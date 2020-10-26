@@ -3,8 +3,10 @@ export class CurrencyRecord {
     this._record = record;
 
     this.id = record._id;
-    this.name = record.name;
-    this.asset = record.asset;
+    this.currency = record.currency;
+    this.digits = record.digits;
+    this.number = record.number;
     this.code = record.code;
+    this.countries = record.countries;
   }
 }
