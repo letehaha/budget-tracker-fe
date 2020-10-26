@@ -12,10 +12,9 @@ const API_VER = process.env.VUE_APP_API_VER;
 /**
  * ApiCaller performs the request to the API
  */
-export class ApiCaller {
+class ApiCaller {
   constructor() {
     this._baseURL = process.env.API_HTTP;
-    console.log(1);
   }
 
   get(endpoint, query, needRaw = true) {
@@ -93,6 +92,7 @@ export class ApiCaller {
 
     try {
       const result = await (await fetch(url, config)).json();
+
       if (opts.needRaw) {
         response = result.response;
       } else {

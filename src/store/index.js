@@ -10,7 +10,6 @@ import {
   TransactionRecord,
   TransactionTypeRecord,
 } from '@/js/records';
-import { COLLECTIONS_NAMES } from '@/js/const';
 import { indexVuexTypes } from './types'
 
 const rootModule = {
@@ -19,13 +18,13 @@ const rootModule = {
       await Promise.all([
         dispatch(indexVuexTypes.FETCH_ACCOUNT_TYPES),
         dispatch(indexVuexTypes.FETCH_CURRENCIES),
-        // dispatch(indexVuexTypes.FETCH_ACCOUNTS),
-        // dispatch(indexVuexTypes.FETCH_CATEGORIES),
-        // dispatch(indexVuexTypes.FETCH_PAYMENT_TYPES),
-        // dispatch(indexVuexTypes.FETCH_TRANSACTION_TYPES),
+        dispatch(indexVuexTypes.FETCH_CATEGORIES),
+        dispatch(indexVuexTypes.FETCH_PAYMENT_TYPES),
+        dispatch(indexVuexTypes.FETCH_TRANSACTION_TYPES),
       ]);
+      await dispatch(indexVuexTypes.FETCH_ACCOUNTS);
+      await dispatch(indexVuexTypes.FETCH_TRANSACTIONS);
       // dispatch(`monobank/${monobankVuexTypes.FETCH_INITIAL_DATA}`);
-      // dispatch(indexVuexTypes.FETCH_TRANSACTIONS);
     },
     async [indexVuexTypes.FETCH_ACCOUNT_TYPES]({ commit }) {
       const result = await api.get('/models/account-types');
@@ -36,87 +35,48 @@ const rootModule = {
       commit(indexVuexTypes.SET_CURRENCIES, result.map(item => new CurrencyRecord(item)));
     },
     async [indexVuexTypes.FETCH_CATEGORIES]({ commit }) {
-      const data = [];
-      const response = await this.$fireStore
-        .collection(COLLECTIONS_NAMES.categories)
-        .get();
-      response.forEach(doc => {
-        data.push(new CategoryRecord(doc.id, doc.data()));
-      });
-      commit(indexVuexTypes.SET_CATEGORIES, data);
+      const result = await api.get('/models/categories');
+      commit(indexVuexTypes.SET_CATEGORIES, result.map(item => new CategoryRecord(item)));
     },
     async [indexVuexTypes.FETCH_TRANSACTION_TYPES]({ commit }) {
-      const data = [];
-      const response = await this.$fireStore
-        .collection(COLLECTIONS_NAMES.transactionTypes)
-        .get();
-      response.forEach(doc => {
-        data.push(new TransactionTypeRecord(doc.id, doc.data()));
-      });
-      commit(indexVuexTypes.SET_TRANSACTION_TYPES, data);
+      const result = await api.get('/models/transaction-types');
+      commit(indexVuexTypes.SET_TRANSACTION_TYPES, result.map(item => new TransactionTypeRecord(item)));
     },
     async [indexVuexTypes.FETCH_PAYMENT_TYPES]({ commit }) {
-      const data = [];
-      const response = await this.$fireStore
-        .collection(COLLECTIONS_NAMES.paymentTypes)
-        .get();
-      response.forEach(doc => {
-        data.push(new PaymentTypeRecord(doc.id, doc.data()));
-      });
-      commit(indexVuexTypes.SET_PAYMENT_TYPES, data);
+      const result = await api.get('/models/payment-types');
+      commit(indexVuexTypes.SET_PAYMENT_TYPES, result.map(item => new PaymentTypeRecord(item)));
     },
     async [indexVuexTypes.FETCH_ACCOUNTS]({ commit, getters }) {
-      const data = [];
-      const response = await this.$fireStore
-        .collection(COLLECTIONS_NAMES.accounts)
-        .get();
+      const result = await api.get('/accounts');
 
-      response.forEach(doc => {
-        const localData = doc.data();
-
-        data.push(
-          new AccountRecord(
-            doc.id,
-            {
-              ...localData,
-              type: getters[indexVuexTypes.GET_ACCOUNT_TYPES]
-                .find(item => item.id === localData.type.id),
-              currency: getters[indexVuexTypes.GET_CURRENCIES]
-                .find(item => item.id === localData.currency.id),
-            },
-          ),
-        );
-      });
-      commit(indexVuexTypes.SET_ACCOUNTS, data);
+      commit(
+        indexVuexTypes.SET_ACCOUNTS,
+        result.map(type => new AccountRecord({
+          ...type,
+          type: getters[indexVuexTypes.GET_ACCOUNT_TYPES]
+            .find(item => item.id === type.type),
+          currency: getters[indexVuexTypes.GET_CURRENCIES]
+            .find(item => item.id === type.currency),
+        })),
+      );
     },
     async [indexVuexTypes.FETCH_TRANSACTIONS]({ commit, getters }) {
-      const listener = this.$fireStore
-        .collection(COLLECTIONS_NAMES.transactions)
-        .onSnapshot(snapshot => {
-          const data = [];
-          snapshot.forEach(doc => {
-            const localData = doc.data();
+      const result = await api.get('/transactions');
 
-            data.push(
-              new TransactionRecord(
-                doc.id,
-                {
-                  ...localData,
-                  account: getters[indexVuexTypes.GET_ACCOUNTS]
-                    .find(item => item.id === localData.account.id),
-                  category: getters[indexVuexTypes.GET_CATEGORIES]
-                    .find(item => item.id === localData.category.id),
-                  paymentType: getters[indexVuexTypes.GET_PAYMENT_TYPES]
-                    .find(item => item.id === localData.paymentType.id),
-                  type: getters[indexVuexTypes.GET_TRANSACTION_TYPES]
-                    .find(item => item.id === localData.type.id),
-                },
-              ),
-            );
-          });
-          commit(indexVuexTypes.SET_TRANSACTIONS, data);
-          commit(indexVuexTypes.SET_TRANSACTIONS_LISTENER, listener);
-        });
+      commit(
+        indexVuexTypes.SET_TRANSACTIONS,
+        result.map(tx => new TransactionRecord({
+          ...tx,
+          paymentType: getters[indexVuexTypes.GET_PAYMENT_TYPES]
+            .find(item => item.id === tx.paymentType),
+          account: getters[indexVuexTypes.GET_ACCOUNTS]
+            .find(item => item.id === tx.account),
+          category: getters[indexVuexTypes.GET_CATEGORIES]
+            .find(item => item.id === tx.category),
+          type: getters[indexVuexTypes.GET_TRANSACTION_TYPES]
+            .find(item => item.id === tx.type),
+        })),
+      );
     },
   },
   mutations: {
@@ -137,9 +97,6 @@ const rootModule = {
     },
     [indexVuexTypes.SET_TRANSACTIONS](state, transactions) {
       state.transactions = transactions;
-    },
-    [indexVuexTypes.SET_TRANSACTIONS_LISTENER](state, listener) {
-      state.transactionsListener = listener;
     },
     [indexVuexTypes.SET_TRANSACTION_TYPES](state, types) {
       state.transactionTypes = types;
@@ -164,7 +121,6 @@ const rootModule = {
     paymentTypes: [],
     transactions: [],
     transactionTypes: [],
-    transactionsListener: [],
   },
 }
 
