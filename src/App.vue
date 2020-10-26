@@ -1,26 +1,38 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <main class="container">
+    <router-view />
+    <Modal
+      :data="modalData"
+      :is-active="isModalVisible"
+      @close="closeModal"
+    />
+  </main>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Modal from '@/components/Modal';
 
 export default {
-  name: 'App',
   components: {
-    HelloWorld
-  }
-}
+    Modal,
+  },
+  data: () => ({
+    isModalVisible: false,
+    modalData: {},
+  }),
+  mounted() {
+    this.$bus.on(this.$bus.eventsList.modalOpen, this.onOpenMessage);
+    this.$bus.on(this.$bus.eventsList.modalClose, this.closeModal);
+  },
+  methods: {
+    onOpenMessage(data) {
+      this.isModalVisible = true;
+      this.modalData = data;
+    },
+    closeModal() {
+      this.modalData = {};
+      this.isModalVisible = false;
+    },
+  },
+};
 </script>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>

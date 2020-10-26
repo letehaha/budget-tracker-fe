@@ -1,0 +1,128 @@
+<template>
+  <section>
+    <div class="dashboard__header">
+      <Button
+        @click="openFormModal"
+      >
+        Add +
+      </Button>
+    </div>
+    <div class="dashboard__list">
+      <template v-for="item in transactions" :key="item.id">
+        <div
+          class="dashboard__list-item"
+          :class="`dashboard__list-item--${item.type.type}`"
+          @click="editTransaction(item.id)"
+        >
+          <div class="dashboard__list-item-info">
+            <div class="dashboard__list-item-category">
+              {{ item.category.name }}
+            </div>
+            <div class="dashboard__list-item-note">
+              {{ item.note }}
+            </div>
+          </div>
+          <div class="dashboard__list-item-right">
+            <div class="dashboard__list-item-amount">
+              {{ item.amount }}
+              {{ item.account.currency.asset }}
+            </div>
+            <div class="dashboard__list-item-time">
+              {{ item.time.toLocaleString() }}
+            </div>
+          </div>
+        </div>
+      </template>
+    </div>
+  </section>
+</template>
+
+<script>
+import { mapActions, mapGetters } from 'vuex';
+import { indexVuexTypes } from '@/store';
+import { TRANSACTIONS_TYPES } from '@/js/const';
+import { MODAL_TYPES } from '@/components/Modal';
+import Button from '@/components/common/Button';
+
+export default {
+  name: 'Dashboard',
+  components: {
+    Button,
+  },
+  computed: {
+    ...mapGetters({
+      accounts: indexVuexTypes.GET_ACCOUNTS,
+      transactions: indexVuexTypes.GET_TRANSACTIONS,
+    }),
+  },
+  mounted() {
+    this.fetshInitialData();
+  },
+  methods: {
+    ...mapActions({
+      fetshInitialData: indexVuexTypes.FETCH_INITIAL_DATA,
+    }),
+    openFormModal() {
+      this.$bus.emit(this.$bus.eventsList.modalOpen, {
+        type: MODAL_TYPES.transactionForm,
+      });
+    },
+    editTransaction(id) {
+      this.$bus.emit(this.$bus.eventsList.modalOpen, {
+        type: MODAL_TYPES.transactionForm,
+        data: {
+          transactionId: id,
+        },
+      });
+    },
+    amountFormatter(amount, type) {
+      switch (type) {
+        case (TRANSACTIONS_TYPES.expense):
+          return `-${amount}`;
+        case (TRANSACTIONS_TYPES.income):
+          return `+${amount}`;
+        case (TRANSACTIONS_TYPES.transfer):
+          return amount;
+        default:
+          return amount;
+      }
+    },
+  },
+};
+</script>
+
+<style lang="scss" scoped>
+.dashboard__list {
+  max-width: 560px;
+  margin: 60px auto 0;
+}
+.dashboard__list-item {
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  color: #ffffff;
+  cursor: pointer;
+}
+.dashboard__list-item--income {
+  background-color: #2ecc71;
+  box-shadow: 0 0 10px 4px rgba(#2ecc71, .1);
+}
+.dashboard__list-item--expense {
+  background-color: #e74c3c;
+  box-shadow: 0 0 10px 4px rgba(#e74c3c, .1);
+}
+.dashboard__list-item--transfer {
+  background-color: #34495e;
+  box-shadow: 0 0 10px 4px rgba(#34495e, .1);
+}
+.dashboard__list-item-note {
+  color: #eaeaea;
+  font-size: 14px;
+}
+.dashboard__list-item-amount {
+  text-align: right;
+}
+</style>
