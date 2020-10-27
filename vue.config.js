@@ -1,4 +1,8 @@
 module.exports = {
+  devServer: {
+    port: process.env.PORT,
+    host: process.env.HOST,
+  },
   css: {
     loaderOptions: {
       scss: {
