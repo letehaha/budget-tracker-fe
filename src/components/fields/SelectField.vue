@@ -56,8 +56,8 @@
 
 <script>
 
-const EVENTS = {
-  input: 'input',
+const MODEL_EVENTS = {
+  input: 'update:modelValue',
 };
 
 export const POSITIONS = Object.freeze({
@@ -68,7 +68,7 @@ export const POSITIONS = Object.freeze({
 export default {
   props: {
     label: { type: String, default: undefined },
-    value: { type: [Object, String], default: undefined },
+    modelValue: { type: [Object, String], default: undefined },
     values: { type: [Array, Object], required: true },
     labelKey: { type: String, default: undefined },
     placeholder: { type: String, default: undefined },
@@ -108,13 +108,13 @@ export default {
     },
   },
   mounted() {
-    if (this.value) {
+    if (this.modelValue) {
       if (typeof this.values[0] === 'object' && this.values[0] !== null) {
         this.selectedValue = this.labelKey
-          ? this.value[this.labelKey]
-          : this.value.label;
+          ? this.modelValue[this.labelKey]
+          : this.modelValue.label;
       } else {
-        this.selectedValue = this.value;
+        this.selectedValue = this.modelValue;
       }
     } else if (this.isValuePreselected) {
       // eslint-disable-next-line prefer-destructuring
@@ -131,7 +131,7 @@ export default {
     selectItem(index) {
       this.selectedValue = this.labels[index];
       this.filterQuery = '';
-      this.$emit(EVENTS.input, this.values[index]);
+      this.$emit(MODEL_EVENTS.input, this.values[index]);
       this.closeDropdown();
     },
     filterLabels(event) {

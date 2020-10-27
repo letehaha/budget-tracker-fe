@@ -19,7 +19,7 @@
     <textarea
       class="text-field__input"
       :placeholder="placeholder || ''"
-      :value="value"
+      :value="modelValue"
       :disabled="disabled"
       :name="name"
       :autofocus="autofocus"
@@ -49,14 +49,14 @@
 </template>
 
 <script>
-const EVENTS = Object.freeze({
-  input: 'input',
+const MODEL_EVENTS = Object.freeze({
+  input: 'update:modelValue',
 });
 
 export default {
   props: {
     label: { type: String, default: undefined },
-    value: { type: [String, Number], default: undefined },
+    modelValue: { type: [String, Number], default: undefined },
     errorMessage: { type: String, default: undefined },
     // proxies
     autocomplete: { type: String, default: 'off' },
@@ -77,16 +77,16 @@ export default {
   }),
   computed: {
     hasValue() {
-      return Boolean(this.value);
+      return Boolean(this.modelValue);
     },
   },
   mounted() {
-    if (this.value) this.currentLength = String(this.value).length;
+    if (this.modelValue) this.currentLength = String(this.modelValue).length;
   },
   methods: {
     onInput(event) {
       if (this.maxlength) this.currentLength = event.target.value.length;
-      this.$emit(EVENTS.input, event.target.value);
+      this.$emit(MODEL_EVENTS.input, event.target.value);
     },
   },
 };

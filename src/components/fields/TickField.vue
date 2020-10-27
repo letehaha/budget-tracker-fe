@@ -1,7 +1,7 @@
 <template>
   <label
     :class="{
-      'tick-field--disabled': $attrs.disabled,
+      'tick-field--disabled': attrs.disabled,
     }"
     :for="id"
     :title="label"
@@ -9,12 +9,11 @@
   >
     <input
       :id="id"
-      :checked="value"
-      :placeholder="$attrs.placeholder || ''"
-      v-bind="$attrs"
+      :checked="modelValue"
+      :placeholder="attrs.placeholder || ''"
+      v-bind="attrs"
       class="tick-field__input"
       type="checkbox"
-      v-on="listeners"
     >
     <div class="tick-field__custom" />
     <p class="tick-field__label">
@@ -25,21 +24,21 @@
 
 <script>
 
-const EVENTS = {
-  input: 'input',
+const MODEL_EVENTS = {
+  input: 'update:modelValue',
 };
 
 export default {
   props: {
     label: { type: String, default: undefined },
-    value: { type: [String, Boolean], required: true },
+    modelValue: { type: [String, Boolean], required: true },
   },
   computed: {
-    listeners() {
+    attrs() {
       return {
-        // ...this.$listeners,
-        input: event => {
-          this.$emit(EVENTS.input, event.target.checked);
+        ...this.$attrs,
+        onInput: event => {
+          this.$emit(MODEL_EVENTS.input, event.target.checked);
         },
       };
     },

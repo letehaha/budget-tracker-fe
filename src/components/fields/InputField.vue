@@ -14,13 +14,12 @@
     </span>
     <input
       :type="type"
-      :value="value"
+      :value="modelValue"
       :placeholder="$attrs.placeholder || ''"
       :style="inputFieldStyles"
       :tabindex="tabindex"
-      v-bind="$attrs"
+      v-bind="attrs"
       class="input-field__input"
-      v-on="listeners"
     >
     <div
       v-if="isSubLabelExist"
@@ -39,28 +38,26 @@
 
 <script>
 
-const EVENTS = {
-  input: 'input',
+const MODEL_EVENTS = {
+  input: 'update:modelValue',
 };
 
 export default {
   props: {
     label: { type: String, default: undefined },
-    value: { type: [String, Number], default: undefined },
+    modelValue: { type: [String, Number], default: undefined },
     type: { type: String, default: undefined },
     tabindex: { type: String, default: undefined },
     errorMessage: { type: String, default: undefined },
     inputFieldStyles: { type: Object, default: undefined },
   },
-  data: () => ({
-  }),
   computed: {
-    listeners() {
+    attrs() {
       return {
-        // ...this.$listeners,
-        input: event => {
-          if (this.value === event.target.value) return;
-          this.$emit(EVENTS.input, event.target.value);
+        ...this.$attrs,
+        onInput: event => {
+          if (this.modelValue === event.target.value) return;
+          this.$emit(MODEL_EVENTS.input, event.target.value);
         },
       };
     },

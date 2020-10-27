@@ -52,17 +52,20 @@ const FLATPICKR_HOOKS = {
   onPreCalendarPosition: 'onPreCalendarPosition',
   onKeyDown: 'onKeyDown',
 };
+const MODEL_EVENTS = {
+  input: 'update:modelValue',
+};
 // Events that will emitted up
 const EMITABLE_EVENTS = {
   getNewValue: 'getNewValue',
-  input: 'input',
   onClose: FLATPICKR_HOOKS.onClose,
   onOpen: FLATPICKR_HOOKS.onOpen,
 };
 export default {
+  emits: Object.values(EMITABLE_EVENTS),
   name: 'DateFieldFlatpickr',
   props: {
-    value: { type: [String, Date], default: '' },
+    modelValue: { type: [String, Date], default: '' },
     enableTime: { type: Boolean, default: true },
     allowInput: { type: Boolean, default: false },
     disabled: { type: Boolean, default: false },
@@ -103,7 +106,7 @@ export default {
     },
   },
   watch: {
-    value(newValue) {
+    modelValue(newValue) {
       // Prevent updates if v-model value is same as input's current value
       if (newValue === this.flatpickrDate) return;
       // Sets the current selected date after value changed
@@ -155,9 +158,9 @@ export default {
       ...hooks,
     };
     // Set initial date without emitting any event
-    safeConfig.defaultDate = this.value || safeConfig.defaultDate;
+    safeConfig.defaultDate = this.modelValue || safeConfig.defaultDate;
     this.flatpickr = new Flatpickr(this.$refs.dateField, safeConfig);
-    this.flatpickrDate = this.value || safeConfig.defaultDate || null;
+    this.flatpickrDate = this.modelValue || safeConfig.defaultDate || null;
   },
   /**
    * Free up memory
@@ -173,7 +176,7 @@ export default {
       if (event) {
         // Let's wait for DOM to be updated
         this.$nextTick(() => {
-          this.$emit(EMITABLE_EVENTS.input, this.flatpickrDate);
+          this.$emit(MODEL_EVENTS.input, this.flatpickrDate);
         });
       }
     },
@@ -211,7 +214,7 @@ export default {
       this.flatpickr.setDate(dateStr, true);
       // Let's wait for DOM to be updated
       this.$nextTick(() => {
-        this.$emit(EMITABLE_EVENTS.input, dateStr);
+        this.$emit(MODEL_EVENTS.input, dateStr);
         this.$emit(EMITABLE_EVENTS.onClose);
       });
     },
