@@ -101,6 +101,7 @@ const rootModule = {
 };
 
 export const store = createStore({
+  strict: true,
   ...rootModule,
   modules: {
     transactions,
