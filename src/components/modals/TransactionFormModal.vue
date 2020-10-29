@@ -85,7 +85,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import { indexVuexTypes } from '@/store';
+import { indexVuexTypes, transactionsVuexTypes } from '@/store';
 import { COLLECTIONS_NAMES } from '@/js/const';
 import InputField from '@/components/fields/InputField';
 import SelectField from '@/components/fields/SelectField';
@@ -127,7 +127,9 @@ export default {
       categories: indexVuexTypes.GET_CATEGORIES,
       paymentTypes: indexVuexTypes.GET_PAYMENT_TYPES,
       transactionTypes: indexVuexTypes.GET_TRANSACTION_TYPES,
-      transactionById: indexVuexTypes.GET_TRANSACTION_BY_ID,
+    }),
+    ...mapGetters('transactions', {
+      transactionById: transactionsVuexTypes.GET_TRANSACTION_BY_ID,
     }),
     transaction() {
       return this.transactionById(this.transactionId);

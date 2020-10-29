@@ -39,7 +39,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import { indexVuexTypes } from '@/store';
+import { indexVuexTypes, transactionsVuexTypes } from '@/store';
 import { TRANSACTIONS_TYPES } from '@/js/const';
 import { MODAL_TYPES } from '@/components/Modal';
 import Button from '@/components/common/Button';
@@ -52,7 +52,9 @@ export default {
   computed: {
     ...mapGetters({
       accounts: indexVuexTypes.GET_ACCOUNTS,
-      transactions: indexVuexTypes.GET_TRANSACTIONS,
+    }),
+    ...mapGetters('transactions', {
+      transactions: transactionsVuexTypes.GET_TRANSACTIONS,
     }),
   },
   mounted() {

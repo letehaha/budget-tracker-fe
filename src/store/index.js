@@ -7,10 +7,11 @@ import {
   AccountRecord,
   CurrencyRecord,
   CategoryRecord,
-  TransactionRecord,
   TransactionTypeRecord,
 } from '@/js/records';
 import { indexVuexTypes } from './types'
+import { transactionsVuexTypes } from './transactions';
+import transactions from './transactions';
 
 const rootModule = {
   actions: {
@@ -23,7 +24,7 @@ const rootModule = {
         dispatch(indexVuexTypes.FETCH_TRANSACTION_TYPES),
       ]);
       await dispatch(indexVuexTypes.FETCH_ACCOUNTS);
-      await dispatch(indexVuexTypes.FETCH_TRANSACTIONS);
+      await dispatch(`transactions/${transactionsVuexTypes.FETCH_TRANSACTIONS}`);
       // dispatch(`monobank/${monobankVuexTypes.FETCH_INITIAL_DATA}`);
     },
     async [indexVuexTypes.FETCH_ACCOUNT_TYPES]({ commit }) {
@@ -60,24 +61,6 @@ const rootModule = {
         })),
       );
     },
-    async [indexVuexTypes.FETCH_TRANSACTIONS]({ commit, getters }) {
-      const result = await api.get('/transactions');
-
-      commit(
-        indexVuexTypes.SET_TRANSACTIONS,
-        result.map(tx => new TransactionRecord({
-          ...tx,
-          paymentType: getters[indexVuexTypes.GET_PAYMENT_TYPES]
-            .find(item => item.id === tx.paymentType),
-          account: getters[indexVuexTypes.GET_ACCOUNTS]
-            .find(item => item.id === tx.account),
-          category: getters[indexVuexTypes.GET_CATEGORIES]
-            .find(item => item.id === tx.category),
-          type: getters[indexVuexTypes.GET_TRANSACTION_TYPES]
-            .find(item => item.id === tx.type),
-        })),
-      );
-    },
   },
   mutations: {
     [indexVuexTypes.SET_ACCOUNT_TYPES](state, accountTypes) {
@@ -95,9 +78,6 @@ const rootModule = {
     [indexVuexTypes.SET_PAYMENT_TYPES](state, paymentTypes) {
       state.paymentTypes = paymentTypes;
     },
-    [indexVuexTypes.SET_TRANSACTIONS](state, transactions) {
-      state.transactions = transactions;
-    },
     [indexVuexTypes.SET_TRANSACTION_TYPES](state, types) {
       state.transactionTypes = types;
     },
@@ -108,9 +88,6 @@ const rootModule = {
     [indexVuexTypes.GET_CURRENCIES]: state => state.currencies,
     [indexVuexTypes.GET_CATEGORIES]: state => state.categories,
     [indexVuexTypes.GET_PAYMENT_TYPES]: state => state.paymentTypes,
-    [indexVuexTypes.GET_TRANSACTIONS]: state => state.transactions,
-    [indexVuexTypes.GET_TRANSACTION_BY_ID]:
-      state => id => state.transactions.find(item => item.id === id),
     [indexVuexTypes.GET_TRANSACTION_TYPES]: state => state.transactionTypes,
   },
   state: {
@@ -119,14 +96,16 @@ const rootModule = {
     currencies: [],
     categories: [],
     paymentTypes: [],
-    transactions: [],
     transactionTypes: [],
   },
-}
+};
 
 export const store = createStore({
   ...rootModule,
-  modules: {},
-})
+  modules: {
+    transactions,
+  },
+});
 
-export { indexVuexTypes } from './types'
+export { indexVuexTypes } from './types';
+export { transactionsVuexTypes } from './transactions';
