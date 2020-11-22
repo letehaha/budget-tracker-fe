@@ -6,7 +6,6 @@
       {
         'button--disabled': disabled,
         'button--outline': outline,
-        'button--has-hover': withHover,
       }
     ]"
     :disabled="disabled"
@@ -23,6 +22,7 @@ export const THEMES = Object.freeze({
 
 export const SIZES = Object.freeze({
   large: 'large',
+  default: 'default',
 });
 
 export default {
@@ -31,7 +31,7 @@ export default {
     disabled: { type: Boolean, default: false },
     size: {
       type: String,
-      default: SIZES.large,
+      default: SIZES.default,
       validator: size => Object.values(SIZES).includes(size),
     },
     theme: {
@@ -40,7 +40,6 @@ export default {
       validator: theme => Object.values(THEMES).includes(theme),
     },
     withShadow: { type: Boolean, default: false },
-    withHover: { type: Boolean, default: false },
     outline: { type: Boolean, default: false },
     isText: { type: Boolean, default: false },
   },
@@ -51,49 +50,38 @@ export default {
 $transition: box-shadow 0.2s ease-out;
 
 .button {
-  font-weight: 700;
-  font-size: 17px;
+  font-weight: 300;
+  font-size: 16px;
   line-height: 1.2;
   border: 1px solid transparent;
-  color: #ffffff;
-  border-radius: 4px;
+  border-radius: var(--system-border-radius);
   cursor: pointer;
   outline: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 12px 30px;
-  transition: $transition;
-
-  /* @include respond-to-custom-width(550px) {
-    font-size: 14px;
-  } */
-
-  &.button--has-hover {
-    transition: $transition, transform 0.2s ease-out;
-
-    &:hover {
-      transform: scale(1.02);
-    }
-  }
-}
-
-.button--large {
-  padding: 16px 34px;
+  padding: 12px 32px;
+  transition: .2s ease-out;
 }
 
 .button--blue {
-  background-color: blue;
+  background-color: var(--system-blue);
+  color: #fff;
 
-  &:not(.button--disabled).button--outline {
-    background-color: transparent;
-    border-color: blue;
-    color: blue;
+  &:hover {
+    background-color: var(--system-blue-hovered);
   }
-
-  &.button--disabled {
-    background-color: #cccccc;
+  &:active {
+    background-color: var(--system-blue-active);
+  }
+  &[disabled] {
+    background-color: var(--system-disabled);
     cursor: not-allowed;
+  }
+  &:not([disabled]).button--outline {
+    background-color: transparent;
+    border-color: var(--system-blue);
+    color: var(--system-blue);
   }
 }
 </style>

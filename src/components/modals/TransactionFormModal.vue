@@ -85,8 +85,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import { indexVuexTypes, transactionsVuexTypes } from '@/store';
-import { COLLECTIONS_NAMES } from '@/js/const';
+import { indexVuexTypes } from '@/store';
 import InputField from '@/components/fields/InputField';
 import SelectField from '@/components/fields/SelectField';
 import TextareaField from '@/components/fields/TextareaField';
@@ -123,16 +122,11 @@ export default {
   computed: {
     ...mapGetters({
       accounts: indexVuexTypes.GET_ACCOUNTS,
-      currencies: indexVuexTypes.GET_CURRENCIES,
-      categories: indexVuexTypes.GET_CATEGORIES,
       paymentTypes: indexVuexTypes.GET_PAYMENT_TYPES,
       transactionTypes: indexVuexTypes.GET_TRANSACTION_TYPES,
     }),
-    ...mapGetters('transactions', {
-      transactionById: transactionsVuexTypes.GET_TRANSACTION_BY_ID,
-    }),
     transaction() {
-      return this.transactionById(this.transactionId);
+      return {};
     },
   },
   watch: {
@@ -156,51 +150,7 @@ export default {
   },
   methods: {
     async submit() {
-      if (this.transaction) {
-        await this.editTransaction();
-      } else {
-        await this.saveTrasnaction();
-      }
-      this.$emit(EVENTS.closeModal);
-    },
-    async saveTrasnaction() {
-      await this.$fireStore
-        .collection(COLLECTIONS_NAMES.transactions)
-        .doc()
-        .set(this.prepareTransactionData());
-    },
-    async editTransaction() {
-      await this.$fireStore
-        .collection(COLLECTIONS_NAMES.transactions)
-        .doc(this.transaction.id)
-        .update(this.prepareTransactionData());
-    },
-    async deleteTransaction() {
-      await this.$fireStore
-        .collection(COLLECTIONS_NAMES.transactions)
-        .doc(this.transaction.id)
-        .delete();
-
-      this.$emit(EVENTS.closeModal);
-    },
-    prepareTransactionData() {
-      return {
-        amount: this.form.amount,
-        time: new Date(this.form.time),
-        note: this.form.note,
-        account: this.$fireStore
-          .collection(COLLECTIONS_NAMES.accounts)
-          .doc(this.form.account.id),
-        category: this.$fireStore
-          .collection(COLLECTIONS_NAMES.categories)
-          .doc(this.form.category.id),
-        paymentType: this.$fireStore
-          .collection(COLLECTIONS_NAMES.paymentTypes)
-          .doc(this.form.paymentType.id),
-        type: this.$fireStore
-          .collection(COLLECTIONS_NAMES.transactionTypes)
-          .doc(this.form.type.id),
-      };
+      console.log('1');
     },
   },
 };

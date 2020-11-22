@@ -87,7 +87,7 @@ export default {
   padding: 80px 24px 24px;
   cursor: pointer;
 
-  z-index: $z-modal;
+  z-index: var(--z-modal);
 
   &.modal--active {
     opacity: 1;

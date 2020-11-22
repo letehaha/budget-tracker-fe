@@ -30,7 +30,10 @@
         class="select-field__dropdown"
       >
         <div class="select-field__dropdown-values">
-          <template v-for="(item, i) in labels" :key="item">
+          <template
+            v-for="(item, i) in labels"
+            :key="item"
+          >
             <button
               :class="{
                 'select-field__dropdown-item--highlighed':
@@ -187,7 +190,7 @@ export default {
   transition: 0.2s ease-out;
   background-color: #ecf0f1;
   box-shadow: 0 3px 10px 2px rgba(0, 0, 0, 0.08);
-  z-index: $z-select-field;
+  z-index: var(--z-select-field);
   border-radius: 4px;
 
   .select-field--active & {

@@ -1,2 +1,1 @@
-export { validateEmail } from './validate-email.util';
-export { deepFreeze } from './deep-freeze.util';
+export { eventBus } from './event-bus.util';

@@ -20,6 +20,10 @@
       :tabindex="tabindex"
       v-bind="attrs"
       class="input-field__input"
+      autocomplete="off"
+      autocorrect="off"
+      autocapitalize="off"
+      spellcheck="false"
     >
     <div
       v-if="isSubLabelExist"
@@ -77,38 +81,35 @@ export default {
   width: 100%;
   flex: 1;
 }
-
 .input-field__input {
   font-size: 16px;
   line-height: 1;
-  color: #333333;
-  padding: 8px 12px;
-  background-color: #ecf0f1;
-  border: 1px solid #bdc3c7;
+  color: var(--primary-text-color);
+  font-weight: 300;
+  padding: 16px 24px;
+  background-color: #fff;
+  border: 1px solid #e1e5ea;
   box-sizing: border-box;
-  border-radius: 4px;
+  border-radius: var(--system-border-radius);
   outline: none;
   width: 100%;
 
   @include placeholder-custom(rgba(#333, 0.4));
 }
-
 .input-field__label {
   font-size: 16px;
-  font-weight: 400;
+  font-weight: 300;
   line-height: 1;
-  color: #ffffff;
-  margin-bottom: 10px;
+  color: var(--primary-text-color);
+  margin-bottom: 5px;
   display: block;
 }
-
 .input-field__err-mes {
   color: red;
   font-size: 14px;
   margin-top: 4px;
   margin-left: 8px;
 }
-
 .input-fields__sublabel {
   position: absolute;
   right: 0;

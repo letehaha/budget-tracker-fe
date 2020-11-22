@@ -5,11 +5,11 @@ const actions = {
   FETCH_TRANSACTIONS: 'FETCH_TRANSACTIONS',
 };
 const getters = {
-  GET_TRANSACTIONS: 'GET_TRANSACTIONS',
-  GET_TRANSACTION_BY_ID: 'GET_TRANSACTION_BY_ID',
+  GET_IS_LOGGED_IN: 'GET_IS_LOGGED_IN',
+  GET_USER: 'GET_USER',
 };
 
-export const transactionsVuexTypes = Object.freeze({
+export const authVuexTypes = Object.freeze({
   ...mutations,
   ...actions,
   ...getters,

@@ -1,1 +1,3 @@
-export { eventBus } from './event-bus.helper';
+export { validateEmail } from './validate-email.helper';
+export { deepFreeze } from './deep-freeze.helper';
+export { writeToClipboard } from './clipboard';

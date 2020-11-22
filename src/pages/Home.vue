@@ -8,7 +8,10 @@
       </Button>
     </div>
     <div class="dashboard__list">
-      <template v-for="item in transactions" :key="item.id">
+      <template
+        v-for="item in transactions"
+        :key="item.id"
+      >
         <div
           class="dashboard__list-item"
           :class="`dashboard__list-item--${item.type.type}`"
@@ -38,8 +41,8 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
-import { indexVuexTypes, transactionsVuexTypes } from '@/store';
+import { mapGetters } from 'vuex';
+import { indexVuexTypes } from '@/store';
 import { TRANSACTIONS_TYPES } from '@/js/const';
 import { MODAL_TYPES } from '@/components/Modal';
 import Button from '@/components/common/Button';
@@ -53,17 +56,14 @@ export default {
     ...mapGetters({
       accounts: indexVuexTypes.GET_ACCOUNTS,
     }),
-    ...mapGetters('transactions', {
-      transactions: transactionsVuexTypes.GET_TRANSACTIONS,
-    }),
+    transactions() {
+      return [];
+    },
   },
   mounted() {
-    this.fetshInitialData();
+
   },
   methods: {
-    ...mapActions({
-      fetshInitialData: indexVuexTypes.FETCH_INITIAL_DATA,
-    }),
     openFormModal() {
       this.$bus.emit(this.$bus.eventsList.modalOpen, {
         type: MODAL_TYPES.transactionForm,

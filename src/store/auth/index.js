@@ -3,7 +3,7 @@ import { getters } from './getters';
 import { mutations } from './mutations';
 import { state } from './state';
 
-export { transactionsVuexTypes } from './types';
+export { authVuexTypes } from './types';
 
 export default {
   namespaced: true,
