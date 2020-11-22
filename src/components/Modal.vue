@@ -14,10 +14,8 @@
 </template>
 
 <script>
-import TransactionFormModal from '@/components/modals/TransactionFormModal';
-
 export const MODAL_TYPES = Object.freeze({
-  transactionForm: 'TransactionFormModal',
+  transactionForm: () => import('@/components/modals/TransactionFormModal'),
 });
 
 const EVENTS = {
@@ -25,9 +23,6 @@ const EVENTS = {
 };
 
 export default {
-  components: {
-    TransactionFormModal,
-  },
   props: {
     isActive: { type: Boolean, default: false },
     /**
