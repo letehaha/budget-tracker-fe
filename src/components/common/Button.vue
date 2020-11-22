@@ -9,13 +9,17 @@
       }
     ]"
     :disabled="disabled"
-    @click="$emit('click')"
+    @click="$emit(EVENTS.click)"
   >
     <slot />
   </button>
 </template>
 
 <script>
+const EVENTS = {
+  click: 'click',
+};
+
 export const THEMES = Object.freeze({
   blue: 'blue',
 });
@@ -43,6 +47,10 @@ export default {
     outline: { type: Boolean, default: false },
     isText: { type: Boolean, default: false },
   },
+  emits: Object.values(EVENTS),
+  data: () => ({
+    EVENTS,
+  }),
 };
 </script>
 
@@ -50,7 +58,8 @@ export default {
 $transition: box-shadow 0.2s ease-out;
 
 .button {
-  font-weight: 300;
+  font-weight: 400;
+  letter-spacing: 0.5px;
   font-size: 16px;
   line-height: 1.2;
   border: 1px solid transparent;

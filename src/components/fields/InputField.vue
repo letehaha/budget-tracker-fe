@@ -85,7 +85,8 @@ export default {
   font-size: 16px;
   line-height: 1;
   color: var(--primary-text-color);
-  font-weight: 300;
+  font-weight: 400;
+  letter-spacing: 0.5px;
   padding: 16px 24px;
   background-color: #fff;
   border: 1px solid #e1e5ea;
@@ -98,7 +99,8 @@ export default {
 }
 .input-field__label {
   font-size: 16px;
-  font-weight: 300;
+  font-weight: 400;
+  letter-spacing: 0.5px;
   line-height: 1;
   color: var(--primary-text-color);
   margin-bottom: 5px;

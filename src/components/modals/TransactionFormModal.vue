@@ -149,9 +149,7 @@ export default {
     },
   },
   methods: {
-    async submit() {
-      console.log('1');
-    },
+    submit() {},
   },
 };
 </script>

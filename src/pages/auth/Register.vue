@@ -75,7 +75,7 @@ export default {
   padding: 48px 32px;
 }
 .register__title {
-  font-weight: 300;
+  font-weight: 500;
   font-size: 30px;
   line-height: 1.4;
   text-align: center;
@@ -92,7 +92,7 @@ export default {
 .register__signup {
   margin-top: 40px;
   text-align: center;
-  font-weight: 300;
+  font-weight: 400;
 }
 .register__signup-link {
   transition: .2s ease-out;

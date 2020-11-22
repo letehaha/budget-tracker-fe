@@ -4,24 +4,28 @@
       <h1 class="login__title">
         Log in to account
       </h1>
-      <div class="login__fields">
+      <form class="login__fields">
         <InputField
           v-model="form.username"
           label="Your username"
           placeholder="ie. johnsnow"
           class="login__field"
+          :disabled="isFormLoading"
         />
         <InputField
           v-model="form.passowrd"
           label="Your password"
           class="login__field"
           type="password"
+          :disabled="isFormLoading"
         />
-      </div>
+      </form>
       <Button
         class="login__submit"
+        :disabled="isFormLoading"
+        @click="submit"
       >
-        Log in
+        {{ isFormLoading ? 'Loading...' : 'Log in' }}
       </Button>
       <div class="login__signup">
         Don’t have an account?
@@ -51,7 +55,13 @@ export default {
       username: '',
       password: '',
     },
+    isFormLoading: false,
   }),
+  methods: {
+    submit() {
+      this.isFormLoading = !this.isFormLoading;
+    },
+  },
 };
 </script>
 
@@ -68,7 +78,7 @@ export default {
   padding: 48px 32px;
 }
 .login__title {
-  font-weight: 300;
+  font-weight: 500;
   font-size: 30px;
   line-height: 1.4;
   text-align: center;
@@ -85,7 +95,7 @@ export default {
 .login__signup {
   margin-top: 40px;
   text-align: center;
-  font-weight: 300;
+  font-weight: 400;
 }
 .login__signup-link {
   transition: .2s ease-out;
