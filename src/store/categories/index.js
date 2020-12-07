@@ -7,12 +7,12 @@ const state = {
 };
 
 const getters = {
-  [categoriesVuexTypes.GET_CATEGORIES]: state => state.user,
+  [categoriesVuexTypes.GET_CATEGORIES]: state => state.categories,
 };
 
 const mutations = {
-  [categoriesVuexTypes.SET_CATEGORIES](state, user) {
-    state.user = user;
+  [categoriesVuexTypes.SET_CATEGORIES](state, categories) {
+    state.categories = categories;
   },
 };
 
