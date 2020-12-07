@@ -6,6 +6,9 @@
       >
         Add +
       </Button>
+      <Button @click="() => logOut({ router: $router })">
+        Log Out
+      </Button>
     </div>
     <div class="dashboard__list">
       <template
@@ -43,6 +46,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import {
+  authVuexTypes,
   indexVuexTypes,
   transactionsVuexTypes,
   userVuexTypes,
@@ -83,6 +87,9 @@ export default {
     }),
     ...mapActions('transactions', {
       fetchTransactions: transactionsVuexTypes.FETCH_TRANSACTIONS,
+    }),
+    ...mapActions('auth', {
+      logOut: authVuexTypes.LOG_OUT,
     }),
     openFormModal() {
       this.$bus.emit(this.$bus.eventsList.modalOpen, {

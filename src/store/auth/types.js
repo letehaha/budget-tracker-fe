@@ -4,6 +4,7 @@ const mutations = {
 };
 const actions = {
   LOG_IN: 'LOG_IN',
+  LOG_OUT: 'LOG_OUT',
 };
 const getters = {
   GET_IS_LOGGED_IN: 'GET_IS_LOGGED_IN',
