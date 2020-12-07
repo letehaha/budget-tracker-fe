@@ -85,7 +85,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import { indexVuexTypes } from '@/store';
+import { indexVuexTypes, accountsVuexTypes } from '@/store';
 import InputField from '@/components/fields/InputField';
 import SelectField from '@/components/fields/SelectField';
 import TextareaField from '@/components/fields/TextareaField';
@@ -121,9 +121,11 @@ export default {
   }),
   computed: {
     ...mapGetters({
-      accounts: indexVuexTypes.GET_ACCOUNTS,
       paymentTypes: indexVuexTypes.GET_PAYMENT_TYPES,
       transactionTypes: indexVuexTypes.GET_TRANSACTION_TYPES,
+    }),
+    ...mapGetters('accounts', {
+      accounts: accountsVuexTypes.GET_ACCOUNTS,
     }),
     transaction() {
       return {};
