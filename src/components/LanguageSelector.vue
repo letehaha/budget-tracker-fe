@@ -20,7 +20,10 @@
     >
       {{ $t(selectedLang.name) }}
       <div class="language-selector__langs">
-        <template v-for="lang in LANGUAGES" :key="lang.code">
+        <template
+          v-for="lang in LANGUAGES"
+          :key="lang.code"
+        >
           <div
             :class="{ 'language-selector__lang--selected': lang.code === selectedLang.code}"
             class="language-selector__lang"

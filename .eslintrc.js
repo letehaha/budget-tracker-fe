@@ -2,10 +2,10 @@ module.exports = {
   root: true,
   env: {
     browser: true,
-    node: true
+    node: true,
   },
   parserOptions: {
-    parser: 'babel-eslint'
+    parser: 'babel-eslint',
   },
   extends: [
     'eslint:recommended',
@@ -15,7 +15,7 @@ module.exports = {
   ],
   // required to lint *.vue files
   plugins: [
-    'vue'
+    'vue',
   ],
   // add your custom rules here
   rules: {
@@ -50,26 +50,26 @@ module.exports = {
     'no-plusplus': 'off',
     'max-len': 'off',
     'vue/max-len': ['warn', {
-      'code': 80,
-      'template': 80,
-      'tabWidth': 2,
-      'comments': 100,
-      'ignorePattern': '',
-      'ignoreComments': false,
-      'ignoreTrailingComments': false,
-      'ignoreUrls': false,
-      'ignoreStrings': true,
-      'ignoreTemplateLiterals': true,
-      'ignoreRegExpLiterals': true,
-      'ignoreHTMLAttributeValues': false,
-      'ignoreHTMLTextContents': false,
+      code: 80,
+      template: 80,
+      tabWidth: 2,
+      comments: 100,
+      ignorePattern: '',
+      ignoreComments: false,
+      ignoreTrailingComments: false,
+      ignoreUrls: false,
+      ignoreStrings: true,
+      ignoreTemplateLiterals: true,
+      ignoreRegExpLiterals: true,
+      ignoreHTMLAttributeValues: false,
+      ignoreHTMLTextContents: false,
     }],
     'vue/no-unused-components': 'warn',
     'import/no-unresolved': ['error', {
-      ignore: ['\.svg']
+      ignore: ['\.svg'],
     }],
     'no-shadow': ['error', {
-      'allow': ['state'],
+      allow: ['state'],
     }],
   },
-}
+};

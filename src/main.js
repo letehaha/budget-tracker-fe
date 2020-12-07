@@ -5,6 +5,7 @@ import { clickOutside } from '@/directives';
 import { eventBus } from '@/js/utils';
 import App from './App';
 import '@/assets/styles/index.scss';
+import './registerServiceWorker';
 
 const app = createApp(App);
 
