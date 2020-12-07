@@ -90,12 +90,15 @@ class ApiCaller {
     const url = `${API_HTTP}${API_VER}${opts.endpoint}${additionalParams}`;
     const config = {
       method: opts.method,
-      body: JSON.stringify(opts.data || {}),
       headers: {
         'Content-Type': 'application/json',
         Authorization: this.authToken,
       },
     };
+
+    if (opts.data) {
+      config.body = JSON.stringify(opts.data);
+    }
 
     if (opts.options?.withoutSignature) {
       delete config.headers.Authorization;
