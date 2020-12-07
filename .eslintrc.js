@@ -68,5 +68,8 @@ module.exports = {
     'import/no-unresolved': ['error', {
       ignore: ['\.svg']
     }],
+    'no-shadow': ['error', {
+      'allow': ['state'],
+    }],
   },
 }

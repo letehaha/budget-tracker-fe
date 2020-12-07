@@ -62,7 +62,6 @@ const EMITABLE_EVENTS = {
   onOpen: FLATPICKR_HOOKS.onOpen,
 };
 export default {
-  emits: Object.values(EMITABLE_EVENTS),
   name: 'DateFieldFlatpickr',
   props: {
     modelValue: { type: [String, Date], default: '' },
@@ -75,6 +74,7 @@ export default {
     label: { type: String, default: '' },
     errorMessage: { type: String, default: undefined },
   },
+  emits: Object.values(EMITABLE_EVENTS),
   data: () => ({
     flatpickrDate: '',
     isCalendarOpen: false,

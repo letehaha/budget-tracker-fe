@@ -1,5 +1,5 @@
 class EventBus {
-  constructor(){
+  constructor() {
     this.events = {};
   }
 
@@ -10,7 +10,7 @@ class EventBus {
 
   emit(eventName, data) {
     if (this.events[eventName]) {
-      this.events[eventName].forEach(function(fn) {
+      this.events[eventName].forEach((fn) => {
         fn(data);
       });
     }
@@ -28,20 +28,20 @@ class EventBus {
   }
 
   reset() {
-    this.events = {}
+    this.events = {};
   }
 
   get eventsList() {
     return {
       modalOpen: 'modal-open',
       modalClose: 'modal-close',
-    }
+    };
   }
 
   eventExists(eventName) {
     return Object
       .values(this.eventsList)
-      .includes(eventName)
+      .includes(eventName);
   }
 }
 

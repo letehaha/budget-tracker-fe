@@ -13,7 +13,7 @@
           :disabled="isFormLoading"
         />
         <InputField
-          v-model="form.passowrd"
+          v-model="form.password"
           label="Your password"
           class="login__field"
           type="password"
@@ -42,6 +42,8 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex';
+import { authVuexTypes } from '@/store';
 import Button from '@/components/common/Button';
 import InputField from '@/components/fields/InputField';
 
@@ -57,9 +59,22 @@ export default {
     },
     isFormLoading: false,
   }),
+  computed: {
+    ...mapGetters('auth', {
+      tokenToken: authVuexTypes.GET_USER_TOKEN,
+    }),
+  },
   methods: {
-    submit() {
-      this.isFormLoading = !this.isFormLoading;
+    ...mapActions('auth', {
+      signIn: authVuexTypes.LOG_IN,
+    }),
+    async submit() {
+      const { password, username } = this.form;
+      this.isFormLoading = true;
+
+      await this.signIn({ password, username });
+
+      this.isFormLoading = false;
     },
   },
 };

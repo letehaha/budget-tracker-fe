@@ -4,6 +4,7 @@ export class CategoryRecord {
 
     this.id = record._id;
     this.name = record.name;
-    this.subcategories = (record.subcategories || []).map(sub => new CategoryRecord(sub));
+    this.subcategories = (record.subcategories || [])
+      .map(sub => new CategoryRecord(sub));
   }
 }

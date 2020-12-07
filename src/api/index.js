@@ -15,45 +15,54 @@ const API_VER = process.env.VUE_APP_API_VER;
 class ApiCaller {
   constructor() {
     this._baseURL = process.env.API_HTTP;
+    this.authToken = null;
   }
 
-  get(endpoint, query, needRaw = true) {
+  setToken(token) {
+    this.authToken = token;
+  }
+
+  get(endpoint, query, options = {}) {
     return this._call({
       method: methods.GET,
       endpoint,
-      needRaw,
+      options,
       query,
     });
   }
 
-  post(endpoint, data) {
+  post(endpoint, data, options = {}) {
     return this._call({
       method: methods.POST,
       endpoint,
+      options,
       data,
     });
   }
 
-  patch(endpoint, data) {
+  patch(endpoint, data, options = {}) {
     return this._call({
       method: methods.PATCH,
       endpoint,
+      options,
       data,
     });
   }
 
-  put(endpoint, data) {
+  put(endpoint, data, options = {}) {
     return this._call({
       method: methods.PUT,
       endpoint,
+      options,
       data,
     });
   }
 
-  delete(endpoint, data) {
+  delete(endpoint, data, options = {}) {
     return this._call({
       method: methods.DELETE,
       endpoint,
+      options,
       data,
     });
   }
@@ -66,7 +75,9 @@ class ApiCaller {
    * @param {object} opts.data - request data (for POST/PUT requests)
    * @param {object} opts.query - request query params. See {@link parseQuery} for details
    * @param {string} opts.method - the http method of request
-   * @param {string} opts.needRaw - defines if raw response should be returned, `true` by default
+   * @param {boolean} opts.options.needRaw - defines if raw response should be
+   * returned, `true` by default
+   * @param {boolean} opts.options.withoutSignature - call API without auth token
    *
    * @private
    */
@@ -79,13 +90,15 @@ class ApiCaller {
     const url = `${API_HTTP}${API_VER}${opts.endpoint}${additionalParams}`;
     const config = {
       method: opts.method,
+      body: JSON.stringify(opts.data || {}),
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        Authorization: this.authToken,
       },
     };
 
-    if (opts.data) {
-      config.body = JSON.stringify(opts.data);
+    if (opts.options?.withoutSignature) {
+      delete config.headers.Authorization;
     }
 
     let response;
@@ -93,11 +106,7 @@ class ApiCaller {
     try {
       const result = await (await fetch(url, config)).json();
 
-      if (opts.needRaw) {
-        response = result.response;
-      } else {
-        response = result;
-      }
+      response = result.response;
     } catch (e) {
       throw new Error(e);
     }
