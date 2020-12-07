@@ -5,3 +5,4 @@ export { CategoryRecord } from './category.record';
 export { CurrencyRecord } from './currency.record';
 export { TransactionRecord } from './transaction.record';
 export { TransactionTypeRecord } from './transaction-type.record';
+export { UserRecord } from './user.record';

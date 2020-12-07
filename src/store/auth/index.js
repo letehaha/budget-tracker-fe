@@ -1,4 +1,5 @@
 import { api } from '@/api';
+import { userVuexTypes } from '@/store/user';
 import { authVuexTypes } from './types';
 
 const state = {
@@ -23,17 +24,21 @@ const mutations = {
 };
 
 const actions = {
-  async [authVuexTypes.LOG_IN]({ commit }, { password, username }) {
+  async [authVuexTypes.LOG_IN]({ commit, dispatch }, { password, username }) {
     try {
       const result = await api.post('/auth/login', {
         password,
         username,
       });
 
-      commit(authVuexTypes.SET_TOKEN, result.token);
-      api.setToken(result.token);
-      localStorage.setItem('user-token', result.token);
-      commit(authVuexTypes.SET_IS_LOGGED_IN, true);
+      if (result.token) {
+        await dispatch(`user/${userVuexTypes.FETCH_USER}`, null, { root: true });
+
+        commit(authVuexTypes.SET_TOKEN, result.token);
+        api.setToken(result.token);
+        localStorage.setItem('user-token', result.token);
+        commit(authVuexTypes.SET_IS_LOGGED_IN, true);
+      }
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error(e);

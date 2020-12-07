@@ -6,6 +6,7 @@ export {
   CurrencyRecord,
   TransactionRecord,
   TransactionTypeRecord,
+  UserRecord,
 } from './models';
 export {
   MONOAccountRecord,
