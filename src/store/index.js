@@ -11,6 +11,7 @@ import auth from './auth';
 import transactions from './transactions';
 import user from './user';
 import categories from './categories';
+import accounts, { accountsVuexTypes } from './accounts';
 
 const rootModule = {
   actions: {
@@ -19,6 +20,7 @@ const rootModule = {
         dispatch(indexVuexTypes.FETCH_ACCOUNT_TYPES),
         dispatch(indexVuexTypes.FETCH_PAYMENT_TYPES),
         dispatch(indexVuexTypes.FETCH_TRANSACTION_TYPES),
+        dispatch(`accounts/${accountsVuexTypes.FETCH_ACCOUNTS}`),
       ]);
     },
     async [indexVuexTypes.FETCH_ACCOUNT_TYPES]({ commit }) {
@@ -73,6 +75,7 @@ export const store = createStore({
     auth,
     user,
     categories,
+    accounts,
     transactions,
   },
 });
@@ -82,3 +85,4 @@ export { authVuexTypes } from './auth';
 export { transactionsVuexTypes } from './transactions';
 export { userVuexTypes } from './user';
 export { categoriesVuexTypes } from './categories';
+export { accountsVuexTypes } from './accounts';

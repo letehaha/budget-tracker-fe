@@ -2,10 +2,12 @@ export class AccountRecord {
   constructor(record = {}) {
     this._record = record;
 
-    this.id = record._id;
+    this.id = record.id;
     this.name = record.name;
-    this.currency = record.currency;
     this.currentBalance = record.currentBalance;
-    this.type = record.type;
+    this.creditLimit = record.creditLimit;
+    this.accountTypeId = record.accountTypeId;
+    this.currencyId = record.currencyId;
+    this.userId = record.userId;
   }
 }
