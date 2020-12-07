@@ -14,12 +14,12 @@
       >
         <div
           class="dashboard__list-item"
-          :class="`dashboard__list-item--${item.type.type}`"
+          :class="`dashboard__list-item--${item.transactionTypeId}`"
           @click="editTransaction(item.id)"
         >
           <div class="dashboard__list-item-info">
             <div class="dashboard__list-item-category">
-              {{ item.category.name }}
+              {{ item.category?.name }}
             </div>
             <div class="dashboard__list-item-note">
               {{ item.note }}
@@ -28,7 +28,7 @@
           <div class="dashboard__list-item-right">
             <div class="dashboard__list-item-amount">
               {{ item.amount }}
-              {{ item.account.currency.asset }}
+              <!-- {{ item.account.currency.asset }} -->
             </div>
             <div class="dashboard__list-item-time">
               {{ item.time.toLocaleString() }}
@@ -100,6 +100,9 @@ export default {
         default:
           return amount;
       }
+    },
+    getCategoryName() {
+
     },
   },
 };
