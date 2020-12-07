@@ -14,8 +14,10 @@
 </template>
 
 <script>
+import { defineAsyncComponent } from 'vue';
+
 export const MODAL_TYPES = Object.freeze({
-  transactionForm: () => import('@/components/modals/TransactionFormModal'),
+  transactionForm: defineAsyncComponent(() => import('@/components/modals/TransactionFormModal')),
 });
 
 const EVENTS = {
