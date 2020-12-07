@@ -1,3 +1,4 @@
+import { api } from '@/api';
 import { store, authVuexTypes } from '@/store';
 
 export function authPageGuard(to, from, next) {
@@ -5,6 +6,7 @@ export function authPageGuard(to, from, next) {
   const token = localStorage.getItem('user-token');
 
   if (isLoggedIn || token) {
+    api.setToken(token);
     next('/');
   } else {
     next();
@@ -16,6 +18,7 @@ export function redirectRouteGuard(to, from, next) {
   const token = localStorage.getItem('user-token');
 
   if (isLoggedIn || token) {
+    api.setToken(token);
     next();
   } else {
     next('/sign-in');

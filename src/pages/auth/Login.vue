@@ -74,6 +74,8 @@ export default {
 
       await this.signIn({ password, username });
 
+      this.$router.push('/');
+
       this.isFormLoading = false;
     },
   },

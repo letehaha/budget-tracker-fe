@@ -31,6 +31,7 @@ const actions = {
       });
 
       commit(authVuexTypes.SET_TOKEN, result.token);
+      api.setToken(result.token);
       localStorage.setItem('user-token', result.token);
       commit(authVuexTypes.SET_IS_LOGGED_IN, true);
     } catch (e) {
