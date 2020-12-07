@@ -1,5 +1,6 @@
 import { api } from '@/api';
 import { userVuexTypes } from '@/store/user';
+import { categoriesVuexTypes } from '@/store/categories';
 import { authVuexTypes } from './types';
 
 const state = {
@@ -32,10 +33,12 @@ const actions = {
       });
 
       if (result.token) {
+        api.setToken(result.token);
+
         await dispatch(`user/${userVuexTypes.FETCH_USER}`, null, { root: true });
+        await dispatch(`categories/${categoriesVuexTypes.FETCH_CATEGORIES}`, null, { root: true });
 
         commit(authVuexTypes.SET_TOKEN, result.token);
-        api.setToken(result.token);
         localStorage.setItem('user-token', result.token);
         commit(authVuexTypes.SET_IS_LOGGED_IN, true);
       }

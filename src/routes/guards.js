@@ -1,5 +1,10 @@
 import { api } from '@/api';
-import { store, authVuexTypes, userVuexTypes } from '@/store';
+import {
+  store,
+  authVuexTypes,
+  userVuexTypes,
+  categoriesVuexTypes,
+} from '@/store';
 
 export function authPageGuard(to, from, next) {
   const isLoggedIn = store.getters[authVuexTypes.isLoggedIn];
@@ -22,6 +27,7 @@ export function redirectRouteGuard(to, from, next) {
     api.setToken(token);
     if (!user) {
       store.dispatch(`user/${userVuexTypes.FETCH_USER}`);
+      store.dispatch(`categories/${categoriesVuexTypes.FETCH_CATEGORIES}`, null, { root: true });
     }
     next();
   } else {

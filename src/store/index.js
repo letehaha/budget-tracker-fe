@@ -10,6 +10,7 @@ import { indexVuexTypes } from './types';
 import auth from './auth';
 import transactions from './transactions';
 import user from './user';
+import categories from './categories';
 
 const rootModule = {
   actions: {
@@ -71,6 +72,7 @@ export const store = createStore({
   modules: {
     auth,
     user,
+    categories,
     transactions,
   },
 });
@@ -79,3 +81,4 @@ export { indexVuexTypes } from './types';
 export { authVuexTypes } from './auth';
 export { transactionsVuexTypes } from './transactions';
 export { userVuexTypes } from './user';
+export { categoriesVuexTypes } from './categories';
