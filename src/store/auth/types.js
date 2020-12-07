@@ -1,5 +1,6 @@
 const mutations = {
   SET_TOKEN: 'SET_TOKEN',
+  SET_IS_LOGGED_IN: 'SET_IS_LOGGED_IN',
 };
 const actions = {
   LOG_IN: 'LOG_IN',

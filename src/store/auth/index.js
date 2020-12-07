@@ -17,6 +17,9 @@ const mutations = {
   [authVuexTypes.SET_TOKEN](state, token) {
     state.userToken = token;
   },
+  [authVuexTypes.SET_IS_LOGGED_IN](state, status) {
+    state.isLoggedIn = status;
+  },
 };
 
 const actions = {
@@ -28,6 +31,8 @@ const actions = {
       });
 
       commit(authVuexTypes.SET_TOKEN, result.token);
+      localStorage.setItem('user-token', result.token);
+      commit(authVuexTypes.SET_IS_LOGGED_IN, true);
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error(e);

@@ -20,6 +20,10 @@ const routes = [
     component: Login,
     beforeEnter: authPageGuard,
   },
+  {
+    path: '/:pathMatch(.*)',
+    redirect: '/',
+  },
 ];
 
 export const router = createRouter({
