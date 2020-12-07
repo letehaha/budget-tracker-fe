@@ -41,8 +41,8 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-import { indexVuexTypes } from '@/store';
+import { mapActions, mapGetters } from 'vuex';
+import { indexVuexTypes, transactionsVuexTypes } from '@/store';
 import { TRANSACTIONS_TYPES } from '@/js/const';
 import { MODAL_TYPES } from '@/components/Modal';
 import Button from '@/components/common/Button';
@@ -54,16 +54,25 @@ export default {
   },
   computed: {
     ...mapGetters({
-      accounts: indexVuexTypes.GET_ACCOUNTS,
+      accountTypes: indexVuexTypes.GET_ACCOUNT_TYPES,
+      paymentTypes: indexVuexTypes.GET_PAYMENT_TYPES,
+      txTypes: indexVuexTypes.GET_TRANSACTION_TYPES,
     }),
-    transactions() {
-      return [];
-    },
+    ...mapGetters('transactions', {
+      transactions: transactionsVuexTypes.GET_TRANSACTIONS,
+    }),
   },
-  mounted() {
-
+  async mounted() {
+    await this.fetchInitialData();
+    this.fetchTransactions();
   },
   methods: {
+    ...mapActions({
+      fetchInitialData: indexVuexTypes.FETCH_INITIAL_DATA,
+    }),
+    ...mapActions('transactions', {
+      fetchTransactions: transactionsVuexTypes.FETCH_TRANSACTIONS,
+    }),
     openFormModal() {
       this.$bus.emit(this.$bus.eventsList.modalOpen, {
         type: MODAL_TYPES.transactionForm,

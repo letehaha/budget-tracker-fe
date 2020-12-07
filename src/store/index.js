@@ -8,6 +8,7 @@ import {
 } from '@/js/records';
 import { indexVuexTypes } from './types';
 import auth from './auth';
+import transactions from './transactions';
 
 const rootModule = {
   actions: {
@@ -68,8 +69,10 @@ export const store = createStore({
   ...rootModule,
   modules: {
     auth,
+    transactions,
   },
 });
 
 export { indexVuexTypes } from './types';
 export { authVuexTypes } from './auth';
+export { transactionsVuexTypes } from './transactions';

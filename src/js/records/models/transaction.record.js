@@ -2,13 +2,14 @@ export class TransactionRecord {
   constructor(record = {}) {
     this._record = record;
 
-    this.id = record._id;
-    this.account = record.account;
+    this.id = record.id;
     this.amount = record.amount;
-    this.category = record.category;
-    this.paymentType = record.paymentType;
+    this.accountId = record.accountId;
+    this.categoryId = record.categoryId;
+    this.paymentTypeId = record.paymentTypeId;
+    this.transactionTypeId = record.transactionTypeId;
+    this.userId = record.userId;
     this.time = record.time;
     this.note = record.note;
-    this.type = record.type;
   }
 }
