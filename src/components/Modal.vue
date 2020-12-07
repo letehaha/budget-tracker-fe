@@ -37,12 +37,12 @@ export default {
       type: Object,
       required: true,
       validator(value) {
+        console.log('value', value);
         if (Object.keys(value).length) {
-          if (
-            !(value.type && Object.values(MODAL_TYPES).includes(value.type))
-          ) {
+          // TODO: add check for a right value
+          if (!value.type) {
             // eslint-disable-next-line no-console
-            console.error(`Modal component. Data prop should contain required "type" key and it should be one of ${Object.values(MODAL_TYPES)}.`);
+            console.error('Modal component. Data prop should contain required "type" key.');
             return false;
           }
         }
