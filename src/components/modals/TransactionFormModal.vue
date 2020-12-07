@@ -32,7 +32,7 @@
         is-value-preselected
       />
     </div>
-    <div class="transaction-form-modal__row">
+    <!-- <div class="transaction-form-modal__row">
       <SelectField
         v-model="form.type"
         label="Transaction Type"
@@ -40,13 +40,13 @@
         label-key="name"
         is-value-preselected
       />
-    </div>
+    </div> -->
     <div class="transaction-form-modal__row">
       <DateField
         v-model="form.time"
       />
     </div>
-    <div class="transaction-form-modal__row">
+    <!-- <div class="transaction-form-modal__row">
       <SelectField
         v-model="form.paymentType"
         label="Payment Type"
@@ -54,7 +54,7 @@
         label-key="name"
         is-value-preselected
       />
-    </div>
+    </div> -->
     <div class="transaction-form-modal__row">
       <TextareaField
         v-model="form.note"
@@ -85,7 +85,11 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import { indexVuexTypes, accountsVuexTypes } from '@/store';
+import {
+  indexVuexTypes,
+  accountsVuexTypes,
+  categoriesVuexTypes,
+} from '@/store';
 import InputField from '@/components/fields/InputField';
 import SelectField from '@/components/fields/SelectField';
 import TextareaField from '@/components/fields/TextareaField';
@@ -126,6 +130,9 @@ export default {
     }),
     ...mapGetters('accounts', {
       accounts: accountsVuexTypes.GET_ACCOUNTS,
+    }),
+    ...mapGetters('categories', {
+      categories: categoriesVuexTypes.GET_CATEGORIES,
     }),
     transaction() {
       return {};
