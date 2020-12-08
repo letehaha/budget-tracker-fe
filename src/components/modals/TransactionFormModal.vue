@@ -32,7 +32,7 @@
         is-value-preselected
       />
     </div>
-    <!-- <div class="transaction-form-modal__row">
+    <div class="transaction-form-modal__row">
       <SelectField
         v-model="form.type"
         label="Transaction Type"
@@ -40,13 +40,13 @@
         label-key="name"
         is-value-preselected
       />
-    </div> -->
+    </div>
     <div class="transaction-form-modal__row">
       <DateField
         v-model="form.time"
       />
     </div>
-    <!-- <div class="transaction-form-modal__row">
+    <div class="transaction-form-modal__row">
       <SelectField
         v-model="form.paymentType"
         label="Payment Type"
@@ -54,7 +54,7 @@
         label-key="name"
         is-value-preselected
       />
-    </div> -->
+    </div>
     <div class="transaction-form-modal__row">
       <TextareaField
         v-model="form.note"
@@ -66,7 +66,7 @@
       <Button
         v-if="transaction"
         class="transaction-form-modal__action"
-        @click="deleteTransaction"
+        @click="deleteTransactionHandler"
       >
         Delete
       </Button>
@@ -75,6 +75,7 @@
           transaction-form-modal__action
           transaction-form-modal__action--submit
         "
+        :disabled="isLoading"
         @click="submit"
       >
         {{ transaction ? 'Edit' : 'Submit' }}
@@ -84,12 +85,14 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import {
   indexVuexTypes,
   accountsVuexTypes,
   categoriesVuexTypes,
+  transactionsVuexTypes,
 } from '@/store';
+import { TransactionRecord } from '@/js/records';
 import InputField from '@/components/fields/InputField';
 import SelectField from '@/components/fields/SelectField';
 import TextareaField from '@/components/fields/TextareaField';
@@ -109,7 +112,7 @@ export default {
     Button,
   },
   props: {
-    transactionId: { type: String, default: undefined },
+    transaction: { type: TransactionRecord, default: undefined },
   },
   data: () => ({
     EVENTS,
@@ -122,6 +125,7 @@ export default {
       note: null,
       type: null,
     },
+    isLoading: false,
   }),
   computed: {
     ...mapGetters({
@@ -134,9 +138,6 @@ export default {
     ...mapGetters('categories', {
       categories: categoriesVuexTypes.GET_CATEGORIES,
     }),
-    transaction() {
-      return {};
-    },
   },
   watch: {
     transaction: {
@@ -146,11 +147,13 @@ export default {
         if (value) {
           this.form = {
             amount: value.amount,
-            account: value.account,
-            type: value.type,
-            category: value.category,
+            account: this.accounts.find(i => i.id === value.accountId),
+            type: this.transactionTypes
+              .find(i => i.id === value.transactionTypeId),
+            category: this.categories.find(i => i.id === value.categoryId),
             time: value.time,
-            paymentType: value.paymentType,
+            paymentType: this.paymentTypes
+              .find(i => i.id === value.paymentTypeId),
             note: value.note,
           };
         }
@@ -158,7 +161,52 @@ export default {
     },
   },
   methods: {
-    submit() {},
+    ...mapActions('transactions', {
+      createTransaction: transactionsVuexTypes.CREATE_TRANSACTION,
+      editTransaction: transactionsVuexTypes.EDIT_TRANSACTION,
+      deleteTransaction: transactionsVuexTypes.DELETE_TRANSACTION,
+    }),
+    async submit() {
+      this.isLoading = true;
+      const {
+        amount,
+        note,
+        time,
+        type: { id: transactionTypeId },
+        paymentType: { id: paymentTypeId },
+        account: { id: accountId },
+        category: { id: categoryId },
+      } = this.form;
+
+      const params = {
+        amount,
+        note,
+        time,
+        transactionTypeId,
+        paymentTypeId,
+        accountId,
+        categoryId,
+      };
+
+      if (this.transaction) {
+        await this.editTransaction({
+          txId: this.transaction.id,
+          ...params,
+        });
+      } else {
+        await this.createTransaction(params);
+      }
+      this.isLoading = false;
+    },
+    async deleteTransactionHandler() {
+      this.isLoading = true;
+
+      await this.deleteTransaction({ txId: this.transaction.id });
+
+      this.$emit(EVENTS.closeModal);
+
+      this.isLoading = false;
+    },
   },
 };
 </script>

@@ -30,6 +30,75 @@ const actions = {
       console.error(e);
     }
   },
+  async [transactionsVuexTypes.CREATE_TRANSACTION](
+    { dispatch },
+    {
+      amount,
+      note = '',
+      time,
+      transactionTypeId,
+      paymentTypeId,
+      accountId,
+      categoryId,
+    },
+  ) {
+    try {
+      await api.post('/transactions', {
+        amount,
+        note,
+        time,
+        transactionTypeId,
+        paymentTypeId,
+        accountId,
+        categoryId,
+      });
+
+      await dispatch(transactionsVuexTypes.FETCH_TRANSACTIONS);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+    }
+  },
+  async [transactionsVuexTypes.EDIT_TRANSACTION](
+    { dispatch },
+    {
+      txId,
+      amount,
+      note = '',
+      time,
+      transactionTypeId,
+      paymentTypeId,
+      accountId,
+      categoryId,
+    },
+  ) {
+    try {
+      await api.put(`/transactions/${txId}`, {
+        amount,
+        note,
+        time,
+        transactionTypeId,
+        paymentTypeId,
+        accountId,
+        categoryId,
+      });
+
+      await dispatch(transactionsVuexTypes.FETCH_TRANSACTIONS);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+    }
+  },
+  async [transactionsVuexTypes.DELETE_TRANSACTION]({ dispatch }, { txId }) {
+    try {
+      await api.delete(`/transactions/${txId}`);
+
+      await dispatch(transactionsVuexTypes.FETCH_TRANSACTIONS);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+    }
+  },
 };
 
 export default {

@@ -18,7 +18,7 @@
         <div
           class="dashboard__list-item"
           :class="`dashboard__list-item--${item.transactionTypeId}`"
-          @click="editTransaction(item.id)"
+          @click="editTransaction(item)"
         >
           <div class="dashboard__list-item-info">
             <div class="dashboard__list-item-category">
@@ -96,12 +96,10 @@ export default {
         type: MODAL_TYPES.transactionForm,
       });
     },
-    editTransaction(id) {
+    editTransaction(transaction) {
       this.$bus.emit(this.$bus.eventsList.modalOpen, {
         type: MODAL_TYPES.transactionForm,
-        data: {
-          transactionId: id,
-        },
+        data: { transaction },
       });
     },
     amountFormatter(amount, type) {
