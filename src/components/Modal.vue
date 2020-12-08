@@ -37,7 +37,6 @@ export default {
       type: Object,
       required: true,
       validator(value) {
-        console.log('value', value);
         if (Object.keys(value).length) {
           // TODO: add check for a right value
           if (!value.type) {
