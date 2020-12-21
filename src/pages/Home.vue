@@ -6,7 +6,7 @@
       >
         Add +
       </Button>
-      <Button @click="() => logOut({ router: $router })">
+      <Button @click="logOut">
         Log Out
       </Button>
     </div>

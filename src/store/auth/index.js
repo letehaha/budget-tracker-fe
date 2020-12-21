@@ -47,14 +47,11 @@ const actions = {
       console.error(e);
     }
   },
-  [authVuexTypes.LOG_OUT]({ commit }, { router }) {
+  [authVuexTypes.LOG_OUT]({ commit }) {
     api.setToken('');
     localStorage.setItem('user-token', '');
     commit(authVuexTypes.SET_TOKEN, null);
     commit(authVuexTypes.SET_IS_LOGGED_IN, false);
-    if (router) {
-      router.push('/sign-in');
-    }
   },
 };
 

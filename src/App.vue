@@ -10,6 +10,8 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+import { authVuexTypes } from '@/store';
 import Modal from '@/components/Modal';
 
 export default {
@@ -20,6 +22,18 @@ export default {
     isModalVisible: false,
     modalData: {},
   }),
+  computed: {
+    ...mapGetters('auth', {
+      isLoggedIn: authVuexTypes.GET_IS_LOGGED_IN,
+    }),
+  },
+  watch: {
+    isLoggedIn(value) {
+      if (!value) {
+        this.$router.push('/sign-in');
+      }
+    },
+  },
   mounted() {
     this.$bus.on(this.$bus.eventsList.modalOpen, this.onOpenMessage);
     this.$bus.on(this.$bus.eventsList.modalClose, this.closeModal);

@@ -1,5 +1,7 @@
 import { api } from '@/api';
 import { CategoryRecord } from '@/js/records';
+import { AuthError } from '@/js/errors';
+import { authVuexTypes } from '@/store/auth/types';
 import { categoriesVuexTypes } from './types';
 
 const state = {
@@ -17,7 +19,7 @@ const mutations = {
 };
 
 const actions = {
-  async [categoriesVuexTypes.FETCH_CATEGORIES]({ commit }) {
+  async [categoriesVuexTypes.FETCH_CATEGORIES]({ commit, dispatch }) {
     try {
       const result = await api.get('/categories');
 
@@ -26,8 +28,11 @@ const actions = {
         result.map(i => new CategoryRecord(i)),
       );
     } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error(e);
+      if (e.constructor === AuthError) {
+        dispatch(`auth/${authVuexTypes.LOG_OUT}`, null, { root: true });
+        return;
+      }
+      throw new Error(e);
     }
   },
 };

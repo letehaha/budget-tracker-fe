@@ -1,3 +1,5 @@
+import * as errors from '@/js/errors';
+
 const methods = Object.freeze({
   PATCH: 'PATCH',
   POST: 'POST',
@@ -5,6 +7,16 @@ const methods = Object.freeze({
   GET: 'GET',
   DELETE: 'DELETE',
 });
+
+const STATUS_CODES = {
+  badRequest: 400,
+  unauthorized: 401,
+  forbidden: 403,
+  notFound: 404,
+  timeout: 408,
+  conflict: 409,
+  internalError: 500,
+};
 
 const API_HTTP = process.env.VUE_APP_API_HTTP;
 const API_VER = process.env.VUE_APP_API_VER;
@@ -105,16 +117,28 @@ class ApiCaller {
     }
 
     let response;
-
     try {
-      const result = await (await fetch(url, config)).json();
-
-      response = result.response;
+      response = await fetch(url, config);
     } catch (e) {
       throw new Error(e);
     }
 
-    return response;
+    if (response.ok) {
+      const result = await response.json();
+
+      return result.response;
+    }
+
+    switch (response.status) {
+      case STATUS_CODES.unauthorized:
+        throw new errors.AuthError(response.statusText, response);
+      case STATUS_CODES.internalError:
+        throw new errors.NetworkError(response.statusText, response);
+      case STATUS_CODES.timeout:
+        throw new errors.TimeoutError(response.statusText, response);
+      default:
+        throw new Error(response.statusText);
+    }
   }
 }
 

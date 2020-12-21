@@ -1,5 +1,7 @@
 import { api } from '@/api';
 import { UserRecord } from '@/js/records';
+import { AuthError } from '@/js/errors';
+import { authVuexTypes } from '@/store/auth/types';
 import { userVuexTypes } from './types';
 
 const state = {
@@ -17,14 +19,17 @@ const mutations = {
 };
 
 const actions = {
-  async [userVuexTypes.FETCH_USER]({ commit }) {
+  async [userVuexTypes.FETCH_USER]({ commit, dispatch }) {
     try {
       const result = await api.get('/user');
 
       commit(userVuexTypes.SET_USER, new UserRecord(result));
     } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error(e);
+      if (e.constructor === AuthError) {
+        dispatch(`auth/${authVuexTypes.LOG_OUT}`, null, { root: true });
+        return;
+      }
+      throw new Error(e);
     }
   },
 };
