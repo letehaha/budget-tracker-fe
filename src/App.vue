@@ -28,10 +28,13 @@ export default {
     }),
   },
   watch: {
-    isLoggedIn(value) {
-      if (!value) {
-        this.$router.push('/sign-in');
-      }
+    isLoggedIn: {
+      immediate: true,
+      handler(value) {
+        if (!value) {
+          this.$router.push('/sign-in');
+        }
+      },
     },
   },
   mounted() {

@@ -1,7 +1,5 @@
 import { api } from '@/api';
 import { TransactionRecord } from '@/js/records';
-import { AuthError } from '@/js/errors';
-import { authVuexTypes } from '@/store/auth/types';
 import { bankMonobankVuexTypes } from './types';
 
 const state = {
@@ -19,7 +17,7 @@ const mutations = {
 };
 
 const actions = {
-  async [bankMonobankVuexTypes.FETCH_TRANSACTIONS]({ commit, dispatch }) {
+  async [bankMonobankVuexTypes.FETCH_TRANSACTIONS]({ commit }) {
     try {
       const result = await api.get('/transactions');
 
@@ -28,10 +26,6 @@ const actions = {
         result.map(i => new TransactionRecord(i)),
       );
     } catch (e) {
-      if (e.constructor === AuthError) {
-        dispatch(`auth/${authVuexTypes.LOG_OUT}`, null, { root: true });
-        return;
-      }
       throw new Error(e);
     }
   },

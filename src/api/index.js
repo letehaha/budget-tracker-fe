@@ -1,3 +1,4 @@
+import { authVuexTypes } from '@/store/auth/types';
 import * as errors from '@/js/errors';
 
 const methods = Object.freeze({
@@ -28,6 +29,7 @@ class ApiCaller {
   constructor() {
     this._baseURL = process.env.API_HTTP;
     this.authToken = null;
+    this.store = null;
   }
 
   setToken(token) {
@@ -131,6 +133,7 @@ class ApiCaller {
 
     switch (response.status) {
       case STATUS_CODES.unauthorized:
+        this.store.dispatch(`auth/${authVuexTypes.LOG_OUT}`);
         throw new errors.AuthError(response.statusText, response);
       case STATUS_CODES.internalError:
         throw new errors.NetworkError(response.statusText, response);
@@ -140,6 +143,14 @@ class ApiCaller {
         throw new Error(response.statusText);
     }
   }
+
+  setStore({ store }) {
+    this.store = store;
+  }
 }
 
 export const api = new ApiCaller();
+
+export function initApiCaller({ store }) {
+  api.setStore({ store });
+}

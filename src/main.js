@@ -3,6 +3,7 @@ import { router } from '@/routes';
 import { store } from '@/store';
 import { clickOutside } from '@/directives';
 import { eventBus } from '@/js/utils';
+import { initApiCaller } from '@/api';
 import App from './App';
 import '@/assets/styles/index.scss';
 import './registerServiceWorker';
@@ -15,5 +16,7 @@ app.directive('click-outside', clickOutside);
 
 app.use(router);
 app.use(store);
+
+initApiCaller({ store });
 
 app.mount('#app');

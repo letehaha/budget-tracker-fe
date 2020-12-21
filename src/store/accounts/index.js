@@ -1,7 +1,5 @@
 import { api } from '@/api';
 import { AccountRecord } from '@/js/records';
-import { AuthError } from '@/js/errors';
-import { authVuexTypes } from '@/store/auth/types';
 import { accountsVuexTypes } from './types';
 
 const state = {
@@ -19,7 +17,7 @@ const mutations = {
 };
 
 const actions = {
-  async [accountsVuexTypes.FETCH_ACCOUNTS]({ commit, dispatch }) {
+  async [accountsVuexTypes.FETCH_ACCOUNTS]({ commit }) {
     try {
       const result = await api.get('/accounts');
 
@@ -28,10 +26,6 @@ const actions = {
         result.map(i => new AccountRecord(i)),
       );
     } catch (e) {
-      if (e.constructor === AuthError) {
-        dispatch(`auth/${authVuexTypes.LOG_OUT}`, null, { root: true });
-        return;
-      }
       throw new Error(e);
     }
   },
