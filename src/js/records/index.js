@@ -10,6 +10,6 @@ export {
 } from './models';
 export {
   MONOAccountRecord,
-  MONOClientInfoRecord,
+  MONOUserRecord,
   MONOCurrencyRecord,
 } from './monobank';

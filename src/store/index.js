@@ -12,6 +12,7 @@ import transactions from './transactions';
 import user from './user';
 import categories from './categories';
 import accounts, { accountsVuexTypes } from './accounts';
+import bankMonobank, { bankMonobankVuexTypes } from './banksIntegrations/monobank';
 
 const rootModule = {
   actions: {
@@ -21,6 +22,7 @@ const rootModule = {
         dispatch(indexVuexTypes.FETCH_PAYMENT_TYPES),
         dispatch(indexVuexTypes.FETCH_TRANSACTION_TYPES),
         dispatch(`accounts/${accountsVuexTypes.FETCH_ACCOUNTS}`),
+        dispatch(`bankMonobank/${bankMonobankVuexTypes.FETCH_USER}`),
       ]);
     },
     async [indexVuexTypes.FETCH_ACCOUNT_TYPES]({ commit }) {
@@ -77,6 +79,7 @@ export const store = createStore({
     categories,
     accounts,
     transactions,
+    bankMonobank,
   },
 });
 
@@ -86,3 +89,4 @@ export { transactionsVuexTypes } from './transactions';
 export { userVuexTypes } from './user';
 export { categoriesVuexTypes } from './categories';
 export { accountsVuexTypes } from './accounts';
+export { bankMonobankVuexTypes } from './banksIntegrations/monobank';

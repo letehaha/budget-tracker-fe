@@ -9,6 +9,9 @@
       <Button @click="logOut">
         Log Out
       </Button>
+      <Button @click="updateWebhookHandler">
+        Update monobank webhook
+      </Button>
     </div>
     <div class="dashboard__list">
       <template
@@ -51,8 +54,11 @@ import {
   transactionsVuexTypes,
   userVuexTypes,
   categoriesVuexTypes,
+  bankMonobankVuexTypes,
 } from '@/store';
 import { TRANSACTIONS_TYPES } from '@/js/const';
+import { TooManyRequestsError } from '@/js/errors';
+import { ErrorHandler } from '@/js/utils';
 import { MODAL_TYPES } from '@/components/Modal';
 import Button from '@/components/common/Button';
 
@@ -76,6 +82,9 @@ export default {
     ...mapGetters('categories', {
       categories: categoriesVuexTypes.GET_CATEGORIES,
     }),
+    ...mapGetters('bankMonobank', {
+      monoUser: bankMonobankVuexTypes.GET_USER,
+    }),
   },
   async mounted() {
     await this.fetchInitialData();
@@ -90,6 +99,9 @@ export default {
     }),
     ...mapActions('auth', {
       logOut: authVuexTypes.LOG_OUT,
+    }),
+    ...mapActions('bankMonobank', {
+      updateWebhook: bankMonobankVuexTypes.UPDATE_WEBHOOK,
     }),
     openFormModal() {
       this.$bus.emit(this.$bus.eventsList.modalOpen, {
@@ -114,8 +126,17 @@ export default {
           return amount;
       }
     },
-    getCategoryName() {
-
+    getCategoryName() {},
+    async updateWebhookHandler() {
+      try {
+        await this.updateWebhook({ clientId: this.monoUser.clientId });
+      } catch (e) {
+        if (e instanceof TooManyRequestsError) {
+          ErrorHandler.process(e, e.data.message);
+          return;
+        }
+        ErrorHandler.processWithoutFeedback(e);
+      }
     },
   },
 };

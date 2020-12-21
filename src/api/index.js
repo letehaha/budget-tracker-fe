@@ -16,6 +16,7 @@ const STATUS_CODES = {
   notFound: 404,
   timeout: 408,
   conflict: 409,
+  tooManyRequests: 429,
   internalError: 500,
 };
 
@@ -131,14 +132,21 @@ class ApiCaller {
       return result.response;
     }
 
+    const errorPayload = await response.json();
+
     switch (response.status) {
       case STATUS_CODES.unauthorized:
         this.store.dispatch(`auth/${authVuexTypes.LOG_OUT}`);
-        throw new errors.AuthError(response.statusText, response);
+        throw new errors.AuthError(response.statusText, errorPayload);
       case STATUS_CODES.internalError:
-        throw new errors.NetworkError(response.statusText, response);
+        throw new errors.NetworkError(response.statusText, errorPayload);
       case STATUS_CODES.timeout:
-        throw new errors.TimeoutError(response.statusText, response);
+        throw new errors.TimeoutError(response.statusText, errorPayload);
+      case STATUS_CODES.tooManyRequests:
+        throw new errors.TooManyRequestsError(
+          response.statusText,
+          errorPayload,
+        );
       default:
         throw new Error(response.statusText);
     }

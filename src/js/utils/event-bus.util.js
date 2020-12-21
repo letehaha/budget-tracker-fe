@@ -31,8 +31,11 @@ class EventBus {
     this.events = {};
   }
 
+  error(payload) { this.emit(this.eventsList.error, payload); }
+
   get eventsList() {
     return {
+      error: 'error',
       modalOpen: 'modal-open',
       modalClose: 'modal-close',
     };

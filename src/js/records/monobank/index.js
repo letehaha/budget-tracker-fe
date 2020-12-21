@@ -1,3 +1,3 @@
 export { MONOAccountRecord } from './account.record';
-export { MONOClientInfoRecord } from './client-info.record';
+export { MONOUserRecord } from './user.record';
 export { MONOCurrencyRecord } from './currency.record';

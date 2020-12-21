@@ -1,10 +1,10 @@
-import * as errors from '@/js/errors';
-import { eventBus } from '@/js/utils';
 import log from 'loglevel';
+import * as errors from '@/js/errors';
+import { eventBus } from './event-bus.util';
 
 export class ErrorHandler {
   static process(error, translationId = '', errorTrackerConfig = {}) {
-    const msgTrId = translationId || ErrorHandler._getTranslationId(error);
+    const msgTrId = translationId || ErrorHandler._getMessage(error);
     eventBus.error(msgTrId);
 
     ErrorHandler.processWithoutFeedback(error, errorTrackerConfig);
@@ -14,23 +14,26 @@ export class ErrorHandler {
     log.error(error);
   }
 
-  static _getTranslationId(error) {
-    let translationId;
+  static _getMessage(error) {
+    let message;
 
     switch (error.constructor) {
       case errors.NetworkError:
-        translationId = 'Unexpected network error';
+        message = 'Unexpected network error';
         break;
       case errors.TimeoutError:
-        translationId = 'Timeout error';
+        message = 'Timeout error';
         break;
       case errors.AuthError:
-        translationId = 'User is not authorized';
+        message = 'User is not authorized';
+        break;
+      case errors.TooManyRequestsError:
+        message = 'To many requests to the endpoint';
         break;
       default:
-        translationId = 'Unexpected error';
+        message = 'Unexpected error';
     }
 
-    return translationId;
+    return message;
   }
 }
