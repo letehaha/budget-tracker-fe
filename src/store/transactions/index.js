@@ -60,8 +60,11 @@ const actions = {
 
       await dispatch(transactionsVuexTypes.FETCH_TRANSACTIONS);
     } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error(e);
+      if (e.constructor === AuthError) {
+        dispatch(`auth/${authVuexTypes.LOG_OUT}`, null, { root: true });
+        return;
+      }
+      throw new Error(e);
     }
   },
   async [transactionsVuexTypes.EDIT_TRANSACTION](
@@ -90,8 +93,11 @@ const actions = {
 
       await dispatch(transactionsVuexTypes.FETCH_TRANSACTIONS);
     } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error(e);
+      if (e.constructor === AuthError) {
+        dispatch(`auth/${authVuexTypes.LOG_OUT}`, null, { root: true });
+        return;
+      }
+      throw new Error(e);
     }
   },
   async [transactionsVuexTypes.DELETE_TRANSACTION]({ dispatch }, { txId }) {
@@ -100,8 +106,11 @@ const actions = {
 
       await dispatch(transactionsVuexTypes.FETCH_TRANSACTIONS);
     } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error(e);
+      if (e.constructor === AuthError) {
+        dispatch(`auth/${authVuexTypes.LOG_OUT}`, null, { root: true });
+        return;
+      }
+      throw new Error(e);
     }
   },
 };
