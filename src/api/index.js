@@ -119,12 +119,7 @@ class ApiCaller {
       delete config.headers.Authorization;
     }
 
-    let response;
-    try {
-      response = await fetch(url, config);
-    } catch (e) {
-      throw new Error(e);
-    }
+    const response = await fetch(url, config);
 
     if (response.ok) {
       const result = await response.json();
@@ -132,12 +127,15 @@ class ApiCaller {
       return result.response;
     }
 
+    // TODO: investogate how to return JSON from server
+    if (response.status === STATUS_CODES.unauthorized) {
+      await this.store.dispatch(`auth/${authVuexTypes.LOG_OUT}`);
+      throw new errors.AuthError(response.statusText, response);
+    }
+
     const errorPayload = await response.json();
 
     switch (response.status) {
-      case STATUS_CODES.unauthorized:
-        this.store.dispatch(`auth/${authVuexTypes.LOG_OUT}`);
-        throw new errors.AuthError(response.statusText, errorPayload);
       case STATUS_CODES.internalError:
         throw new errors.NetworkError(response.statusText, errorPayload);
       case STATUS_CODES.timeout:
