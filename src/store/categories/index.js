@@ -8,6 +8,8 @@ const state = {
 
 const getters = {
   [categoriesVuexTypes.GET_CATEGORIES]: state => state.categories,
+  [categoriesVuexTypes.GET_CATEGORY_BY_ID]: state => id => state.categories
+    .find(item => item.id === id),
 };
 
 const mutations = {

@@ -6,6 +6,7 @@ const actions = {
 };
 const getters = {
   GET_CATEGORIES: 'GET_CATEGORIES',
+  GET_CATEGORY_BY_ID: 'GET_CATEGORY_BY_ID',
 };
 
 export const categoriesVuexTypes = Object.freeze({

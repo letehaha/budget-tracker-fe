@@ -1,16 +1,23 @@
 import { api } from '@/api';
 import { TooManyRequestsError } from '@/js/errors';
-import { TransactionRecord, MONOUserRecord } from '@/js/records';
+import { TRANSACTION_TYPES as TYPES } from '@/js/const';
+import {
+  TransactionModelRecord,
+  MONOTransactionRecord,
+  MONOUserRecord,
+} from '@/js/records';
 import { bankMonobankVuexTypes } from './types';
 
 const state = {
   transactions: [],
   user: null,
+  isUserExist: false,
 };
 
 const getters = {
-  [bankMonobankVuexTypes.GET_TRANSACTIONS]: state => state.transactions,
   [bankMonobankVuexTypes.GET_USER]: state => state.user,
+  [bankMonobankVuexTypes.IS_USER_EXIST]: state => state.isUserExist,
+  [bankMonobankVuexTypes.GET_TRANSACTIONS]: state => state.transactions,
 };
 
 const mutations = {
@@ -20,17 +27,25 @@ const mutations = {
   [bankMonobankVuexTypes.SET_USER](state, user) {
     state.user = user;
   },
+  [bankMonobankVuexTypes.SET_USER_EXIST_STATUS](state, status) {
+    state.isUserExist = status;
+  },
 };
 
 const actions = {
   async [bankMonobankVuexTypes.FETCH_USER]({ commit }) {
     try {
+      commit(bankMonobankVuexTypes.SET_USER_EXIST_STATUS, false);
+
       const result = await api.get('/banks/monobank/user');
 
-      commit(
-        bankMonobankVuexTypes.SET_USER,
-        new MONOUserRecord(result),
-      );
+      if (result) {
+        commit(bankMonobankVuexTypes.SET_USER_EXIST_STATUS, true);
+        commit(
+          bankMonobankVuexTypes.SET_USER,
+          new MONOUserRecord(result),
+        );
+      }
     } catch (e) {
       throw new Error(e);
     }
@@ -41,7 +56,10 @@ const actions = {
 
       commit(
         bankMonobankVuexTypes.SET_TRANSACTIONS,
-        result.map(i => new TransactionRecord(i)),
+        result.map(i => new TransactionModelRecord(
+          TYPES.monobank,
+          new MONOTransactionRecord(i),
+        )),
       );
     } catch (e) {
       throw new Error(e);

@@ -87,15 +87,15 @@ export default {
   color: var(--primary-text-color);
   font-weight: 400;
   letter-spacing: 0.5px;
-  padding: 16px 24px;
+  padding: 12px 24px;
   background-color: #fff;
-  border: 1px solid #e1e5ea;
+  border: 1px solid #acafb3;
   box-sizing: border-box;
   border-radius: var(--system-border-radius);
   outline: none;
   width: 100%;
 
-  @include placeholder-custom(rgba(#333, 0.4));
+  @include placeholder-custom(rgba(#333, 0.6));
 }
 .input-field__label {
   font-size: 16px;

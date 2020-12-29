@@ -15,8 +15,36 @@ import accounts, { accountsVuexTypes } from './accounts';
 import bankMonobank, { bankMonobankVuexTypes } from './banksIntegrations/monobank';
 
 const rootModule = {
+  state: {
+    accountTypes: [],
+    paymentTypes: [],
+    transactionTypes: [],
+    isAppInitialized: false,
+  },
+  getters: {
+    [indexVuexTypes.GET_APP_INIT_STATUS]: state => state.isAppInitialized,
+    [indexVuexTypes.GET_ACCOUNT_TYPES]: state => state.accountTypes,
+    [indexVuexTypes.GET_PAYMENT_TYPES]: state => state.paymentTypes,
+    [indexVuexTypes.GET_TRANSACTION_TYPES]: state => state.transactionTypes,
+  },
+  mutations: {
+    [indexVuexTypes.SET_APP_INITIALIZE_STATUS](state, status) {
+      state.isAppInitialized = status;
+    },
+    [indexVuexTypes.SET_ACCOUNT_TYPES](state, accountTypes) {
+      state.accountTypes = accountTypes;
+    },
+    [indexVuexTypes.SET_PAYMENT_TYPES](state, paymentTypes) {
+      state.paymentTypes = paymentTypes;
+    },
+    [indexVuexTypes.SET_TRANSACTION_TYPES](state, types) {
+      state.transactionTypes = types;
+    },
+  },
   actions: {
-    async [indexVuexTypes.FETCH_INITIAL_DATA]({ dispatch }) {
+    async [indexVuexTypes.FETCH_INITIAL_DATA]({ commit, dispatch }) {
+      commit(indexVuexTypes.SET_APP_INITIALIZE_STATUS, false);
+
       await Promise.all([
         dispatch(indexVuexTypes.FETCH_ACCOUNT_TYPES),
         dispatch(indexVuexTypes.FETCH_PAYMENT_TYPES),
@@ -24,6 +52,8 @@ const rootModule = {
         dispatch(`accounts/${accountsVuexTypes.FETCH_ACCOUNTS}`),
         dispatch(`bankMonobank/${bankMonobankVuexTypes.FETCH_USER}`),
       ]);
+
+      commit(indexVuexTypes.SET_APP_INITIALIZE_STATUS, true);
     },
     async [indexVuexTypes.FETCH_ACCOUNT_TYPES]({ commit }) {
       const result = await api.get('/models/account-types');
@@ -46,27 +76,6 @@ const rootModule = {
         result.map(item => new PaymentTypeRecord(item)),
       );
     },
-  },
-  mutations: {
-    [indexVuexTypes.SET_ACCOUNT_TYPES](state, accountTypes) {
-      state.accountTypes = accountTypes;
-    },
-    [indexVuexTypes.SET_PAYMENT_TYPES](state, paymentTypes) {
-      state.paymentTypes = paymentTypes;
-    },
-    [indexVuexTypes.SET_TRANSACTION_TYPES](state, types) {
-      state.transactionTypes = types;
-    },
-  },
-  getters: {
-    [indexVuexTypes.GET_ACCOUNT_TYPES]: state => state.accountTypes,
-    [indexVuexTypes.GET_PAYMENT_TYPES]: state => state.paymentTypes,
-    [indexVuexTypes.GET_TRANSACTION_TYPES]: state => state.transactionTypes,
-  },
-  state: {
-    accountTypes: [],
-    paymentTypes: [],
-    transactionTypes: [],
   },
 };
 

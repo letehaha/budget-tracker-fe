@@ -92,7 +92,7 @@ import {
   categoriesVuexTypes,
   transactionsVuexTypes,
 } from '@/store';
-import { TransactionRecord } from '@/js/records';
+import { TransactionRecord, MONOTransactionRecord } from '@/js/records';
 import InputField from '@/components/fields/InputField';
 import SelectField from '@/components/fields/SelectField';
 import TextareaField from '@/components/fields/TextareaField';
@@ -112,7 +112,10 @@ export default {
     Button,
   },
   props: {
-    transaction: { type: TransactionRecord, default: undefined },
+    transaction: {
+      type: [TransactionRecord, MONOTransactionRecord],
+      default: undefined,
+    },
   },
   data: () => ({
     EVENTS,

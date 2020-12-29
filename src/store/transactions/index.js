@@ -1,5 +1,6 @@
 import { api } from '@/api';
-import { TransactionRecord } from '@/js/records';
+import { TRANSACTION_TYPES as TYPES } from '@/js/const';
+import { TransactionRecord, TransactionModelRecord } from '@/js/records';
 import { transactionsVuexTypes } from './types';
 
 const state = {
@@ -23,7 +24,10 @@ const actions = {
 
       commit(
         transactionsVuexTypes.SET_TRANSACTIONS,
-        result.map(i => new TransactionRecord(i)),
+        result.map(i => new TransactionModelRecord(
+          TYPES.system,
+          new TransactionRecord(i),
+        )),
       );
     } catch (e) {
       throw new Error(e);
