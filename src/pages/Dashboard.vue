@@ -1,11 +1,21 @@
 <template>
-  <section>
+  <section class="dashboard">
+    <div class="dashboard__accounts">
+      Accounts
+    </div>
+    <div class="dashboard__info">
+      <div class="dashboard__charts">
+        Charts
+      </div>
+      <div class="dashboard__records">
+        <TransactionsList />
+      </div>
+    </div>
     <!-- <div class="dashboard__header">
       <Button @click="updateWebhookHandler">
         Update monobank webhook
       </Button>
     </div> -->
-    <TransactionsList />
   </section>
 </template>
 
@@ -68,4 +78,19 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.dashboard {
+  padding: 24px;
+}
+.dashboard__info {
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  margin-top: 24px;
+  grid-gap: 24px;
+}
+.dashboard__records {
+  padding: 24px;
+  background-color: #fff;
+  box-shadow: 0 0 24px 0px rgba(0, 0, 0, 0.05);
+  border-radius: 6px;
+}
 </style>

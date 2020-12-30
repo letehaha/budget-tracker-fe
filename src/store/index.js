@@ -26,6 +26,8 @@ const rootModule = {
     [indexVuexTypes.GET_ACCOUNT_TYPES]: state => state.accountTypes,
     [indexVuexTypes.GET_PAYMENT_TYPES]: state => state.paymentTypes,
     [indexVuexTypes.GET_TRANSACTION_TYPES]: state => state.transactionTypes,
+    [indexVuexTypes.GET_TRANSACTION_TYPE_BY_ID]: state => id => state
+      .transactionTypes.find(item => item.id === id),
   },
   mutations: {
     [indexVuexTypes.SET_APP_INITIALIZE_STATUS](state, status) {

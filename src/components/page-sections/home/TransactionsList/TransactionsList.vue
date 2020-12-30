@@ -2,7 +2,7 @@
   <div class="transactions-list">
     <template
       v-for="item in allTransactions"
-      :key="item.id"
+      :key="item?.tx.id"
     >
       <template v-if="item.type === TRANSACTION_TYPES.system">
         <Transaction :tx="item.tx" />
@@ -23,7 +23,7 @@ import {
   transactionsVuexTypes,
   bankMonobankVuexTypes,
 } from '@/store';
-import Transaction from './Transaction';
+import Transaction from './SystemTransaction';
 import MonoTransaction from './MonoTransaction';
 
 export default {
@@ -46,8 +46,10 @@ export default {
       monoTransactions: bankMonobankVuexTypes.GET_TRANSACTIONS,
     }),
     allTransactions() {
-      return [...this.monoTransactions, ...this.transactions]
+      const data = [...this.monoTransactions, ...this.transactions]
         .sort((a, b) => compareDesc(new Date(a.time), new Date(b.time)));
+
+      return data.slice(0, 8);
     },
   },
   watch: {
@@ -71,10 +73,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.transactions-list {
-  max-width: 560px;
-  margin: 60px auto 0;
-}
-</style>

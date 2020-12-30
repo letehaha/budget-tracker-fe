@@ -1,7 +1,7 @@
 <template>
   <div
     class="transaction"
-    :class="`transaction--${tx.transactionTypeId}`"
+    :class="`transaction--${txType.name.toLowerCase()}`"
     @click="editTransaction(tx)"
   >
     <div class="transaction__info">
@@ -28,7 +28,7 @@
 import { format } from 'date-fns';
 import { TRANSACTIONS_TYPES } from '@/js/const';
 import { mapGetters } from 'vuex';
-import { categoriesVuexTypes } from '@/store';
+import { indexVuexTypes, categoriesVuexTypes } from '@/store';
 import { formatAmount } from '@/js/helpers';
 import { MODAL_TYPES } from '@/components/Modal';
 
@@ -37,9 +37,15 @@ export default {
     tx: { type: Object, required: true },
   },
   computed: {
+    ...mapGetters({
+      getTxTypeById: indexVuexTypes.GET_TRANSACTION_TYPE_BY_ID,
+    }),
     ...mapGetters('categories', {
       categoryById: categoriesVuexTypes.GET_CATEGORY_BY_ID,
     }),
+    txType() {
+      return this.getTxTypeById(this.tx.transactionTypeId);
+    },
     category() {
       return this.categoryById(this.tx.categoryId);
     },
@@ -47,7 +53,7 @@ export default {
   methods: {
     formatAmount,
     formateDate(date) {
-      return format(new Date(date), 'd MMMM Y');
+      return format(new Date(date), 'd MMMM y');
     },
     editTransaction(transaction) {
       this.$bus.emit(this.$bus.eventsList.modalOpen, {
@@ -80,26 +86,30 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  color: #ffffff;
   cursor: pointer;
 }
-.transaction--income {
-  background-color: #2ecc71;
-  box-shadow: 0 0 10px 4px rgba(#2ecc71, .1);
-}
-.transaction--expense {
-  background-color: #e74c3c;
-  box-shadow: 0 0 10px 4px rgba(#e74c3c, .1);
-}
-.transaction--transfer {
-  background-color: #34495e;
-  box-shadow: 0 0 10px 4px rgba(#34495e, .1);
+.transaction__category {
+  font-size: 16px;
+  white-space: nowrap;
+  letter-spacing: 0.5px;
+  color: #333;
 }
 .transaction__note {
-  color: #eaeaea;
+  color: #666;
   font-size: 14px;
+  letter-spacing: 0.5px;
 }
 .transaction__amount {
   text-align: right;
+
+  .transaction--income & {
+    color: #2ecc71;
+  }
+  .transaction--expense & {
+    color: #e74c3c;
+  }
+  .transaction--transfer & {
+    color: #34495e;
+  }
 }
 </style>
