@@ -1,6 +1,10 @@
 import { api } from '@/api';
 import { TRANSACTION_TYPES as TYPES } from '@/js/const';
-import { TransactionRecord, TransactionModelRecord } from '@/js/records';
+import {
+  TransactionRecord,
+  TransactionModelRecord,
+  MONOTransactionRecord,
+} from '@/js/records';
 import { transactionsVuexTypes } from './types';
 
 const state = {
@@ -18,16 +22,27 @@ const mutations = {
 };
 
 const actions = {
-  async [transactionsVuexTypes.FETCH_TRANSACTIONS]({ commit }) {
+  async [transactionsVuexTypes.FETCH_TRANSACTIONS]({ commit }, { limit }) {
     try {
-      const result = await api.get('/transactions');
+      const result = await api.get('/transactions', { limit });
 
       commit(
         transactionsVuexTypes.SET_TRANSACTIONS,
-        result.map(i => new TransactionModelRecord(
-          TYPES.system,
-          new TransactionRecord(i),
-        )),
+        result.map((i) => {
+          if (i.transactionEntityId === TYPES.system) {
+            return new TransactionModelRecord(
+              TYPES.system,
+              new TransactionRecord(i),
+            );
+          }
+          if (i.transactionEntityId === TYPES.monobank) {
+            return new TransactionModelRecord(
+              TYPES.monobank,
+              new MONOTransactionRecord(i),
+            );
+          }
+          return undefined;
+        }),
       );
     } catch (e) {
       throw new Error(e);

@@ -9,6 +9,7 @@ const actions = {
 };
 const getters = {
   GET_TRANSACTIONS: 'GET_TRANSACTIONS',
+  GET_LATEST_TRANSACTIONS: 'GET_LATEST_TRANSACTIONS',
 };
 
 export const transactionsVuexTypes = Object.freeze({

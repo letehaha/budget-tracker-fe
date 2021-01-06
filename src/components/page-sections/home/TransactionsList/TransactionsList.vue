@@ -18,11 +18,7 @@
 import { compareDesc } from 'date-fns';
 import { mapActions, mapGetters } from 'vuex';
 import { TRANSACTION_TYPES } from '@/js/const';
-import {
-  indexVuexTypes,
-  transactionsVuexTypes,
-  bankMonobankVuexTypes,
-} from '@/store';
+import { indexVuexTypes, transactionsVuexTypes } from '@/store';
 import Transaction from './SystemTransaction';
 import MonoTransaction from './MonoTransaction';
 
@@ -41,34 +37,26 @@ export default {
     ...mapGetters('transactions', {
       transactions: transactionsVuexTypes.GET_TRANSACTIONS,
     }),
-    ...mapGetters('bankMonobank', {
-      isMonoUserExist: bankMonobankVuexTypes.IS_USER_EXIST,
-      monoTransactions: bankMonobankVuexTypes.GET_TRANSACTIONS,
-    }),
     allTransactions() {
-      const data = [...this.monoTransactions, ...this.transactions]
+      const data = [...this.transactions]
         .sort((a, b) => compareDesc(new Date(a.time), new Date(b.time)));
 
       return data.slice(0, 8);
     },
   },
   watch: {
-    isAppInitialized(value) {
-      if (value) {
-        this.fetchTransactions();
-
-        if (this.isMonoUserExist) {
-          this.fetchMonoTransactions();
+    isAppInitialized: {
+      immediate: true,
+      handler(value) {
+        if (value) {
+          this.fetchTransactions({ limit: 8 });
         }
-      }
+      },
     },
   },
   methods: {
     ...mapActions('transactions', {
       fetchTransactions: transactionsVuexTypes.FETCH_TRANSACTIONS,
-    }),
-    ...mapActions('bankMonobank', {
-      fetchMonoTransactions: bankMonobankVuexTypes.FETCH_TRANSACTIONS,
     }),
   },
 };

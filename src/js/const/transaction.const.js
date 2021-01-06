@@ -1,4 +1,4 @@
 export const TRANSACTION_TYPES = Object.freeze({
-  system: 'system',
-  monobank: 'monobank',
+  system: 1,
+  monobank: 2,
 });
