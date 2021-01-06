@@ -7,7 +7,7 @@ import {
 } from '@/store';
 
 export function authPageGuard(to, from, next) {
-  const isLoggedIn = store.getters[authVuexTypes.isLoggedIn];
+  const isLoggedIn = store.getters[`auth/${authVuexTypes.GET_IS_LOGGED_IN}`];
   const token = localStorage.getItem('user-token');
 
   if (isLoggedIn || token) {
