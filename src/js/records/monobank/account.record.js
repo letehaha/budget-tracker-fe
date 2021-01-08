@@ -2,14 +2,19 @@ export class MONOAccountRecord {
   constructor(record = {}) {
     this._record = record;
 
+    this.accountId = record.accountId;
     this.balance = record.balance;
-    this.cashbackType = record.cashbackType;
     this.creditLimit = record.creditLimit;
-    this.currencyCode = record.currencyCode;
-    this.iban = record.iban;
-    this.id = record.id;
+    this.cashbackType = record.cashbackType;
     this.maskedPan = record.maskedPan;
     this.type = record.type;
+    this.iban = record.iban;
+    this.isEnabled = record.isEnabled;
+    this.createdAt = record.createdAt;
+    this.updatedAt = record.updatedAt;
+    this.monoUserId = record.monoUserId;
+    this.currencyId = record.currencyId;
+    this.accountTypeId = record.accountTypeId;
   }
 
   get verboseCreditLimit() {

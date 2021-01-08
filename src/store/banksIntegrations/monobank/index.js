@@ -5,11 +5,13 @@ import {
   TransactionModelRecord,
   MONOTransactionRecord,
   MONOUserRecord,
+  MONOAccountRecord,
 } from '@/js/records';
 import { bankMonobankVuexTypes } from './types';
 
 const state = {
   transactions: [],
+  accounts: [],
   user: null,
   isUserExist: false,
 };
@@ -18,6 +20,7 @@ const getters = {
   [bankMonobankVuexTypes.GET_USER]: state => state.user,
   [bankMonobankVuexTypes.IS_USER_EXIST]: state => state.isUserExist,
   [bankMonobankVuexTypes.GET_TRANSACTIONS]: state => state.transactions,
+  [bankMonobankVuexTypes.GET_ACCOUNTS]: state => state.accounts,
 };
 
 const mutations = {
@@ -29,6 +32,9 @@ const mutations = {
   },
   [bankMonobankVuexTypes.SET_USER_EXIST_STATUS](state, status) {
     state.isUserExist = status;
+  },
+  [bankMonobankVuexTypes.SET_ACCOUNTS](state, accounts) {
+    state.accounts = accounts;
   },
 };
 
@@ -60,6 +66,18 @@ const actions = {
           TYPES.monobank,
           new MONOTransactionRecord(i),
         )),
+      );
+    } catch (e) {
+      throw new Error(e);
+    }
+  },
+  async [bankMonobankVuexTypes.FETCH_ACCOUNTS]({ commit }) {
+    try {
+      const result = await api.get('/banks/monobank/accounts');
+
+      commit(
+        bankMonobankVuexTypes.SET_ACCOUNTS,
+        result.map(i => new MONOAccountRecord(i)),
       );
     } catch (e) {
       throw new Error(e);

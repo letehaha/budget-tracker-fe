@@ -1,8 +1,6 @@
 <template>
   <section class="dashboard">
-    <div class="dashboard__accounts">
-      Accounts
-    </div>
+    <AccountsList class="dashboard__accounts" />
     <div class="dashboard__info">
       <div class="dashboard__charts">
         Charts
@@ -29,12 +27,14 @@ import {
 } from '@/store';
 import { TooManyRequestsError } from '@/js/errors';
 import { ErrorHandler } from '@/js/utils';
-import TransactionsList from '@/components/page-sections/home/TransactionsList/TransactionsList';
+import TransactionsList from '@/components/page-sections/dashboard/TransactionsList/TransactionsList';
+import AccountsList from '@/components/page-sections/dashboard/AccountsList/AccountsList';
 
 export default {
   name: 'Dashboard',
   components: {
     TransactionsList,
+    AccountsList,
   },
   computed: {
     ...mapGetters({
@@ -50,10 +50,12 @@ export default {
     }),
     ...mapGetters('bankMonobank', {
       monoUser: bankMonobankVuexTypes.GET_USER,
+      accounts: bankMonobankVuexTypes.GET_ACCOUNTS,
     }),
   },
   async mounted() {
     await this.fetchInitialData();
+    this.fetchAccounts();
   },
   methods: {
     ...mapActions({
@@ -61,6 +63,7 @@ export default {
     }),
     ...mapActions('bankMonobank', {
       updateWebhook: bankMonobankVuexTypes.UPDATE_WEBHOOK,
+      fetchAccounts: bankMonobankVuexTypes.FETCH_ACCOUNTS,
     }),
     async updateWebhookHandler() {
       try {
