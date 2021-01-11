@@ -27,7 +27,7 @@ export default {
       isAppInitialized: indexVuexTypes.GET_APP_INIT_STATUS,
     }),
     ...mapGetters('bankMonobank', {
-      monoAccounts: bankMonobankVuexTypes.GET_ACCOUNTS,
+      monoAccounts: bankMonobankVuexTypes.GET_ACTIVE_ACCOUNTS,
     }),
     ...mapGetters('accounts', {
       accounts: accountsVuexTypes.GET_ACCOUNTS,

@@ -21,6 +21,8 @@ const getters = {
   [bankMonobankVuexTypes.IS_USER_EXIST]: state => state.isUserExist,
   [bankMonobankVuexTypes.GET_TRANSACTIONS]: state => state.transactions,
   [bankMonobankVuexTypes.GET_ACCOUNTS]: state => state.accounts,
+  [bankMonobankVuexTypes.GET_ACTIVE_ACCOUNTS]:
+    state => state.accounts.filter(item => item.isEnabled),
 };
 
 const mutations = {
