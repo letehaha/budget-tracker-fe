@@ -4,7 +4,7 @@ export class AccountRecord {
 
     this.id = record.id;
     this.name = record.name;
-    this.currentBalance = record.currentBalance;
+    this.balance = record.currentBalance;
     this.creditLimit = record.creditLimit;
     this.accountTypeId = record.accountTypeId;
     this.currencyId = record.currencyId;

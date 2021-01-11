@@ -1,12 +1,10 @@
 <template>
   <div class="accounts-list">
     <template
-      v-for="account in accounts"
+      v-for="account in allAccounts"
       :key="account.id"
     >
-      <div>
-        {{ account.balance }}
-      </div>
+      <Account :account="account" />
     </template>
   </div>
 </template>
@@ -16,16 +14,27 @@ import { mapActions, mapGetters } from 'vuex';
 import {
   indexVuexTypes,
   bankMonobankVuexTypes,
+  accountsVuexTypes,
 } from '@/store';
+import Account from './Account';
 
 export default {
+  components: {
+    Account,
+  },
   computed: {
     ...mapGetters({
       isAppInitialized: indexVuexTypes.GET_APP_INIT_STATUS,
     }),
     ...mapGetters('bankMonobank', {
-      accounts: bankMonobankVuexTypes.GET_ACCOUNTS,
+      monoAccounts: bankMonobankVuexTypes.GET_ACCOUNTS,
     }),
+    ...mapGetters('accounts', {
+      accounts: accountsVuexTypes.GET_ACCOUNTS,
+    }),
+    allAccounts() {
+      return [...this.monoAccounts, ...this.accounts];
+    },
   },
   watch: {
     isAppInitialized: {
@@ -44,3 +53,12 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.accounts-list {
+  display: grid;
+  grid-template-rows: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fit, 180px);
+  grid-gap: 8px;
+}
+</style>
