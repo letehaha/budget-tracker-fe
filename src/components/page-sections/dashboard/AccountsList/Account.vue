@@ -29,5 +29,11 @@ export default {
   background-color: #fff;
   border-radius: 6px;
   box-shadow: 0 0 24px 0px rgba(0, 0, 0, 0.05);
+  transition: box-shadow .2s ease-out;
+  cursor: pointer;
+
+  &:hover {
+    box-shadow: 0 0 24px 0px rgba(0, 0, 0, 0.15);
+  }
 }
 </style>
