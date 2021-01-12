@@ -122,6 +122,21 @@ const actions = {
       throw new Error(e);
     }
   },
+  async [bankMonobankVuexTypes.REFRESH_ACCOUNTS]({ commit }) {
+    try {
+      const accounts = await api.get('/banks/monobank/refresh-accounts');
+
+      commit(
+        bankMonobankVuexTypes.SET_ACCOUNTS,
+        accounts.map(i => new MONOAccountRecord(i)),
+      );
+    } catch (e) {
+      if (e instanceof TooManyRequestsError) {
+        throw e;
+      }
+      throw new Error(e);
+    }
+  },
 };
 
 export default {

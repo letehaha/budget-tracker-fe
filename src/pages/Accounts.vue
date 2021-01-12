@@ -20,6 +20,9 @@
     </div>
     <h2 class="accounts__subtitle">
       Monobank
+      <button @click="refreshMonoAccouns">
+        Refresh
+      </button>
     </h2>
     <div class="accounts__list">
       <template
@@ -93,6 +96,7 @@ export default {
     formatAmount,
     ...mapActions('bankMonobank', {
       fetchAccounts: bankMonobankVuexTypes.FETCH_ACCOUNTS,
+      refreshMonoAccouns: bankMonobankVuexTypes.REFRESH_ACCOUNTS,
     }),
   },
 };

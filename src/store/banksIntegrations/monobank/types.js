@@ -19,6 +19,7 @@ const actions = {
   FETCH_USER: 'FETCH_USER',
   FETCH_ACCOUNTS: 'FETCH_ACCOUNTS',
   UPDATE_BY_ID: 'UPDATE_BY_ID',
+  REFRESH_ACCOUNTS: 'REFRESH_ACCOUNTS',
 };
 
 export const bankMonobankVuexTypes = Object.freeze({
