@@ -130,6 +130,8 @@ class ApiCaller {
 
     // eslint-disable-next-line no-console
     console.log('response.status', response.status);
+    // eslint-disable-next-line no-console
+    console.log('this.app.$router', this.app.$router);
 
     // TODO: investogate how to return JSON from server
     if (response.status === STATUS_CODES.unauthorized) {
