@@ -143,6 +143,31 @@ const actions = {
       throw new Error(e);
     }
   },
+  async [bankMonobankVuexTypes.LOAD_TRANSACTIONS_FROM_LATEST](
+    ctx,
+    { accountId },
+  ) {
+    try {
+      let latestTx = await api.get('/banks/monobank/transactions', {
+        from: 1,
+        limit: 1,
+      });
+      if (latestTx ?? latestTx.length) {
+        latestTx = new MONOTransactionRecord(latestTx[0]);
+
+        await api.get('/banks/monobank/load-transactions', {
+          from: new Date(latestTx.time).getTime(),
+          to: new Date().getTime(),
+          accountId,
+        });
+      }
+    } catch (e) {
+      if (e instanceof TooManyRequestsError) {
+        throw e;
+      }
+      throw new Error(e);
+    }
+  },
 };
 
 export default {

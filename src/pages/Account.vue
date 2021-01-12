@@ -13,6 +13,9 @@
         type="checkbox"
       >
     </label>
+    <button @click="loadLatestTransactionsHandler">
+      Refresh
+    </button>
   </div>
 </template>
 
@@ -74,7 +77,12 @@ export default {
     ...mapActions('bankMonobank', {
       fetchAccounts: bankMonobankVuexTypes.FETCH_ACCOUNTS,
       updateMonoAccount: bankMonobankVuexTypes.UPDATE_BY_ID,
+      loadLatestTransactions:
+        bankMonobankVuexTypes.LOAD_TRANSACTIONS_FROM_LATEST,
     }),
+    loadLatestTransactionsHandler() {
+      this.loadLatestTransactions({ accountId: 'u2v1VSXB5UKOtoQYW9dPQw' });
+    },
   },
 };
 </script>
