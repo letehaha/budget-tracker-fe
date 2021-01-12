@@ -128,6 +128,9 @@ class ApiCaller {
       return result.response;
     }
 
+    // eslint-disable-next-line no-console
+    console.log('response.status', response.status);
+
     // TODO: investogate how to return JSON from server
     if (response.status === STATUS_CODES.unauthorized) {
       await this.store.dispatch(`auth/${authVuexTypes.LOG_OUT}`);
