@@ -20,7 +20,13 @@ const getters = {
   [bankMonobankVuexTypes.GET_USER]: state => state.user,
   [bankMonobankVuexTypes.IS_USER_EXIST]: state => state.isUserExist,
   [bankMonobankVuexTypes.GET_TRANSACTIONS]: state => state.transactions,
-  [bankMonobankVuexTypes.GET_ACCOUNTS]: state => state.accounts,
+  [bankMonobankVuexTypes.GET_ACCOUNTS]: state => {
+    const temp = [...state.accounts];
+
+    return temp.sort(
+      (a, b) => (b.accountId).localeCompare(a.accountId),
+    );
+  },
   [bankMonobankVuexTypes.GET_ACCOUNT_BY_ID]:
     state => id => state.accounts.find(i => i.accountId === id),
   [bankMonobankVuexTypes.GET_ACTIVE_ACCOUNTS]:
