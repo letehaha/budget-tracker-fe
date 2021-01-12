@@ -6,10 +6,11 @@ export class MONOAccountRecord {
     this.balance = record.balance;
     this.creditLimit = record.creditLimit;
     this.cashbackType = record.cashbackType;
-    this.maskedPan = record.maskedPan;
+    this.maskedPan = JSON.parse(record.maskedPan);
     this.type = record.type;
     this.iban = record.iban;
     this.isEnabled = record.isEnabled;
+    this.name = record.name;
     this.createdAt = record.createdAt;
     this.updatedAt = record.updatedAt;
     this.monoUserId = record.monoUserId;

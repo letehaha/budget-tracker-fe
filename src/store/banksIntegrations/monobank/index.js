@@ -21,6 +21,8 @@ const getters = {
   [bankMonobankVuexTypes.IS_USER_EXIST]: state => state.isUserExist,
   [bankMonobankVuexTypes.GET_TRANSACTIONS]: state => state.transactions,
   [bankMonobankVuexTypes.GET_ACCOUNTS]: state => state.accounts,
+  [bankMonobankVuexTypes.GET_ACCOUNT_BY_ID]:
+    state => id => state.accounts.find(i => i.accountId === id),
   [bankMonobankVuexTypes.GET_ACTIVE_ACCOUNTS]:
     state => state.accounts.filter(item => item.isEnabled),
 };
@@ -37,6 +39,12 @@ const mutations = {
   },
   [bankMonobankVuexTypes.SET_ACCOUNTS](state, accounts) {
     state.accounts = accounts;
+  },
+  [bankMonobankVuexTypes.REPLACE_ACCOUNT](state, account) {
+    const oldAccount = state.accounts
+      .findIndex(item => account.accountId === item.accountId);
+
+    state.accounts[oldAccount] = account;
   },
 };
 
@@ -80,6 +88,25 @@ const actions = {
       commit(
         bankMonobankVuexTypes.SET_ACCOUNTS,
         result.map(i => new MONOAccountRecord(i)),
+      );
+    } catch (e) {
+      throw new Error(e);
+    }
+  },
+  async [bankMonobankVuexTypes.UPDATE_BY_ID](
+    { commit },
+    { id, name, isEnabled },
+  ) {
+    try {
+      const result = await api.post('/banks/monobank/account', {
+        accountId: id,
+        name,
+        isEnabled,
+      });
+
+      commit(
+        bankMonobankVuexTypes.REPLACE_ACCOUNT,
+        new MONOAccountRecord(result),
       );
     } catch (e) {
       throw new Error(e);

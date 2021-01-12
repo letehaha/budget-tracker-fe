@@ -57,7 +57,6 @@ export default {
 <style lang="scss" scoped>
 .accounts-list {
   display: grid;
-  grid-template-rows: repeat(2, 1fr);
   grid-template-columns: repeat(auto-fit, 180px);
   grid-gap: 8px;
 }

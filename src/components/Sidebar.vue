@@ -11,6 +11,12 @@
         Dashboard
       </router-link>
       <router-link
+        to="/accounts"
+        class="sidebar__navigation-link"
+      >
+        Accounts
+      </router-link>
+      <router-link
         to="/settings"
         class="sidebar__navigation-link"
       >

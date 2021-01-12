@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Dashboard from '@/pages/Dashboard';
+import Accounts from '@/pages/Accounts';
+import Account from '@/pages/Account';
 import Register from '@/pages/auth/Register';
 import Login from '@/pages/auth/Login';
 import { redirectRouteGuard, authPageGuard } from './guards';
@@ -13,6 +15,22 @@ const routes = [
   {
     path: '/',
     component: Dashboard,
+    beforeEnter: redirectRouteGuard,
+    meta: {
+      layout: ROUTER_LAYOUTS.dashboard,
+    },
+  },
+  {
+    path: '/accounts',
+    component: Accounts,
+    beforeEnter: redirectRouteGuard,
+    meta: {
+      layout: ROUTER_LAYOUTS.dashboard,
+    },
+  },
+  {
+    path: '/account',
+    component: Account,
     beforeEnter: redirectRouteGuard,
     meta: {
       layout: ROUTER_LAYOUTS.dashboard,
