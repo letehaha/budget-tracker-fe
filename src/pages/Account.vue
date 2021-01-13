@@ -81,7 +81,7 @@ export default {
         bankMonobankVuexTypes.LOAD_TRANSACTIONS_FROM_LATEST,
     }),
     loadLatestTransactionsHandler() {
-      this.loadLatestTransactions({ accountId: 'u2v1VSXB5UKOtoQYW9dPQw' });
+      this.loadLatestTransactions({ accountId: this.account.accountId });
     },
   },
 };
