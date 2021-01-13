@@ -17,6 +17,6 @@ app.directive('click-outside', clickOutside);
 app.use(router);
 app.use(store);
 
-initApiCaller({ store, app });
-
 app.mount('#app');
+
+initApiCaller({ store, router });

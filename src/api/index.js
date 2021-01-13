@@ -31,7 +31,7 @@ class ApiCaller {
     this._baseURL = process.env.API_HTTP;
     this.authToken = null;
     this.store = null;
-    this.app = null;
+    this.router = null;
   }
 
   setToken(token) {
@@ -128,15 +128,10 @@ class ApiCaller {
       return result.response;
     }
 
-    // eslint-disable-next-line no-console
-    console.log('response.status', response.status);
-    // eslint-disable-next-line no-console
-    console.log('this.app.$router', this.app.$router);
-
     // TODO: investogate how to return JSON from server
     if (response.status === STATUS_CODES.unauthorized) {
       await this.store.dispatch(`auth/${authVuexTypes.LOG_OUT}`);
-      this.app.$router.push('/sign-in');
+      this.router.push('/sign-in');
       throw new errors.AuthError(response.statusText, response);
     }
 
@@ -161,14 +156,14 @@ class ApiCaller {
     this.store = store;
   }
 
-  setApp({ app }) {
-    this.app = app;
+  setRouter({ router }) {
+    this.router = router;
   }
 }
 
 export const api = new ApiCaller();
 
-export function initApiCaller({ store, app }) {
+export function initApiCaller({ store, router }) {
   api.setStore({ store });
-  api.setApp({ app });
+  api.setRouter({ router });
 }
