@@ -10,7 +10,7 @@ export class MONOAccountRecord {
     this.type = record.type;
     this.iban = record.iban;
     this.isEnabled = record.isEnabled;
-    this.name = record.name;
+    this.name = record.name || `${record.type.toUpperCase()} ${record.cashbackType}`;
     this.createdAt = record.createdAt;
     this.updatedAt = record.updatedAt;
     this.monoUserId = record.monoUserId;
