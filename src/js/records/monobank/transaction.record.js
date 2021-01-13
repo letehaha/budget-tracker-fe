@@ -1,3 +1,5 @@
+import { formatAmount } from '@/js/helpers';
+
 export class MONOTransactionRecord {
   constructor(record = {}) {
     this._record = record;
@@ -18,5 +20,13 @@ export class MONOTransactionRecord {
     this.monoAccountId = record.monoAccountId;
     this.transactionEntityId = record.transactionEntityId;
     this.note = record.note;
+  }
+
+  get formattedAmount() {
+    return formatAmount(this.amount);
+  }
+
+  get formattedCashback() {
+    return formatAmount(this.cashbackAmount);
   }
 }

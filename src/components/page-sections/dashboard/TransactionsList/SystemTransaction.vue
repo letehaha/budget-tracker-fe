@@ -2,7 +2,7 @@
   <div
     class="transaction"
     :class="`transaction--${txType.name.toLowerCase()}`"
-    @click="editTransaction(tx)"
+    @click="editTransaction"
   >
     <div class="transaction__info">
       <div class="transaction__category">
@@ -55,10 +55,10 @@ export default {
     formateDate(date) {
       return format(new Date(date), 'd MMMM y');
     },
-    editTransaction(transaction) {
+    editTransaction() {
       this.$bus.emit(this.$bus.eventsList.modalOpen, {
-        type: MODAL_TYPES.transactionForm,
-        data: { transaction },
+        type: MODAL_TYPES.systemTxForm,
+        data: { transaction: this.tx },
       });
     },
     amountFormatter(amount, type) {

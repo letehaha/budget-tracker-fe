@@ -2,7 +2,7 @@
   <div
     class="transaction"
     :class="`transaction--${txType.name.toLowerCase()}`"
-    @click="editTransaction(tx)"
+    @click="editTransaction"
   >
     <div class="transaction__info">
       <div class="transaction__category">
@@ -14,7 +14,7 @@
     </div>
     <div class="transaction__right">
       <div class="transaction__amount">
-        {{ formatAmount(tx.amount) }}
+        {{ tx.formattedAmount }}
         <!-- {{ tx.account.currency.asset }} -->
       </div>
       <div class="transaction__time">
@@ -29,7 +29,6 @@ import { format } from 'date-fns';
 import { TRANSACTIONS_TYPES } from '@/js/const';
 import { mapGetters } from 'vuex';
 import { indexVuexTypes, categoriesVuexTypes } from '@/store';
-import { formatAmount } from '@/js/helpers';
 import { MODAL_TYPES } from '@/components/Modal';
 
 export default {
@@ -51,14 +50,13 @@ export default {
     },
   },
   methods: {
-    formatAmount,
     formateDate(date) {
       return format(new Date(date), 'd MMMM y');
     },
-    editTransaction(transaction) {
+    editTransaction() {
       this.$bus.emit(this.$bus.eventsList.modalOpen, {
-        type: MODAL_TYPES.transactionForm,
-        data: { transaction },
+        type: MODAL_TYPES.monobankTxForm,
+        data: { transaction: this.tx },
       });
     },
     amountFormatter(amount, type) {

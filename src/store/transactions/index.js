@@ -1,5 +1,6 @@
 import { api } from '@/api';
 import { TRANSACTION_TYPES as TYPES } from '@/js/const';
+import { bankMonobankVuexTypes } from '@/store/banksIntegrations/monobank/types';
 import {
   TransactionRecord,
   TransactionModelRecord,
@@ -26,24 +27,27 @@ const actions = {
     try {
       const result = await api.get('/transactions', { limit });
 
-      commit(
-        transactionsVuexTypes.SET_TRANSACTIONS,
-        result.map((i) => {
-          if (i.transactionEntityId === TYPES.system) {
-            return new TransactionModelRecord(
-              TYPES.system,
-              new TransactionRecord(i),
-            );
-          }
-          if (i.transactionEntityId === TYPES.monobank) {
-            return new TransactionModelRecord(
-              TYPES.monobank,
-              new MONOTransactionRecord(i),
-            );
-          }
-          return undefined;
-        }),
-      );
+      const resultTxs = [];
+      const monoTxs = [];
+
+      result.forEach(item => {
+        if (item.transactionEntityId === TYPES.system) {
+          resultTxs.push(new TransactionModelRecord(
+            TYPES.system,
+            new TransactionRecord(item),
+          ));
+        }
+        if (item.transactionEntityId === TYPES.monobank) {
+          resultTxs.push(new TransactionModelRecord(
+            TYPES.monobank,
+            new MONOTransactionRecord(item),
+          ));
+          monoTxs.push(new MONOTransactionRecord(item));
+        }
+      });
+
+      commit(transactionsVuexTypes.SET_TRANSACTIONS, resultTxs);
+      commit(`bankMonobank/${bankMonobankVuexTypes.SET_TRANSACTIONS}`, monoTxs, { root: true });
     } catch (e) {
       throw new Error(e);
     }

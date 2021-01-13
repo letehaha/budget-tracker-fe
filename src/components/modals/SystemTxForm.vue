@@ -1,20 +1,18 @@
 <template>
-  <div class="transaction-form-modal">
+  <div class="system-tx-form">
     <div>
-      <button
-        @click="$emit(EVENTS.closeModal)"
-      >
+      <button @click="$emit(EVENTS.closeModal)">
         Close
       </button>
     </div>
-    <div class="transaction-form-modal__row">
+    <div class="system-tx-form__row">
       <InputField
         v-model="form.amount"
         type="number"
         placeholder="Amount"
       />
     </div>
-    <div class="transaction-form-modal__row">
+    <div class="system-tx-form__row">
       <SelectField
         v-model="form.account"
         label="Account"
@@ -23,7 +21,7 @@
         is-value-preselected
       />
     </div>
-    <div class="transaction-form-modal__row">
+    <div class="system-tx-form__row">
       <SelectField
         v-model="form.category"
         label="Category"
@@ -32,7 +30,7 @@
         is-value-preselected
       />
     </div>
-    <div class="transaction-form-modal__row">
+    <div class="system-tx-form__row">
       <SelectField
         v-model="form.type"
         label="Transaction Type"
@@ -41,12 +39,12 @@
         is-value-preselected
       />
     </div>
-    <div class="transaction-form-modal__row">
+    <div class="system-tx-form__row">
       <DateField
         v-model="form.time"
       />
     </div>
-    <div class="transaction-form-modal__row">
+    <div class="system-tx-form__row">
       <SelectField
         v-model="form.paymentType"
         label="Payment Type"
@@ -55,25 +53,25 @@
         is-value-preselected
       />
     </div>
-    <div class="transaction-form-modal__row">
+    <div class="system-tx-form__row">
       <TextareaField
         v-model="form.note"
         placeholder="Note"
         label="Note (optional)"
       />
     </div>
-    <div class="transaction-form-modal__actions">
+    <div class="system-tx-form__actions">
       <Button
         v-if="transaction"
-        class="transaction-form-modal__action"
+        class="system-tx-form__action"
         @click="deleteTransactionHandler"
       >
         Delete
       </Button>
       <Button
         class="
-          transaction-form-modal__action
-          transaction-form-modal__action--submit
+          system-tx-form__action
+          system-tx-form__action--submit
         "
         :disabled="isLoading"
         @click="submit"
@@ -92,7 +90,7 @@ import {
   categoriesVuexTypes,
   transactionsVuexTypes,
 } from '@/store';
-import { TransactionRecord, MONOTransactionRecord } from '@/js/records';
+import { TransactionRecord } from '@/js/records';
 import InputField from '@/components/fields/InputField';
 import SelectField from '@/components/fields/SelectField';
 import TextareaField from '@/components/fields/TextareaField';
@@ -113,7 +111,7 @@ export default {
   },
   props: {
     transaction: {
-      type: [TransactionRecord, MONOTransactionRecord],
+      type: TransactionRecord,
       default: undefined,
     },
   },
@@ -215,21 +213,21 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.transaction-form-modal {
-  background-color: #ffffff;
+.system-tx-form {
+  background-color: #fff;
   padding: 60px;
   width: 100%;
   max-width: 600px;
 }
-.transaction-form-modal__row {
+.system-tx-form__row {
   margin-bottom: 20px;
 }
-.transaction-form-modal__actions {
+.system-tx-form__actions {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
-.transaction-form-modal__action--submit {
+.system-tx-form__action--submit {
   margin-left: auto;
 }
 </style>

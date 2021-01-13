@@ -1,3 +1,4 @@
+import { compareDesc } from 'date-fns';
 import { api } from '@/api';
 import { TooManyRequestsError } from '@/js/errors';
 import { TRANSACTION_TYPES as TYPES } from '@/js/const';
@@ -19,7 +20,8 @@ const state = {
 const getters = {
   [bankMonobankVuexTypes.GET_USER]: state => state.user,
   [bankMonobankVuexTypes.IS_USER_EXIST]: state => state.isUserExist,
-  [bankMonobankVuexTypes.GET_TRANSACTIONS]: state => state.transactions,
+  [bankMonobankVuexTypes.GET_TRANSACTIONS]: state => state.transactions
+    .sort((a, b) => compareDesc(new Date(a.time), new Date(b.time))),
   [bankMonobankVuexTypes.GET_ACCOUNTS]: state => {
     const temp = [...state.accounts];
 
@@ -35,7 +37,11 @@ const getters = {
 
 const mutations = {
   [bankMonobankVuexTypes.SET_TRANSACTIONS](state, txs) {
-    state.transactions = txs;
+    const txsIds = txs.map(item => item.id);
+    state.transactions = [
+      ...txs,
+      ...state.transactions.filter(tx => !txsIds.includes(tx.id)),
+    ];
   },
   [bankMonobankVuexTypes.SET_USER](state, user) {
     state.user = user;
@@ -45,6 +51,12 @@ const mutations = {
   },
   [bankMonobankVuexTypes.SET_ACCOUNTS](state, accounts) {
     state.accounts = accounts;
+  },
+  [bankMonobankVuexTypes.REPLACE_TRANSACTION](state, tx) {
+    const oldTx = state.transactions
+      .findIndex(item => tx.id === item.id);
+
+    state.accounts[oldTx] = tx;
   },
   [bankMonobankVuexTypes.REPLACE_ACCOUNT](state, account) {
     const oldAccount = state.accounts
@@ -87,6 +99,25 @@ const actions = {
       throw new Error(e);
     }
   },
+  async [bankMonobankVuexTypes.UPDATE_TRANSACTION_BY_ID](
+    { commit },
+    { id, note, categoryId },
+  ) {
+    try {
+      const result = await api.post('/banks/monobank/transaction', {
+        id,
+        note,
+        categoryId,
+      });
+
+      commit(
+        bankMonobankVuexTypes.REPLACE_TRANSACTION,
+        new MONOTransactionRecord(result),
+      );
+    } catch (e) {
+      throw new Error(e);
+    }
+  },
   async [bankMonobankVuexTypes.FETCH_ACCOUNTS]({ commit }) {
     try {
       const result = await api.get('/banks/monobank/accounts');
@@ -99,7 +130,7 @@ const actions = {
       throw new Error(e);
     }
   },
-  async [bankMonobankVuexTypes.UPDATE_BY_ID](
+  async [bankMonobankVuexTypes.UPDATE_ACCOUNT_BY_ID](
     { commit },
     { id, name, isEnabled },
   ) {
