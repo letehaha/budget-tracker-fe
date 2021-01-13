@@ -16,5 +16,6 @@ export class MONOTransactionRecord {
     this.transactionTypeId = record.transactionTypeId;
     this.paymentTypeId = record.paymentTypeId;
     this.monoAccountId = record.monoAccountId;
+    this.note = record.note;
   }
 }
