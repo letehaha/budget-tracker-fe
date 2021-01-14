@@ -1,5 +1,10 @@
+const getters = {
+  GET_TRANSACTIONS: 'GET_TRANSACTIONS',
+  GET_LATEST_TRANSACTIONS: 'GET_LATEST_TRANSACTIONS',
+};
 const mutations = {
   SET_TRANSACTIONS: 'SET_TRANSACTIONS',
+  REPLACE_TRANSACTION: 'REPLACE_TRANSACTION',
 };
 const actions = {
   FETCH_TRANSACTIONS: 'FETCH_TRANSACTIONS',
@@ -7,13 +12,9 @@ const actions = {
   EDIT_TRANSACTION: 'EDIT_TRANSACTION',
   DELETE_TRANSACTION: 'DELETE_TRANSACTION',
 };
-const getters = {
-  GET_TRANSACTIONS: 'GET_TRANSACTIONS',
-  GET_LATEST_TRANSACTIONS: 'GET_LATEST_TRANSACTIONS',
-};
 
 export const transactionsVuexTypes = Object.freeze({
+  ...getters,
   ...mutations,
   ...actions,
-  ...getters,
 });

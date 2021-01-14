@@ -11,10 +11,11 @@
       <p>Time: {{ transaction.time }}</p>
       <p>Payment Type: {{ transaction.paymentTypeId }}</p>
       <p>Cashback: {{ +transaction.formattedCashback ? transaction.formattedCashback : '-' }}</p>
+      <p>Description: {{ transaction.description }}</p>
     </div>
     <div class="monobank-tx-form__row">
       <SelectField
-        v-model="form.categoryId"
+        v-model="form.category"
         label="Category"
         :values="categories"
         label-key="name"
@@ -75,7 +76,7 @@ export default {
   data: () => ({
     EVENTS,
     form: {
-      categoryId: null,
+      category: null,
       note: null,
     },
     isLoading: false,
@@ -92,19 +93,10 @@ export default {
       categories: categoriesVuexTypes.GET_CATEGORIES,
     }),
   },
-  watch: {
-    transaction: {
-      immediate: true,
-      deep: true,
-      handler(value) {
-        if (value) {
-          this.form = {
-            categoryId: value.categoryId,
-            note: value.note,
-          };
-        }
-      },
-    },
+  created() {
+    this.form.note = this.transaction.note;
+    this.form.category = this.categories
+      .find(item => item.id === this.transaction.categoryId);
   },
   methods: {
     ...mapActions('bankMonobank', {
@@ -112,11 +104,11 @@ export default {
     }),
     async submit() {
       this.isLoading = true;
-      const { note, categoryId } = this.form;
+      const { note, category } = this.form;
 
       const params = {
         note,
-        categoryId,
+        categoryId: category.id,
       };
 
       await this.editTransaction({
@@ -131,7 +123,7 @@ export default {
 
 <style lang="scss" scoped>
 .monobank-tx-form {
-  background-color: #ffffff;
+  background-color: #fff;
   padding: 60px;
   width: 100%;
   max-width: 600px;

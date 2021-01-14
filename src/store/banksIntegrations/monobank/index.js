@@ -8,6 +8,7 @@ import {
   MONOUserRecord,
   MONOAccountRecord,
 } from '@/js/records';
+import { transactionsVuexTypes } from '@/store/transactions/types';
 import { bankMonobankVuexTypes } from './types';
 
 const state = {
@@ -56,7 +57,7 @@ const mutations = {
     const oldTx = state.transactions
       .findIndex(item => tx.id === item.id);
 
-    state.accounts[oldTx] = tx;
+    state.transactions[oldTx] = tx;
   },
   [bankMonobankVuexTypes.REPLACE_ACCOUNT](state, account) {
     const oldAccount = state.accounts
@@ -113,6 +114,11 @@ const actions = {
       commit(
         bankMonobankVuexTypes.REPLACE_TRANSACTION,
         new MONOTransactionRecord(result),
+      );
+      commit(
+        `transactions/${transactionsVuexTypes.REPLACE_TRANSACTION}`,
+        new MONOTransactionRecord(result),
+        { root: true },
       );
     } catch (e) {
       throw new Error(e);

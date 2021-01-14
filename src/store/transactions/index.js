@@ -20,6 +20,26 @@ const mutations = {
   [transactionsVuexTypes.SET_TRANSACTIONS](state, txs) {
     state.transactions = txs;
   },
+  [transactionsVuexTypes.REPLACE_TRANSACTION](state, tx) {
+    let localTx = tx;
+
+    if (tx instanceof TransactionRecord) {
+      localTx = new TransactionModelRecord(
+        TYPES.system,
+        tx,
+      );
+    }
+    if (tx instanceof MONOTransactionRecord) {
+      localTx = new TransactionModelRecord(
+        TYPES.monobank,
+        tx,
+      );
+    }
+    const oldTx = state.transactions
+      .findIndex(item => localTx.tx.id === item.tx.id);
+
+    state.transactions[oldTx] = localTx;
+  },
 };
 
 const actions = {
