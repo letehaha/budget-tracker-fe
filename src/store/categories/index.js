@@ -2,9 +2,11 @@ import { api } from '@/api';
 import { CategoryRecord } from '@/js/records';
 import { categoriesVuexTypes } from './types';
 
-const state = {
+const initialState = () => ({
   categories: [],
-};
+});
+
+const state = initialState();
 
 const getters = {
   [categoriesVuexTypes.GET_CATEGORIES]: state => state.categories,
@@ -15,6 +17,9 @@ const getters = {
 const mutations = {
   [categoriesVuexTypes.SET_CATEGORIES](state, categories) {
     state.categories = categories;
+  },
+  [categoriesVuexTypes.RESET_STORE](state) {
+    Object.assign(state, initialState());
   },
 };
 

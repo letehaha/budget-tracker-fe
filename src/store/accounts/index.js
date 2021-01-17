@@ -2,9 +2,11 @@ import { api } from '@/api';
 import { AccountRecord } from '@/js/records';
 import { accountsVuexTypes } from './types';
 
-const state = {
+const initialState = () => ({
   accounts: [],
-};
+});
+
+const state = initialState();
 
 const getters = {
   [accountsVuexTypes.GET_ACCOUNTS]: state => state.accounts,
@@ -13,6 +15,9 @@ const getters = {
 const mutations = {
   [accountsVuexTypes.SET_ACCOUNTS](state, accounts) {
     state.accounts = accounts;
+  },
+  [accountsVuexTypes.RESET_STATE](state) {
+    Object.assign(state, initialState());
   },
 };
 

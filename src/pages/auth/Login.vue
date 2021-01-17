@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { mapActions } from 'vuex';
 import { authVuexTypes } from '@/store';
 import Button from '@/components/common/Button';
 import InputField from '@/components/fields/InputField';
@@ -59,11 +59,6 @@ export default {
     },
     isFormLoading: false,
   }),
-  computed: {
-    ...mapGetters('auth', {
-      tokenToken: authVuexTypes.GET_USER_TOKEN,
-    }),
-  },
   methods: {
     ...mapActions('auth', {
       signIn: authVuexTypes.LOG_IN,

@@ -12,7 +12,7 @@
           class="register__field"
         />
         <InputField
-          v-model="form.passowrd"
+          v-model="form.password"
           label="Password"
           class="register__field"
           type="password"
@@ -26,6 +26,7 @@
       </div>
       <Button
         class="register__submit"
+        @click="submit"
       >
         Sign up
       </Button>
@@ -44,6 +45,8 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
+import { authVuexTypes } from '@/store';
 import Button from '@/components/common/Button';
 import InputField from '@/components/fields/InputField';
 
@@ -59,6 +62,21 @@ export default {
       verifyPassowrd: '',
     },
   }),
+  methods: {
+    ...mapActions('auth', {
+      signUp: authVuexTypes.SIGN_UP,
+    }),
+    async submit() {
+      const { password, username } = this.form;
+      this.isFormLoading = true;
+
+      await this.signUp({ password, username });
+
+      this.$router.push('/');
+
+      this.isFormLoading = false;
+    },
+  },
 };
 </script>
 

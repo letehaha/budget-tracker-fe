@@ -8,9 +8,11 @@ import {
 } from '@/js/records';
 import { transactionsVuexTypes } from './types';
 
-const state = {
+const initialState = () => ({
   transactions: [],
-};
+});
+
+const state = initialState();
 
 const getters = {
   [transactionsVuexTypes.GET_TRANSACTIONS]: state => state.transactions,
@@ -19,6 +21,9 @@ const getters = {
 const mutations = {
   [transactionsVuexTypes.SET_TRANSACTIONS](state, txs) {
     state.transactions = txs;
+  },
+  [transactionsVuexTypes.RESET_STORE](state) {
+    Object.assign(state, initialState());
   },
   [transactionsVuexTypes.REPLACE_TRANSACTION](state, tx) {
     let localTx = tx;

@@ -19,6 +19,7 @@ import { defineAsyncComponent } from 'vue';
 export const MODAL_TYPES = Object.freeze({
   systemTxForm: defineAsyncComponent(() => import('@/components/modals/SystemTxForm')),
   monobankTxForm: defineAsyncComponent(() => import('@/components/modals/MonobankTxForm')),
+  monobankSetToken: defineAsyncComponent(() => import('@/components/modals/MonobankSetToken')),
 });
 
 const EVENTS = {

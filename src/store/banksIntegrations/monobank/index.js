@@ -1,7 +1,7 @@
 import { compareDesc } from 'date-fns';
 import { api } from '@/api';
 import { TooManyRequestsError } from '@/js/errors';
-import { TRANSACTION_TYPES as TYPES } from '@/js/const';
+import { TRANSACTION_TYPES as TYPES, ERROR_CODES } from '@/js/const';
 import {
   TransactionModelRecord,
   MONOTransactionRecord,
@@ -11,12 +11,15 @@ import {
 import { transactionsVuexTypes } from '@/store/transactions/types';
 import { bankMonobankVuexTypes } from './types';
 
-const state = {
+const initialState = () => ({
   transactions: [],
   accounts: [],
   user: null,
   isUserExist: false,
-};
+  isMonoAccountPaired: true,
+});
+
+const state = initialState();
 
 const getters = {
   [bankMonobankVuexTypes.GET_USER]: state => state.user,
@@ -34,6 +37,8 @@ const getters = {
     state => id => state.accounts.find(i => i.accountId === id),
   [bankMonobankVuexTypes.GET_ACTIVE_ACCOUNTS]:
     state => state.accounts.filter(item => item.isEnabled),
+  [bankMonobankVuexTypes.GET_ACCOUNT_PAIRED_STATUS]:
+    state => state.isMonoAccountPaired,
 };
 
 const mutations = {
@@ -46,6 +51,12 @@ const mutations = {
   },
   [bankMonobankVuexTypes.SET_USER](state, user) {
     state.user = user;
+  },
+  [bankMonobankVuexTypes.RESET_STORE](state) {
+    Object.assign(state, initialState());
+  },
+  [bankMonobankVuexTypes.SET_PAIRED_ACCOUNT_STATUS](state, status) {
+    state.isMonoAccountPaired = status;
   },
   [bankMonobankVuexTypes.SET_USER_EXIST_STATUS](state, status) {
     state.isUserExist = status;
@@ -68,7 +79,10 @@ const mutations = {
 };
 
 const actions = {
-  async [bankMonobankVuexTypes.FETCH_USER]({ commit }) {
+  async [bankMonobankVuexTypes.FETCH_USER]({ commit, getters }) {
+    if (!getters[bankMonobankVuexTypes.GET_ACCOUNT_PAIRED_STATUS]) {
+      return;
+    }
     try {
       commit(bankMonobankVuexTypes.SET_USER_EXIST_STATUS, false);
 
@@ -80,12 +94,20 @@ const actions = {
           bankMonobankVuexTypes.SET_USER,
           new MONOUserRecord(result),
         );
+        commit(bankMonobankVuexTypes.SET_PAIRED_ACCOUNT_STATUS, true);
       }
     } catch (e) {
+      if (e?.data?.code === ERROR_CODES.monobankUserNotPaired) {
+        commit(bankMonobankVuexTypes.SET_PAIRED_ACCOUNT_STATUS, false);
+        return;
+      }
       throw new Error(e);
     }
   },
-  async [bankMonobankVuexTypes.FETCH_TRANSACTIONS]({ commit }) {
+  async [bankMonobankVuexTypes.FETCH_TRANSACTIONS]({ commit, getters }) {
+    if (!getters[bankMonobankVuexTypes.GET_ACCOUNT_PAIRED_STATUS]) {
+      return;
+    }
     try {
       const result = await api.get('/banks/monobank/transactions');
 
@@ -97,13 +119,20 @@ const actions = {
         )),
       );
     } catch (e) {
+      if (e?.data?.code === ERROR_CODES.monobankUserNotPaired) {
+        commit(bankMonobankVuexTypes.SET_PAIRED_ACCOUNT_STATUS, false);
+        return;
+      }
       throw new Error(e);
     }
   },
   async [bankMonobankVuexTypes.UPDATE_TRANSACTION_BY_ID](
-    { commit },
+    { commit, getters },
     { id, note, categoryId },
   ) {
+    if (!getters[bankMonobankVuexTypes.GET_ACCOUNT_PAIRED_STATUS]) {
+      return;
+    }
     try {
       const result = await api.post('/banks/monobank/transaction', {
         id,
@@ -121,10 +150,17 @@ const actions = {
         { root: true },
       );
     } catch (e) {
+      if (e?.data?.code === ERROR_CODES.monobankUserNotPaired) {
+        commit(bankMonobankVuexTypes.SET_PAIRED_ACCOUNT_STATUS, false);
+        return;
+      }
       throw new Error(e);
     }
   },
-  async [bankMonobankVuexTypes.FETCH_ACCOUNTS]({ commit }) {
+  async [bankMonobankVuexTypes.FETCH_ACCOUNTS]({ commit, getters }) {
+    if (!getters[bankMonobankVuexTypes.GET_ACCOUNT_PAIRED_STATUS]) {
+      return;
+    }
     try {
       const result = await api.get('/banks/monobank/accounts');
 
@@ -132,14 +168,22 @@ const actions = {
         bankMonobankVuexTypes.SET_ACCOUNTS,
         result.map(i => new MONOAccountRecord(i)),
       );
+      commit(bankMonobankVuexTypes.SET_PAIRED_ACCOUNT_STATUS, true);
     } catch (e) {
+      if (e?.data?.code === ERROR_CODES.monobankUserNotPaired) {
+        commit(bankMonobankVuexTypes.SET_PAIRED_ACCOUNT_STATUS, false);
+        return;
+      }
       throw new Error(e);
     }
   },
   async [bankMonobankVuexTypes.UPDATE_ACCOUNT_BY_ID](
-    { commit },
+    { commit, getters },
     { id, name, isEnabled },
   ) {
+    if (!getters[bankMonobankVuexTypes.GET_ACCOUNT_PAIRED_STATUS]) {
+      return;
+    }
     try {
       const result = await api.post('/banks/monobank/account', {
         accountId: id,
@@ -152,10 +196,17 @@ const actions = {
         new MONOAccountRecord(result),
       );
     } catch (e) {
+      if (e?.data?.code === ERROR_CODES.monobankUserNotPaired) {
+        commit(bankMonobankVuexTypes.SET_PAIRED_ACCOUNT_STATUS, false);
+        return;
+      }
       throw new Error(e);
     }
   },
-  async [bankMonobankVuexTypes.UPDATE_WEBHOOK](ctx, { clientId }) {
+  async [bankMonobankVuexTypes.UPDATE_WEBHOOK]({ getters }, { clientId }) {
+    if (!getters[bankMonobankVuexTypes.GET_ACCOUNT_PAIRED_STATUS]) {
+      return;
+    }
     try {
       await api.post('/banks/monobank/update-webhook', { clientId });
     } catch (e) {
@@ -165,7 +216,10 @@ const actions = {
       throw new Error(e);
     }
   },
-  async [bankMonobankVuexTypes.REFRESH_ACCOUNTS]({ commit }) {
+  async [bankMonobankVuexTypes.REFRESH_ACCOUNTS]({ commit, getters }) {
+    if (!getters[bankMonobankVuexTypes.GET_ACCOUNT_PAIRED_STATUS]) {
+      return;
+    }
     try {
       const accounts = await api.get('/banks/monobank/refresh-accounts');
 
@@ -181,9 +235,12 @@ const actions = {
     }
   },
   async [bankMonobankVuexTypes.LOAD_TRANSACTIONS_FROM_LATEST](
-    ctx,
+    { getters },
     { accountId },
   ) {
+    if (!getters[bankMonobankVuexTypes.GET_ACCOUNT_PAIRED_STATUS]) {
+      return;
+    }
     try {
       let latestTx = await api.get('/banks/monobank/transactions', {
         from: 1,
@@ -202,6 +259,16 @@ const actions = {
       if (e instanceof TooManyRequestsError) {
         throw e;
       }
+      throw new Error(e);
+    }
+  },
+  async [bankMonobankVuexTypes.PAIR_ACCOUNT]({ getters }, { token }) {
+    if (getters[bankMonobankVuexTypes.GET_ACCOUNT_PAIRED_STATUS]) {
+      return;
+    }
+    try {
+      await api.post('/banks/monobank/pair-user', { token });
+    } catch (e) {
       throw new Error(e);
     }
   },

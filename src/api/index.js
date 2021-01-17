@@ -142,6 +142,8 @@ class ApiCaller {
         throw new errors.NetworkError(response.statusText, errorPayload);
       case STATUS_CODES.timeout:
         throw new errors.TimeoutError(response.statusText, errorPayload);
+      case STATUS_CODES.notFound:
+        throw new errors.NotFoundError(response.statusText, errorPayload);
       case STATUS_CODES.tooManyRequests:
         throw new errors.TooManyRequestsError(
           response.statusText,

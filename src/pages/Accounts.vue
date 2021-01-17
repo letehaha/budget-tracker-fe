@@ -20,9 +20,16 @@
     </div>
     <h2 class="accounts__subtitle">
       Monobank
-      <button @click="refreshMonoAccouns">
-        Refresh
-      </button>
+      <template v-if="!isPaired">
+        <button @click="pairMonobankAccount">
+          Pair account
+        </button>
+      </template>
+      <template v-else>
+        <button @click="refreshMonoAccouns">
+          Refresh
+        </button>
+      </template>
     </h2>
     <div class="accounts__list">
       <template
@@ -63,6 +70,7 @@ import {
   accountsVuexTypes,
 } from '@/store';
 import { formatAmount } from '@/js/helpers';
+import { MODAL_TYPES } from '@/components/Modal';
 
 export default {
   computed: {
@@ -71,6 +79,7 @@ export default {
     }),
     ...mapGetters('bankMonobank', {
       monoAccounts: bankMonobankVuexTypes.GET_ACCOUNTS,
+      isPaired: bankMonobankVuexTypes.GET_ACCOUNT_PAIRED_STATUS,
     }),
     ...mapGetters('accounts', {
       accounts: accountsVuexTypes.GET_ACCOUNTS,
@@ -94,10 +103,18 @@ export default {
   },
   methods: {
     formatAmount,
+    ...mapActions({
+      fetchInitialData: indexVuexTypes.FETCH_INITIAL_DATA,
+    }),
     ...mapActions('bankMonobank', {
       fetchAccounts: bankMonobankVuexTypes.FETCH_ACCOUNTS,
       refreshMonoAccouns: bankMonobankVuexTypes.REFRESH_ACCOUNTS,
     }),
+    pairMonobankAccount() {
+      this.$bus.emit(this.$bus.eventsList.modalOpen, {
+        type: MODAL_TYPES.monobankSetToken,
+      });
+    },
   },
 };
 </script>
