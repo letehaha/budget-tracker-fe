@@ -7,5 +7,6 @@ export class MONOUserRecord {
     this.name = record.name;
     this.webHookUrl = record.webHookUrl;
     this.systemUserId = record.systemUserId;
+    this.apiToken = record.apiToken;
   }
 }

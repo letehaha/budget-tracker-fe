@@ -39,6 +39,7 @@ const getters = {
     state => state.accounts.filter(item => item.isEnabled),
   [bankMonobankVuexTypes.GET_ACCOUNT_PAIRED_STATUS]:
     state => state.isMonoAccountPaired,
+  [bankMonobankVuexTypes.IS_TOKEN_PRESENT]: state => !!state.user?.apiToken,
 };
 
 const mutations = {
@@ -268,6 +269,18 @@ const actions = {
     }
     try {
       await api.post('/banks/monobank/pair-user', { token });
+    } catch (e) {
+      throw new Error(e);
+    }
+  },
+  async [bankMonobankVuexTypes.UPDATE_USER]({ commit }, { token, name }) {
+    try {
+      const response = await api.post('/banks/monobank/user', { apiToken: token, name });
+
+      commit(
+        bankMonobankVuexTypes.SET_USER,
+        new MONOUserRecord(response),
+      );
     } catch (e) {
       throw new Error(e);
     }

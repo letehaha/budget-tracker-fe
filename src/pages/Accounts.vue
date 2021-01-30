@@ -21,13 +21,18 @@
     <h2 class="accounts__subtitle">
       Monobank
       <template v-if="!isPaired">
-        <button @click="pairMonobankAccount">
+        <button @click="setMonobankToken">
           Pair account
         </button>
       </template>
-      <template v-else>
+      <template v-else-if="isPaired && isTokenPresent">
         <button @click="refreshMonoAccouns">
           Refresh
+        </button>
+      </template>
+      <template v-else-if="isPaired && !isTokenPresent">
+        <button @click="setMonobankToken({ isUpdate: true })">
+          Update token
         </button>
       </template>
     </h2>
@@ -80,6 +85,7 @@ export default {
     ...mapGetters('bankMonobank', {
       monoAccounts: bankMonobankVuexTypes.GET_ACCOUNTS,
       isPaired: bankMonobankVuexTypes.GET_ACCOUNT_PAIRED_STATUS,
+      isTokenPresent: bankMonobankVuexTypes.IS_TOKEN_PRESENT,
     }),
     ...mapGetters('accounts', {
       accounts: accountsVuexTypes.GET_ACCOUNTS,
@@ -110,9 +116,12 @@ export default {
       fetchAccounts: bankMonobankVuexTypes.FETCH_ACCOUNTS,
       refreshMonoAccouns: bankMonobankVuexTypes.REFRESH_ACCOUNTS,
     }),
-    pairMonobankAccount() {
+    setMonobankToken({ isUpdate }) {
       this.$bus.emit(this.$bus.eventsList.modalOpen, {
         type: MODAL_TYPES.monobankSetToken,
+        data: {
+          isUpdate,
+        },
       });
     },
   },

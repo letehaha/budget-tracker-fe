@@ -26,7 +26,12 @@
         :disabled="isLoading"
         @click="submit"
       >
-        Pair account
+        <template v-if="isUpdate">
+          Update token
+        </template>
+        <template v-else>
+          Pair account
+        </template>
       </Button>
     </div>
   </div>
@@ -48,6 +53,9 @@ export default {
     InputField,
     Button,
   },
+  props: {
+    isUpdate: { type: Boolean, default: false },
+  },
   data: () => ({
     EVENTS,
     form: {
@@ -58,13 +66,19 @@ export default {
   methods: {
     ...mapActions('bankMonobank', {
       pairAccount: bankMonobankVuexTypes.PAIR_ACCOUNT,
+      updateMonoUser: bankMonobankVuexTypes.UPDATE_USER,
     }),
     async submit() {
       this.isLoading = true;
 
-      await this.pairAccount({ token: this.form.token });
+      if (this.isUpdate) {
+        await this.updateMonoUser({ token: this.form.token });
+      } else {
+        await this.pairAccount({ token: this.form.token });
+      }
 
       this.isLoading = false;
+      this.$emit(EVENTS.closeModal);
     },
   },
 };
