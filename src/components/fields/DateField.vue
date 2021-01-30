@@ -60,16 +60,18 @@ const EMITABLE_EVENTS = {
   getNewValue: 'getNewValue',
   onClose: FLATPICKR_HOOKS.onClose,
   onOpen: FLATPICKR_HOOKS.onOpen,
+  ...MODEL_EVENTS,
 };
 export default {
   name: 'DateFieldFlatpickr',
   props: {
     modelValue: { type: [String, Date], default: '' },
+    mode: { type: String, default: undefined },
     enableTime: { type: Boolean, default: true },
     allowInput: { type: Boolean, default: false },
     disabled: { type: Boolean, default: false },
-    disableBefore: { type: String, default: '' },
-    disableAfter: { type: String, default: '' },
+    disableBefore: { type: Date, default: '' },
+    disableAfter: { type: Date, default: '' },
     placeholder: { type: String, default: 'dd/mm/yyyy at HH:MM' },
     label: { type: String, default: '' },
     errorMessage: { type: String, default: undefined },
@@ -89,6 +91,7 @@ export default {
         altInput: true,
         allowInput: this.allowInput,
         altFormat: this.enableTime ? 'd/m/Y at H:i' : 'd/m/Y',
+        mode: this.mode,
         disableMobile: true,
         disable: [
           (date) => {

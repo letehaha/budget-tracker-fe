@@ -236,7 +236,7 @@ const actions = {
     }
   },
   async [bankMonobankVuexTypes.LOAD_TRANSACTIONS_FROM_LATEST](
-    { getters },
+    { getters, dispatch },
     { accountId },
   ) {
     if (!getters[bankMonobankVuexTypes.GET_ACCOUNT_PAIRED_STATUS]) {
@@ -250,12 +250,35 @@ const actions = {
       if (latestTx ?? latestTx.length) {
         latestTx = new MONOTransactionRecord(latestTx[0]);
 
-        await api.get('/banks/monobank/load-transactions', {
-          from: new Date(latestTx.time).getTime(),
-          to: new Date().getTime(),
-          accountId,
-        });
+        await dispatch(
+          bankMonobankVuexTypes.LOAD_TRANSACTIONS_FOR_PERIOD,
+          {
+            accountId,
+            from: new Date(latestTx.time).getTime(),
+            to: new Date().getTime(),
+          },
+        );
       }
+    } catch (e) {
+      if (e instanceof TooManyRequestsError) {
+        throw e;
+      }
+      throw new Error(e);
+    }
+  },
+  async [bankMonobankVuexTypes.LOAD_TRANSACTIONS_FOR_PERIOD](
+    { getters },
+    { accountId, from, to },
+  ) {
+    if (!getters[bankMonobankVuexTypes.GET_ACCOUNT_PAIRED_STATUS]) {
+      return;
+    }
+    try {
+      await api.get('/banks/monobank/load-transactions', {
+        from,
+        to,
+        accountId,
+      });
     } catch (e) {
       if (e instanceof TooManyRequestsError) {
         throw e;
