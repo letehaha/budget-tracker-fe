@@ -5,6 +5,7 @@ export class MONOTransactionRecord {
     this._record = record;
 
     this.id = record.id;
+    this.originalId = record.originalId;
     this.description = record.description;
     this.amount = record.amount;
     this.time = record.time;
