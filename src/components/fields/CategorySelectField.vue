@@ -1,48 +1,61 @@
 <template>
   <div
     :class="{
-      'select-field--disabled': $attrs.disabled,
-      'select-field--active': isDropdownOpened
+      'category-select-field--disabled': $attrs.disabled,
+      'category-select-field--active': isDropdownOpened
     }"
-    class="select-field"
+    class="category-select-field"
   >
     <span
       v-if="label"
-      class="select-field__label"
+      class="category-select-field__label"
     >
       {{ label }}
     </span>
-    <div
-      v-click-outside="closeDropdown"
-      class="select-field__wrapper"
-    >
+    <div class="category-select-field__wrapper">
       <div
         v-bind="$attrs"
-        class="select-field__input"
+        class="category-select-field__input"
         @click="toggleDropdown"
       >
-        {{ selectedValue || placeholder }}
-        <div class="select-field__arrow" />
+        {{ selectedValue.name || placeholder }}
+        <div class="category-select-field__arrow" />
       </div>
       <div
         v-if="isDropdownOpened"
-        :class="`select-field__dropdown--${position}`"
-        class="select-field__dropdown"
+        :class="`category-select-field__dropdown--${position}`"
+        class="category-select-field__dropdown"
       >
-        <div class="select-field__dropdown-values">
+        <div class="category-select-field__dropdown-values">
+          <template v-if="previousLevel.length">
+            <button
+              class="category-select-field__dropdown-back-level"
+              @click="backLevelUp"
+            >
+              Back to prev level
+            </button>
+            <button
+              class="category-select-field__dropdown-item"
+              :class="{
+                'category-select-field__dropdown-item--highlighed': selectedValue.id === topLevelCategory.id
+              }"
+              @click="selectItem(topLevelCategory, true)"
+            >
+              {{ topLevelCategory.name }}
+            </button>
+          </template>
           <template
-            v-for="(item, i) in labels"
-            :key="item"
+            v-for="item in levelValues"
+            :key="item.id"
           >
             <button
+              class="category-select-field__dropdown-item"
               :class="{
-                'select-field__dropdown-item--highlighed':
-                  selectedValue === item
+                'category-select-field__dropdown-item--highlighed': selectedValue.id === item.id
               }"
-              class="select-field__dropdown-item"
-              @click="selectItem(i)"
+              @click="selectItem(item)"
             >
-              {{ item }}
+              {{ item.name }}
             </button>
           </template>
         </div>
@@ -50,7 +63,7 @@
     </div>
     <p
       v-if="errorMessage"
-      class="select-field__err-mes"
+      class="category-select-field__err-mes"
     >
       {{ errorMessage }}
     </p>
@@ -58,7 +71,6 @@
 </template>
 
 <script>
-
 const MODEL_EVENTS = {
   input: 'update:modelValue',
 };
@@ -84,45 +96,25 @@ export default {
     isDropdownOpened: false,
     selectedValue: null,
     filterQuery: '',
+    levelValues: null,
+    previousLevel: [], // list of levels indices
   }),
   computed: {
-    labels() {
-      if (Array.isArray(this.values[0])) {
-        if (this.withSearchField && this.filterQuery) {
-          return this.values
-            .filter(str => !str.toLowerCase().search(this.filterQuery));
+    topLevelCategory() {
+      let category;
+      for (let i = 0; i < this.previousLevel.length; i++) {
+        if (i === 0) {
+          category = this.values[this.previousLevel[i]];
+        } else {
+          category = category[this.previousLevel[i]];
         }
-        return this.values;
       }
-      if (typeof this.values[0] === 'object' && this.values[0] !== null) {
-        const values = this.values
-          .map(obj => (this.labelKey ? obj[this.labelKey] : obj.label));
-        if (this.withSearchField && this.filterQuery) {
-          return values
-            .filter(str => !str.toLowerCase().search(this.filterQuery));
-        }
-        return values;
-      }
-      if (this.withSearchField && this.filterQuery) {
-        return this.values
-          .filter(str => !str.toLowerCase().search(this.filterQuery));
-      }
-      return this.values;
+      return category;
     },
   },
-  mounted() {
-    if (this.modelValue) {
-      if (typeof this.values[0] === 'object' && this.values[0] !== null) {
-        this.selectedValue = this.labelKey
-          ? this.modelValue[this.labelKey]
-          : this.modelValue.label;
-      } else {
-        this.selectedValue = this.modelValue;
-      }
-    } else if (this.isValuePreselected) {
-      // eslint-disable-next-line prefer-destructuring
-      this.selectedValue = this.labels[0];
-    }
+  created() {
+    this.levelValues = this.values;
+    this.selectedValue = this.modelValue;
   },
   methods: {
     toggleDropdown() {
@@ -131,28 +123,44 @@ export default {
     closeDropdown() {
       this.isDropdownOpened = false;
     },
-    selectItem(index) {
-      this.selectedValue = this.labels[index];
-      this.filterQuery = '';
-      this.$emit(MODEL_EVENTS.input, this.values[index]);
-      this.closeDropdown();
+    selectItem(item, ignorePreselect = false) {
+      if (item.subCategories.length && !ignorePreselect) {
+        this.definePreviousLevel(item);
+        this.levelValues = item.subCategories;
+      } else {
+        this.selectedValue = item;
+        this.$emit(MODEL_EVENTS.input, item);
+        this.closeDropdown();
+      }
     },
-    filterLabels(event) {
-      const { value } = event.target;
-      this.filterQuery = value.toLowerCase();
+    definePreviousLevel(selectedItem) {
+      this.previousLevel.push(this.levelValues.findIndex(
+        item => item.id === selectedItem.id,
+      ));
+    },
+    backLevelUp() {
+      let level;
+      for (let i = 0; i < this.previousLevel.length; i++) {
+        if (i === 0) {
+          level = this.values;
+        } else {
+          level = level[this.previousLevel[i - 1]].subCategories;
+        }
+      }
+      this.previousLevel.length -= 1;
+      this.levelValues = level;
     },
   },
 };
 </script>
 
 <style lang="scss">
-.select-field {
+.category-select-field {
   position: relative;
   width: 100%;
   flex: 1;
 }
-
-.select-field__input {
+.category-select-field__input {
   font-size: 16px;
   line-height: 1;
   color: #333333;
@@ -165,8 +173,7 @@ export default {
   width: 100%;
   cursor: pointer;
 }
-
-.select-field__label {
+.category-select-field__label {
   font-size: 16px;
   font-weight: 400;
   line-height: 1;
@@ -174,12 +181,10 @@ export default {
   margin-bottom: 10px;
   display: block;
 }
-
-.select-field__wrapper {
+.category-select-field__wrapper {
   position: relative;
 }
-
-.select-field__dropdown {
+.category-select-field__dropdown {
   position: absolute;
   top: 100%;
   width: 100%;
@@ -190,21 +195,19 @@ export default {
   transition: 0.2s ease-out;
   background-color: #ecf0f1;
   box-shadow: 0 3px 10px 2px rgba(0, 0, 0, 0.08);
-  z-index: var(--z-select-field);
+  z-index: var(--z-category-select-field);
   border-radius: 4px;
 
-  .select-field--active & {
+  .category-select-field--active & {
     visibility: visible;
     opacity: 1;
   }
 }
-
-.select-field__dropdown-values {
+.category-select-field__dropdown-values {
   overflow: auto;
-  max-height: 200px;
+  max-height: 250px;
 }
-
-.select-field__dropdown-item {
+.category-select-field__dropdown-item {
   display: flex;
   align-items: center;
   transition: background-color 0.3s ease-out;
@@ -213,7 +216,7 @@ export default {
   font-size: 14px;
   line-height: 1.2;
   color: #333333;
-  padding: 16px;
+  padding: 8px 16px;
   width: 100%;
   text-align: left;
   overflow: hidden;
@@ -228,8 +231,7 @@ export default {
     background-color: #dbe1e2;
   }
 }
-
-.select-field__arrow {
+.category-select-field__arrow {
   position: absolute;
   width: 20px;
   height: 20px;
@@ -255,13 +257,12 @@ export default {
     transform: rotate(-45deg);
   }
 
-  .select-field--active & {
+  .category-select-field--active & {
     &:before { transform: rotate(45deg); }
     &:after { transform: rotate(-45deg); }
   }
 }
-
-.select-field__err-mes {
+.category-select-field__err-mes {
   color: red;
   font-size: 12px;
 }

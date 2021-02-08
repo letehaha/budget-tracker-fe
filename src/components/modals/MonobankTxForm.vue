@@ -14,7 +14,7 @@
       <p>Description: {{ transaction.description }}</p>
     </div>
     <div class="monobank-tx-form__row">
-      <SelectField
+      <CategorySelectField
         v-model="form.category"
         label="Category"
         :values="categories"
@@ -52,7 +52,7 @@ import {
   bankMonobankVuexTypes,
 } from '@/store';
 import { MONOTransactionRecord } from '@/js/records';
-import SelectField from '@/components/fields/SelectField';
+import CategorySelectField from '@/components/fields/CategorySelectField';
 import TextareaField from '@/components/fields/TextareaField';
 import Button from '@/components/common/Button';
 
@@ -63,7 +63,7 @@ const EVENTS = {
 export default {
   name: 'MonobankTxForm',
   components: {
-    SelectField,
+    CategorySelectField,
     TextareaField,
     Button,
   },

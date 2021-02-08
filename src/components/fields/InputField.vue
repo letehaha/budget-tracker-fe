@@ -75,7 +75,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .input-field {
   position: relative;
   width: 100%;
