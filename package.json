@@ -7,7 +7,8 @@
     "lint": "vue-cli-service lint",
     "dev": "vue-cli-service serve",
     "start": "npm run dev",
-    "docker-build": "docker build . -t letehaha/frontend"
+    "docker-build": "docker build . -t letehaha/frontend",
+    "test": "jest --passWithNoTests"
   },
   "dependencies": {
     "core-js": "^3.6.5",
@@ -16,7 +17,7 @@
     "lodash": "^4.17.20",
     "loglevel": "^1.7.0",
     "register-service-worker": "^1.7.1",
-    "vue": "^3.0.5",
+    "vue": "3.0.4",
     "vue-router": "^4.0.0-rc.1",
     "vuex": "^4.0.0-beta.4"
   },
@@ -27,17 +28,36 @@
     "@vue/cli-service": "~4.5.0",
     "@vue/compiler-sfc": "^3.0.0",
     "@vue/eslint-config-airbnb": "^5.1.0",
+    "@vue/test-utils": "^2.0.0-rc.0",
     "babel-eslint": "^10.1.0",
+    "babel-jest": "^26.6.3",
     "eslint": "^6.8.0",
     "eslint-friendly-formatter": "^4.0.1",
     "eslint-loader": "^4.0.2",
     "eslint-plugin-vue": "^7.0.0-beta.4",
+    "jest": "^26.6.3",
     "node-sass": "^4.14.1",
-    "sass-loader": "^10.0.4"
+    "sass-loader": "^10.0.4",
+    "typescript": "^4.1.3",
+    "vue-jest": "^5.0.0-alpha.7"
   },
   "browserslist": [
     "> 1%",
     "last 2 versions",
     "not dead"
-  ]
+  ],
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "vue"
+    ],
+    "transform": {
+      "^.+\\.js$": "<rootDir>/node_modules/babel-jest",
+      ".*\\.(vue)$": "<rootDir>/node_modules/vue-jest"
+    },
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/src/$1"
+    }
+  }
 }

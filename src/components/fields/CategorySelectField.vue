@@ -12,7 +12,10 @@
     >
       {{ label }}
     </span>
-    <div class="category-select-field__wrapper">
+    <div
+      v-if="selectedValue"
+      class="category-select-field__wrapper"
+    >
       <div
         v-bind="$attrs"
         class="category-select-field__input"

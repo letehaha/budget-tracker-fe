@@ -16,7 +16,11 @@ module.exports = {
   // required to lint *.vue files
   plugins: [
     'vue',
+    'jest',
   ],
+  env: {
+    'jest/globals': true,
+  },
   // add your custom rules here
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 1,
