@@ -6,7 +6,7 @@
   >
     <div class="transaction__info">
       <div class="transaction__category">
-        {{ category.name }}
+        {{ category?.name }}
       </div>
       <div class="transaction__note">
         {{ tx.description }}

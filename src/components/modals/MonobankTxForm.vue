@@ -91,11 +91,12 @@ export default {
     }),
     ...mapGetters('categories', {
       categories: categoriesVuexTypes.GET_CATEGORIES,
+      rawCategories: categoriesVuexTypes.GET_RAW_CATEGORIES,
     }),
   },
   created() {
     this.form.note = this.transaction.note;
-    this.form.category = this.categories
+    this.form.category = this.rawCategories
       .find(item => item.id === this.transaction.categoryId);
   },
   methods: {
