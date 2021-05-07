@@ -27,7 +27,7 @@
       </template>
       <template v-else-if="isPaired && isTokenPresent">
         <button @click="refreshMonoAccouns">
-          Refresh
+          Refresh balances
         </button>
       </template>
       <template v-else-if="isPaired && !isTokenPresent">
