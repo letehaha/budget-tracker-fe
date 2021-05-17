@@ -1,6 +1,9 @@
 <template>
   <div class="login">
-    <div class="login__wrapper">
+    <div
+      class="login__wrapper"
+      @keypress.enter="submit"
+    >
       <h1 class="login__title">
         Log in to account
       </h1>
