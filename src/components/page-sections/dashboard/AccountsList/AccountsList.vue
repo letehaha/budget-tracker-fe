@@ -4,13 +4,17 @@
       v-for="account in allAccounts"
       :key="account.id"
     >
-      <Account :account="account" />
+      <Account
+        :account="account"
+        @click="redirectToAccount(account)"
+      />
     </template>
   </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import { ACCOUNT_TYPES } from '@/js/const';
 import {
   indexVuexTypes,
   bankMonobankVuexTypes,
@@ -50,6 +54,9 @@ export default {
     ...mapActions('bankMonobank', {
       fetchAccounts: bankMonobankVuexTypes.FETCH_ACCOUNTS,
     }),
+    redirectToAccount(account) {
+      this.$router.push({ path: '/account', query: { id: account.accountId, type: ACCOUNT_TYPES.mono } });
+    },
   },
 };
 </script>

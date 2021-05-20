@@ -44,7 +44,7 @@
         <div
           class="accounts__item"
           :class="{ 'accounts__item--disabled': !account.isEnabled }"
-          @click="$router.push({ path: '/account', query: { id: account.accountId, type: 'mono' } })"
+          @click="redirectToAccount(account)"
         >
           <div
             v-if="!account.isEnabled"
@@ -76,6 +76,7 @@ import {
 } from '@/store';
 import { formatAmount } from '@/js/helpers';
 import { MODAL_TYPES } from '@/components/Modal';
+import { ACCOUNT_TYPES } from '@/js/const';
 
 export default {
   computed: {
@@ -123,6 +124,9 @@ export default {
           isUpdate,
         },
       });
+    },
+    redirectToAccount(account) {
+      this.$router.push({ path: '/account', query: { id: account.accountId, type: ACCOUNT_TYPES.mono } });
     },
   },
 };
