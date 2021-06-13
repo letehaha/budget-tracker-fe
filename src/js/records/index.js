@@ -15,3 +15,4 @@ export {
   MONOCurrencyRecord,
 } from './monobank';
 export { TransactionModelRecord } from './transaction-model.record';
+export * from './crypto';
