@@ -31,6 +31,7 @@
 import { mapActions } from 'vuex';
 import { authVuexTypes } from '@/store';
 import { MODAL_TYPES } from '@/components/Modal';
+import { eventBus } from '@/js/utils';
 import Button from '@/components/common/Button';
 import InputField from '@/components/fields/InputField';
 
@@ -49,7 +50,7 @@ export default {
       logOut: authVuexTypes.LOG_OUT,
     }),
     openFormModal() {
-      this.$bus.emit(this.$bus.eventsList.modalOpen, {
+      eventBus.emit(eventBus.eventsList.modalOpen, {
         type: MODAL_TYPES.transactionForm,
       });
     },
