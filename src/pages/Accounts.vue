@@ -59,7 +59,7 @@
             {{ account.maskedPan[0] || account.iban }}
           </div>
           <div class="accounts__item-balance">
-            {{ formatAmount(account.balance) }}
+            {{ formatBalance(account) }}
           </div>
         </div>
       </template>
@@ -68,66 +68,83 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { computed, watch, onMounted } from 'vue';
+import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
 import {
   indexVuexTypes,
   bankMonobankVuexTypes,
-  accountsVuexTypes,
 } from '@/store';
 import { formatAmount } from '@/js/helpers';
+import { eventBus } from '@/js/utils';
 import { MODAL_TYPES } from '@/components/Modal';
 import { ACCOUNT_TYPES } from '@/js/const';
 
 export default {
-  computed: {
-    ...mapGetters({
-      isAppInitialized: indexVuexTypes.GET_APP_INIT_STATUS,
-    }),
-    ...mapGetters('bankMonobank', {
-      monoAccounts: bankMonobankVuexTypes.GET_ACCOUNTS,
-      isPaired: bankMonobankVuexTypes.GET_ACCOUNT_PAIRED_STATUS,
-      isTokenPresent: bankMonobankVuexTypes.IS_TOKEN_PRESENT,
-    }),
-    ...mapGetters('accounts', {
-      accounts: accountsVuexTypes.GET_ACCOUNTS,
-    }),
-  },
-  watch: {
-    isAppInitialized: {
-      immediate: true,
-      handler(value) {
+  setup() {
+    const store = useStore();
+    const router = useRouter();
+
+    const isAppInitialized = computed(
+      () => store.getters[indexVuexTypes.GET_APP_INIT_STATUS],
+    );
+    const monoAccounts = computed(() => store.getters[`bankMonobank/${bankMonobankVuexTypes.GET_ACCOUNTS}`]);
+    const isPaired = computed(() => store.getters[`bankMonobank/${bankMonobankVuexTypes.GET_ACCOUNT_PAIRED_STATUS}`]);
+    const isTokenPresent = computed(() => store.getters[`bankMonobank/${bankMonobankVuexTypes.IS_TOKEN_PRESENT}`]);
+    const accounts = computed(() => store.getters[`accounts/${bankMonobankVuexTypes.GET_ACCOUNTS}`]);
+
+    watch(
+      isAppInitialized,
+      (value) => {
         if (value) {
-          this.fetchAccounts();
+          store.dispatch(`bankMonobank/${bankMonobankVuexTypes.FETCH_ACCOUNTS}`);
         }
       },
-    },
-  },
-  async mounted() {
-    if (!this.isAppInitialized) {
-      await this.fetchInitialData();
-    }
-    this.fetchAccounts();
-  },
-  methods: {
-    formatAmount,
-    ...mapActions({
-      fetchInitialData: indexVuexTypes.FETCH_INITIAL_DATA,
-    }),
-    ...mapActions('bankMonobank', {
-      fetchAccounts: bankMonobankVuexTypes.FETCH_ACCOUNTS,
-      refreshMonoAccouns: bankMonobankVuexTypes.REFRESH_ACCOUNTS,
-    }),
-    setMonobankToken({ isUpdate }) {
-      this.$bus.emit(this.$bus.eventsList.modalOpen, {
+      { immediate: true },
+    );
+
+    onMounted(async () => {
+      if (!isAppInitialized.value) {
+        await store.dispatch(indexVuexTypes.FETCH_INITIAL_DATA);
+      }
+      store.dispatch(`bankMonobank/${bankMonobankVuexTypes.FETCH_ACCOUNTS}`);
+    });
+
+    const refreshMonoAccouns = () => {
+      store.dispatch(`bankMonobank/${bankMonobankVuexTypes.REFRESH_ACCOUNTS}`);
+    };
+
+    const setMonobankToken = ({ isUpdate = false } = {}) => {
+      eventBus.emit(eventBus.eventsList.modalOpen, {
         type: MODAL_TYPES.monobankSetToken,
         data: {
           isUpdate,
         },
       });
-    },
-    redirectToAccount(account) {
-      this.$router.push({ path: '/account', query: { id: account.accountId, type: ACCOUNT_TYPES.mono } });
-    },
+    };
+
+    const redirectToAccount = account => {
+      router.push({
+        path: '/account',
+        query: { id: account.accountId, type: ACCOUNT_TYPES.mono },
+      });
+    };
+
+    const formatBalance = account => (
+      formatAmount(account.balance - account.creditLimit)
+    );
+
+    return {
+      setMonobankToken,
+      isAppInitialized,
+      monoAccounts,
+      isPaired,
+      isTokenPresent,
+      accounts,
+      refreshMonoAccouns,
+      formatBalance,
+      redirectToAccount,
+    };
   },
 };
 </script>

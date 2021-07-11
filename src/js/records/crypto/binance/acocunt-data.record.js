@@ -6,6 +6,7 @@ export class BinanceBalanceRecord {
     this.asset = record.asset;
     this.free = record.free;
     this.locked = record.locked;
+    this.price = record.usdPrice;
     this.precision = record.free.split('.')[1].length;
   }
 

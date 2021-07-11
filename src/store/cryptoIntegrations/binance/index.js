@@ -14,6 +14,16 @@ const getters = {
   [cryptoBinanceVuexTypes.GET_BALANCES]: state => state.accountData?.balances,
   [cryptoBinanceVuexTypes.GET_EXISTING_BALANCES]: state => state.accountData
     ?.balances?.filter(item => Number(item.free) || Number(item.locked)),
+  [cryptoBinanceVuexTypes.GET_TOTAL_USD_BALANCE]: (state) => {
+    const balances = state.accountData
+      ?.balances?.filter(item => Number(item.free) || Number(item.locked));
+
+    return (balances || []).reduce((acc, item) => {
+      const price = item.price ?? 1;
+
+      return acc + (Number(item.total) * Number(price ?? 0));
+    }, 0);
+  },
   [cryptoBinanceVuexTypes.GET_SETTINGS]: state => state.userSettings,
 };
 
