@@ -42,9 +42,6 @@ module.exports = {
     'vue/no-v-for-template-key': 'off',
     'import/prefer-default-export': 'off',
     'import/no-dynamic-require': 'off',
-    'import/extensions': ['error', {
-      svg: 'never',
-    }],
     'no-restricted-syntax': 'off',
     'global-require': 'off',
     'no-plusplus': 'off',
@@ -66,7 +63,7 @@ module.exports = {
     }],
     'vue/no-unused-components': 'warn',
     'import/no-unresolved': ['error', {
-      ignore: ['\.svg'],
+      ignore: ['.svg'],
     }],
     'no-shadow': ['error', {
       allow: ['state', 'getters'],
