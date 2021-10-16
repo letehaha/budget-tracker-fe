@@ -145,7 +145,7 @@ class ApiCaller {
       return result.response;
     }
 
-    // TODO: investogate how to return JSON from server
+    // TODO: investogate how to return JSON from server (isse #38)
     if (response.status === STATUS_CODES.unauthorized) {
       await this.store.dispatch(`auth/${authVuexTypes.LOG_OUT}`);
       this.router.push('/sign-in');
