@@ -30,10 +30,12 @@
     "src/**/*.tsx",
     "src/**/*.vue",
     "tests/**/*.ts",
-    "tests/**/*.tsx"
+    "tests/**/*.tsx",
+    "vue.config.js",
+    ".eslintrc.js",
+    "babel.config.js"
   ],
   "exclude": [
-    "node_modules",
-    "vue.config.js"
+    "node_modules"
   ]
 }

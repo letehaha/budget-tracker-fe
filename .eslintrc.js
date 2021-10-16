@@ -8,7 +8,7 @@ module.exports = {
 
   parserOptions: {
     parser: '@typescript-eslint/parser',
-    project: "./tsconfig.json"
+    project: './tsconfig.json',
   },
 
   extends: [
@@ -45,8 +45,8 @@ module.exports = {
       ],
     }],
     'import/extensions': 'off',
-    "no-unused-vars": 'off',
-    "@typescript-eslint/no-unused-vars": 'warn',
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars': 'warn',
     'arrow-body-style': 'warn',
     'import/no-named-as-default': 'off',
     'func-names': [1, 'as-needed'],
@@ -79,8 +79,8 @@ module.exports = {
     'import/no-unresolved': ['error', {
       ignore: ['.svg'],
     }],
-    "no-shadow": "off",
-    "@typescript-eslint/no-shadow": ['error', {
+    'no-shadow': 'off',
+    '@typescript-eslint/no-shadow': ['error', {
       allow: ['state', 'getters'],
     }],
   },
