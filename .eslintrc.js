@@ -1,22 +1,37 @@
 module.exports = {
   root: true,
+
   env: {
     browser: true,
     node: true,
   },
+
   parserOptions: {
-    parser: 'babel-eslint',
+    parser: '@typescript-eslint/parser',
+    project: './tsconfig.json',
   },
+
   extends: [
     'eslint:recommended',
     'plugin:vue/recommended',
     'plugin:vue/vue3-essential',
     '@vue/airbnb',
+    '@vue/typescript',
   ],
+
   // required to lint *.vue files
   plugins: [
     'vue',
   ],
+
+  settings: {
+    'import/resolver': {
+      alias: [
+        ['shared-types', './shared-types'],
+      ],
+    },
+  },
+
   // add your custom rules here
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 1,
@@ -29,10 +44,9 @@ module.exports = {
         'e', // for e.returnvalue
       ],
     }],
-    'import/extensions': ['error', {
-      svg: 'never',
-    }],
-    'no-unused-vars': 'warn',
+    'import/extensions': 'off',
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars': 'warn',
     'arrow-body-style': 'warn',
     'import/no-named-as-default': 'off',
     'func-names': [1, 'as-needed'],
@@ -65,7 +79,8 @@ module.exports = {
     'import/no-unresolved': ['error', {
       ignore: ['.svg'],
     }],
-    'no-shadow': ['error', {
+    'no-shadow': 'off',
+    '@typescript-eslint/no-shadow': ['error', {
       allow: ['state', 'getters'],
     }],
   },

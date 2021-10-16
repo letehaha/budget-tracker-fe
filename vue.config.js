@@ -1,3 +1,5 @@
+const path = require('path');
+
 module.exports = {
   devServer: {
     port: process.env.PORT,
@@ -11,5 +13,9 @@ module.exports = {
         `,
       },
     },
+  },
+  chainWebpack: config => {
+    config.resolve.alias
+      .set('shared-types', path.resolve(__dirname, './shared-types'));
   },
 };

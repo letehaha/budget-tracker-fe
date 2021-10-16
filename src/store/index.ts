@@ -1,4 +1,5 @@
 import { createStore } from 'vuex';
+import { PaymentTypeResponse } from 'shared-types';
 import { api } from '@/api';
 
 import {
@@ -72,7 +73,8 @@ const rootModule = {
       );
     },
     async [indexVuexTypes.FETCH_PAYMENT_TYPES]({ commit }) {
-      const result = await api.get('/models/payment-types');
+      const result: PaymentTypeResponse[] = await api.get('/models/payment-types');
+
       commit(
         indexVuexTypes.SET_PAYMENT_TYPES,
         result.map(item => new PaymentTypeRecord(item)),
