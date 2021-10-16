@@ -20,15 +20,16 @@
   </main>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapGetters } from 'vuex';
 import { authVuexTypes } from '@/store';
 import { ROUTER_LAYOUTS } from '@/routes';
-import Modal from '@/components/Modal';
-import Header from '@/components/Header';
-import Sidebar from '@/components/Sidebar';
+import Modal from '@/components/Modal.vue';
+import Header from '@/components/Header.vue';
+import Sidebar from '@/components/Sidebar.vue';
 
-export default {
+export default defineComponent({
   components: {
     Modal,
     Header,
@@ -71,7 +72,7 @@ export default {
       this.isModalVisible = false;
     },
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>
