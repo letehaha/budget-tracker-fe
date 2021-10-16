@@ -202,7 +202,7 @@ export default {
      *
      * @link https://flatpickr.js.org/events/#events
      */
-    // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     onOpen(selectedDates, dateStr, instance) {
       this.isCalendarOpen = true;
       // Let's wait for DOM to be updated
@@ -210,7 +210,7 @@ export default {
         this.$emit(EMITABLE_EVENTS.onOpen);
       });
     },
-    // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     onClose(selectedDates, dateStr, instance) {
       this.isCalendarOpen = false;
       this.flatpickrDate = dateStr;

@@ -1,13 +1,22 @@
 import { authVuexTypes } from '@/store/auth/types';
 import * as errors from '@/js/errors';
 
-const methods = Object.freeze({
-  PATCH: 'PATCH',
-  POST: 'POST',
-  PUT: 'PUT',
-  GET: 'GET',
-  DELETE: 'DELETE',
-});
+enum methods {
+  patch = 'PATCH',
+  post = 'POST',
+  put = 'PUT',
+  get = 'GET',
+  delete = 'DELETE',
+}
+
+interface ApiRequestConfig {
+  method: methods,
+  headers: {
+    'Content-Type': string;
+    Authorization: string;
+  },
+  body?: string,
+}
 
 const STATUS_CODES = {
   badRequest: 400,
@@ -27,6 +36,14 @@ const API_VER = process.env.VUE_APP_API_VER;
  * ApiCaller performs the request to the API
  */
 class ApiCaller {
+  store;
+
+  router;
+
+  authToken;
+
+  _baseURL;
+
   constructor() {
     this._baseURL = process.env.API_HTTP;
     this.authToken = null;
@@ -34,13 +51,13 @@ class ApiCaller {
     this.router = null;
   }
 
-  setToken(token) {
+  setToken(token: string): void {
     this.authToken = token;
   }
 
-  get(endpoint, query, options = {}) {
+  get(endpoint: string, query?: string, options = {}) {
     return this._call({
-      method: methods.GET,
+      method: methods.get,
       endpoint,
       options,
       query,
@@ -49,7 +66,7 @@ class ApiCaller {
 
   post(endpoint, data, options = {}) {
     return this._call({
-      method: methods.POST,
+      method: methods.post,
       endpoint,
       options,
       data,
@@ -58,7 +75,7 @@ class ApiCaller {
 
   patch(endpoint, data, options = {}) {
     return this._call({
-      method: methods.PATCH,
+      method: methods.patch,
       endpoint,
       options,
       data,
@@ -67,7 +84,7 @@ class ApiCaller {
 
   put(endpoint, data, options = {}) {
     return this._call({
-      method: methods.PUT,
+      method: methods.put,
       endpoint,
       options,
       data,
@@ -76,7 +93,7 @@ class ApiCaller {
 
   delete(endpoint, data, options = {}) {
     return this._call({
-      method: methods.DELETE,
+      method: methods.delete,
       endpoint,
       options,
       data,
@@ -104,7 +121,7 @@ class ApiCaller {
       additionalParams = `?${additionalParams}`;
     }
     const url = `${API_HTTP}${API_VER}${opts.endpoint}${additionalParams}`;
-    const config = {
+    const config: ApiRequestConfig = {
       method: opts.method,
       headers: {
         'Content-Type': 'application/json',

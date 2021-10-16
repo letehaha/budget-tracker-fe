@@ -3,7 +3,7 @@ import { router } from '@/routes';
 import { store } from '@/store';
 import { clickOutside } from '@/directives';
 import { initApiCaller } from '@/api';
-import App from './App';
+import App from './App.vue';
 import '@/assets/styles/index.scss';
 import './registerServiceWorker';
 
