@@ -4,6 +4,8 @@
  * @class
  */
 export class NetworkError extends Error {
+  data;
+
   constructor(message, data) {
     super(message);
 

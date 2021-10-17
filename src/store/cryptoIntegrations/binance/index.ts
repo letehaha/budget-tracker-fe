@@ -1,20 +1,28 @@
+import { RawAccountDataResponse, NormalizedAccountData } from 'shared-types/responses/crypto/binance';
+import { MutationTree, ActionTree, GetterTree } from 'vuex';
 import { api } from '@/api';
-import { BinanceAccountDataRecord } from '@/js/records';
+import { RootState } from '@/store/types';
 import { cryptoBinanceVuexTypes } from './types';
+import { normalizeAccountData } from './response-normalizer';
 
-const initialState = () => ({
-  accountData: {},
+interface State {
+  accountData: NormalizedAccountData | null;
+  userSettings: unknown;
+}
+
+const initialState = (): State => ({
+  accountData: null,
   userSettings: null,
 });
 
-const state = initialState();
+const state: State = initialState();
 
-const getters = {
+const getters: GetterTree<State, RootState> = {
   [cryptoBinanceVuexTypes.GET_ACCOUNT_DATA]: state => state.accountData,
   [cryptoBinanceVuexTypes.GET_BALANCES]: state => state.accountData?.balances,
   [cryptoBinanceVuexTypes.GET_EXISTING_BALANCES]: state => state.accountData
     ?.balances?.filter(item => Number(item.free) || Number(item.locked)),
-  [cryptoBinanceVuexTypes.GET_TOTAL_USD_BALANCE]: (state) => {
+  [cryptoBinanceVuexTypes.GET_TOTAL_USD_BALANCE]: (state): number => {
     const balances = state.accountData
       ?.balances?.filter(item => Number(item.free) || Number(item.locked));
 
@@ -27,7 +35,7 @@ const getters = {
   [cryptoBinanceVuexTypes.GET_SETTINGS]: state => state.userSettings,
 };
 
-const mutations = {
+const mutations: MutationTree<State> = {
   [cryptoBinanceVuexTypes.SET_ACCOUNT_DATA](state, data) {
     state.accountData = data;
   },
@@ -36,17 +44,17 @@ const mutations = {
   },
 };
 
-const actions = {
+const actions: ActionTree<State, RootState> = {
   async [cryptoBinanceVuexTypes.FETCH_ACCOUNT_DATA]({ commit }) {
     try {
-      const result = await api.get('/crypto/binance/account');
+      const result: RawAccountDataResponse = await api.get('/crypto/binance/account');
 
       commit(
         cryptoBinanceVuexTypes.SET_ACCOUNT_DATA,
-        new BinanceAccountDataRecord(result),
+        normalizeAccountData(result),
       );
     } catch (e) {
-      throw new Error(e);
+      throw e;
     }
   },
 };

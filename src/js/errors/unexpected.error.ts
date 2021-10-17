@@ -3,7 +3,9 @@
  *
  * @class
  */
-export class TooManyRequestsError extends Error {
+export class UnexpectedError extends Error {
+  data;
+
   constructor(message, data) {
     super(message);
 

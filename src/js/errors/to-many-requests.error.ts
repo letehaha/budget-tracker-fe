@@ -1,9 +1,11 @@
 /**
- * Authorization error.
+ * Too many requests error.
  *
  * @class
  */
-export class AuthError extends Error {
+export class TooManyRequestsError extends Error {
+  data;
+
   constructor(message, data) {
     super(message);
 

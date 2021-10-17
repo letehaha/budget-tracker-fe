@@ -1,59 +1,78 @@
 <template>
   <div class="crypto">
     <h1>Crypto</h1>
-    <p>Total: {{ totalBalance }}</p>
-    <template v-if="balances">
-      <div class="crypto__balances">
-        <div class="crypto__balance">
-          <p>Asset</p>
-          <p>Total</p>
-          <p>Price</p>
-          <p>Holdings</p>
-        </div>
-        <template
-          v-for="balance in balances"
-          :key="balance.asset"
-        >
-          <div class="crypto__balance">
-            <p>{{ balance.asset }}</p>
-            <p>{{ balance.total }}</p>
-            <p>{{ balance.price ?? balance.total }}</p>
-            <p>{{ formatFiat(getPrice(balance)) }}</p>
-          </div>
-        </template>
-      </div>
+
+    <template v-if="isDataLoading">
+      LOADING...
+    </template>
+
+    <template v-else>
+      <template v-if="isAPIKeysDefined">
+        <GeneralList />
+      </template>
+
+      <template v-else>
+        <APIKeysForm />
+      </template>
     </template>
   </div>
 </template>
 
-<script>
-import { computed } from 'vue';
-import { useStore } from 'vuex';
-import { cryptoBinanceVuexTypes } from '@/store';
+<script lang="ts">
+import { ERROR_CODES } from 'shared-types';
+import {
+  defineComponent,
+  ref,
+  onBeforeMount,
+} from 'vue';
 import { formatFiat } from '@/js/helpers';
+import { ApiErrorResponseError } from '@/js/errors';
+import { useCryptoBinanceInfo } from '@/composable';
+import GeneralList from '@/components/page-sections/crypto/GeneralList.vue';
+import APIKeysForm from '@/components/page-sections/crypto/APIKeysForm.vue';
 
-export default {
+export default defineComponent({
+  components: {
+    GeneralList,
+    APIKeysForm,
+  },
   setup() {
-    const store = useStore();
-    const binanceNamespace = 'cryptoBinance';
+    const { fetchAccountData } = useCryptoBinanceInfo();
 
-    const balances = computed(() => store.getters[`${binanceNamespace}/${cryptoBinanceVuexTypes.GET_EXISTING_BALANCES}`]);
-    const totalBalance = computed(() => formatFiat(store.getters[`${binanceNamespace}/${cryptoBinanceVuexTypes.GET_TOTAL_USD_BALANCE}`]));
+    const isAPIKeysDefined = ref(false);
+    const isDataLoading = ref(false);
 
-    store.dispatch(`${binanceNamespace}/${cryptoBinanceVuexTypes.FETCH_ACCOUNT_DATA}`);
+    onBeforeMount(async () => {
+      isDataLoading.value = true;
 
-    const getPrice = balance => (
-      balance.price ? balance.price * balance.total : balance.total
-    );
+      try {
+        await fetchAccountData();
+
+        isAPIKeysDefined.value = true;
+      } catch (e) {
+        if (e instanceof ApiErrorResponseError) {
+          if (
+            [
+              ERROR_CODES.cryptoBinanceBothAPIKeysDoesNotexist,
+              ERROR_CODES.cryptoBinancePublicAPIKeyNotDefined,
+              ERROR_CODES.cryptoBinanceSecretAPIKeyNotDefined,
+            ].includes(e.data.code)
+          ) {
+            isAPIKeysDefined.value = false;
+          }
+        }
+      } finally {
+        isDataLoading.value = false;
+      }
+    });
 
     return {
-      balances,
-      totalBalance,
-      getPrice,
       formatFiat,
+      isAPIKeysDefined,
+      isDataLoading,
     };
   },
-};
+});
 </script>
 
 <style lang="scss">

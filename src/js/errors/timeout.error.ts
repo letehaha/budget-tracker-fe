@@ -4,6 +4,8 @@
  * @class
  */
 export class TimeoutError extends Error {
+  data;
+
   constructor(message, data) {
     super(message);
 
