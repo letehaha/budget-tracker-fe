@@ -26,9 +26,9 @@
 
 <script>
 import { format } from 'date-fns';
+import { mapGetters } from 'vuex';
 import { TRANSACTIONS_TYPES } from '@/js/const';
 import { eventBus } from '@/js/utils';
-import { mapGetters } from 'vuex';
 import { indexVuexTypes, categoriesVuexTypes } from '@/store';
 import { MODAL_TYPES } from '@/components/Modal';
 
