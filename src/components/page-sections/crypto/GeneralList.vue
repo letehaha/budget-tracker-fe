@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p>Total: {{ totalBalance }}</p>
+    <p>Total: {{ fiatTotalBalance }}</p>
     <template v-if="balances">
       <div class="crypto__balances">
         <div class="crypto__balance">

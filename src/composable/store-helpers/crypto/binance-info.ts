@@ -6,6 +6,8 @@ export const useCryptoBinanceInfo = (): {
   balances: ComputedRef<boolean>;
   totalBalance: ComputedRef<number>;
   fetchAccountData: () => Promise<void>
+  setUserSettings:
+    (payload: { publicKey: string; secretKey: string }) => Promise<void>
 } => {
   const binanceNamespace = 'cryptoBinance';
 
@@ -20,9 +22,14 @@ export const useCryptoBinanceInfo = (): {
     await store.dispatch(`${binanceNamespace}/${cryptoBinanceVuexTypes.FETCH_ACCOUNT_DATA}`);
   };
 
+  const setUserSettings = async (payload) => {
+    await store.dispatch(`${binanceNamespace}/${cryptoBinanceVuexTypes.SET_SETTINGS}`, payload);
+  };
+
   return {
     balances,
     totalBalance,
     fetchAccountData,
+    setUserSettings,
   };
 };

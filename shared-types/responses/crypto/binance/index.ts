@@ -36,3 +36,9 @@ export interface NormalizedAccountData {
   takerCommission: number;
   updateTime: number;
 }
+
+export interface AccountSettings {
+  apiKey: string;
+  secretKey: string;
+  userId: number;
+}

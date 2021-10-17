@@ -1,4 +1,8 @@
-import { RawAccountDataResponse, NormalizedAccountData } from 'shared-types/responses/crypto/binance';
+import {
+  RawAccountDataResponse,
+  NormalizedAccountData,
+  AccountSettings,
+} from 'shared-types/responses/crypto/binance';
 import { MutationTree, ActionTree, GetterTree } from 'vuex';
 import { api } from '@/api';
 import { RootState } from '@/store/types';
@@ -7,7 +11,7 @@ import { normalizeAccountData } from './response-normalizer';
 
 interface State {
   accountData: NormalizedAccountData | null;
-  userSettings: unknown;
+  userSettings: AccountSettings | null;
 }
 
 const initialState = (): State => ({
@@ -45,7 +49,7 @@ const mutations: MutationTree<State> = {
   ) {
     state.accountData = data;
   },
-  [cryptoBinanceVuexTypes.SET_SETTINGS](state, data) {
+  [cryptoBinanceVuexTypes.SET_SETTINGS](state, data: AccountSettings) {
     state.userSettings = data;
   },
 };
@@ -59,6 +63,21 @@ const actions: ActionTree<State, RootState> = {
         cryptoBinanceVuexTypes.SET_ACCOUNT_DATA,
         normalizeAccountData(result),
       );
+    } catch (e) {
+      throw e;
+    }
+  },
+  async [cryptoBinanceVuexTypes.SET_SETTINGS](
+    { commit },
+    { publicKey, secretKey }: { publicKey: string; secretKey: string },
+  ) {
+    try {
+      const result: AccountSettings = await api.post('/crypto/binance/set-settings', {
+        apiKey: publicKey,
+        secretKey,
+      });
+
+      commit(cryptoBinanceVuexTypes.SET_SETTINGS, result);
     } catch (e) {
       throw e;
     }
