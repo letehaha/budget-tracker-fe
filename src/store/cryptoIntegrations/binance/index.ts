@@ -36,7 +36,10 @@ const getters: GetterTree<State, RootState> = {
 };
 
 const mutations: MutationTree<State> = {
-  [cryptoBinanceVuexTypes.SET_ACCOUNT_DATA](state, data) {
+  [cryptoBinanceVuexTypes.SET_ACCOUNT_DATA](
+    state,
+    data: NormalizedAccountData,
+  ) {
     state.accountData = data;
   },
   [cryptoBinanceVuexTypes.SET_SETTINGS](state, data) {
