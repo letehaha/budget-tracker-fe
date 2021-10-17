@@ -16,7 +16,7 @@
           <div class="crypto__balance">
             <p>{{ balance.asset }}</p>
             <p>{{ balance.total }}</p>
-            <p>{{ balance.price ?? balance.total }}</p>
+            <p>{{ formatFiat(balance.price ?? balance.total) }}</p>
             <p>{{ formatFiat(getPrice(balance)) }}</p>
           </div>
         </template>
