@@ -19,9 +19,13 @@ const state: State = initialState();
 
 const getters: GetterTree<State, RootState> = {
   [cryptoBinanceVuexTypes.GET_ACCOUNT_DATA]: state => state.accountData,
+  [cryptoBinanceVuexTypes.GET_SETTINGS]: state => state.userSettings,
+
   [cryptoBinanceVuexTypes.GET_BALANCES]: state => state.accountData?.balances,
+
   [cryptoBinanceVuexTypes.GET_EXISTING_BALANCES]: state => state.accountData
     ?.balances?.filter(item => Number(item.free) || Number(item.locked)),
+
   [cryptoBinanceVuexTypes.GET_TOTAL_USD_BALANCE]: (state): number => {
     const balances = state.accountData
       ?.balances?.filter(item => Number(item.free) || Number(item.locked));
@@ -32,7 +36,6 @@ const getters: GetterTree<State, RootState> = {
       return acc + (Number(item.total) * Number(price ?? 0));
     }, 0);
   },
-  [cryptoBinanceVuexTypes.GET_SETTINGS]: state => state.userSettings,
 };
 
 const mutations: MutationTree<State> = {
