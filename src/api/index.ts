@@ -1,3 +1,4 @@
+import { APIRequestError } from 'shared-types';
 import { authVuexTypes } from '@/store/auth/types';
 import * as errors from '@/js/errors';
 
@@ -17,17 +18,6 @@ interface ApiRequestConfig {
   },
   body?: string,
 }
-
-const STATUS_CODES = {
-  badRequest: 400,
-  unauthorized: 401,
-  forbidden: 403,
-  notFound: 404,
-  timeout: 408,
-  conflict: 409,
-  tooManyRequests: 429,
-  internalError: 500,
-};
 
 const API_HTTP = process.env.VUE_APP_API_HTTP;
 const API_VER = process.env.VUE_APP_API_VER;
@@ -145,30 +135,23 @@ class ApiCaller {
       return result.response;
     }
 
-    // TODO: investogate how to return JSON from server
-    if (response.status === STATUS_CODES.unauthorized) {
+    let errorPayload: APIRequestError | string;
+
+    try {
+      errorPayload = await response.clone().json();
+    } catch (e) {
+      if (e instanceof SyntaxError) {
+        errorPayload = await response.clone().text();
+      }
+    }
+
+    if (errorPayload === 'Unauthorized') {
       await this.store.dispatch(`auth/${authVuexTypes.LOG_OUT}`);
       this.router.push('/sign-in');
       throw new errors.AuthError(response.statusText, response);
     }
 
-    const errorPayload = await response.json();
-
-    switch (response.status) {
-      case STATUS_CODES.internalError:
-        throw new errors.NetworkError(response.statusText, errorPayload);
-      case STATUS_CODES.timeout:
-        throw new errors.TimeoutError(response.statusText, errorPayload);
-      case STATUS_CODES.notFound:
-        throw new errors.NotFoundError(response.statusText, errorPayload);
-      case STATUS_CODES.tooManyRequests:
-        throw new errors.TooManyRequestsError(
-          response.statusText,
-          errorPayload,
-        );
-      default:
-        throw new Error(response.statusText);
-    }
+    throw new errors.ApiErrorResponseError(response.statusText, errorPayload);
   }
 
   setStore({ store }) {

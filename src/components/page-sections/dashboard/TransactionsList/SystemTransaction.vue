@@ -29,6 +29,7 @@ import { format } from 'date-fns';
 import { mapGetters } from 'vuex';
 import { indexVuexTypes, categoriesVuexTypes } from '@/store';
 import { TRANSACTIONS_TYPES } from '@/js/const';
+import { eventBus } from '@/js/utils';
 import { formatAmount } from '@/js/helpers';
 import { MODAL_TYPES } from '@/components/Modal';
 
@@ -56,7 +57,7 @@ export default {
       return format(new Date(date), 'd MMMM y');
     },
     editTransaction() {
-      this.$bus.emit(this.$bus.eventsList.modalOpen, {
+      eventBus.emit(eventBus.eventsList.modalOpen, {
         type: MODAL_TYPES.systemTxForm,
         data: { transaction: this.tx },
       });

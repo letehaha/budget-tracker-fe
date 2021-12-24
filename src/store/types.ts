@@ -23,3 +23,5 @@ export const indexVuexTypes = Object.freeze({
   ...actions,
   ...getters,
 });
+
+export type RootState = Record<string, never>;

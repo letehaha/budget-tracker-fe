@@ -6,25 +6,29 @@
     }"
     class="input-field"
   >
-    <span
-      v-if="label"
-      class="input-field__label"
-    >
-      {{ label }}
-    </span>
-    <input
-      :type="type"
-      :value="modelValue"
-      :placeholder="$attrs.placeholder || ''"
-      :style="inputFieldStyles"
-      :tabindex="tabindex"
-      v-bind="attrs"
-      class="input-field__input"
-      autocomplete="off"
-      autocorrect="off"
-      autocapitalize="off"
-      spellcheck="false"
-    >
+    <label class="input-field__input-focusable">
+      <span
+        v-if="label"
+        class="input-field__label"
+      >
+        {{ label }}
+      </span>
+      <div class="input-field__input-wrapper">
+        <input
+          :type="type"
+          :value="modelValue"
+          :placeholder="$attrs.placeholder || ''"
+          :style="inputFieldStyles"
+          :tabindex="tabindex"
+          v-bind="attrs"
+          class="input-field__input"
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+          spellcheck="false"
+        >
+      </div>
+    </label>
     <div
       v-if="isSubLabelExist"
       class="input-fields__sublabel"
@@ -80,6 +84,9 @@ export default {
   position: relative;
   width: 100%;
   flex: 1;
+}
+.input-field__input-wrapper {
+  position: relative;
 }
 .input-field__input {
   font-size: 16px;

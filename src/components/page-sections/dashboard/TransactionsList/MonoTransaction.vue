@@ -26,8 +26,9 @@
 
 <script>
 import { format } from 'date-fns';
-import { TRANSACTIONS_TYPES } from '@/js/const';
 import { mapGetters } from 'vuex';
+import { TRANSACTIONS_TYPES } from '@/js/const';
+import { eventBus } from '@/js/utils';
 import { indexVuexTypes, categoriesVuexTypes } from '@/store';
 import { MODAL_TYPES } from '@/components/Modal';
 
@@ -54,7 +55,7 @@ export default {
       return format(new Date(date), 'd MMMM y');
     },
     editTransaction() {
-      this.$bus.emit(this.$bus.eventsList.modalOpen, {
+      eventBus.emit(eventBus.eventsList.modalOpen, {
         type: MODAL_TYPES.monobankTxForm,
         data: { transaction: this.tx },
       });

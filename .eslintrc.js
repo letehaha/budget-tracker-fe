@@ -22,6 +22,7 @@ module.exports = {
   // required to lint *.vue files
   plugins: [
     'vue',
+    '@typescript-eslint',
   ],
 
   settings: {
@@ -46,6 +47,7 @@ module.exports = {
     }],
     'import/extensions': 'off',
     'no-unused-vars': 'off',
+    'no-useless-catch': 'off',
     '@typescript-eslint/no-unused-vars': 'warn',
     'arrow-body-style': 'warn',
     'import/no-named-as-default': 'off',

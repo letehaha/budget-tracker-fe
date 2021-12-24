@@ -14,6 +14,7 @@ import user from './user';
 import categories from './categories';
 import accounts, { accountsVuexTypes } from './accounts';
 import bankMonobank, { bankMonobankVuexTypes } from './banksIntegrations/monobank';
+import cryptoBinance from './cryptoIntegrations/binance';
 
 const rootModule = {
   state: {
@@ -93,6 +94,7 @@ export const store = createStore({
     accounts,
     transactions,
     bankMonobank,
+    cryptoBinance,
   },
 });
 
@@ -103,3 +105,4 @@ export { userVuexTypes } from './user';
 export { categoriesVuexTypes } from './categories';
 export { accountsVuexTypes } from './accounts';
 export { bankMonobankVuexTypes } from './banksIntegrations/monobank';
+export { cryptoBinanceVuexTypes } from './cryptoIntegrations/binance';

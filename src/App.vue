@@ -25,6 +25,7 @@ import { defineComponent } from 'vue';
 import { mapGetters } from 'vuex';
 import { authVuexTypes } from '@/store';
 import { ROUTER_LAYOUTS } from '@/routes';
+import { eventBus } from '@/js/utils';
 import Modal from '@/components/Modal.vue';
 import Header from '@/components/Header.vue';
 import Sidebar from '@/components/Sidebar.vue';
@@ -59,8 +60,8 @@ export default defineComponent({
     },
   },
   mounted() {
-    this.$bus.on(this.$bus.eventsList.modalOpen, this.onOpenMessage);
-    this.$bus.on(this.$bus.eventsList.modalClose, this.closeModal);
+    eventBus.on(eventBus.eventsList.modalOpen, this.onOpenMessage);
+    eventBus.on(eventBus.eventsList.modalClose, this.closeModal);
   },
   methods: {
     onOpenMessage(data) {

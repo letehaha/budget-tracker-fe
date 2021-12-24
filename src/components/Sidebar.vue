@@ -17,6 +17,12 @@
         Accounts
       </router-link>
       <router-link
+        to="/crypto"
+        class="sidebar__navigation-link"
+      >
+        Crypto
+      </router-link>
+      <router-link
         to="/settings"
         class="sidebar__navigation-link"
       >

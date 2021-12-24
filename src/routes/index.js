@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Dashboard from '@/pages/Dashboard';
 import Accounts from '@/pages/Accounts';
 import Account from '@/pages/Account';
+import Crypto from '@/pages/Crypto';
 import Register from '@/pages/auth/Register';
 import Login from '@/pages/auth/Login';
 import { redirectRouteGuard, authPageGuard } from './guards';
@@ -31,6 +32,14 @@ const routes = [
   {
     path: '/account',
     component: Account,
+    beforeEnter: redirectRouteGuard,
+    meta: {
+      layout: ROUTER_LAYOUTS.dashboard,
+    },
+  },
+  {
+    path: '/crypto',
+    component: Crypto,
     beforeEnter: redirectRouteGuard,
     meta: {
       layout: ROUTER_LAYOUTS.dashboard,

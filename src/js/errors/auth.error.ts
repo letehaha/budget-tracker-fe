@@ -1,9 +1,11 @@
 /**
- * Not found error.
+ * Authorization error.
  *
  * @class
  */
-export class NotFoundError extends Error {
+export class AuthError extends Error {
+  data;
+
   constructor(message, data) {
     super(message);
 
