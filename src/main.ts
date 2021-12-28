@@ -9,6 +9,8 @@ import './registerServiceWorker';
 
 const app = createApp(App);
 
+console.log('testing new update');
+
 app.directive('click-outside', clickOutside);
 
 app.use(router);
