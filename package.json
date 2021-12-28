@@ -6,7 +6,9 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "dev": "vue-cli-service serve",
-    "docker-build": "docker build . -t letehaha/frontend",
+    "docker-build": "docker build . -t letehaha/budget-tracker-fe",
+    "docker-push": "docker push letehaha/budget-tracker-fe",
+    "docker-compose": "npm run docker-build && npm run docker-push",
     "start": "npm run dev",
     "test": "jest --passWithNoTests"
   },
