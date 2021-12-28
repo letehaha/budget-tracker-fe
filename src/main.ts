@@ -9,9 +9,6 @@ import './registerServiceWorker';
 
 const app = createApp(App);
 
-// eslint-disable-next-line no-console
-console.log('testing new update');
-
 app.directive('click-outside', clickOutside);
 
 app.use(router);
