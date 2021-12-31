@@ -26,7 +26,6 @@ const API_VER = process.env.VUE_APP_API_VER;
 console.log('API_HTTP', API_HTTP);
 // eslint-disable-next-line no-console
 console.log('API_VER', API_VER);
-
 /**
  * ApiCaller performs the request to the API
  */
