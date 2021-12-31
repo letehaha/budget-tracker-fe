@@ -27,15 +27,16 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapActions } from 'vuex';
 import { authVuexTypes } from '@/store';
-import { MODAL_TYPES } from '@/components/Modal';
+import { MODAL_TYPES } from '@/components/Modal.vue';
 import { eventBus } from '@/js/utils';
-import Button from '@/components/common/Button';
-import InputField from '@/components/fields/InputField';
+import Button from '@/components/common/Button.vue';
+import InputField from '@/components/fields/InputField.vue';
 
-export default {
+export default defineComponent({
   components: {
     Button,
     InputField,
@@ -59,7 +60,7 @@ export default {
       this.$router.push('/sign-in');
     },
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>

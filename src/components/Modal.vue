@@ -13,20 +13,20 @@
   </div>
 </template>
 
-<script>
-import { defineAsyncComponent } from 'vue';
+<script lang="ts">
+import { defineAsyncComponent, defineComponent } from 'vue';
 
 export const MODAL_TYPES = Object.freeze({
-  systemTxForm: defineAsyncComponent(() => import('@/components/modals/SystemTxForm')),
-  monobankTxForm: defineAsyncComponent(() => import('@/components/modals/MonobankTxForm')),
-  monobankSetToken: defineAsyncComponent(() => import('@/components/modals/MonobankSetToken')),
+  systemTxForm: defineAsyncComponent(() => import('@/components/modals/SystemTxForm.vue')),
+  monobankTxForm: defineAsyncComponent(() => import('@/components/modals/MonobankTxForm.vue')),
+  monobankSetToken: defineAsyncComponent(() => import('@/components/modals/MonobankSetToken.vue')),
 });
 
 const EVENTS = {
   close: 'close',
 };
 
-export default {
+export default defineComponent({
   props: {
     isActive: { type: Boolean, default: false },
     /**
@@ -70,7 +70,7 @@ export default {
       }
     },
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>

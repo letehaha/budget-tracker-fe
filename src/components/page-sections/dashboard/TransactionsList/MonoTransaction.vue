@@ -24,15 +24,16 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { format } from 'date-fns';
+import { defineComponent } from 'vue';
 import { mapGetters } from 'vuex';
 import { TRANSACTIONS_TYPES } from '@/js/const';
 import { eventBus } from '@/js/utils';
 import { indexVuexTypes, categoriesVuexTypes } from '@/store';
-import { MODAL_TYPES } from '@/components/Modal';
+import { MODAL_TYPES } from '@/components/Modal.vue';
 
-export default {
+export default defineComponent({
   props: {
     tx: { type: Object, required: true },
   },
@@ -72,9 +73,8 @@ export default {
           return amount;
       }
     },
-    getCategoryName() {},
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>

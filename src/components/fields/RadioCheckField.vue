@@ -25,8 +25,10 @@
   </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { defineComponent } from 'vue';
+
+export default defineComponent({
   props: {
     label: { type: String, default: undefined },
     value: { type: [String, Boolean], required: true },
@@ -37,7 +39,7 @@ export default {
       return `radio-check-field-${this._uid}`;
     },
   },
-};
+});
 </script>
 
 <style lang="scss">
