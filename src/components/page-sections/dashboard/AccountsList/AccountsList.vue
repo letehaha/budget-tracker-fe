@@ -12,7 +12,8 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapActions, mapGetters } from 'vuex';
 import { ACCOUNT_TYPES } from '@/js/const';
 import {
@@ -20,9 +21,9 @@ import {
   bankMonobankVuexTypes,
   accountsVuexTypes,
 } from '@/store';
-import Account from './Account';
+import Account from './Account.vue';
 
-export default {
+export default defineComponent({
   components: {
     Account,
   },
@@ -58,7 +59,7 @@ export default {
       this.$router.push({ path: '/account', query: { id: account.accountId, type: ACCOUNT_TYPES.mono } });
     },
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>

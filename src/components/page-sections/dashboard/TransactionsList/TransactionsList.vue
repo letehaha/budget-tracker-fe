@@ -14,15 +14,16 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { compareDesc } from 'date-fns';
+import { defineComponent } from 'vue';
 import { mapActions, mapGetters } from 'vuex';
 import { TRANSACTION_TYPES } from '@/js/const';
 import { indexVuexTypes, transactionsVuexTypes } from '@/store';
-import Transaction from './SystemTransaction';
-import MonoTransaction from './MonoTransaction';
+import Transaction from './SystemTransaction.vue';
+import MonoTransaction from './MonoTransaction.vue';
 
-export default {
+export default defineComponent({
   components: {
     Transaction,
     MonoTransaction,
@@ -59,5 +60,5 @@ export default {
       fetchTransactions: transactionsVuexTypes.FETCH_TRANSACTIONS,
     }),
   },
-};
+});
 </script>

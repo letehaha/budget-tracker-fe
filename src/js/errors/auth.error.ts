@@ -1,3 +1,5 @@
+import { ApiBaseError } from 'shared-types';
+
 /**
  * Authorization error.
  *
@@ -6,7 +8,7 @@
 export class AuthError extends Error {
   data;
 
-  constructor(message, data) {
+  constructor(message: string, data: ApiBaseError) {
     super(message);
 
     this.data = data;

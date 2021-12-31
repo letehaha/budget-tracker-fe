@@ -32,12 +32,6 @@
   </div>
 </template>
 
-<script>
-export default {
-
-};
-</script>
-
 <style lang="scss" scoped>
 .sidebar {
   padding: 24px 24px;

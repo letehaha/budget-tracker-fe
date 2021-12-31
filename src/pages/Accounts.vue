@@ -21,7 +21,7 @@
     <h2 class="accounts__subtitle">
       Monobank
       <template v-if="!isPaired">
-        <button @click="setMonobankToken">
+        <button @click="() => setMonobankToken()">
           Pair account
         </button>
       </template>
@@ -67,8 +67,10 @@
   </div>
 </template>
 
-<script>
-import { computed, watch, onMounted } from 'vue';
+<script lang="ts">
+import {
+  defineComponent, computed, watch, onMounted,
+} from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import {
@@ -77,10 +79,10 @@ import {
 } from '@/store';
 import { formatAmount } from '@/js/helpers';
 import { eventBus } from '@/js/utils';
-import { MODAL_TYPES } from '@/components/Modal';
+import { MODAL_TYPES } from '@/components/Modal.vue';
 import { ACCOUNT_TYPES } from '@/js/const';
 
-export default {
+export default defineComponent({
   setup() {
     const store = useStore();
     const router = useRouter();
@@ -146,7 +148,7 @@ export default {
       redirectToAccount,
     };
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>

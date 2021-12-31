@@ -1,3 +1,5 @@
+import { Dispatch, Commit, Store } from 'vuex';
+
 const mutations = {
   SET_ACCOUNT_TYPES: 'SET_ACCOUNT_TYPES',
   SET_PAYMENT_TYPES: 'SET_PAYMENT_TYPES',
@@ -25,3 +27,10 @@ export const indexVuexTypes = Object.freeze({
 });
 
 export type RootState = Record<string, never>;
+
+export type ActionContext = {
+  commit: Commit;
+  dispatch: Dispatch;
+}
+
+export type CustomStore = Store<RootState>;
