@@ -7,7 +7,7 @@
       <div class="page">
         <Sidebar />
         <div class="page__wrapper">
-          <Header />
+          <UIHeader />
           <router-view />
         </div>
       </div>
@@ -27,13 +27,13 @@ import { authVuexTypes } from '@/store';
 import { ROUTER_LAYOUTS } from '@/routes';
 import { eventBus } from '@/js/utils';
 import Modal from '@/components/Modal.vue';
-import Header from '@/components/Header.vue';
+import UIHeader from '@/components/Header.vue';
 import Sidebar from '@/components/Sidebar.vue';
 
 export default defineComponent({
   components: {
     Modal,
-    Header,
+    UIHeader,
     Sidebar,
   },
   data: () => ({

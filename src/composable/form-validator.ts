@@ -60,6 +60,7 @@ export const useFormValidation = <
   resetValidation: () => void;
 } => {
   // for some reason TS says $touch methods are no defined on returned type
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const instance: any = useVuelidate(rules, form, vuelidateOptions);
 
   /**
