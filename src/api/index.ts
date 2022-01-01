@@ -1,4 +1,4 @@
-import { APIRequestError } from 'shared-types';
+import { ApiBaseError, RESPONSE_STATUS, ERROR_CODES } from 'shared-types';
 import { Router } from 'vue-router';
 import { CustomStore } from '@/store/types';
 import { authVuexTypes } from '@/store/auth/types';
@@ -60,7 +60,7 @@ class ApiCaller {
     });
   }
 
-  post(endpoint, data, options = {}) {
+  post(endpoint: string, data, options = {}) {
     return this._call({
       method: methods.post,
       endpoint,
@@ -69,7 +69,7 @@ class ApiCaller {
     });
   }
 
-  patch(endpoint, data, options = {}) {
+  patch(endpoint: string, data, options = {}) {
     return this._call({
       method: methods.patch,
       endpoint,
@@ -78,7 +78,7 @@ class ApiCaller {
     });
   }
 
-  put(endpoint, data, options = {}) {
+  put(endpoint: string, data, options = {}) {
     return this._call({
       method: methods.put,
       endpoint,
@@ -87,7 +87,7 @@ class ApiCaller {
     });
   }
 
-  delete(endpoint, data = undefined, options = {}) {
+  delete(endpoint: string, data = undefined, options = {}) {
     return this._call({
       method: methods.delete,
       endpoint,
@@ -133,37 +133,40 @@ class ApiCaller {
       delete config.headers.Authorization;
     }
 
-    const response = await fetch(url, config);
+    const result = await fetch(url, config);
 
-    if (response.ok) {
-      const result = await response.json();
+    const {
+      status,
+      response,
+    }: {
+      status: RESPONSE_STATUS,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      response: ApiBaseError | any,
+    } = await result.json();
 
-      return result.response;
+    if (status === RESPONSE_STATUS.success) {
+      return response;
     }
 
-    let errorPayload: APIRequestError | string;
+    if (status === RESPONSE_STATUS.error) {
+      if (response.code === ERROR_CODES.unauthorized) {
+        await this.store.dispatch(`auth/${authVuexTypes.LOG_OUT}`);
 
-    try {
-      errorPayload = await response.clone().json();
-    } catch (e) {
-      if (e instanceof SyntaxError) {
-        errorPayload = await response.clone().text();
+        this.router.push('/sign-in');
+
+        throw new errors.AuthError(
+          response.statusText,
+          response,
+        );
       }
-    }
 
-    if (errorPayload === 'Unauthorized') {
-      await this.store.dispatch(`auth/${authVuexTypes.LOG_OUT}`);
-      this.router.push('/sign-in');
-      throw new errors.AuthError(
+      throw new errors.ApiErrorResponseError(
         response.statusText,
-        response as unknown as APIRequestError,
+        response,
       );
     }
 
-    throw new errors.ApiErrorResponseError(
-      response.statusText,
-      errorPayload as APIRequestError,
-    );
+    return undefined;
   }
 
   setStore({ store }) {

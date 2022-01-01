@@ -1,6 +1,11 @@
 export * from './responses';
 export * from './api';
 
+export enum RESPONSE_STATUS {
+  error = 'error',
+  success = 'success',
+}
+
 export enum CATEGORY_TYPES {
   internal = 'internal',
   custom = 'custom',
