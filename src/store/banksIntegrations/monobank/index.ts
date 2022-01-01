@@ -119,9 +119,7 @@ const actions: ActionTree<State, RootState> = {
     } catch (e) {
       if (e?.data?.code === ERROR_CODES.monobankUserNotPaired) {
         commit(bankMonobankVuexTypes.SET_PAIRED_ACCOUNT_STATUS, false);
-        return;
       }
-      throw new Error(e);
     }
   },
   async [bankMonobankVuexTypes.FETCH_TRANSACTIONS]({ commit, getters }) {
@@ -192,9 +190,7 @@ const actions: ActionTree<State, RootState> = {
     } catch (e) {
       if (e?.data?.code === ERROR_CODES.monobankUserNotPaired) {
         commit(bankMonobankVuexTypes.SET_PAIRED_ACCOUNT_STATUS, false);
-        return;
       }
-      throw new Error(e);
     }
   },
   async [bankMonobankVuexTypes.UPDATE_ACCOUNT_BY_ID](

@@ -23,7 +23,7 @@
         Crypto
       </router-link>
       <router-link
-        to="/settings"
+        to="/crypto"
         class="sidebar__navigation-link"
       >
         Settings

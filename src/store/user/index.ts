@@ -39,7 +39,8 @@ const actions: ActionTree<State, RootState> = {
 
       commit(userVuexTypes.SET_USER, new UserRecord(result));
     } catch (e) {
-      throw new Error(e);
+      // eslint-disable-next-line no-console
+      console.log(e);
     }
   },
 };

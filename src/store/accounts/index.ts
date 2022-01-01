@@ -37,7 +37,8 @@ const actions: ActionTree<State, RootState> = {
         result.map(i => new AccountRecord(i)),
       );
     } catch (e) {
-      throw new Error(e);
+      // eslint-disable-next-line no-console
+      console.log(e);
     }
   },
 };

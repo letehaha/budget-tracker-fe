@@ -51,7 +51,8 @@ const actions: ActionTree<State, RootState> = {
         getRawCategories(result).map(i => new CategoryRecord(i)),
       );
     } catch (e) {
-      throw new Error(e);
+      // eslint-disable-next-line no-console
+      console.log(e);
     }
   },
 };
