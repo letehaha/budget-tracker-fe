@@ -1,4 +1,4 @@
-import { ApiForbiddenError } from 'shared-types';
+import { ApiForbiddenError, ApiBaseError } from 'shared-types';
 
 /**
  * Forbidden error.
@@ -8,7 +8,7 @@ import { ApiForbiddenError } from 'shared-types';
 export class ForbiddenError extends Error {
   data: ApiForbiddenError;
 
-  constructor(message, data) {
+  constructor(message: string, data: ApiBaseError) {
     super(message);
 
     this.data = data;

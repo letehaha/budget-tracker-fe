@@ -34,9 +34,10 @@
   </div>
 </template>
 
-<script>
-import Flatpickr from 'flatpickr';
+<script lang="ts">
+import buildFlatpickr from 'flatpickr';
 import { isBefore, isAfter } from 'date-fns';
+import { defineComponent } from 'vue';
 // All supported events by Flatpickr
 const FLATPICKR_HOOKS = {
   onChange: 'onChange',
@@ -62,7 +63,7 @@ const EMITABLE_EVENTS = {
   onOpen: FLATPICKR_HOOKS.onOpen,
   ...MODEL_EVENTS,
 };
-export default {
+export default defineComponent({
   name: 'DateFieldFlatpickr',
   props: {
     modelValue: { type: [String, Date], default: '' },
@@ -162,7 +163,7 @@ export default {
     };
     // Set initial date without emitting any event
     safeConfig.defaultDate = this.modelValue || safeConfig.defaultDate;
-    this.flatpickr = new Flatpickr(this.$refs.dateField, safeConfig);
+    this.flatpickr = buildFlatpickr(this.$refs.dateField, safeConfig);
     this.flatpickrDate = this.modelValue || safeConfig.defaultDate || null;
   },
   /**
@@ -185,7 +186,7 @@ export default {
     },
     defineFlatpickrHooks(config) {
       const safeConfig = { ...config };
-      FLATPICKR_HOOKS.forEach((hook) => {
+      Object.values(FLATPICKR_HOOKS).forEach((hook) => {
         delete safeConfig[hook];
       });
       return safeConfig;
@@ -222,7 +223,7 @@ export default {
       });
     },
   },
-};
+});
 </script>
 
 <style lang="scss">

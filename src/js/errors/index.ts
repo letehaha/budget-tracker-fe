@@ -1,4 +1,4 @@
-import { APIRequestError } from 'shared-types';
+import { APIRequestError, ApiBaseError } from 'shared-types';
 
 export * from './network.error';
 export * from './timeout.error';
@@ -11,7 +11,7 @@ export * from './forbidden.error';
 export class ApiErrorResponseError extends Error {
   data: APIRequestError;
 
-  constructor(message, data) {
+  constructor(message: string, data: ApiBaseError) {
     super(message);
 
     this.data = data;

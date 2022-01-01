@@ -26,14 +26,15 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import _debounce from 'lodash/debounce';
+import { defineComponent } from 'vue';
 import { mapActions, mapGetters } from 'vuex';
 import { bankMonobankVuexTypes } from '@/store';
 import { formatAmount } from '@/js/helpers';
-import DateField from '@/components/fields/DateField';
+import DateField from '@/components/fields/DateField.vue';
 
-export default {
+export default defineComponent({
   components: {
     DateField,
   },
@@ -108,7 +109,7 @@ export default {
       }
     },
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>

@@ -1,4 +1,6 @@
 import { APIRequestError } from 'shared-types';
+import { Router } from 'vue-router';
+import { CustomStore } from '@/store/types';
 import { authVuexTypes } from '@/store/auth/types';
 import * as errors from '@/js/errors';
 
@@ -22,13 +24,17 @@ interface ApiRequestConfig {
 const API_HTTP = process.env.VUE_APP_API_HTTP;
 const API_VER = process.env.VUE_APP_API_VER;
 
+// eslint-disable-next-line no-console
+console.log('API_HTTP', API_HTTP);
+// eslint-disable-next-line no-console
+console.log('API_VER', API_VER);
 /**
  * ApiCaller performs the request to the API
  */
 class ApiCaller {
-  store;
+  store: CustomStore;
 
-  router;
+  router: Router;
 
   authToken;
 
@@ -45,7 +51,7 @@ class ApiCaller {
     this.authToken = token;
   }
 
-  get(endpoint: string, query?: string, options = {}) {
+  get(endpoint: string, query?: Record<string, unknown>, options = {}) {
     return this._call({
       method: methods.get,
       endpoint,
@@ -81,7 +87,7 @@ class ApiCaller {
     });
   }
 
-  delete(endpoint, data, options = {}) {
+  delete(endpoint, data = undefined, options = {}) {
     return this._call({
       method: methods.delete,
       endpoint,
@@ -148,24 +154,32 @@ class ApiCaller {
     if (errorPayload === 'Unauthorized') {
       await this.store.dispatch(`auth/${authVuexTypes.LOG_OUT}`);
       this.router.push('/sign-in');
-      throw new errors.AuthError(response.statusText, response);
+      throw new errors.AuthError(
+        response.statusText,
+        response as unknown as APIRequestError,
+      );
     }
 
-    throw new errors.ApiErrorResponseError(response.statusText, errorPayload);
+    throw new errors.ApiErrorResponseError(
+      response.statusText,
+      errorPayload as APIRequestError,
+    );
   }
 
   setStore({ store }) {
     this.store = store;
   }
 
-  setRouter({ router }) {
+  setRouter({ router }: { router: Router }) {
     this.router = router;
   }
 }
 
 export const api = new ApiCaller();
 
-export function initApiCaller({ store, router }) {
+export function initApiCaller(
+  { store, router }: { store: CustomStore; router: Router },
+): void {
   api.setStore({ store });
   api.setRouter({ router });
 }

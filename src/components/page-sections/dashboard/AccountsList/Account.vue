@@ -9,18 +9,19 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { AccountRecord, MONOAccountRecord } from '@/js/records';
 import { formatAmount } from '@/js/helpers';
 
-export default {
+export default defineComponent({
   props: {
     account: { type: [AccountRecord, MONOAccountRecord], required: true },
   },
   methods: {
     formatAmount,
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>
