@@ -1,4 +1,4 @@
-name: eslint
+name: Lint and Build
 
 on:
   push:
@@ -7,8 +7,8 @@ on:
     branches: [main]
 
 jobs:
-  eslint:
-    name: Eslint
+  check:
+    name: Lint and Build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -25,3 +25,5 @@ jobs:
         run: npm ci
       - name: Lint source code with ESLint
         run: npm run lint
+      - name: Build source code
+        run: npm run build

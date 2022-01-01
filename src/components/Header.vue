@@ -52,7 +52,7 @@ export default defineComponent({
     }),
     openFormModal() {
       eventBus.emit(eventBus.eventsList.modalOpen, {
-        type: MODAL_TYPES.transactionForm,
+        type: MODAL_TYPES.systemTxForm,
       });
     },
     logOutHandler() {

@@ -35,7 +35,7 @@
 </template>
 
 <script lang="ts">
-import Flatpickr from 'flatpickr';
+import buildFlatpickr from 'flatpickr';
 import { isBefore, isAfter } from 'date-fns';
 import { defineComponent } from 'vue';
 // All supported events by Flatpickr
@@ -163,7 +163,7 @@ export default defineComponent({
     };
     // Set initial date without emitting any event
     safeConfig.defaultDate = this.modelValue || safeConfig.defaultDate;
-    this.flatpickr = new Flatpickr(this.$refs.dateField, safeConfig);
+    this.flatpickr = buildFlatpickr(this.$refs.dateField, safeConfig);
     this.flatpickrDate = this.modelValue || safeConfig.defaultDate || null;
   },
   /**
