@@ -14,7 +14,9 @@
 </template>
 
 <script lang="ts">
-import { defineAsyncComponent, defineComponent } from 'vue';
+import {
+  defineAsyncComponent, PropType, AsyncComponentLoader, defineComponent,
+} from 'vue';
 
 export const MODAL_TYPES = Object.freeze({
   systemTxForm: defineAsyncComponent(() => import('@/components/modals/SystemTxForm.vue')),
@@ -26,6 +28,12 @@ const EVENTS = {
   close: 'close',
 };
 
+type ModalDataProp = {
+  data: unknown;
+  type: AsyncComponentLoader;
+  hideOnWidth: number;
+}
+
 export default defineComponent({
   props: {
     isActive: { type: Boolean, default: false },
@@ -36,9 +44,9 @@ export default defineComponent({
      * @param data.hideOnWidth - hide modal on window width
      */
     data: {
-      type: Object,
+      type: Object as PropType<ModalDataProp>,
       required: true,
-      validator(value) {
+      validator(value: ModalDataProp) {
         if (Object.keys(value).length) {
           // TODO: add check for a right value
           if (!value.type) {
