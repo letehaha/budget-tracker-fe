@@ -23,7 +23,7 @@
         Crypto
       </router-link>
       <router-link
-        to="/settings"
+        to="/crypto"
         class="sidebar__navigation-link"
       >
         Settings
@@ -31,12 +31,6 @@
     </nav>
   </div>
 </template>
-
-<script>
-export default {
-
-};
-</script>
 
 <style lang="scss" scoped>
 .sidebar {

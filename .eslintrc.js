@@ -7,20 +7,27 @@ module.exports = {
   },
 
   parserOptions: {
-    parser: '@typescript-eslint/parser',
-    project: './tsconfig.json',
+    ecmaVersion: 2020,
   },
 
-  extends: [
-    'eslint:recommended',
-    'plugin:vue/recommended',
-    'plugin:vue/vue3-essential',
-    '@vue/airbnb',
-    '@vue/typescript',
+  overrides: [
+    {
+      files: ['*.ts', '*.tsx'],
+      parserOptions: {
+        project: ['./tsconfig.json'],
+      },
+    },
   ],
 
-  // required to lint *.vue files
+  extends: [
+    'plugin:vue/vue3-essential',
+    'plugin:vue/vue3-recommended',
+    '@vue/airbnb',
+    '@vue/typescript/recommended',
+  ],
+
   plugins: [
+    // required to lint *.vue files
     'vue',
     '@typescript-eslint',
   ],
@@ -32,6 +39,18 @@ module.exports = {
       ],
     },
   },
+
+  overrides: [
+    {
+      files: [
+        '**/__tests__/*.{j,t}s?(x)',
+        '**/tests/unit/**/*.spec.{j,t}s?(x)',
+      ],
+      env: {
+        jest: true,
+      },
+    },
+  ],
 
   // add your custom rules here
   rules: {

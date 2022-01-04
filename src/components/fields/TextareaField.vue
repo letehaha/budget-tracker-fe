@@ -48,12 +48,14 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
+
 const MODEL_EVENTS = Object.freeze({
   input: 'update:modelValue',
 });
 
-export default {
+export default defineComponent({
   props: {
     label: { type: String, default: undefined },
     modelValue: { type: [String, Number], default: undefined },
@@ -66,7 +68,7 @@ export default {
     placeholder: { type: String, default: undefined },
     required: { type: Boolean, default: false },
     readonly: { type: Boolean, default: false },
-    title: { type: [String, Number], default: undefined },
+    title: { type: String, default: undefined },
     maxlength: { type: [String, Number], default: undefined },
     // textarea proxies
     rows: { type: [String, Number], default: 4 },
@@ -89,7 +91,7 @@ export default {
       this.$emit(MODEL_EVENTS.input, event.target.value);
     },
   },
-};
+});
 </script>
 
 <style lang="scss">

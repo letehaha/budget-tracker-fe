@@ -57,7 +57,8 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 
 const MODEL_EVENTS = {
   input: 'update:modelValue',
@@ -68,7 +69,7 @@ export const POSITIONS = Object.freeze({
   top: 'top',
 });
 
-export default {
+export default defineComponent({
   props: {
     label: { type: String, default: undefined },
     modelValue: { type: [Object, String], default: undefined },
@@ -142,7 +143,7 @@ export default {
       this.filterQuery = value.toLowerCase();
     },
   },
-};
+});
 </script>
 
 <style lang="scss">

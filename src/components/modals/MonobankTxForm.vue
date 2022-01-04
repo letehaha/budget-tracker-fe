@@ -43,7 +43,8 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapActions, mapGetters } from 'vuex';
 import {
   indexVuexTypes,
@@ -52,15 +53,15 @@ import {
   bankMonobankVuexTypes,
 } from '@/store';
 import { MONOTransactionRecord } from '@/js/records';
-import CategorySelectField from '@/components/fields/CategorySelectField';
-import TextareaField from '@/components/fields/TextareaField';
-import Button from '@/components/common/Button';
+import CategorySelectField from '@/components/fields/CategorySelectField.vue';
+import TextareaField from '@/components/fields/TextareaField.vue';
+import Button from '@/components/common/Button.vue';
 
 const EVENTS = {
   closeModal: 'close-modal',
 };
 
-export default {
+export default defineComponent({
   name: 'MonobankTxForm',
   components: {
     CategorySelectField,
@@ -119,7 +120,7 @@ export default {
       this.isLoading = false;
     },
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>

@@ -82,7 +82,8 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapActions, mapGetters } from 'vuex';
 import {
   indexVuexTypes,
@@ -91,17 +92,17 @@ import {
   transactionsVuexTypes,
 } from '@/store';
 import { TransactionRecord } from '@/js/records';
-import InputField from '@/components/fields/InputField';
-import SelectField from '@/components/fields/SelectField';
-import TextareaField from '@/components/fields/TextareaField';
-import DateField from '@/components/fields/DateField';
-import Button from '@/components/common/Button';
+import InputField from '@/components/fields/InputField.vue';
+import SelectField from '@/components/fields/SelectField.vue';
+import TextareaField from '@/components/fields/TextareaField.vue';
+import DateField from '@/components/fields/DateField.vue';
+import Button from '@/components/common/Button.vue';
 
 const EVENTS = {
   closeModal: 'close-modal',
 };
 
-export default {
+export default defineComponent({
   components: {
     DateField,
     InputField,
@@ -209,7 +210,7 @@ export default {
       this.isLoading = false;
     },
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>

@@ -44,13 +44,14 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 
 const MODEL_EVENTS = {
   input: 'update:modelValue',
 };
 
-export default {
+export default defineComponent({
   props: {
     label: { type: String, default: undefined },
     modelValue: { type: [String, Number], default: undefined },
@@ -76,7 +77,7 @@ export default {
   methods: {
 
   },
-};
+});
 </script>
 
 <style lang="scss">
