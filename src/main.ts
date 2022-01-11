@@ -4,7 +4,7 @@ import { store } from '@/store';
 import { clickOutside } from '@/directives';
 import { initApiCaller } from '@/api';
 import App from './App.vue';
-import '@/assets/styles/index.scss';
+import '@/styles/index.scss';
 import './registerServiceWorker';
 
 const app = createApp(App);
