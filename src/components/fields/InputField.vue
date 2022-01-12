@@ -115,7 +115,7 @@ export default defineComponent({
   display: block;
 }
 .input-field__err-mes {
-  color: red;
+  color: var(--app-danger-color);
   font-size: 14px;
   margin-top: 4px;
   margin-left: 8px;

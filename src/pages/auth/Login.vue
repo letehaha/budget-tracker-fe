@@ -7,13 +7,17 @@
       <h1 class="login__title">
         Log in to account
       </h1>
-      <form class="login__fields">
+      <FormWrapper
+        :error="formError"
+        class="login__fields"
+      >
         <InputField
           v-model="form.username"
           label="Your username"
           placeholder="ie. johnsnow"
           class="login__field"
           :disabled="isFormLoading"
+          :error-message="getFieldErrorMessage('form.username')"
         />
         <InputField
           v-model="form.password"
@@ -21,8 +25,9 @@
           class="login__field"
           type="password"
           :disabled="isFormLoading"
+          :error-message="getFieldErrorMessage('form.password')"
         />
-      </form>
+      </FormWrapper>
       <Button
         class="login__submit"
         :disabled="isFormLoading"
@@ -45,9 +50,16 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { mapActions } from 'vuex';
-import { authVuexTypes } from '@/store';
+import { ERROR_CODES } from 'shared-types';
+import {
+  defineComponent, ref, Ref, watch,
+} from 'vue';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/store';
+import { useFormValidation } from '@/composable';
+import { required, minLength } from '@/js/helpers/validators.helper';
+
+import FormWrapper from '@/components/fields/FormWrapper.vue';
 import Button from '@/components/common/Button.vue';
 import InputField from '@/components/fields/InputField.vue';
 
@@ -55,28 +67,73 @@ export default defineComponent({
   components: {
     Button,
     InputField,
+    FormWrapper,
   },
-  data: () => ({
-    form: {
+  setup() {
+    const router = useRouter();
+    const { signIn } = useAuthStore();
+
+    const form = ref({
       username: '',
       password: '',
-    },
-    isFormLoading: false,
-  }),
-  methods: {
-    ...mapActions('auth', {
-      signIn: authVuexTypes.LOG_IN,
-    }),
-    async submit() {
-      const { password, username } = this.form;
-      this.isFormLoading = true;
+    });
+    const isFormLoading = ref(false);
+    const formError: Ref<string | null> = ref(null);
 
-      await this.signIn({ password, username });
+    const {
+      isFormValid,
+      getFieldErrorMessage,
+    } = useFormValidation(
+      { form },
+      {
+        form: {
+          username: { required },
+          password: {
+            required,
+            passwordMinLength: minLength(6),
+          },
+        },
+      },
+      undefined,
+      {
+        customValidationMessages: {
+          passwordMinLength: 'Minimal length is 6.',
+        },
+      },
+    );
 
-      this.$router.push('/');
+    watch(form.value, () => { formError.value = null; });
 
-      this.isFormLoading = false;
-    },
+    const submit = async () => {
+      if (!isFormValid()) return;
+
+      const { password, username } = form.value;
+
+      try {
+        isFormLoading.value = true;
+
+        await signIn({ password, username });
+
+        router.push('/');
+      } catch (e) {
+        const errorCodes = {
+          [ERROR_CODES.notFound]: 'Incorrect email or password.',
+          [ERROR_CODES.invalidCredentials]: 'Password is invalid.',
+        };
+
+        formError.value = errorCodes[e.code] || 'Unexpected error.';
+      } finally {
+        isFormLoading.value = false;
+      }
+    };
+
+    return {
+      form,
+      formError,
+      isFormLoading,
+      submit,
+      getFieldErrorMessage,
+    };
   },
 });
 </script>

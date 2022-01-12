@@ -36,9 +36,11 @@ export type APIRequestError =
 export enum ERROR_CODES {
   // general
   tooManyRequests = 'TOO_MANY_REQUESTS',
+  notFound = 'NOT_FOUND',
 
   // auth
   unauthorized = 'UNAUTHENTICATED',
+  invalidCredentials = 'INVALID_CREDENTIALS',
 
   // monobank
   monobankUserNotPaired = 'MONOBANK_USER_NOT_PAIRED',

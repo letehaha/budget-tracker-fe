@@ -1,3 +1,4 @@
+import { ERROR_CODES } from 'shared-types';
 import { MutationTree, ActionTree, GetterTree } from 'vuex';
 import { RootState } from '@/store/types';
 import { api } from '@/api';
@@ -54,8 +55,14 @@ const actions: ActionTree<State, RootState> = {
         commit(authVuexTypes.SET_IS_LOGGED_IN, true);
       }
     } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error(e);
+      const possibleErrorCodes = [
+        ERROR_CODES.notFound,
+        ERROR_CODES.invalidCredentials,
+      ];
+
+      if (possibleErrorCodes.includes(e.data.code)) {
+        throw e.data;
+      }
     }
   },
   async [authVuexTypes.SIGN_UP]({ dispatch }, { password, username }) {
@@ -89,4 +96,5 @@ export default {
   actions,
 };
 
-export { authVuexTypes } from './types';
+export { authVuexTypes, namespace } from './types';
+export { useAuthStore } from './composable';

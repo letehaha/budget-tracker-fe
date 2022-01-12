@@ -8,7 +8,7 @@ import {
   TransactionTypeRecord,
 } from '@/js/records';
 import { indexVuexTypes } from './types';
-import auth from './auth';
+import auth, { namespace as authNamespace } from './auth';
 import transactions from './transactions';
 import user from './user';
 import categories from './categories';
@@ -88,7 +88,7 @@ export const store = createStore({
   strict: true,
   ...rootModule,
   modules: {
-    auth,
+    [authNamespace]: auth,
     user,
     categories,
     accounts,
@@ -99,7 +99,7 @@ export const store = createStore({
 });
 
 export { indexVuexTypes } from './types';
-export { authVuexTypes } from './auth';
+export { authVuexTypes, useAuthStore } from './auth';
 export { transactionsVuexTypes } from './transactions';
 export { userVuexTypes } from './user';
 export { categoriesVuexTypes } from './categories';
