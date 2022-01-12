@@ -9,14 +9,9 @@ $primary-color: #2ecc71;
     --primary-#{$shade}-rgb: #{hextorgb($color)};
   }
 
-  --system-disabled: rgb(174, 174, 178);
-
-  --system-border-radius: 6px;
-
   // app elements color
   --app-bg-color: #fafafa;
   --app-surface-color: #fff;
-
   --app-on-bg-color: #333;
   --app-on-surface-color: #222;
 
@@ -26,6 +21,8 @@ $primary-color: #2ecc71;
     --app-on-bg-color: #E1E1E1;
     --app-on-surface-color: #E3E3E3;
   }
+
+  --system-border-radius: 6px;
 
   // sizes
   --container-width: 1200px;
