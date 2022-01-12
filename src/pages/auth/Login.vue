@@ -87,6 +87,7 @@ export default defineComponent({
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: var(--app-bg-color);
 }
 .login__wrapper {
   width: 100%;
@@ -99,6 +100,7 @@ export default defineComponent({
   line-height: 1.4;
   text-align: center;
   margin-bottom: 40px;
+  color: var(--app-on-bg-color);
 }
 .login__field {
   &:not(:last-child) {
@@ -112,6 +114,7 @@ export default defineComponent({
   margin-top: 40px;
   text-align: center;
   font-weight: 400;
+  color: var(--app-on-bg-color);
 }
 .login__signup-link {
   transition: .2s ease-out;

@@ -87,7 +87,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .monobank-set-token {
-  background-color: #fff;
+  background-color: var(--app-bg-color);
   padding: 60px;
   width: 100%;
   max-width: 600px;

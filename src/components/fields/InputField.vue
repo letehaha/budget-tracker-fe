@@ -126,7 +126,7 @@ export default defineComponent({
   top: 0;
   font-size: 16px;
   font-weight: 400;
-  color: #000000;
+  color: rgba(var(--app-on-surface-color-rgb), 0.95);
 
   a {
     color: #ffffff;

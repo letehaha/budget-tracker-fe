@@ -1,7 +1,6 @@
 $primary-color: #2ecc71;
 
 :root {
-  // colors
   --primary-text-color: #333;
 
   @each $shade, $color in makeColorPalette($primary-color) {
@@ -17,7 +16,6 @@ $primary-color: #2ecc71;
     --app-on-surface-color: #222,
   ) {
     #{$cssVar}: $value;
-    // in case you wanna use rgba with css variables, you need to use varname-rgb
     #{$cssVar}-rgb: #{hextorgb($value)};
   }
 
@@ -29,7 +27,6 @@ $primary-color: #2ecc71;
       --app-on-surface-color: #E3E3E3,
     ) {
       #{$cssVar}: $value;
-      // in case you wanna use rgba with css variables, you need to use varname-rgb
       #{$cssVar}-rgb: #{hextorgb($value)};
     }
   }
