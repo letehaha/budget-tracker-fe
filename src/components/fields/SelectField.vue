@@ -263,7 +263,7 @@ export default defineComponent({
 }
 
 .select-field__err-mes {
-  color: red;
+  color: var(--app-danger-color);
   font-size: 12px;
 }
 </style>

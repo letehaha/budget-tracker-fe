@@ -18,3 +18,5 @@ export const authVuexTypes = Object.freeze({
   ...actions,
   ...getters,
 });
+
+export const namespace = 'auth';

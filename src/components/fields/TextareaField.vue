@@ -132,7 +132,7 @@ export default defineComponent({
 }
 
 .text-field__err-mes {
-  color: red;
+  color: var(--app-danger-color);
   font-size: 12px;
 }
 </style>

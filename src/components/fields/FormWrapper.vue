@@ -1,0 +1,50 @@
+<template>
+  <div class="form-wrapper">
+    <template v-if="Array.isArray(error)">
+      <div class="form-wrapper__error-list">
+        <template
+          v-for="item in error"
+          :key="item"
+        >
+          <p class="form-wrapper__error">
+            {{ item }}
+          </p>
+        </template>
+      </div>
+    </template>
+    <template v-else>
+      <div class="form-wrapper__error-list">
+        <p class="form-wrapper__error">
+          {{ error }}
+        </p>
+      </div>
+    </template>
+
+    <slot />
+  </div>
+</template>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
+
+export default defineComponent({
+  props: {
+    error: { type: [Array, String], default: undefined },
+  },
+});
+</script>
+
+<style lang="scss" scoped>
+.form-wrapper__error-list {
+  display: grid;
+  grid-gap: 8px;
+
+  margin-bottom: 16px;
+}
+.form-wrapper__error {
+  text-align: center;
+  color: var(--app-danger-color);
+  font-size: 14px;
+  line-height: 1.3;
+}
+</style>
