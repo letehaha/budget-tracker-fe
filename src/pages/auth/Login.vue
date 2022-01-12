@@ -116,9 +116,12 @@ export default defineComponent({
 
         router.push('/');
       } catch (e) {
-        if (e.code === ERROR_CODES.notFound) {
-          formError.value = 'Incorrect email or password.';
-        }
+        const errorCodes = {
+          [ERROR_CODES.notFound]: 'Incorrect email or password.',
+          [ERROR_CODES.invalidCredentials]: 'Password is invalid.',
+        };
+
+        formError.value = errorCodes[e.code] || 'Unexpected error.';
       } finally {
         isFormLoading.value = false;
       }

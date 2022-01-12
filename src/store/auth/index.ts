@@ -55,7 +55,12 @@ const actions: ActionTree<State, RootState> = {
         commit(authVuexTypes.SET_IS_LOGGED_IN, true);
       }
     } catch (e) {
-      if (e.data.code === ERROR_CODES.notFound) {
+      const possibleErrorCodes = [
+        ERROR_CODES.notFound,
+        ERROR_CODES.invalidCredentials,
+      ];
+
+      if (possibleErrorCodes.includes(e.data.code)) {
         throw e.data;
       }
     }
