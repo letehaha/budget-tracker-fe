@@ -115,10 +115,10 @@ export default defineComponent({
 }
 .register__signup-link {
   transition: .2s ease-out;
-  color: var(--system-blue);
+  color: var(--primary-500);
 
   &:hover {
-    color: var(--system-blue-hovered);
+    color: var(--primary-700);
   }
 }
 </style>

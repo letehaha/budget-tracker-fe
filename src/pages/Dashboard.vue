@@ -93,8 +93,11 @@ export default defineComponent({
 }
 .dashboard__records {
   padding: 24px;
-  background-color: #fff;
+  background-color: var(--app-surface-color);
   box-shadow: 0 0 24px 0px rgba(0, 0, 0, 0.05);
   border-radius: 6px;
+}
+.dashboard__charts {
+  color: var(--app-on-surface-color);
 }
 </style>

@@ -157,9 +157,11 @@ export default defineComponent({
 }
 .accounts__title {
   margin-bottom: 16px;
+  color: var(--app-on-bg-color);
 }
 .accounts__subtitle {
   margin-bottom: 16px;
+  color: var(--app-on-bg-color);
 }
 .accounts__list {
   display: grid;
@@ -168,7 +170,8 @@ export default defineComponent({
 }
 .accounts__item {
   padding: 16px;
-  background-color: #fff;
+  background-color: var(--app-surface-color);
+  color: var(--app-on-surface-color);
   border-radius: 6px;
   box-shadow: 0 0 24px 0px rgba(0, 0, 0, 0.05);
   transition: box-shadow .2s ease-out;
@@ -199,7 +202,7 @@ export default defineComponent({
   position: absolute;
   top: 8px;
   right: 8px;
-  background-color: #ccc;
+  background-color: var(--app-bg-color);
   padding: 2px 4px;
   font-size: 12px;
   border-radius: 4px;

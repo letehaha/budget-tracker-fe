@@ -92,25 +92,25 @@ export default defineComponent({
 .input-field__input {
   font-size: 16px;
   line-height: 1;
-  color: var(--primary-text-color);
+  color: var(--app-on-surface-color);
   font-weight: 400;
   letter-spacing: 0.5px;
   padding: 12px 24px;
-  background-color: #fff;
+  background-color: var(--app-surface-color);
   border: 1px solid #acafb3;
   box-sizing: border-box;
   border-radius: var(--system-border-radius);
   outline: none;
   width: 100%;
 
-  @include placeholder-custom(rgba(#333, 0.6));
+  @include placeholder-custom(rgba(var(--app-on-surface-color-rgb), 0.6));
 }
 .input-field__label {
   font-size: 16px;
   font-weight: 400;
   letter-spacing: 0.5px;
   line-height: 1;
-  color: var(--primary-text-color);
+  color: var(--app-on-surface-color);
   margin-bottom: 5px;
   display: block;
 }
@@ -126,7 +126,7 @@ export default defineComponent({
   top: 0;
   font-size: 16px;
   font-weight: 400;
-  color: #000000;
+  color: rgba(var(--app-on-surface-color-rgb), 0.95);
 
   a {
     color: #ffffff;
