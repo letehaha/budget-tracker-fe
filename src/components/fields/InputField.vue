@@ -103,7 +103,7 @@ export default defineComponent({
   outline: none;
   width: 100%;
 
-  @include placeholder-custom(var(--app-on-surface-color));
+  @include placeholder-custom(rgba(var(--app-on-surface-color-rgb), 0.6));
 }
 .input-field__label {
   font-size: 16px;

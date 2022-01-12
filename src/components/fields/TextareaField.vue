@@ -128,7 +128,7 @@ export default defineComponent({
   outline: none;
   color: var(--app-on-surface-color);
 
-  @include placeholder-custom(var(--app-on-surface-color));
+  @include placeholder-custom(rgba(var(--app-on-surface-color-rgb), 0.4));
 }
 
 .text-field__err-mes {

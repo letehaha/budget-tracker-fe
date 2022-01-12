@@ -10,16 +10,28 @@ $primary-color: #2ecc71;
   }
 
   // app elements color
-  --app-bg-color: #fafafa;
-  --app-surface-color: #fff;
-  --app-on-bg-color: #333;
-  --app-on-surface-color: #222;
+  @each $cssVar, $value in (
+    --app-bg-color: #fafafa,
+    --app-surface-color: #fff,
+    --app-on-bg-color: #333,
+    --app-on-surface-color: #222,
+  ) {
+    #{$cssVar}: $value;
+    // in case you wanna use rgba with css variables, you need to use varname-rgb
+    #{$cssVar}-rgb: #{hextorgb($value)};
+  }
 
   @media (prefers-color-scheme: dark) {
-    --app-bg-color: #121212;
-    --app-surface-color: #1E1E1E;
-    --app-on-bg-color: #E1E1E1;
-    --app-on-surface-color: #E3E3E3;
+    @each $cssVar, $value in (
+      --app-bg-color: #121212,
+      --app-surface-color: #1E1E1E,
+      --app-on-bg-color: #E1E1E1,
+      --app-on-surface-color: #E3E3E3,
+    ) {
+      #{$cssVar}: $value;
+      // in case you wanna use rgba with css variables, you need to use varname-rgb
+      #{$cssVar}-rgb: #{hextorgb($value)};
+    }
   }
 
   --system-border-radius: 6px;
