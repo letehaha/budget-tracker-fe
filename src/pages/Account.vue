@@ -123,6 +123,6 @@ export default defineComponent({
   font-size: 18px;
   padding: 8px;
   outline: none;
-  color: #333;
+  color: var(--app-on-bg-color);
 }
 </style>

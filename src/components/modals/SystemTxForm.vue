@@ -215,7 +215,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .system-tx-form {
-  background-color: #fff;
+  background-color: var(--app-surface-color);
   padding: 60px;
   width: 100%;
   max-width: 600px;

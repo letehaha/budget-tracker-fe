@@ -112,23 +112,23 @@ export default defineComponent({
   font-weight: 400;
   font-size: 13px;
   line-height: 1.2;
-  color: #000000;
+  color: var(--app-on-surface-color);
 }
 
 .text-field__input {
   width: 100%;
   position: relative;
   padding: 16px 16px 24px;
-  caret-color: #000000;
-  background-color: #ffffff;
-  border: 1px solid #000000;
+  caret-color: var(--app-on-surface-color);
+  background-color: var(--app-surface-color);
+  border: 1px solid var(--app-on-surface-color);
   border-radius: 4px;
   transition: all 0s, border-color 0.2s ease-out;
   resize: none;
   outline: none;
-  color: #000000;
+  color: var(--app-on-surface-color);
 
-  @include placeholder-custom(rgba(#000000, 0.4));
+  @include placeholder-custom(var(--app-on-surface-color));
 }
 
 .text-field__err-mes {

@@ -70,7 +70,7 @@ export default defineComponent({
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #fff;
+  background-color: var(--app-surface-color);
 }
 .header__actions {
   display: flex;
@@ -83,7 +83,7 @@ export default defineComponent({
   border: none;
   background-color: transparent;
   outline: none;
-  color: #333;
+  color: var(--app-on-surface-color);
   letter-spacing: 0.5px;
   font-size: 16px;
   cursor: pointer;

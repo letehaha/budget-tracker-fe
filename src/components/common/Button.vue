@@ -82,23 +82,23 @@ $transition: box-shadow 0.2s ease-out;
 }
 
 .button--blue {
-  background-color: var(--system-blue);
+  background-color: var(--primary-500);
   color: #fff;
 
   &:hover {
-    background-color: var(--system-blue-hovered);
+    background-color: var(--primary-700);
   }
   &:active {
-    background-color: var(--system-blue-active);
+    background-color: var(--primary-600);
   }
   &[disabled] {
-    background-color: var(--system-disabled);
+    background-color: var(--primary-200);
     cursor: not-allowed;
   }
   &:not([disabled]).button--outline {
     background-color: transparent;
-    border-color: var(--system-blue);
-    color: var(--system-blue);
+    border-color: var(--primary-500);
+    color: var(--primary-500);
   }
 }
 </style>
