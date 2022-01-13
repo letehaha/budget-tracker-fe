@@ -37,17 +37,18 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapActions } from 'vuex';
 import { bankMonobankVuexTypes } from '@/store';
-import InputField from '@/components/fields/InputField';
-import Button from '@/components/common/Button';
+import InputField from '@/components/fields/InputField.vue';
+import Button from '@/components/common/Button.vue';
 
 const EVENTS = {
   closeModal: 'close-modal',
 };
 
-export default {
+export default defineComponent({
   name: 'MonobankSetToken',
   components: {
     InputField,
@@ -81,12 +82,12 @@ export default {
       this.$emit(EVENTS.closeModal);
     },
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>
 .monobank-set-token {
-  background-color: #fff;
+  background-color: var(--app-bg-color);
   padding: 60px;
   width: 100%;
   max-width: 600px;

@@ -34,9 +34,10 @@
   </div>
 </template>
 
-<script>
-import Flatpickr from 'flatpickr';
+<script lang="ts">
+import buildFlatpickr from 'flatpickr';
 import { isBefore, isAfter } from 'date-fns';
+import { defineComponent } from 'vue';
 // All supported events by Flatpickr
 const FLATPICKR_HOOKS = {
   onChange: 'onChange',
@@ -62,7 +63,7 @@ const EMITABLE_EVENTS = {
   onOpen: FLATPICKR_HOOKS.onOpen,
   ...MODEL_EVENTS,
 };
-export default {
+export default defineComponent({
   name: 'DateFieldFlatpickr',
   props: {
     modelValue: { type: [String, Date], default: '' },
@@ -162,7 +163,7 @@ export default {
     };
     // Set initial date without emitting any event
     safeConfig.defaultDate = this.modelValue || safeConfig.defaultDate;
-    this.flatpickr = new Flatpickr(this.$refs.dateField, safeConfig);
+    this.flatpickr = buildFlatpickr(this.$refs.dateField, safeConfig);
     this.flatpickrDate = this.modelValue || safeConfig.defaultDate || null;
   },
   /**
@@ -185,7 +186,7 @@ export default {
     },
     defineFlatpickrHooks(config) {
       const safeConfig = { ...config };
-      FLATPICKR_HOOKS.forEach((hook) => {
+      Object.values(FLATPICKR_HOOKS).forEach((hook) => {
         delete safeConfig[hook];
       });
       return safeConfig;
@@ -202,7 +203,7 @@ export default {
      *
      * @link https://flatpickr.js.org/events/#events
      */
-    // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     onOpen(selectedDates, dateStr, instance) {
       this.isCalendarOpen = true;
       // Let's wait for DOM to be updated
@@ -210,7 +211,7 @@ export default {
         this.$emit(EMITABLE_EVENTS.onOpen);
       });
     },
-    // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     onClose(selectedDates, dateStr, instance) {
       this.isCalendarOpen = false;
       this.flatpickrDate = dateStr;
@@ -222,7 +223,7 @@ export default {
       });
     },
   },
-};
+});
 </script>
 
 <style lang="scss">
@@ -243,8 +244,8 @@ export default {
   width: 100%;
   padding: 8px 12px;
   outline: none;
-  color: #333333;
-  background-color: #ecf0f1;
+  color: var(--app-on-surface-color);
+  background-color: var(--app-surface-color);
   border: 1px solid #bdc3c7;
 
   .date-field-flatpickr--disabled > & {

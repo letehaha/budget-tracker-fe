@@ -19,7 +19,6 @@
         label="Category"
         :values="categories"
         label-key="name"
-        is-value-preselected
       />
     </div>
     <div class="monobank-tx-form__row">
@@ -37,13 +36,14 @@
         :disabled="isLoading"
         @click="submit"
       >
-        Edit
+        Save changes
       </Button>
     </div>
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapActions, mapGetters } from 'vuex';
 import {
   indexVuexTypes,
@@ -52,15 +52,15 @@ import {
   bankMonobankVuexTypes,
 } from '@/store';
 import { MONOTransactionRecord } from '@/js/records';
-import CategorySelectField from '@/components/fields/CategorySelectField';
-import TextareaField from '@/components/fields/TextareaField';
-import Button from '@/components/common/Button';
+import CategorySelectField from '@/components/fields/CategorySelectField.vue';
+import TextareaField from '@/components/fields/TextareaField.vue';
+import Button from '@/components/common/Button.vue';
 
 const EVENTS = {
   closeModal: 'close-modal',
 };
 
-export default {
+export default defineComponent({
   name: 'MonobankTxForm',
   components: {
     CategorySelectField,
@@ -119,18 +119,19 @@ export default {
       this.isLoading = false;
     },
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>
 .monobank-tx-form {
-  background-color: #fff;
+  background-color: var(--app-bg-color);
   padding: 60px;
   width: 100%;
   max-width: 600px;
 }
 .monobank-tx-form__row {
   margin-bottom: 20px;
+  color: var(--app-on-bg-color);
 }
 .monobank-tx-form__actions {
   display: flex;

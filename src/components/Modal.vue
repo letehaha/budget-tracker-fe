@@ -13,20 +13,28 @@
   </div>
 </template>
 
-<script>
-import { defineAsyncComponent } from 'vue';
+<script lang="ts">
+import {
+  defineAsyncComponent, PropType, AsyncComponentLoader, defineComponent,
+} from 'vue';
 
 export const MODAL_TYPES = Object.freeze({
-  systemTxForm: defineAsyncComponent(() => import('@/components/modals/SystemTxForm')),
-  monobankTxForm: defineAsyncComponent(() => import('@/components/modals/MonobankTxForm')),
-  monobankSetToken: defineAsyncComponent(() => import('@/components/modals/MonobankSetToken')),
+  systemTxForm: defineAsyncComponent(() => import('@/components/modals/SystemTxForm.vue')),
+  monobankTxForm: defineAsyncComponent(() => import('@/components/modals/MonobankTxForm.vue')),
+  monobankSetToken: defineAsyncComponent(() => import('@/components/modals/MonobankSetToken.vue')),
 });
 
 const EVENTS = {
   close: 'close',
 };
 
-export default {
+type ModalDataProp = {
+  data: unknown;
+  type: AsyncComponentLoader;
+  hideOnWidth: number;
+}
+
+export default defineComponent({
   props: {
     isActive: { type: Boolean, default: false },
     /**
@@ -36,9 +44,9 @@ export default {
      * @param data.hideOnWidth - hide modal on window width
      */
     data: {
-      type: Object,
+      type: Object as PropType<ModalDataProp>,
       required: true,
-      validator(value) {
+      validator(value: ModalDataProp) {
         if (Object.keys(value).length) {
           // TODO: add check for a right value
           if (!value.type) {
@@ -70,7 +78,7 @@ export default {
       }
     },
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>

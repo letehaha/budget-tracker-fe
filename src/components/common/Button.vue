@@ -15,7 +15,9 @@
   </button>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, PropType } from 'vue';
+
 const EVENTS = {
   click: 'click',
 };
@@ -29,19 +31,25 @@ export const SIZES = Object.freeze({
   default: 'default',
 });
 
-export default {
+enum BUTTON_TYPES {
+  button = 'button',
+  submit = 'submit',
+  reset = 'reset',
+}
+
+export default defineComponent({
   props: {
-    type: { type: String, default: 'button' },
+    type: { type: String as PropType<BUTTON_TYPES>, default: 'button' },
     disabled: { type: Boolean, default: false },
     size: {
       type: String,
       default: SIZES.default,
-      validator: size => Object.values(SIZES).includes(size),
+      validator: (size: string) => Object.values(SIZES).includes(size),
     },
     theme: {
       type: String,
       default: THEMES.blue,
-      validator: theme => Object.values(THEMES).includes(theme),
+      validator: (theme: string) => Object.values(THEMES).includes(theme),
     },
     withShadow: { type: Boolean, default: false },
     outline: { type: Boolean, default: false },
@@ -51,7 +59,7 @@ export default {
   data: () => ({
     EVENTS,
   }),
-};
+});
 </script>
 
 <style lang="scss" scoped>
@@ -74,23 +82,23 @@ $transition: box-shadow 0.2s ease-out;
 }
 
 .button--blue {
-  background-color: var(--system-blue);
+  background-color: var(--primary-500);
   color: #fff;
 
   &:hover {
-    background-color: var(--system-blue-hovered);
+    background-color: var(--primary-700);
   }
   &:active {
-    background-color: var(--system-blue-active);
+    background-color: var(--primary-600);
   }
   &[disabled] {
-    background-color: var(--system-disabled);
+    background-color: var(--primary-200);
     cursor: not-allowed;
   }
   &:not([disabled]).button--outline {
     background-color: transparent;
-    border-color: var(--system-blue);
-    color: var(--system-blue);
+    border-color: var(--primary-500);
+    color: var(--primary-500);
   }
 }
 </style>

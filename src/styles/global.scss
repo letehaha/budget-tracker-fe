@@ -1,0 +1,23 @@
+html {
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+html, body, main, h1, h2, h3, h4, h5, h6, p, a, span, b, strong, div, header,
+footer, section, article, aside, code, button, input, textarea, form, img, pre {
+  font-family: 'Montserrat', 'Aria', sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+}
+
+.container {
+  max-width: calc(var(--container-width) + (var(--container-padding) * 2));
+  padding: 0 var(--container-padding);
+  width: 100%;
+  margin: 0 auto;
+}

@@ -6,25 +6,29 @@
     }"
     class="input-field"
   >
-    <span
-      v-if="label"
-      class="input-field__label"
-    >
-      {{ label }}
-    </span>
-    <input
-      :type="type"
-      :value="modelValue"
-      :placeholder="$attrs.placeholder || ''"
-      :style="inputFieldStyles"
-      :tabindex="tabindex"
-      v-bind="attrs"
-      class="input-field__input"
-      autocomplete="off"
-      autocorrect="off"
-      autocapitalize="off"
-      spellcheck="false"
-    >
+    <label class="input-field__input-focusable">
+      <span
+        v-if="label"
+        class="input-field__label"
+      >
+        {{ label }}
+      </span>
+      <div class="input-field__input-wrapper">
+        <input
+          :type="type"
+          :value="modelValue"
+          :placeholder="$attrs.placeholder || ''"
+          :style="inputFieldStyles"
+          :tabindex="tabindex"
+          v-bind="attrs"
+          class="input-field__input"
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+          spellcheck="false"
+        >
+      </div>
+    </label>
     <div
       v-if="isSubLabelExist"
       class="input-fields__sublabel"
@@ -40,13 +44,14 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 
 const MODEL_EVENTS = {
   input: 'update:modelValue',
 };
 
-export default {
+export default defineComponent({
   props: {
     label: { type: String, default: undefined },
     modelValue: { type: [String, Number], default: undefined },
@@ -72,7 +77,7 @@ export default {
   methods: {
 
   },
-};
+});
 </script>
 
 <style lang="scss">
@@ -81,33 +86,36 @@ export default {
   width: 100%;
   flex: 1;
 }
+.input-field__input-wrapper {
+  position: relative;
+}
 .input-field__input {
   font-size: 16px;
   line-height: 1;
-  color: var(--primary-text-color);
+  color: var(--app-on-surface-color);
   font-weight: 400;
   letter-spacing: 0.5px;
   padding: 12px 24px;
-  background-color: #fff;
+  background-color: var(--app-surface-color);
   border: 1px solid #acafb3;
   box-sizing: border-box;
   border-radius: var(--system-border-radius);
   outline: none;
   width: 100%;
 
-  @include placeholder-custom(rgba(#333, 0.6));
+  @include placeholder-custom(rgba(var(--app-on-surface-color-rgb), 0.6));
 }
 .input-field__label {
   font-size: 16px;
   font-weight: 400;
   letter-spacing: 0.5px;
   line-height: 1;
-  color: var(--primary-text-color);
+  color: var(--app-on-surface-color);
   margin-bottom: 5px;
   display: block;
 }
 .input-field__err-mes {
-  color: red;
+  color: var(--app-danger-color);
   font-size: 14px;
   margin-top: 4px;
   margin-left: 8px;
@@ -118,7 +126,7 @@ export default {
   top: 0;
   font-size: 16px;
   font-weight: 400;
-  color: #000000;
+  color: rgba(var(--app-on-surface-color-rgb), 0.95);
 
   a {
     color: #ffffff;

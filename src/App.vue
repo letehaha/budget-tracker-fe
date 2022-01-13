@@ -7,7 +7,7 @@
       <div class="page">
         <Sidebar />
         <div class="page__wrapper">
-          <Header />
+          <UIHeader />
           <router-view />
         </div>
       </div>
@@ -20,18 +20,20 @@
   </main>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapGetters } from 'vuex';
 import { authVuexTypes } from '@/store';
 import { ROUTER_LAYOUTS } from '@/routes';
-import Modal from '@/components/Modal';
-import Header from '@/components/Header';
-import Sidebar from '@/components/Sidebar';
+import { eventBus } from '@/js/utils';
+import Modal from '@/components/Modal.vue';
+import UIHeader from '@/components/Header.vue';
+import Sidebar from '@/components/Sidebar.vue';
 
-export default {
+export default defineComponent({
   components: {
     Modal,
-    Header,
+    UIHeader,
     Sidebar,
   },
   data: () => ({
@@ -58,8 +60,8 @@ export default {
     },
   },
   mounted() {
-    this.$bus.on(this.$bus.eventsList.modalOpen, this.onOpenMessage);
-    this.$bus.on(this.$bus.eventsList.modalClose, this.closeModal);
+    eventBus.on(eventBus.eventsList.modalOpen, this.onOpenMessage);
+    eventBus.on(eventBus.eventsList.modalClose, this.closeModal);
   },
   methods: {
     onOpenMessage(data) {
@@ -71,14 +73,14 @@ export default {
       this.isModalVisible = false;
     },
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>
 .page {
   display: grid;
   grid-template-columns: 240px 1fr;
-  background-color: #fafafa;
+  background-color: var(--app-bg-color);
   min-height: 100vh;
 }
 </style>

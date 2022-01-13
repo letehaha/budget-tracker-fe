@@ -27,14 +27,16 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapActions } from 'vuex';
 import { authVuexTypes } from '@/store';
-import { MODAL_TYPES } from '@/components/Modal';
-import Button from '@/components/common/Button';
-import InputField from '@/components/fields/InputField';
+import { MODAL_TYPES } from '@/components/Modal.vue';
+import { eventBus } from '@/js/utils';
+import Button from '@/components/common/Button.vue';
+import InputField from '@/components/fields/InputField.vue';
 
-export default {
+export default defineComponent({
   components: {
     Button,
     InputField,
@@ -49,8 +51,8 @@ export default {
       logOut: authVuexTypes.LOG_OUT,
     }),
     openFormModal() {
-      this.$bus.emit(this.$bus.eventsList.modalOpen, {
-        type: MODAL_TYPES.transactionForm,
+      eventBus.emit(eventBus.eventsList.modalOpen, {
+        type: MODAL_TYPES.systemTxForm,
       });
     },
     logOutHandler() {
@@ -58,7 +60,7 @@ export default {
       this.$router.push('/sign-in');
     },
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>
@@ -68,7 +70,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #fff;
+  background-color: var(--app-surface-color);
 }
 .header__actions {
   display: flex;
@@ -81,7 +83,7 @@ export default {
   border: none;
   background-color: transparent;
   outline: none;
-  color: #333;
+  color: var(--app-on-surface-color);
   letter-spacing: 0.5px;
   font-size: 16px;
   cursor: pointer;

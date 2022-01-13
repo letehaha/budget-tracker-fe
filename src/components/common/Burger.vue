@@ -11,7 +11,8 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 /**
   Example of usage:
 
@@ -39,18 +40,19 @@
 
  */
 
-export default {
+export default defineComponent({
   props: {
     isActive: { type: Boolean, required: true },
     linesStyles: { type: Object, required: false, default: () => ({}) },
     burgerStyles: { type: Object, required: false, default: () => ({}) },
   },
+  emits: ['clicked'],
   methods: {
     onClick() {
       this.$emit('clicked');
     },
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>

@@ -17,7 +17,8 @@
   </section>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapActions, mapGetters } from 'vuex';
 import {
   indexVuexTypes,
@@ -27,10 +28,10 @@ import {
 } from '@/store';
 import { TooManyRequestsError } from '@/js/errors';
 import { ErrorHandler } from '@/js/utils';
-import TransactionsList from '@/components/page-sections/dashboard/TransactionsList/TransactionsList';
-import AccountsList from '@/components/page-sections/dashboard/AccountsList/AccountsList';
+import TransactionsList from '@/components/page-sections/dashboard/TransactionsList/TransactionsList.vue';
+import AccountsList from '@/components/page-sections/dashboard/AccountsList/AccountsList.vue';
 
-export default {
+export default defineComponent({
   name: 'Dashboard',
   components: {
     TransactionsList,
@@ -77,7 +78,7 @@ export default {
       }
     },
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>
@@ -92,8 +93,11 @@ export default {
 }
 .dashboard__records {
   padding: 24px;
-  background-color: #fff;
+  background-color: var(--app-surface-color);
   box-shadow: 0 0 24px 0px rgba(0, 0, 0, 0.05);
   border-radius: 6px;
+}
+.dashboard__charts {
+  color: var(--app-on-surface-color);
 }
 </style>

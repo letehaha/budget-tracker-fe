@@ -22,13 +22,14 @@
   </label>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 
 const MODEL_EVENTS = {
   input: 'update:modelValue',
 };
 
-export default {
+export default defineComponent({
   props: {
     label: { type: String, default: undefined },
     modelValue: { type: [String, Boolean], required: true },
@@ -46,7 +47,7 @@ export default {
       return `tick-field-${this._uid}`;
     },
   },
-};
+});
 </script>
 
 <style lang="scss">
@@ -103,8 +104,8 @@ export default {
   }
 
   .tick-field__input:checked + & {
-    background-color: red;
-    border-color: red;
+    background-color: var(--app-danger-color);
+    border-color: var(--app-danger-color);
 
     &:after,
     &:before {

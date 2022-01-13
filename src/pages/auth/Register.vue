@@ -44,13 +44,14 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapActions } from 'vuex';
 import { authVuexTypes } from '@/store';
-import Button from '@/components/common/Button';
-import InputField from '@/components/fields/InputField';
+import Button from '@/components/common/Button.vue';
+import InputField from '@/components/fields/InputField.vue';
 
-export default {
+export default defineComponent({
   components: {
     Button,
     InputField,
@@ -77,7 +78,7 @@ export default {
       this.isFormLoading = false;
     },
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>
@@ -114,10 +115,10 @@ export default {
 }
 .register__signup-link {
   transition: .2s ease-out;
-  color: var(--system-blue);
+  color: var(--primary-500);
 
   &:hover {
-    color: var(--system-blue-hovered);
+    color: var(--primary-700);
   }
 }
 </style>

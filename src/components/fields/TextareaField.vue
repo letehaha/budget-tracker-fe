@@ -48,12 +48,14 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
+
 const MODEL_EVENTS = Object.freeze({
   input: 'update:modelValue',
 });
 
-export default {
+export default defineComponent({
   props: {
     label: { type: String, default: undefined },
     modelValue: { type: [String, Number], default: undefined },
@@ -66,7 +68,7 @@ export default {
     placeholder: { type: String, default: undefined },
     required: { type: Boolean, default: false },
     readonly: { type: Boolean, default: false },
-    title: { type: [String, Number], default: undefined },
+    title: { type: String, default: undefined },
     maxlength: { type: [String, Number], default: undefined },
     // textarea proxies
     rows: { type: [String, Number], default: 4 },
@@ -89,7 +91,7 @@ export default {
       this.$emit(MODEL_EVENTS.input, event.target.value);
     },
   },
-};
+});
 </script>
 
 <style lang="scss">
@@ -110,27 +112,27 @@ export default {
   font-weight: 400;
   font-size: 13px;
   line-height: 1.2;
-  color: #000000;
+  color: var(--app-on-surface-color);
 }
 
 .text-field__input {
   width: 100%;
   position: relative;
   padding: 16px 16px 24px;
-  caret-color: #000000;
-  background-color: #ffffff;
-  border: 1px solid #000000;
+  caret-color: var(--app-on-surface-color);
+  background-color: var(--app-surface-color);
+  border: 1px solid var(--app-on-surface-color);
   border-radius: 4px;
   transition: all 0s, border-color 0.2s ease-out;
   resize: none;
   outline: none;
-  color: #000000;
+  color: var(--app-on-surface-color);
 
-  @include placeholder-custom(rgba(#000000, 0.4));
+  @include placeholder-custom(rgba(var(--app-on-surface-color-rgb), 0.4));
 }
 
 .text-field__err-mes {
-  color: red;
+  color: var(--app-danger-color);
   font-size: 12px;
 }
 </style>
