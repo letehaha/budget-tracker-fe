@@ -19,7 +19,6 @@
         label="Category"
         :values="categories"
         label-key="name"
-        is-value-preselected
       />
     </div>
     <div class="monobank-tx-form__row">
@@ -37,7 +36,7 @@
         :disabled="isLoading"
         @click="submit"
       >
-        Edit
+        Save changes
       </Button>
     </div>
   </div>
