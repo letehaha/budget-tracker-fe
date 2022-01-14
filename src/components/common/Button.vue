@@ -18,18 +18,18 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
 
-const EVENTS = {
-  click: 'click',
-};
+enum EVENTS {
+  click = 'click',
+}
 
-export const THEMES = Object.freeze({
-  blue: 'blue',
-});
+export enum THEMES {
+  primary = 'primary',
+}
 
-export const SIZES = Object.freeze({
-  large: 'large',
-  default: 'default',
-});
+export enum SIZES {
+  large = 'large',
+  default = 'default',
+}
 
 enum BUTTON_TYPES {
   button = 'button',
@@ -44,16 +44,15 @@ export default defineComponent({
     size: {
       type: String,
       default: SIZES.default,
-      validator: (size: string) => Object.values(SIZES).includes(size),
+      validator: (size: SIZES) => Object.values(SIZES).includes(size),
     },
     theme: {
       type: String,
-      default: THEMES.blue,
-      validator: (theme: string) => Object.values(THEMES).includes(theme),
+      default: THEMES.primary,
+      validator: (theme: THEMES) => Object.values(THEMES).includes(theme),
     },
     withShadow: { type: Boolean, default: false },
     outline: { type: Boolean, default: false },
-    isText: { type: Boolean, default: false },
   },
   emits: Object.values(EVENTS),
   data: () => ({
@@ -81,7 +80,7 @@ $transition: box-shadow 0.2s ease-out;
   transition: .2s ease-out;
 }
 
-.button--blue {
+.button--primary {
   background-color: var(--primary-500);
   color: #fff;
 

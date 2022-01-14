@@ -10,7 +10,9 @@
     "docker-push": "docker push letehaha/budget-tracker-fe",
     "docker-compose": "npm run docker-build && npm run docker-push",
     "start": "npm run dev",
-    "test": "jest --passWithNoTests --config ./jest.config.js"
+    "test": "jest --passWithNoTests --config ./jest.config.js",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
   },
   "dependencies": {
     "@vuelidate/core": "2.0.0-alpha.28",
@@ -27,6 +29,15 @@
     "vuex": "^4.0.2"
   },
   "devDependencies": {
+    "@babel/core": "^7.16.7",
+    "@babel/plugin-proposal-class-properties": "^7.16.7",
+    "@babel/plugin-proposal-private-methods": "^7.16.7",
+    "@babel/plugin-proposal-private-property-in-object": "^7.16.7",
+    "@storybook/addon-actions": "^6.4.12",
+    "@storybook/addon-docs": "^6.4.12",
+    "@storybook/addon-essentials": "^6.4.12",
+    "@storybook/addon-links": "^6.4.12",
+    "@storybook/vue3": "^6.4.12",
     "@typescript-eslint/eslint-plugin": "^4.18.0",
     "@typescript-eslint/parser": "^4.18.0",
     "@vue/cli-plugin-babel": "~4.5.0",
@@ -41,6 +52,8 @@
     "@vue/vue3-jest": "^27.0.0-alpha.4",
     "babel-eslint": "^10.1.0",
     "babel-jest": "^27.4.6",
+    "babel-loader": "^8.2.3",
+    "css-loader": "^4.3.0",
     "eslint": "^6.8.0",
     "eslint-friendly-formatter": "^4.0.1",
     "eslint-import-resolver-alias": "^1.1.2",
@@ -53,29 +66,16 @@
     "jest-watch-typeahead": "^1.0.0",
     "markdown-loader-jest": "^0.1.1",
     "node-sass": "^4.14.1",
-    "sass-loader": "^10.0.4",
+    "sass-loader": "^10.2.0",
     "ts-jest": "^27.1.2",
     "typescript": "~4.1.5",
-    "vue-loader": "^17.0.0",
+    "vue-loader": "^16.8.3",
+    "vue-style-loader": "^4.1.3",
     "vue-svg-loader": "^0.17.0-beta.2"
   },
   "browserslist": [
     "> 1%",
     "last 2 versions",
     "not dead"
-  ],
-  "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "vue"
-    ],
-    "transform": {
-      "^.+\\.js$": "<rootDir>/node_modules/babel-jest",
-      ".*\\.(vue)$": "<rootDir>/node_modules/vue-jest"
-    },
-    "moduleNameMapper": {
-      "^@/(.*)$": "<rootDir>/src/$1"
-    }
-  }
+  ]
 }
