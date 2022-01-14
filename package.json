@@ -30,6 +30,8 @@
   },
   "devDependencies": {
     "@babel/core": "^7.16.7",
+    "@babel/plugin-proposal-class-properties": "^7.16.7",
+    "@babel/plugin-proposal-private-methods": "^7.16.7",
     "@babel/plugin-proposal-private-property-in-object": "^7.16.7",
     "@storybook/addon-actions": "^6.4.12",
     "@storybook/addon-docs": "^6.4.12",
@@ -75,19 +77,5 @@
     "> 1%",
     "last 2 versions",
     "not dead"
-  ],
-  "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "vue"
-    ],
-    "transform": {
-      "^.+\\.js$": "<rootDir>/node_modules/babel-jest",
-      ".*\\.(vue)$": "<rootDir>/node_modules/vue-jest"
-    },
-    "moduleNameMapper": {
-      "^@/(.*)$": "<rootDir>/src/$1"
-    }
-  }
+  ]
 }
