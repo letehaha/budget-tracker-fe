@@ -11,8 +11,7 @@
     "docker-compose": "npm run docker-build && npm run docker-push",
     "start": "npm run dev",
     "test": "jest --passWithNoTests --config ./jest.config.js",
-    "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "storybook": "start-storybook -p 6006"
   },
   "dependencies": {
     "@vuelidate/core": "2.0.0-alpha.28",
