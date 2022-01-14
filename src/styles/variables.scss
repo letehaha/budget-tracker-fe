@@ -1,6 +1,6 @@
 $primary-color: #2ecc71;
 
-:root {
+body {
   --primary-text-color: #333;
 
   @each $shade, $color in makeColorPalette($primary-color) {
@@ -21,7 +21,7 @@ $primary-color: #2ecc71;
     #{$cssVar}-rgb: #{hextorgb($value)};
   }
 
-  @media (prefers-color-scheme: dark) {
+  &.dark {
     @each $cssVar, $value in (
       --app-danger-color: #fd7461,
 
