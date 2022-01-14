@@ -2,12 +2,13 @@ const path = require('path');
 
 module.exports = {
   stories: [
-    "../src/**/*.stories.mdx",
-    "../src/**/*.stories.@(js|jsx|ts|tsx)"
+    '../src/**/*.story.@(js|jsx|ts|tsx)',
+    '../src/**/*.stories.@(js|jsx|ts|tsx)',
   ],
   addons: [
-    "@storybook/addon-links",
-    "@storybook/addon-essentials",
+    '@storybook/addon-links',
+    '@storybook/addon-essentials',
+    'storybook-dark-mode',
   ],
   webpackFinal: async (config, { configType }) => {
     config.module.rules.push({
@@ -28,11 +29,11 @@ module.exports = {
 
     config.resolve.alias = {
       ...config.resolve.alias,
-      '@': path.resolve(__dirname, "../src"),
-      '~': path.resolve(__dirname, "../src"),
+      '@': path.resolve(__dirname, '../src'),
+      '~': path.resolve(__dirname, '../src'),
     }
 
     return config
   },
-  framework: "@storybook/vue3"
+  framework: '@storybook/vue3'
 }

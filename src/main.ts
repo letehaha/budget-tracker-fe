@@ -7,6 +7,9 @@ import App from './App.vue';
 import '@/styles/index.scss';
 import './registerServiceWorker';
 
+const matched = window.matchMedia('(prefers-color-scheme: dark)').matches;
+document.body.classList.add(matched ? 'dark' : 'light');
+
 const app = createApp(App);
 
 app.directive('click-outside', clickOutside);

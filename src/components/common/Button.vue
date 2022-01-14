@@ -51,7 +51,6 @@ export default defineComponent({
       default: THEMES.primary,
       validator: (theme: THEMES) => Object.values(THEMES).includes(theme),
     },
-    withShadow: { type: Boolean, default: false },
     outline: { type: Boolean, default: false },
   },
   emits: Object.values(EVENTS),
