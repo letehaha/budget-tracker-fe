@@ -9,7 +9,7 @@ import {
 } from '@/js/records';
 import { indexVuexTypes } from './types';
 import auth, { namespace as authNamespace } from './auth';
-import transactions from './transactions';
+import transactions, { namespace as txsNamespace } from './transactions';
 import user from './user';
 import categories from './categories';
 import accounts, { accountsVuexTypes } from './accounts';
@@ -92,15 +92,16 @@ export const store = createStore({
     user,
     categories,
     accounts,
-    transactions,
+    [txsNamespace]: transactions,
     bankMonobank,
     cryptoBinance,
   },
 });
 
+export { useRootStore } from './composable';
 export { indexVuexTypes } from './types';
 export { authVuexTypes, useAuthStore } from './auth';
-export { transactionsVuexTypes } from './transactions';
+export { transactionsVuexTypes, useTransactionsStore } from './transactions';
 export { userVuexTypes } from './user';
 export { categoriesVuexTypes } from './categories';
 export { accountsVuexTypes } from './accounts';

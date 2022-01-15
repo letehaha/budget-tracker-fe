@@ -59,10 +59,10 @@ const mutations: MutationTree<State> = {
 const actions: ActionTree<State, RootState> = {
   async [transactionsVuexTypes.FETCH_TRANSACTIONS](
     { commit }: ActionContext,
-    { limit },
+    { limit, from = 0 },
   ) {
     try {
-      const result = await api.get('/transactions', { limit });
+      const result = await api.get('/transactions', { limit, from });
 
       const resultTxs = [];
       const monoTxs = [];
@@ -85,6 +85,8 @@ const actions: ActionTree<State, RootState> = {
 
       commit(transactionsVuexTypes.SET_TRANSACTIONS, resultTxs);
       commit(`bankMonobank/${bankMonobankVuexTypes.SET_TRANSACTIONS}`, monoTxs, { root: true });
+
+      return resultTxs;
     } catch (e) {
       throw new Error(e);
     }
@@ -168,4 +170,5 @@ export default {
   mutations,
 };
 
-export { transactionsVuexTypes } from './types';
+export { transactionsVuexTypes, namespace } from './types';
+export { useTransactionsStore } from './composable';

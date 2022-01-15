@@ -5,25 +5,31 @@
     </div>
     <nav class="sidebar__navigation">
       <router-link
-        to="/"
+        :to="{ name: 'dashboard' }"
         class="sidebar__navigation-link"
       >
         Dashboard
       </router-link>
       <router-link
-        to="/accounts"
+        :to="{ name: 'accounts' }"
         class="sidebar__navigation-link"
       >
         Accounts
       </router-link>
       <router-link
-        to="/crypto"
+        :to="{ name: 'records' }"
+        class="sidebar__navigation-link"
+      >
+        Records
+      </router-link>
+      <router-link
+        :to="{ name: 'crypto' }"
         class="sidebar__navigation-link"
       >
         Crypto
       </router-link>
       <router-link
-        to="/crypto"
+        :to="{ name: 'crypto' }"
         class="sidebar__navigation-link"
       >
         Settings

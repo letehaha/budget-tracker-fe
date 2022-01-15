@@ -1,10 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import Dashboard from '@/pages/Dashboard.vue';
-import Accounts from '@/pages/Accounts.vue';
-import Account from '@/pages/Account.vue';
-import Crypto from '@/pages/Crypto.vue';
-import Register from '@/pages/auth/Register.vue';
-import Login from '@/pages/auth/Login.vue';
 import { redirectRouteGuard, authPageGuard } from './guards';
 
 export const ROUTER_LAYOUTS = Object.freeze({
@@ -15,7 +9,8 @@ export const ROUTER_LAYOUTS = Object.freeze({
 const routes = [
   {
     path: '/',
-    component: Dashboard,
+    name: 'dashboard',
+    component: () => import('@/pages/Dashboard.vue'),
     beforeEnter: redirectRouteGuard,
     meta: {
       layout: ROUTER_LAYOUTS.dashboard,
@@ -23,7 +18,8 @@ const routes = [
   },
   {
     path: '/accounts',
-    component: Accounts,
+    name: 'accounts',
+    component: () => import('@/pages/Accounts.vue'),
     beforeEnter: redirectRouteGuard,
     meta: {
       layout: ROUTER_LAYOUTS.dashboard,
@@ -31,7 +27,8 @@ const routes = [
   },
   {
     path: '/account',
-    component: Account,
+    name: 'account',
+    component: () => import('@/pages/Account.vue'),
     beforeEnter: redirectRouteGuard,
     meta: {
       layout: ROUTER_LAYOUTS.dashboard,
@@ -39,7 +36,17 @@ const routes = [
   },
   {
     path: '/crypto',
-    component: Crypto,
+    name: 'crypto',
+    component: () => import('@/pages/Crypto.vue'),
+    beforeEnter: redirectRouteGuard,
+    meta: {
+      layout: ROUTER_LAYOUTS.dashboard,
+    },
+  },
+  {
+    path: '/records',
+    name: 'records',
+    component: () => import('@/pages/Records.vue'),
     beforeEnter: redirectRouteGuard,
     meta: {
       layout: ROUTER_LAYOUTS.dashboard,
@@ -47,7 +54,8 @@ const routes = [
   },
   {
     path: '/sign-up',
-    component: Register,
+    name: 'auth/sign-up',
+    component: () => import('@/pages/auth/Register.vue'),
     beforeEnter: authPageGuard,
     meta: {
       layout: ROUTER_LAYOUTS.auth,
@@ -55,7 +63,8 @@ const routes = [
   },
   {
     path: '/sign-in',
-    component: Login,
+    name: 'auth/sign-in',
+    component: () => import('@/pages/auth/Login.vue'),
     beforeEnter: authPageGuard,
     meta: {
       layout: ROUTER_LAYOUTS.auth,
