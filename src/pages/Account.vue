@@ -6,16 +6,6 @@
       type="text"
       placeholder="No name set..."
     >
-    <div class="account__load">
-      <DateField
-        v-model="form.period"
-        :disable-after="new Date()"
-        mode="range"
-      />
-      <button @click="loadTransactionsForPeriod">
-        Load transactions
-      </button>
-    </div>
     <label>
       Is enabled:
       <input
@@ -23,6 +13,17 @@
         type="checkbox"
       >
     </label>
+    <button @click="loadLatestTransactionsHandler">
+      Refresh
+    </button>
+    <DateField
+      v-model="form.period"
+      :disable-after="new Date()"
+      mode="range"
+    />
+    <button @click="loadTransactionsForPeriod">
+      Load transactions
+    </button>
   </div>
 </template>
 
@@ -83,9 +84,6 @@ export default defineComponent({
       }
     },
   },
-  created() {
-    this.loadLatestTransactions({ accountId: this.account.accountId });
-  },
   methods: {
     formatAmount,
     ...mapActions('bankMonobank', {
@@ -95,6 +93,9 @@ export default defineComponent({
         bankMonobankVuexTypes.LOAD_TRANSACTIONS_FROM_LATEST,
       loadTxsForPeriod: bankMonobankVuexTypes.LOAD_TRANSACTIONS_FOR_PERIOD,
     }),
+    loadLatestTransactionsHandler() {
+      this.loadLatestTransactions({ accountId: this.account.accountId });
+    },
     async loadTransactionsForPeriod() {
       if (this.form.period) {
         const dates = this.form.period.split(' to ');
@@ -115,16 +116,6 @@ export default defineComponent({
 <style lang="scss" scoped>
 .account {
   padding: 24px;
-  label {
-    display: block;
-    margin-top: 8px;
-  }
-  &__load {
-    display: flex;
-  }
-}
-.date-field-flatpickr {
-    max-width: 290px
 }
 .account__name {
   border: none;
