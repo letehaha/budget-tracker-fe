@@ -19,3 +19,5 @@ export const transactionsVuexTypes = Object.freeze({
   ...mutations,
   ...actions,
 });
+
+export const namespace = 'transactions';

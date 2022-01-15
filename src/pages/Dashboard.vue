@@ -7,6 +7,12 @@
       </div>
       <div class="dashboard__records">
         <TransactionsList />
+        <router-link
+          class="dashboard__show-all"
+          :to="{ name: 'records' }"
+        >
+          Show all records
+        </router-link>
       </div>
     </div>
     <!-- <div class="dashboard__header">
@@ -28,7 +34,7 @@ import {
 } from '@/store';
 import { TooManyRequestsError } from '@/js/errors';
 import { ErrorHandler } from '@/js/utils';
-import TransactionsList from '@/components/page-sections/dashboard/TransactionsList/TransactionsList.vue';
+import TransactionsList from '@/components/page-sections/dashboard/TransactionsList.vue';
 import AccountsList from '@/components/page-sections/dashboard/AccountsList/AccountsList.vue';
 
 export default defineComponent({
@@ -39,6 +45,7 @@ export default defineComponent({
   },
   computed: {
     ...mapGetters({
+      isAppInitialized: indexVuexTypes.GET_APP_INIT_STATUS,
       accountTypes: indexVuexTypes.GET_ACCOUNT_TYPES,
       paymentTypes: indexVuexTypes.GET_PAYMENT_TYPES,
       txTypes: indexVuexTypes.GET_TRANSACTION_TYPES,
@@ -55,7 +62,9 @@ export default defineComponent({
     }),
   },
   async mounted() {
-    await this.fetchInitialData();
+    if (!this.isAppInitialized) {
+      await this.fetchInitialData();
+    }
     this.fetchAccounts();
   },
   methods: {
@@ -99,5 +108,10 @@ export default defineComponent({
 }
 .dashboard__charts {
   color: var(--app-on-surface-color);
+}
+.dashboard__show-all {
+  display: block;
+  color: var(--primary-500);
+  text-align: center;
 }
 </style>

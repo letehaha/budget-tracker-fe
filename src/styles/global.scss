@@ -3,6 +3,10 @@ html {
   line-height: 1.4;
 }
 
+body {
+  background-color: var(--app-bg-color);
+}
+
 html, body, main, h1, h2, h3, h4, h5, h6, p, a, span, b, strong, div, header,
 footer, section, article, aside, code, button, input, textarea, form, img, pre {
   font-family: 'Montserrat', 'Aria', sans-serif;
