@@ -1,6 +1,8 @@
 <template>
   <div class="crypto">
-    <h1>Crypto</h1>
+    <h1 class="crypto__title">
+      Crypto
+    </h1>
 
     <template v-if="isDataLoading">
       LOADING...
@@ -78,6 +80,7 @@ export default defineComponent({
 <style lang="scss">
 .crypto {
   padding: 24px;
+  color: var(--app-on-bg-color);
 }
 .crypto__balance {
   display: grid;

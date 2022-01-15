@@ -18,18 +18,18 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
 
-const EVENTS = {
-  click: 'click',
-};
+enum EVENTS {
+  click = 'click',
+}
 
-export const THEMES = Object.freeze({
-  blue: 'blue',
-});
+export enum THEMES {
+  primary = 'primary',
+}
 
-export const SIZES = Object.freeze({
-  large: 'large',
-  default: 'default',
-});
+export enum SIZES {
+  large = 'large',
+  default = 'default',
+}
 
 enum BUTTON_TYPES {
   button = 'button',
@@ -44,16 +44,14 @@ export default defineComponent({
     size: {
       type: String,
       default: SIZES.default,
-      validator: (size: string) => Object.values(SIZES).includes(size),
+      validator: (size: SIZES) => Object.values(SIZES).includes(size),
     },
     theme: {
       type: String,
-      default: THEMES.blue,
-      validator: (theme: string) => Object.values(THEMES).includes(theme),
+      default: THEMES.primary,
+      validator: (theme: THEMES) => Object.values(THEMES).includes(theme),
     },
-    withShadow: { type: Boolean, default: false },
     outline: { type: Boolean, default: false },
-    isText: { type: Boolean, default: false },
   },
   emits: Object.values(EVENTS),
   data: () => ({
@@ -81,24 +79,24 @@ $transition: box-shadow 0.2s ease-out;
   transition: .2s ease-out;
 }
 
-.button--blue {
-  background-color: var(--system-blue);
+.button--primary {
+  background-color: var(--primary-500);
   color: #fff;
 
   &:hover {
-    background-color: var(--system-blue-hovered);
+    background-color: var(--primary-700);
   }
   &:active {
-    background-color: var(--system-blue-active);
+    background-color: var(--primary-600);
   }
   &[disabled] {
-    background-color: var(--system-disabled);
+    background-color: var(--primary-200);
     cursor: not-allowed;
   }
   &:not([disabled]).button--outline {
     background-color: transparent;
-    border-color: var(--system-blue);
-    color: var(--system-blue);
+    border-color: var(--primary-500);
+    color: var(--primary-500);
   }
 }
 </style>

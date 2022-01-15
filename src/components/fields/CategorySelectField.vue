@@ -19,7 +19,7 @@
       <div
         v-bind="$attrs"
         class="category-select-field__input"
-        @click="toggleDropdown"
+        @click="() => toggleDropdown()"
       >
         {{ selectedValue.name || placeholder }}
         <div class="category-select-field__arrow" />
@@ -30,12 +30,14 @@
         class="category-select-field__dropdown"
       >
         <div class="category-select-field__dropdown-values">
-          <template v-if="previousLevel.length">
+          <!-- Show top parent category at the top of list of child categories -->
+          <template v-if="previousLevelsIndices.length">
             <button
               class="category-select-field__dropdown-back-level"
               @click="backLevelUp"
             >
-              Back to prev level
+              <ChevronLeftIcon />
+              Previous level
             </button>
             <button
               class="category-select-field__dropdown-item"
@@ -46,7 +48,13 @@
             >
               {{ topLevelCategory.name }}
             </button>
+
+            <h3 class="category-select-field__dropdown-subcategories-title">
+              Subcategories
+            </h3>
           </template>
+
+          <!-- Show list of categories -->
           <template
             v-for="item in levelValues"
             :key="item.id"
@@ -54,11 +62,18 @@
             <button
               class="category-select-field__dropdown-item"
               :class="{
-                'category-select-field__dropdown-item--highlighed': selectedValue.id === item.id
+                'category-select-field__dropdown-item--highlighed': selectedValue.id === item.id,
               }"
               @click="selectItem(item)"
             >
               {{ item.name }}
+
+              <template v-if="item.subCategories.length">
+                <div class="category-select-field__dropdown-child-amount">
+                  <span>({{ item.subCategories.length }})</span>
+                  <ChevronRightIcon />
+                </div>
+              </template>
             </button>
           </template>
         </div>
@@ -74,11 +89,17 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { CategoryModel } from 'shared-types';
+import {
+  defineComponent, ref, Ref, computed, ComputedRef, PropType,
+} from 'vue';
 
-const MODEL_EVENTS = {
-  input: 'update:modelValue',
-};
+import ChevronRightIcon from '@/assets/icons/chevron-right.svg?inline';
+import ChevronLeftIcon from '@/assets/icons/chevron-left.svg?inline';
+
+enum EVENTS {
+  input = 'update:modelValue',
+}
 
 export const POSITIONS = Object.freeze({
   bottom: 'bottom',
@@ -86,75 +107,109 @@ export const POSITIONS = Object.freeze({
 });
 
 export default defineComponent({
+  components: {
+    ChevronRightIcon,
+    ChevronLeftIcon,
+  },
   props: {
     label: { type: String, default: undefined },
-    modelValue: { type: [Object, String], default: undefined },
-    values: { type: [Array, Object], required: true },
+    modelValue: {
+      type: Object as PropType<CategoryModel>,
+      default: undefined,
+    },
+    values: {
+      type: Array as PropType<CategoryModel[]>,
+      required: true,
+    },
     labelKey: { type: String, default: undefined },
     placeholder: { type: String, default: undefined },
-    withSearchField: { type: Boolean, default: false },
     errorMessage: { type: String, default: undefined },
     position: { type: String, default: POSITIONS.bottom },
-    isValuePreselected: { type: Boolean, default: false },
   },
-  data: () => ({
-    isDropdownOpened: false,
-    selectedValue: null,
-    filterQuery: '',
-    levelValues: null,
-    previousLevel: [], // list of levels indices
-  }),
-  computed: {
-    topLevelCategory() {
+  setup(props, { emit }) {
+    const selectedValue = ref(props.modelValue);
+    // not sure why it works only using `as`
+    const levelValues = ref(props.values) as Ref<CategoryModel[]>;
+
+    const isDropdownOpened = ref(false);
+    const previousLevelsIndices: Ref<number[]> = ref([]);
+
+    const topLevelCategory: ComputedRef<CategoryModel> = computed(() => {
+      /**
+       * If we are in a category's subcategories list, finds the subcategories
+       * parent category to show it in the UI
+       */
       let category;
-      for (let i = 0; i < this.previousLevel.length; i++) {
+      for (let i = 0; i < previousLevelsIndices.value.length; i++) {
         if (i === 0) {
-          category = this.values[this.previousLevel[i]];
+          category = props.values[previousLevelsIndices.value[i]];
         } else {
-          category = category[this.previousLevel[i]];
+          category = category[previousLevelsIndices.value[i]];
         }
       }
       return category;
-    },
-  },
-  created() {
-    this.levelValues = this.values;
-    this.selectedValue = this.modelValue;
-  },
-  methods: {
-    toggleDropdown() {
-      this.isDropdownOpened = !this.isDropdownOpened;
-    },
-    closeDropdown() {
-      this.isDropdownOpened = false;
-    },
-    selectItem(item, ignorePreselect = false) {
-      if (item.subCategories.length && !ignorePreselect) {
-        this.definePreviousLevel(item);
-        this.levelValues = item.subCategories;
-      } else {
-        this.selectedValue = item;
-        this.$emit(MODEL_EVENTS.input, item);
-        this.closeDropdown();
-      }
-    },
-    definePreviousLevel(selectedItem) {
-      this.previousLevel.push(this.levelValues.findIndex(
+    });
+
+    const toggleDropdown = (state?: boolean) => {
+      isDropdownOpened.value = state ?? !isDropdownOpened.value;
+    };
+
+    const definePreviousLevelsIndices = (selectedItem: CategoryModel) => {
+      // push to `previousLevelsIndices` index of selecteItem so we will have
+      // history of parent categories with which we can move through the history
+      // of previous categories
+      previousLevelsIndices.value.push(levelValues.value.findIndex(
         item => item.id === selectedItem.id,
       ));
-    },
-    backLevelUp() {
+    };
+
+    const selectItem = (item: CategoryModel, ignorePreselect = false) => {
+      /**
+       * If item has child categories, it goes level deeper. `ignorePreselect`
+       * will disable diving level deeper and will select category even if it
+       * has child categories
+       */
+      if (item.subCategories.length && !ignorePreselect) {
+        definePreviousLevelsIndices(item);
+        levelValues.value = item.subCategories;
+      } else {
+        selectedValue.value = item;
+        emit(EVENTS.input, item);
+        toggleDropdown(false);
+      }
+    };
+    const backLevelUp = () => {
+      /**
+       * Uses `previousLevelsIndices` to navigate through the history and make
+       * previous level as the current one.
+       *
+       * At the end clears `previousLevelsIndices` by removing the last element
+       * in the history.
+       */
       let level;
-      for (let i = 0; i < this.previousLevel.length; i++) {
+      for (let i = 0; i < previousLevelsIndices.value.length; i++) {
         if (i === 0) {
-          level = this.values;
+          level = props.values;
         } else {
-          level = level[this.previousLevel[i - 1]].subCategories;
+          level = level[previousLevelsIndices.value[i - 1]].subCategories;
         }
       }
-      this.previousLevel.length -= 1;
-      this.levelValues = level;
-    },
+      previousLevelsIndices.value.length -= 1;
+      levelValues.value = level;
+    };
+
+    return {
+      isDropdownOpened,
+      selectedValue,
+      levelValues,
+      previousLevelsIndices,
+      topLevelCategory,
+
+      toggleDropdown,
+      selectItem,
+      definePreviousLevelsIndices,
+      backLevelUp,
+    };
   },
 });
 </script>
@@ -168,10 +223,10 @@ export default defineComponent({
 .category-select-field__input {
   font-size: 16px;
   line-height: 1;
-  color: #333333;
   padding: 16px 20px;
-  background-color: #ecf0f1;
-  border: 1px solid #bdc3c7;
+  color: var(--app-on-surface-color);
+  background-color: var(--app-surface-color);
+  border: 1px solid var(--app-on-surface-color);
   box-sizing: border-box;
   border-radius: 4px;
   outline: none;
@@ -182,7 +237,7 @@ export default defineComponent({
   font-size: 16px;
   font-weight: 400;
   line-height: 1;
-  color: #333333;
+  color: var(--app-on-surface-color);
   margin-bottom: 10px;
   display: block;
 }
@@ -198,7 +253,7 @@ export default defineComponent({
   opacity: 0;
   padding: 8px 0;
   transition: 0.2s ease-out;
-  background-color: #ecf0f1;
+  background-color: var(--app-surface-color);
   box-shadow: 0 3px 10px 2px rgba(0, 0, 0, 0.08);
   z-index: var(--z-category-select-field);
   border-radius: 4px;
@@ -217,23 +272,66 @@ export default defineComponent({
   align-items: center;
   transition: background-color 0.3s ease-out;
   border: none;
-  background-color: #ecf0f1;
+  background-color: var(--app-surface-color);
   font-size: 14px;
   line-height: 1.2;
-  color: #333333;
+  color: var(--app-on-surface-color);
   padding: 8px 16px;
   width: 100%;
   text-align: left;
   overflow: hidden;
   text-overflow: ellipsis;
   cursor: pointer;
+  position: relative;
 
   &--highlighed {
-    background-color: #dbe1e2;
+    background-color: rgba(var(--app-on-surface-color-rgb), 0.05);
   }
 
   &:hover {
-    background-color: #dbe1e2;
+    background-color: rgba(var(--app-on-surface-color-rgb), 0.05);
+  }
+}
+.category-select-field__dropdown-subcategories-title {
+  font-weight: 500;
+  font-size: 16px;
+  color: var(--app-on-surface-color);
+  margin: 16px 0 8px 16px;
+}
+.category-select-field__dropdown-child-amount {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  color: var(--app-on-surface-color);
+
+  span {
+    margin-right: 8px;
+  }
+
+  svg {
+    width: 12px;
+  }
+}
+.category-select-field__dropdown-back-level {
+  margin: 8px 16px 16px;
+  border: none;
+  color: var(--primary-500);
+  cursor: pointer;
+  background-color: transparent;
+
+  &:hover {
+    svg {
+      transform: translateX(-5px);
+    }
+  }
+
+  svg {
+    transition: .3s ease-out;
+
+    width: 12px;
   }
 }
 .category-select-field__arrow {
@@ -249,7 +347,7 @@ export default defineComponent({
     position: absolute;
     width: 8px;
     height: 2px;
-    background-color: #000000;
+    background-color: var(--app-on-surface-color);
     border-radius: 2px;
     transform: rotate(45deg);
     top: 10px;
@@ -268,7 +366,7 @@ export default defineComponent({
   }
 }
 .category-select-field__err-mes {
-  color: red;
+  color: var(--app-danger-color);
   font-size: 12px;
 }
 </style>

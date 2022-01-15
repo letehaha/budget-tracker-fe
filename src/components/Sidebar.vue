@@ -35,7 +35,7 @@
 <style lang="scss" scoped>
 .sidebar {
   padding: 24px 24px;
-  background-color: #fff;
+  background-color: var(--app-surface-color);
   z-index: 1;
 }
 .sidebar__logo {
@@ -44,6 +44,7 @@
   letter-spacing: 0.5px;
   text-align: center;
   margin-bottom: 80px;
+  color: var(--app-on-surface-color);
 }
 .sidebar__navigation-link {
   font-size: 16px;
@@ -51,5 +52,6 @@
   font-weight: 400;
   display: block;
   margin-bottom: 32px;
+  color: var(--app-on-surface-color);
 }
 </style>

@@ -19,7 +19,6 @@
         label="Category"
         :values="categories"
         label-key="name"
-        is-value-preselected
       />
     </div>
     <div class="monobank-tx-form__row">
@@ -37,7 +36,7 @@
         :disabled="isLoading"
         @click="submit"
       >
-        Edit
+        Save changes
       </Button>
     </div>
   </div>
@@ -125,13 +124,14 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .monobank-tx-form {
-  background-color: #fff;
+  background-color: var(--app-bg-color);
   padding: 60px;
   width: 100%;
   max-width: 600px;
 }
 .monobank-tx-form__row {
   margin-bottom: 20px;
+  color: var(--app-on-bg-color);
 }
 .monobank-tx-form__actions {
   display: flex;

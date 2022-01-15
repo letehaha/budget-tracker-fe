@@ -156,9 +156,9 @@ export default defineComponent({
 .select-field__input {
   font-size: 16px;
   line-height: 1;
-  color: #333333;
+  color: var(--app-on-surface-color);
   padding: 16px 20px;
-  background-color: #ecf0f1;
+  background-color: var(--app-surface-color);
   border: 1px solid #bdc3c7;
   box-sizing: border-box;
   border-radius: 4px;
@@ -171,7 +171,7 @@ export default defineComponent({
   font-size: 16px;
   font-weight: 400;
   line-height: 1;
-  color: #333333;
+  color: var(--app-on-surface-color);
   margin-bottom: 10px;
   display: block;
 }
@@ -189,7 +189,7 @@ export default defineComponent({
   opacity: 0;
   padding: 8px 0;
   transition: 0.2s ease-out;
-  background-color: #ecf0f1;
+  background-color: var(--app-surface-color);
   box-shadow: 0 3px 10px 2px rgba(0, 0, 0, 0.08);
   z-index: var(--z-select-field);
   border-radius: 4px;
@@ -210,10 +210,10 @@ export default defineComponent({
   align-items: center;
   transition: background-color 0.3s ease-out;
   border: none;
-  background-color: #ecf0f1;
+  background-color: var(--app-surface-color);
   font-size: 14px;
   line-height: 1.2;
-  color: #333333;
+  color: var(--app-on-surface-color);
   padding: 16px;
   width: 100%;
   text-align: left;
@@ -243,7 +243,7 @@ export default defineComponent({
     position: absolute;
     width: 8px;
     height: 2px;
-    background-color: #000000;
+    background-color: var(--app-on-surface-color);
     border-radius: 2px;
     transform: rotate(45deg);
     top: 10px;
@@ -263,7 +263,7 @@ export default defineComponent({
 }
 
 .select-field__err-mes {
-  color: red;
+  color: var(--app-danger-color);
   font-size: 12px;
 }
 </style>

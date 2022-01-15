@@ -93,7 +93,10 @@ export default defineComponent({
   font-size: 16px;
   white-space: nowrap;
   letter-spacing: 0.5px;
-  color: #333;
+  color: var(--app-on-surface-color);
+}
+.transaction__time {
+  color: var(--app-on-surface-color);
 }
 .transaction__note {
   color: #666;

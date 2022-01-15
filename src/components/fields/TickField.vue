@@ -104,8 +104,8 @@ export default defineComponent({
   }
 
   .tick-field__input:checked + & {
-    background-color: red;
-    border-color: red;
+    background-color: var(--app-danger-color);
+    border-color: var(--app-danger-color);
 
     &:after,
     &:before {

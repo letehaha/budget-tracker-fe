@@ -244,8 +244,8 @@ export default defineComponent({
   width: 100%;
   padding: 8px 12px;
   outline: none;
-  color: #333333;
-  background-color: #ecf0f1;
+  color: var(--app-on-surface-color);
+  background-color: var(--app-surface-color);
   border: 1px solid #bdc3c7;
 
   .date-field-flatpickr--disabled > & {

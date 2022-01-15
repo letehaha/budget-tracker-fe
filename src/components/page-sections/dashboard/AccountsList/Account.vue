@@ -27,7 +27,7 @@ export default defineComponent({
 <style lang="scss" scoped>
 .account {
   padding: 16px;
-  background-color: #fff;
+  background-color: var(--app-surface-color);
   border-radius: 6px;
   box-shadow: 0 0 24px 0px rgba(0, 0, 0, 0.05);
   transition: box-shadow .2s ease-out;
@@ -36,5 +36,11 @@ export default defineComponent({
   &:hover {
     box-shadow: 0 0 24px 0px rgba(0, 0, 0, 0.15);
   }
+}
+.account__name {
+  color: var(--app-on-surface-color);
+}
+.account__balance {
+  color: var(--app-on-surface-color);
 }
 </style>

@@ -1,4 +1,6 @@
-import { Ref, ToRefs, isRef } from 'vue';
+import {
+  Ref, ComputedRef, ToRefs, isRef,
+} from 'vue';
 import useVuelidate, {
   GlobalConfig,
   ValidationArgs,
@@ -42,6 +44,7 @@ const GENERIC_VALIDATION_MESSAGES = Object.freeze({
  * @param rules - list of validation rules which will be used to
  *                validate the form
  * @param vuelidateOptions - list of vuelidate options
+ * @param validationOptions - list of custom options
  *
  * @returns list of methods
  */
@@ -53,6 +56,12 @@ export const useFormValidation = <
     form: T | Ref<T> | ToRefs<T>,
     rules: Ref<Vargs> | Vargs,
     vuelidateOptions?: GlobalConfig,
+    validationOptions?: {
+      customValidationMessages: Record<
+        string,
+        string | Ref<string> | ComputedRef<string>
+      >;
+    },
   ): {
   isFormValid: (formPart?: string) => boolean;
   touchField: (fieldPath: string) => void;
@@ -155,7 +164,13 @@ export const useFormValidation = <
 
     for (const rule of Object.keys(fieldRules)) {
       if (field[rule].$invalid) {
-        return GENERIC_VALIDATION_MESSAGES[rule] || 'Field is invalid';
+        const customMessage = validationOptions?.customValidationMessages[rule];
+
+        const customErrorMessage = isRef(customMessage)
+          ? customMessage.value
+          : customMessage;
+
+        return customErrorMessage || GENERIC_VALIDATION_MESSAGES[rule] || '';
       }
     }
     return '';
