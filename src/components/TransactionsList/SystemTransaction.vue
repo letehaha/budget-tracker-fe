@@ -103,6 +103,9 @@ export default defineComponent({
   font-size: 14px;
   letter-spacing: 0.5px;
 }
+.transaction__right {
+  flex: none;
+}
 .transaction__amount {
   text-align: right;
 
