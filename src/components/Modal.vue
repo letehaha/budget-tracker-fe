@@ -33,7 +33,7 @@ const EVENTS = {
 type ModalDataProp = {
   data: unknown;
   type: AsyncComponentLoader;
-  hideOnWidth: number;
+  hideOnWidth?: number;
 }
 
 export default defineComponent({
@@ -72,7 +72,7 @@ export default defineComponent({
   },
   methods: {
     windowResize() {
-      if (this.data.hideOnWidth && this.isActive) {
+      if (this.data?.hideOnWidth && this.isActive) {
         const width = window.innerWidth;
         if (width < this.data.hideOnWidth) {
           this.$emit(EVENTS.close);
