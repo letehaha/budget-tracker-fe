@@ -27,7 +27,7 @@ export const useNotificationCenter = (): {
   const addNotification = (notification: NotificationArg): number => {
     const id = idCounter++;
     notifications.value.push({
-      type: NotificationType.warning,
+      type: NotificationType.info,
       ...notification,
       id,
     });
