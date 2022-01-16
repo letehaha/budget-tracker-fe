@@ -6,8 +6,8 @@ import { categoriesVuexTypes } from './types';
 import { getRawCategories } from './helpers';
 
 interface State {
-  categories: unknown[];
-  rawCategories: unknown[];
+  categories: CategoryRecord[];
+  rawCategories: CategoryRecord[];
 }
 
 const initialState = (): State => ({
@@ -21,8 +21,7 @@ const getters: GetterTree<State, RootState> = {
   [categoriesVuexTypes.GET_CATEGORIES]: state => state.categories,
   [categoriesVuexTypes.GET_RAW_CATEGORIES]: state => state.rawCategories,
   [categoriesVuexTypes.GET_CATEGORY_BY_ID]: state => id => state.rawCategories
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    .find((item: any) => item.id === id),
+    .find(item => item.id === id),
 };
 
 const mutations: MutationTree<State> = {

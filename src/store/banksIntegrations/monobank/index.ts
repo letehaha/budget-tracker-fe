@@ -14,9 +14,9 @@ import { transactionsVuexTypes } from '@/store/transactions/types';
 import { bankMonobankVuexTypes } from './types';
 
 interface State {
-  user: null;
-  transactions: unknown[];
-  accounts: unknown[];
+  user: MONOUserRecord;
+  transactions: MONOTransactionRecord[];
+  accounts: MONOAccountRecord[];
   isUserExist: boolean;
   isMonoAccountPaired: boolean;
 }
@@ -35,27 +35,20 @@ const getters: GetterTree<State, RootState> = {
   [bankMonobankVuexTypes.GET_USER]: state => state.user,
   [bankMonobankVuexTypes.IS_USER_EXIST]: state => state.isUserExist,
   [bankMonobankVuexTypes.GET_TRANSACTIONS]: state => state.transactions
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    .sort((a: any, b: any) => compareDesc(new Date(a.time), new Date(b.time))),
+    .sort((a, b) => compareDesc(new Date(a.time), new Date(b.time))),
   [bankMonobankVuexTypes.GET_ACCOUNTS]: state => {
     const temp = [...state.accounts];
 
-    return temp.sort(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (a: any, b: any) => (b.accountId).localeCompare(a.accountId),
-    );
+    return temp.sort((a, b) => (b.accountId).localeCompare(a.accountId));
   },
   [bankMonobankVuexTypes.GET_ACCOUNT_BY_ID]:
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    state => id => state.accounts.find((i: any) => i.accountId === id),
+    state => id => state.accounts.find(i => i.accountId === id),
   [bankMonobankVuexTypes.GET_ACTIVE_ACCOUNTS]:
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    state => state.accounts.filter((item: any) => item.isEnabled),
+    state => state.accounts.filter(item => item.isEnabled),
   [bankMonobankVuexTypes.GET_ACCOUNT_PAIRED_STATUS]:
     state => state.isMonoAccountPaired,
   [bankMonobankVuexTypes.IS_TOKEN_PRESENT]:
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    state => !!(state.user as any).apiToken,
+    state => !!state.user?.apiToken,
 };
 
 const mutations: MutationTree<State> = {
@@ -63,8 +56,7 @@ const mutations: MutationTree<State> = {
     const txsIds = txs.map(item => item.id);
     state.transactions = [
       ...txs,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ...state.transactions.filter((tx: any) => !txsIds.includes(tx.id)),
+      ...state.transactions.filter(tx => !txsIds.includes(tx.id)),
     ];
   },
   [bankMonobankVuexTypes.SET_USER](state, user) {
@@ -84,15 +76,13 @@ const mutations: MutationTree<State> = {
   },
   [bankMonobankVuexTypes.REPLACE_TRANSACTION](state, tx) {
     const oldTx = state.transactions
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .findIndex((item: any) => tx.id === item.id);
+      .findIndex(item => tx.id === item.id);
 
     state.transactions[oldTx] = tx;
   },
   [bankMonobankVuexTypes.REPLACE_ACCOUNT](state, account) {
     const oldAccount = state.accounts
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .findIndex((item: any) => account.accountId === item.accountId);
+      .findIndex(item => account.accountId === item.accountId);
 
     state.accounts[oldAccount] = account;
   },

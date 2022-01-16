@@ -13,7 +13,7 @@ import {
 import { transactionsVuexTypes } from './types';
 
 interface State {
-  transactions: unknown[];
+  transactions: TransactionModelRecord[];
 }
 
 const initialState = (): State => ({
@@ -49,8 +49,7 @@ const mutations: MutationTree<State> = {
       );
     }
     const oldTx = state.transactions
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .findIndex((item: any) => localTx.tx.id === item.tx.id);
+      .findIndex(item => localTx.tx.id === item.tx.id);
 
     state.transactions[oldTx] = localTx;
   },
