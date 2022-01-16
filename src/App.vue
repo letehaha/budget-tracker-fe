@@ -17,6 +17,7 @@
       :is-active="isModalVisible"
       @close="closeModal"
     />
+    <NotificationsCenter />
   </main>
 </template>
 
@@ -30,15 +31,18 @@ import Modal from '@/components/Modal.vue';
 import UIHeader from '@/components/Header.vue';
 import Sidebar from '@/components/Sidebar.vue';
 
+import NotificationsCenter from '@/components/notification-center/NotificationsCenter.vue';
+
 export default defineComponent({
   components: {
     Modal,
     UIHeader,
     Sidebar,
+    NotificationsCenter,
   },
   data: () => ({
     isModalVisible: false,
-    modalData: {},
+    modalData: undefined,
     ROUTER_LAYOUTS,
   }),
   computed: {

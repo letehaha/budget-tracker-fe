@@ -10,7 +10,9 @@ body {
 
   // app elements color
   @each $cssVar, $value in (
-    --app-danger-color: #f43a25,
+    --app-danger-color: #e1301c,
+    --app-warning-color: #e5971c,
+    --app-success-color: #059134,
 
     --app-bg-color: #fafafa,
     --app-surface-color: #fff,
@@ -23,7 +25,9 @@ body {
 
   &.dark {
     @each $cssVar, $value in (
-      --app-danger-color: #fd7461,
+      --app-danger-color: #532219,
+      --app-warning-color: #5d4d16,
+      --app-success-color: #103b31,
 
       --app-bg-color: #121212,
       --app-surface-color: #1E1E1E,
