@@ -4,12 +4,14 @@
     :class="{ 'modal--active': isActive }"
     @click.self="$emit(EVENTS.close)"
   >
-    <component
-      :is="data.type"
-      v-bind="data.data"
-      class="modal__component"
-      @close-modal="$emit(EVENTS.close)"
-    />
+    <template v-if="data">
+      <component
+        :is="data.type"
+        v-bind="data.data"
+        class="modal__component"
+        @close-modal="$emit(EVENTS.close)"
+      />
+    </template>
   </div>
 </template>
 
@@ -45,7 +47,7 @@ export default defineComponent({
      */
     data: {
       type: Object as PropType<ModalDataProp>,
-      required: true,
+      default: undefined,
       validator(value: ModalDataProp) {
         if (Object.keys(value).length) {
           // TODO: add check for a right value
