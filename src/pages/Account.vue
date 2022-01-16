@@ -28,87 +28,128 @@
 </template>
 
 <script lang="ts">
+import { ERROR_CODES } from 'shared-types';
 import _debounce from 'lodash/debounce';
-import { defineComponent } from 'vue';
-import { mapActions, mapGetters } from 'vuex';
-import { bankMonobankVuexTypes } from '@/store';
-import { formatAmount } from '@/js/helpers';
+import {
+  defineComponent, reactive, computed, watch,
+} from 'vue';
+import { useRoute } from 'vue-router';
+import { useBankMonobankStore } from '@/store';
+
+import {
+  useNotificationCenter,
+  NotificationType,
+} from '@/components/notification-center';
+
 import DateField from '@/components/fields/DateField.vue';
 
 export default defineComponent({
   components: {
     DateField,
   },
-  data() {
-    return {
-      form: {
-        name: '',
-        isEnabled: false,
-        period: null,
-      },
-      debouncedUpdateMonoAccHandler: _debounce(this.updateMonoAccount, 1000),
-    };
-  },
-  computed: {
-    ...mapGetters('bankMonobank', {
-      getMonoAccount: bankMonobankVuexTypes.GET_ACCOUNT_BY_ID,
-    }),
-    account() {
-      return this.getMonoAccount(this.$route.query.id);
-    },
-  },
-  watch: {
-    account: {
-      immediate: true,
-      handler(value) {
-        if (value) {
-          this.form.name = value.name;
-          this.form.isEnabled = value.isEnabled;
+  setup() {
+    const route = useRoute();
+    const { addNotification } = useNotificationCenter();
+    const {
+      getMonoAccountById,
+      updateMonoAccount,
+      loadLatestTransactions,
+      loadTxsForPeriod,
+    } = useBankMonobankStore();
+
+    const form = reactive({
+      name: '',
+      isEnabled: false,
+      period: null,
+    });
+
+    const account = computed(
+      () => getMonoAccountById.value(route.query.id as string),
+    );
+
+    const loadLatestTransactionsHandler = async () => {
+      try {
+        const response = await loadLatestTransactions({
+          accountId: account.value.accountId,
+        });
+
+        addNotification({
+          text: response.minutesToFinish >= 1
+            ? `Loading started. Estimated loading time is ${response.minutesToFinish} minute(s).`
+            : 'Loaded successfully',
+          type: NotificationType.success,
+        });
+      } catch (e) {
+        if (e.data.code === ERROR_CODES.forbidden) {
+          addNotification({
+            text: e.data.message,
+            type: NotificationType.error,
+          });
         }
-      },
-    },
-    'form.name': function (value) {
-      if (value !== this.account.name) {
-        this.debouncedUpdateMonoAccHandler({
-          id: this.account.accountId,
-          name: value,
-        });
       }
-    },
-    'form.isEnabled': function (value) {
-      if (value !== this.account.isEnabled) {
-        this.debouncedUpdateMonoAccHandler({
-          id: this.account.accountId,
-          isEnabled: value,
-        });
-      }
-    },
-  },
-  methods: {
-    formatAmount,
-    ...mapActions('bankMonobank', {
-      fetchAccounts: bankMonobankVuexTypes.FETCH_ACCOUNTS,
-      updateMonoAccount: bankMonobankVuexTypes.UPDATE_ACCOUNT_BY_ID,
-      loadLatestTransactions:
-        bankMonobankVuexTypes.LOAD_TRANSACTIONS_FROM_LATEST,
-      loadTxsForPeriod: bankMonobankVuexTypes.LOAD_TRANSACTIONS_FOR_PERIOD,
-    }),
-    loadLatestTransactionsHandler() {
-      this.loadLatestTransactions({ accountId: this.account.accountId });
-    },
-    async loadTransactionsForPeriod() {
-      if (this.form.period) {
-        const dates = this.form.period.split(' to ');
+    };
+
+    const loadTransactionsForPeriod = async () => {
+      if (form.period) {
+        const dates = form.period.split(' to ');
         const from = new Date(dates[0]).getTime();
         const to = new Date(dates[1]).getTime();
-        await this.loadTxsForPeriod({
-          accountId: this.account.accountId,
+        await loadTxsForPeriod({
+          accountId: account.value.accountId,
           from,
           to,
         });
-        this.form.period = null;
+        addNotification({
+          text: 'Loaded successfully',
+          type: NotificationType.success,
+        });
+        form.period = null;
       }
-    },
+    };
+
+    const debouncedUpdateMonoAccHandler = _debounce(updateMonoAccount, 1000);
+
+    watch(
+      () => account.value,
+      (value) => {
+        if (value) {
+          form.name = value.name;
+          form.isEnabled = value.isEnabled;
+        }
+      },
+      { immediate: true },
+    );
+
+    watch(
+      () => form.name,
+      (value) => {
+        if (value !== account.value.name) {
+          debouncedUpdateMonoAccHandler({
+            id: account.value.accountId,
+            name: value,
+          });
+        }
+      },
+    );
+
+    watch(
+      () => form.isEnabled,
+      (value) => {
+        if (value !== account.value.isEnabled) {
+          debouncedUpdateMonoAccHandler({
+            id: account.value.accountId,
+            isEnabled: value,
+          });
+        }
+      },
+    );
+
+    return {
+      form,
+      account,
+      loadLatestTransactionsHandler,
+      loadTransactionsForPeriod,
+    };
   },
 });
 </script>

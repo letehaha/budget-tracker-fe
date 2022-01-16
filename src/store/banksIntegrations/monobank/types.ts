@@ -37,3 +37,5 @@ export const bankMonobankVuexTypes = Object.freeze({
   ...actions,
   ...getters,
 });
+
+export const namespace = 'bankMonobank';

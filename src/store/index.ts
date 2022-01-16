@@ -13,7 +13,10 @@ import transactions, { namespace as txsNamespace } from './transactions';
 import user from './user';
 import categories from './categories';
 import accounts, { accountsVuexTypes } from './accounts';
-import bankMonobank, { bankMonobankVuexTypes } from './banksIntegrations/monobank';
+import bankMonobank, {
+  bankMonobankVuexTypes,
+  namespace as bankMonobankNamespace,
+} from './banksIntegrations/monobank';
 import cryptoBinance from './cryptoIntegrations/binance';
 
 const rootModule = {
@@ -93,7 +96,7 @@ export const store = createStore({
     categories,
     accounts,
     [txsNamespace]: transactions,
-    bankMonobank,
+    [bankMonobankNamespace]: bankMonobank,
     cryptoBinance,
   },
 });
@@ -105,5 +108,5 @@ export { transactionsVuexTypes, useTransactionsStore } from './transactions';
 export { userVuexTypes } from './user';
 export { categoriesVuexTypes } from './categories';
 export { accountsVuexTypes } from './accounts';
-export { bankMonobankVuexTypes } from './banksIntegrations/monobank';
+export { bankMonobankVuexTypes, useBankMonobankStore } from './banksIntegrations/monobank';
 export { cryptoBinanceVuexTypes } from './cryptoIntegrations/binance';
