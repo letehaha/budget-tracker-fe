@@ -2,6 +2,12 @@ import { ApiBaseError, RESPONSE_STATUS, ERROR_CODES } from 'shared-types';
 import { Router } from 'vue-router';
 import { CustomStore } from '@/store/types';
 import { authVuexTypes } from '@/store/auth/types';
+
+import {
+  useNotificationCenter,
+  NotificationType,
+} from '@/components/notification-center';
+
 import * as errors from '@/js/errors';
 
 enum methods {
@@ -149,8 +155,16 @@ class ApiCaller {
     }
 
     if (status === RESPONSE_STATUS.error) {
+      const { addNotification } = useNotificationCenter();
+
       if (response.code === ERROR_CODES.unauthorized) {
         await this.store.dispatch(`auth/${authVuexTypes.LOG_OUT}`);
+
+        addNotification({
+          id: 'authorization-error',
+          text: 'Unauthorized. Please, login first.',
+          type: NotificationType.error,
+        });
 
         this.router.push('/sign-in');
 
@@ -158,6 +172,14 @@ class ApiCaller {
           response.statusText,
           response,
         );
+      }
+
+      if (response.code === ERROR_CODES.unexpected) {
+        addNotification({
+          id: 'unexpected-error',
+          text: 'Unexpected error.',
+          type: NotificationType.error,
+        });
       }
 
       throw new errors.ApiErrorResponseError(

@@ -255,7 +255,7 @@ const actions: ActionTree<State, RootState> = {
     { accountId },
   ) {
     if (!getters[bankMonobankVuexTypes.GET_ACCOUNT_PAIRED_STATUS]) {
-      return;
+      return undefined;
     }
     try {
       let latestTx = await api.get('/banks/monobank/transactions', {
@@ -265,7 +265,7 @@ const actions: ActionTree<State, RootState> = {
       if (latestTx ?? latestTx.length) {
         latestTx = new MONOTransactionRecord(latestTx[0]);
 
-        await dispatch(
+        return dispatch(
           bankMonobankVuexTypes.LOAD_TRANSACTIONS_FOR_PERIOD,
           {
             accountId,
@@ -280,16 +280,17 @@ const actions: ActionTree<State, RootState> = {
       }
       throw new Error(e);
     }
+    return undefined;
   },
   async [bankMonobankVuexTypes.LOAD_TRANSACTIONS_FOR_PERIOD](
     { getters },
     { accountId, from, to },
   ) {
     if (!getters[bankMonobankVuexTypes.GET_ACCOUNT_PAIRED_STATUS]) {
-      return;
+      return undefined;
     }
     try {
-      await api.get('/banks/monobank/load-transactions', {
+      return api.get('/banks/monobank/load-transactions', {
         from,
         to,
         accountId,
@@ -333,4 +334,5 @@ export default {
   mutations,
 };
 
-export { bankMonobankVuexTypes } from './types';
+export { bankMonobankVuexTypes, namespace } from './types';
+export { useBankMonobankStore } from './composable';

@@ -37,6 +37,9 @@ export enum ERROR_CODES {
   // general
   tooManyRequests = 'TOO_MANY_REQUESTS',
   notFound = 'NOT_FOUND',
+  unexpected = 'UNEXPECTED',
+  validationError = 'VALIDATION_ERROR',
+  forbidden = 'FORBIDDEN',
 
   // auth
   unauthorized = 'UNAUTHENTICATED',
