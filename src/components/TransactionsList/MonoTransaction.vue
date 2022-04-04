@@ -28,7 +28,7 @@
 import { format } from 'date-fns';
 import { defineComponent } from 'vue';
 import { mapGetters } from 'vuex';
-import { TRANSACTIONS_TYPES } from '@/js/const';
+import { TRANSACTIONS_TYPES } from 'shared-types';
 import { eventBus } from '@/js/utils';
 import { indexVuexTypes, categoriesVuexTypes } from '@/store';
 import { MODAL_TYPES } from '@/components/Modal.vue';

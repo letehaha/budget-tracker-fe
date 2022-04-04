@@ -29,7 +29,7 @@
         Crypto
       </router-link>
       <router-link
-        :to="{ name: 'crypto' }"
+        :to="{ name: 'settings' }"
         class="sidebar__navigation-link"
       >
         Settings
