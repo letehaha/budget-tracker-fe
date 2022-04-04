@@ -26,7 +26,7 @@
         </button>
       </template>
       <template v-else-if="isPaired && isTokenPresent">
-        <button @click="refreshMonoAccouns">
+        <button @click="refreshMonoAccounts">
           Refresh balances
         </button>
       </template>
@@ -112,7 +112,7 @@ export default defineComponent({
       store.dispatch(`bankMonobank/${bankMonobankVuexTypes.FETCH_ACCOUNTS}`);
     });
 
-    const refreshMonoAccouns = () => {
+    const refreshMonoAccounts = () => {
       store.dispatch(`bankMonobank/${bankMonobankVuexTypes.REFRESH_ACCOUNTS}`);
     };
 
@@ -143,7 +143,7 @@ export default defineComponent({
       isPaired,
       isTokenPresent,
       accounts,
-      refreshMonoAccouns,
+      refreshMonoAccounts,
       formatBalance,
       redirectToAccount,
     };
