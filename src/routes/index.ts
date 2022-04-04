@@ -53,6 +53,15 @@ const routes = [
     },
   },
   {
+    path: '/settings',
+    name: 'settings',
+    component: () => import('@/pages/Settings/Settings.vue'),
+    beforeEnter: redirectRouteGuard,
+    meta: {
+      layout: ROUTER_LAYOUTS.dashboard,
+    },
+  },
+  {
     path: '/sign-up',
     name: 'auth/sign-up',
     component: () => import('@/pages/auth/Register.vue'),

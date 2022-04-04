@@ -44,12 +44,12 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 
-import { useNotificationCenter, NotificationType } from './index';
-
 import WarningIcon from '@/assets/icons/warning.svg?inline';
 import ErrorIcon from '@/assets/icons/error.svg?inline';
 import SuccessIcon from '@/assets/icons/success.svg?inline';
 import XmarkIcon from '@/assets/icons/xmark.svg?inline';
+
+import { useNotificationCenter, NotificationType } from './index';
 
 export default defineComponent({
   components: {

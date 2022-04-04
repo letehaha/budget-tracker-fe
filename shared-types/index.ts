@@ -11,6 +11,12 @@ export enum CATEGORY_TYPES {
   custom = 'custom',
 }
 
+export enum TRANSACTIONS_TYPES {
+  expense = 'expense',
+  income = 'income',
+  transfer = 'transfer',
+}
+
 export interface CategoryModel {
   color: string;
   id: number;
