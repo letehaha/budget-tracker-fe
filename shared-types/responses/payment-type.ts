@@ -1,4 +1,4 @@
 export interface PaymentTypeResponse {
-  id: string;
+  id: number;
   name: string;
 }

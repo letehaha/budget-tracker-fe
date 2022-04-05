@@ -99,7 +99,7 @@ export const useTransactionsStore = defineStore('transactions', () => {
     }
   };
 
-  const deleteTransaction = async ({ txId }: { txId: string }) => {
+  const deleteTransaction = async ({ txId }: { txId: number }) => {
     try {
       await api.delete(`/transactions/${txId}`);
 

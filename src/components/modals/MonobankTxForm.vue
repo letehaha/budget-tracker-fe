@@ -43,19 +43,18 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, ref, reactive } from 'vue';
 import { storeToRefs } from 'pinia';
-import { mapActions, mapGetters } from 'vuex';
+
 import {
   usePaymentTypesStore,
   useTransactionTypesStore,
   useAccountsStore,
+  useCategoriesStore,
 } from '@/newStore';
-import {
-  categoriesVuexTypes,
-  bankMonobankVuexTypes,
-} from '@/store';
+
 import { MONOTransactionRecord } from '@/js/records';
+
 import CategorySelectField from '@/components/fields/CategorySelectField.vue';
 import TextareaField from '@/components/fields/TextareaField.vue';
 import Button from '@/components/common/Button.vue';
@@ -77,59 +76,57 @@ export default defineComponent({
       default: undefined,
     },
   },
-  setup() {
+  setup(props) {
     const paymentTypesStore = usePaymentTypesStore();
     const transactionTypesStore = useTransactionTypesStore();
     const accountsStore = useAccountsStore();
+    const categoriesStore = useCategoriesStore();
 
     const { paymentTypes } = storeToRefs(paymentTypesStore);
     const { accounts } = storeToRefs(accountsStore);
     const { transactionTypes } = storeToRefs(transactionTypesStore);
+    const { rawCategories, categories } = storeToRefs(categoriesStore);
 
-    return {
-      accounts,
-      paymentTypes,
-      transactionTypes,
+    const form = reactive({
+      category: rawCategories.value
+        .find(item => item.id === props.transaction.categoryId),
+      note: props.transaction.note,
+    });
+    const isLoading = ref(false);
+
+    const editTransaction = (tx) => {
+      // ...mapActions('bankMonobank', {
+      //   editTransaction: bankMonobankVuexTypes.UPDATE_TRANSACTION_BY_ID,
+      // }),
     };
-  },
-  data: () => ({
-    EVENTS,
-    form: {
-      category: null,
-      note: null,
-    },
-    isLoading: false,
-  }),
-  computed: {
-    ...mapGetters('categories', {
-      categories: categoriesVuexTypes.GET_CATEGORIES,
-      rawCategories: categoriesVuexTypes.GET_RAW_CATEGORIES,
-    }),
-  },
-  created() {
-    this.form.note = this.transaction.note;
-    this.form.category = this.rawCategories
-      .find(item => item.id === this.transaction.categoryId);
-  },
-  methods: {
-    ...mapActions('bankMonobank', {
-      editTransaction: bankMonobankVuexTypes.UPDATE_TRANSACTION_BY_ID,
-    }),
-    async submit() {
-      this.isLoading = true;
-      const { note, category } = this.form;
+
+    const submit = async () => {
+      isLoading.value = true;
+      const { note, category } = form;
 
       const params = {
         note,
         categoryId: category.id,
       };
 
-      await this.editTransaction({
-        id: this.transaction.id,
+      await editTransaction({
+        id: props.transaction.id,
         ...params,
       });
-      this.isLoading = false;
-    },
+
+      isLoading.value = false;
+    };
+
+    return {
+      EVENTS,
+      form,
+      isLoading,
+      categories,
+      accounts,
+      paymentTypes,
+      transactionTypes,
+      submit,
+    };
   },
 });
 </script>

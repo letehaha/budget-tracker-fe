@@ -31,12 +31,13 @@
 <script lang="ts">
 import { format } from 'date-fns';
 import { defineComponent, computed } from 'vue';
-import { mapGetters } from 'vuex';
 import { TRANSACTIONS_TYPES } from 'shared-types';
-import { useTransactionTypesStore } from '@/newStore';
-import { categoriesVuexTypes } from '@/store';
+
+import { useTransactionTypesStore, useCategoriesStore } from '@/newStore';
+
 import { eventBus } from '@/js/utils';
 import { formatAmount } from '@/js/helpers';
+
 import { MODAL_TYPES } from '@/components/Modal.vue';
 
 export default defineComponent({
@@ -45,9 +46,14 @@ export default defineComponent({
   },
   setup(props) {
     const { getTransactionTypeById } = useTransactionTypesStore();
+    const { getCategoryTypeById } = useCategoriesStore();
 
     const txType = computed(
       () => getTransactionTypeById(props.tx.transactionTypeId),
+    );
+
+    const category = computed(
+      () => getCategoryTypeById(props.tx.categoryId),
     );
 
     const formateDate = date => format(new Date(date), 'd MMMM y');
@@ -62,18 +68,11 @@ export default defineComponent({
     return {
       TRANSACTIONS_TYPES,
       txType,
+      category,
       formatAmount,
       formateDate,
       editTransaction,
     };
-  },
-  computed: {
-    ...mapGetters('categories', {
-      categoryById: categoriesVuexTypes.GET_CATEGORY_BY_ID,
-    }),
-    category() {
-      return this.categoryById(this.tx.categoryId);
-    },
   },
 });
 </script>

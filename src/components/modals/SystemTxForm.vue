@@ -83,16 +83,19 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { mapGetters } from 'vuex';
+import {
+  defineComponent,
+  ref,
+  watch,
+} from 'vue';
 import { storeToRefs } from 'pinia';
 import {
   usePaymentTypesStore,
   useTransactionTypesStore,
   useAccountsStore,
   useTransactionsStore,
+  useCategoriesStore,
 } from '@/newStore';
-import { categoriesVuexTypes } from '@/store';
 import { TransactionRecord } from '@/js/records';
 import InputField from '@/components/fields/InputField.vue';
 import SelectField from '@/components/fields/SelectField.vue';
@@ -118,32 +121,18 @@ export default defineComponent({
       default: undefined,
     },
   },
-  setup() {
+  setup(props, { emit }) {
     const store = usePaymentTypesStore();
     const transactionTypesStore = useTransactionTypesStore();
     const accountsStore = useAccountsStore();
+    const categoriesStore = useCategoriesStore();
     const {
       createTransaction,
       editTransaction,
       deleteTransaction,
     } = useTransactionsStore();
 
-    const { paymentTypes } = storeToRefs(store);
-    const { accounts } = storeToRefs(accountsStore);
-    const { transactionTypes } = storeToRefs(transactionTypesStore);
-
-    return {
-      accounts,
-      paymentTypes,
-      transactionTypes,
-      createTransaction,
-      editTransaction,
-      deleteTransaction,
-    };
-  },
-  data: () => ({
-    EVENTS,
-    form: {
+    const form = ref({
       amount: null,
       account: null,
       category: null,
@@ -151,38 +140,40 @@ export default defineComponent({
       paymentType: null,
       note: null,
       type: null,
-    },
-    isLoading: false,
-  }),
-  computed: {
-    ...mapGetters('categories', {
-      categories: categoriesVuexTypes.GET_CATEGORIES,
-    }),
-  },
-  watch: {
-    transaction: {
-      immediate: true,
-      deep: true,
-      handler(value) {
+    });
+    const isLoading = ref(false);
+
+    const { paymentTypes } = storeToRefs(store);
+    const { accounts } = storeToRefs(accountsStore);
+    const { transactionTypes } = storeToRefs(transactionTypesStore);
+    const { categories } = storeToRefs(categoriesStore);
+
+    watch(
+      () => props.transaction,
+      (value) => {
         if (value) {
-          this.form = {
+          form.value = {
             amount: value.amount,
-            account: this.accounts.find(i => i.id === value.accountId),
-            type: this.transactionTypes
+            account: accounts.value.find(i => i.id === value.accountId),
+            type: transactionTypes.value
               .find(i => i.id === value.transactionTypeId),
-            category: this.categories.find(i => i.id === value.categoryId),
+            category: categories.value.find(i => i.id === value.categoryId),
             time: value.time,
-            paymentType: this.paymentTypes
+            paymentType: paymentTypes.value
               .find(i => i.id === value.paymentTypeId),
             note: value.note,
           };
         }
       },
-    },
-  },
-  methods: {
-    async submit() {
-      this.isLoading = true;
+      {
+        immediate: true,
+        deep: true,
+      },
+    );
+
+    const submit = async () => {
+      isLoading.value = true;
+
       const {
         amount,
         note,
@@ -191,7 +182,7 @@ export default defineComponent({
         paymentType: { id: paymentTypeId },
         account: { id: accountId },
         category: { id: categoryId },
-      } = this.form;
+      } = form.value;
 
       const params = {
         amount,
@@ -203,25 +194,40 @@ export default defineComponent({
         categoryId,
       };
 
-      if (this.transaction) {
-        await this.editTransaction({
-          txId: this.transaction.id,
+      if (props.transaction) {
+        await editTransaction({
+          txId: props.transaction.id,
           ...params,
         });
       } else {
-        await this.createTransaction(params);
+        await createTransaction(params);
       }
-      this.isLoading = false;
-    },
-    async deleteTransactionHandler() {
-      this.isLoading = true;
+      isLoading.value = false;
+    };
+    const deleteTransactionHandler = async () => {
+      isLoading.value = true;
 
-      await this.deleteTransaction({ txId: this.transaction.id });
+      await deleteTransaction({ txId: props.transaction.id });
 
-      this.$emit(EVENTS.closeModal);
+      emit(EVENTS.closeModal);
 
-      this.isLoading = false;
-    },
+      isLoading.value = false;
+    };
+
+    return {
+      EVENTS,
+      form,
+      isLoading,
+      accounts,
+      categories,
+      paymentTypes,
+      transactionTypes,
+      createTransaction,
+      editTransaction,
+      deleteTransaction,
+      deleteTransactionHandler,
+      submit,
+    };
   },
 });
 </script>
