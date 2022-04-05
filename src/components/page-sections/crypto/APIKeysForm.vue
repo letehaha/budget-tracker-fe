@@ -22,7 +22,8 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
-import { useFormValidation, useCryptoBinanceInfo } from '@/composable';
+import { useCryptoBinanceStore } from '@/newStore';
+import { useFormValidation } from '@/composable';
 import { required } from '@/js/helpers/validators.helper';
 import InputField from '@/components/fields/InputField.vue';
 import Button from '@/components/common/Button.vue';
@@ -30,7 +31,7 @@ import Button from '@/components/common/Button.vue';
 export default defineComponent({
   components: { InputField, Button },
   setup() {
-    const { setUserSettings } = useCryptoBinanceInfo();
+    const cryptoBinanceStore = useCryptoBinanceStore();
 
     const isFormLoading = ref(false);
     const form = ref({
@@ -58,7 +59,7 @@ export default defineComponent({
       isFormLoading.value = true;
 
       try {
-        await setUserSettings({
+        await cryptoBinanceStore.setSettings({
           publicKey: form.value.public,
           secretKey: form.value.secret,
         });

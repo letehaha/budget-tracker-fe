@@ -28,11 +28,16 @@
 <script lang="ts">
 import { defineComponent, computed } from 'vue';
 import { formatFiat } from '@/js/helpers';
-import { useCryptoBinanceInfo } from '@/composable';
+import { storeToRefs } from 'pinia';
+import { useCryptoBinanceStore } from '@/newStore';
 
 export default defineComponent({
   setup() {
-    const { balances, totalBalance } = useCryptoBinanceInfo();
+    const binanceStore = useCryptoBinanceStore();
+    const {
+      existingBalances: balances,
+      totalUSDBalance: totalBalance,
+    } = storeToRefs(binanceStore);
 
     const fiatTotalBalance = computed(() => formatFiat(totalBalance.value));
 

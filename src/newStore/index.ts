@@ -8,3 +8,6 @@ export { useUserStore } from '@/newStore/user';
 export { useTransactionsStore } from '@/newStore/transactions';
 export { useCategoriesStore } from '@/newStore/categories/categories';
 export { useAuthStore } from '@/newStore/auth';
+
+// crypto
+export { useCryptoBinanceStore } from '@/newStore/integrations/crypto/binance';

@@ -7,7 +7,6 @@ import bankMonobank, {
   bankMonobankVuexTypes,
   namespace as bankMonobankNamespace,
 } from './banksIntegrations/monobank';
-import cryptoBinance from './cryptoIntegrations/binance';
 
 const state: RootState = {
   isAppInitialized: false,
@@ -43,11 +42,9 @@ export const store = createStore({
   actions,
   modules: {
     [bankMonobankNamespace]: bankMonobank,
-    cryptoBinance,
   },
 });
 
 export { useRootStore } from './composable';
 export { indexVuexTypes } from './types';
 export { bankMonobankVuexTypes, useBankMonobankStore } from './banksIntegrations/monobank';
-export { cryptoBinanceVuexTypes } from './cryptoIntegrations/binance';
