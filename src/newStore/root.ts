@@ -4,6 +4,7 @@ import { useCurrenciesStore } from './currencies';
 import { useAccountTypesStore } from './account-types';
 import { usePaymentTypesStore } from './payment-types';
 import { useTransactionTypesStore } from './transaction-types';
+import { useAccountsStore } from './accounts';
 
 export const useRootStore = defineStore('root', () => {
   const isAppInitialized = ref(false);
@@ -21,6 +22,7 @@ export const useRootStore = defineStore('root', () => {
       loadAccountTypes(),
       loadPaymentTypes(),
       loadTransactionTypes(),
+      useAccountsStore(),
     ]);
 
     isAppInitialized.value = true;

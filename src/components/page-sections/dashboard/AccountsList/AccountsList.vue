@@ -15,11 +15,12 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { mapActions, mapGetters } from 'vuex';
+import { storeToRefs } from 'pinia';
+import { useAccountsStore } from '@/newStore';
 import { ACCOUNT_TYPES } from '@/js/const';
 import {
   indexVuexTypes,
   bankMonobankVuexTypes,
-  accountsVuexTypes,
 } from '@/store';
 import Account from './Account.vue';
 
@@ -27,15 +28,20 @@ export default defineComponent({
   components: {
     Account,
   },
+  setup() {
+    const accountsStore = useAccountsStore();
+    const { accounts } = storeToRefs(accountsStore);
+
+    return {
+      accounts,
+    };
+  },
   computed: {
     ...mapGetters({
       isAppInitialized: indexVuexTypes.GET_APP_INIT_STATUS,
     }),
     ...mapGetters('bankMonobank', {
       monoAccounts: bankMonobankVuexTypes.GET_ACTIVE_ACCOUNTS,
-    }),
-    ...mapGetters('accounts', {
-      accounts: accountsVuexTypes.GET_ACCOUNTS,
     }),
     allAccounts() {
       return [...this.monoAccounts, ...this.accounts];

@@ -4,7 +4,6 @@ import { RootState } from '@/store/types';
 import { api } from '@/api';
 import { userVuexTypes } from '@/store/user';
 import { categoriesVuexTypes } from '@/store/categories';
-import { accountsVuexTypes } from '@/store/accounts';
 import { bankMonobankVuexTypes } from '@/store/banksIntegrations/monobank';
 import { transactionsVuexTypes } from '@/store/transactions';
 import { authVuexTypes } from './types';
@@ -80,7 +79,8 @@ const actions: ActionTree<State, RootState> = {
     localStorage.setItem('user-token', '');
     commit(authVuexTypes.SET_TOKEN, null);
     commit(authVuexTypes.SET_IS_LOGGED_IN, false);
-    commit(`accounts/${accountsVuexTypes.RESET_STATE}`, null, { root: true });
+    // TODO:
+    // commit(`accounts/${accountsVuexTypes.RESET_STATE}`, null, { root: true });
     commit(`bankMonobank/${bankMonobankVuexTypes.RESET_STORE}`, null, { root: true });
     commit(`categories/${categoriesVuexTypes.RESET_STORE}`, null, { root: true });
     commit(`transactions/${transactionsVuexTypes.RESET_STORE}`, null, { root: true });

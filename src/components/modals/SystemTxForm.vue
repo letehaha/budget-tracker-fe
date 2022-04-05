@@ -86,9 +86,12 @@
 import { defineComponent } from 'vue';
 import { mapActions, mapGetters } from 'vuex';
 import { storeToRefs } from 'pinia';
-import { usePaymentTypesStore, useTransactionTypesStore } from '@/newStore';
 import {
-  accountsVuexTypes,
+  usePaymentTypesStore,
+  useTransactionTypesStore,
+  useAccountsStore,
+} from '@/newStore';
+import {
   categoriesVuexTypes,
   transactionsVuexTypes,
 } from '@/store';
@@ -120,11 +123,14 @@ export default defineComponent({
   setup() {
     const store = usePaymentTypesStore();
     const transactionTypesStore = useTransactionTypesStore();
+    const accountsStore = useAccountsStore();
 
     const { paymentTypes } = storeToRefs(store);
+    const { accounts } = storeToRefs(accountsStore);
     const { transactionTypes } = storeToRefs(transactionTypesStore);
 
     return {
+      accounts,
       paymentTypes,
       transactionTypes,
     };
@@ -143,9 +149,6 @@ export default defineComponent({
     isLoading: false,
   }),
   computed: {
-    ...mapGetters('accounts', {
-      accounts: accountsVuexTypes.GET_ACCOUNTS,
-    }),
     ...mapGetters('categories', {
       categories: categoriesVuexTypes.GET_CATEGORIES,
     }),

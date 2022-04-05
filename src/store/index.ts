@@ -7,7 +7,6 @@ import auth, { namespace as authNamespace } from './auth';
 import transactions, { namespace as txsNamespace } from './transactions';
 import user from './user';
 import categories from './categories';
-import accounts, { accountsVuexTypes } from './accounts';
 import bankMonobank, {
   bankMonobankVuexTypes,
   namespace as bankMonobankNamespace,
@@ -33,7 +32,6 @@ const actions: ActionTree<RootState, RootState> = {
     commit(indexVuexTypes.SET_APP_INITIALIZE_STATUS, false);
 
     await Promise.all([
-      dispatch(`accounts/${accountsVuexTypes.FETCH_ACCOUNTS}`),
       dispatch(`bankMonobank/${bankMonobankVuexTypes.FETCH_USER}`),
     ]);
 
@@ -51,7 +49,6 @@ export const store = createStore({
     [authNamespace]: auth,
     user,
     categories,
-    accounts,
     [txsNamespace]: transactions,
     [bankMonobankNamespace]: bankMonobank,
     cryptoBinance,
@@ -64,6 +61,5 @@ export { authVuexTypes, useAuthStore } from './auth';
 export { transactionsVuexTypes, useTransactionsStore } from './transactions';
 export { userVuexTypes } from './user';
 export { categoriesVuexTypes } from './categories';
-export { accountsVuexTypes } from './accounts';
 export { bankMonobankVuexTypes, useBankMonobankStore } from './banksIntegrations/monobank';
 export { cryptoBinanceVuexTypes } from './cryptoIntegrations/binance';
