@@ -34,7 +34,8 @@ import {
   defineComponent, reactive, computed, watch,
 } from 'vue';
 import { useRoute } from 'vue-router';
-import { useBankMonobankStore } from '@/store';
+import { storeToRefs } from 'pinia';
+import { useBanksMonobankStore } from '@/stores';
 
 import {
   useNotificationCenter,
@@ -50,12 +51,9 @@ export default defineComponent({
   setup() {
     const route = useRoute();
     const { addNotification } = useNotificationCenter();
-    const {
-      getMonoAccountById,
-      updateMonoAccount,
-      loadLatestTransactions,
-      loadTxsForPeriod,
-    } = useBankMonobankStore();
+    const monobankStore = useBanksMonobankStore();
+
+    const { getAccountById } = storeToRefs(monobankStore);
 
     const form = reactive({
       name: '',
@@ -64,12 +62,12 @@ export default defineComponent({
     });
 
     const account = computed(
-      () => getMonoAccountById.value(route.query.id as string),
+      () => getAccountById.value(route.query.id as string),
     );
 
     const loadLatestTransactionsHandler = async () => {
       try {
-        const response = await loadLatestTransactions({
+        const response = await monobankStore.loadTransactionsFromLatest({
           accountId: account.value.accountId,
         });
 
@@ -94,7 +92,7 @@ export default defineComponent({
         const dates = form.period.split(' to ');
         const from = new Date(dates[0]).getTime();
         const to = new Date(dates[1]).getTime();
-        await loadTxsForPeriod({
+        await monobankStore.loadTransactionsForPeriod({
           accountId: account.value.accountId,
           from,
           to,
@@ -107,7 +105,10 @@ export default defineComponent({
       }
     };
 
-    const debouncedUpdateMonoAccHandler = _debounce(updateMonoAccount, 1000);
+    const debouncedUpdateMonoAccHandler = _debounce(
+      monobankStore.updateAccountById,
+      1000,
+    );
 
     watch(
       () => account.value,

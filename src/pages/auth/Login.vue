@@ -55,7 +55,7 @@ import {
   defineComponent, ref, Ref, watch,
 } from 'vue';
 import { useRouter } from 'vue-router';
-import { useAuthStore } from '@/store';
+import { useAuthStore } from '@/stores';
 import { useFormValidation } from '@/composable';
 import { required, minLength } from '@/js/helpers/validators.helper';
 
@@ -71,7 +71,7 @@ export default defineComponent({
   },
   setup() {
     const router = useRouter();
-    const { signIn } = useAuthStore();
+    const { login } = useAuthStore();
 
     const form = ref({
       username: '',
@@ -112,9 +112,9 @@ export default defineComponent({
       try {
         isFormLoading.value = true;
 
-        await signIn({ password, username });
+        await login({ password, username });
 
-        router.push('/');
+        router.push({ name: 'dashboard' });
       } catch (e) {
         const errorCodes = {
           [ERROR_CODES.notFound]: 'Incorrect email or password.',

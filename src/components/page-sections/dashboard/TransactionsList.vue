@@ -6,7 +6,8 @@
 
 <script lang="ts">
 import { defineComponent, watch } from 'vue';
-import { useTransactionsStore, useRootStore } from '@/store';
+import { storeToRefs } from 'pinia';
+import { useRootStore, useTransactionsStore } from '@/stores';
 
 import TransactionsList from '@/components/TransactionsList/TransactionsList.vue';
 
@@ -15,14 +16,17 @@ export default defineComponent({
     TransactionsList,
   },
   setup() {
-    const { isAppInitialized } = useRootStore();
-    const { transactions, fetchTransactions } = useTransactionsStore();
+    const rootStore = useRootStore();
+    const transactionsStore = useTransactionsStore();
+
+    const { isAppInitialized } = storeToRefs(rootStore);
+    const { transactions } = storeToRefs(transactionsStore);
 
     watch(
-      () => isAppInitialized.value,
+      isAppInitialized,
       (value) => {
         if (value) {
-          fetchTransactions({ limit: 8 });
+          transactionsStore.loadTransactions({ limit: 8 });
         }
       },
       { immediate: true },

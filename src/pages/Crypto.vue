@@ -29,7 +29,7 @@ import {
 } from 'vue';
 import { formatFiat } from '@/js/helpers';
 import { ApiErrorResponseError } from '@/js/errors';
-import { useCryptoBinanceInfo } from '@/composable';
+import { useCryptoBinanceStore } from '@/stores';
 import GeneralList from '@/components/page-sections/crypto/GeneralList.vue';
 import APIKeysForm from '@/components/page-sections/crypto/APIKeysForm.vue';
 
@@ -39,7 +39,7 @@ export default defineComponent({
     APIKeysForm,
   },
   setup() {
-    const { fetchAccountData } = useCryptoBinanceInfo();
+    const binanceStore = useCryptoBinanceStore();
 
     const isAPIKeysDefined = ref(false);
     const isDataLoading = ref(false);
@@ -48,7 +48,7 @@ export default defineComponent({
       isDataLoading.value = true;
 
       try {
-        await fetchAccountData();
+        await binanceStore.loadAccountData();
 
         isAPIKeysDefined.value = true;
       } catch (e) {

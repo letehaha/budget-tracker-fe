@@ -26,11 +26,14 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { useRootStore } from '@/store';
+import { storeToRefs } from 'pinia';
+import { useCurrenciesStore } from '@/stores';
 
 export default defineComponent({
   setup() {
-    const { currencies } = useRootStore();
+    const store = useCurrenciesStore();
+
+    const { currencies } = storeToRefs(store);
 
     return {
       currencies,

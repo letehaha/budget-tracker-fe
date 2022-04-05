@@ -12,9 +12,9 @@ export enum CATEGORY_TYPES {
 }
 
 export enum TRANSACTIONS_TYPES {
-  expense = 'expense',
-  income = 'income',
-  transfer = 'transfer',
+  expense = 2,
+  income = 1,
+  transfer = 3,
 }
 
 export interface CategoryModel {

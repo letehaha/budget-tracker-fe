@@ -1,7 +1,11 @@
 <template>
   <div
     class="transaction"
-    :class="`transaction--${txType.name.toLowerCase()}`"
+    :class="{
+      'transaction--income': txType.type === TRANSACTIONS_TYPES.income,
+      'transaction--expense': txType.type === TRANSACTIONS_TYPES.expense,
+      'transaction--transfer': txType.type === TRANSACTIONS_TYPES.transfer,
+    }"
     @click="editTransaction"
   >
     <div class="transaction__info">
@@ -26,55 +30,49 @@
 
 <script lang="ts">
 import { format } from 'date-fns';
-import { defineComponent } from 'vue';
-import { mapGetters } from 'vuex';
-import { indexVuexTypes, categoriesVuexTypes } from '@/store';
+import { defineComponent, computed } from 'vue';
 import { TRANSACTIONS_TYPES } from 'shared-types';
+
+import { useTransactionTypesStore, useCategoriesStore } from '@/stores';
+
 import { eventBus } from '@/js/utils';
 import { formatAmount } from '@/js/helpers';
+
 import { MODAL_TYPES } from '@/components/Modal.vue';
 
 export default defineComponent({
   props: {
     tx: { type: Object, required: true },
   },
-  computed: {
-    ...mapGetters({
-      getTxTypeById: indexVuexTypes.GET_TRANSACTION_TYPE_BY_ID,
-    }),
-    ...mapGetters('categories', {
-      categoryById: categoriesVuexTypes.GET_CATEGORY_BY_ID,
-    }),
-    txType() {
-      return this.getTxTypeById(this.tx.transactionTypeId);
-    },
-    category() {
-      return this.categoryById(this.tx.categoryId);
-    },
-  },
-  methods: {
-    formatAmount,
-    formateDate(date) {
-      return format(new Date(date), 'd MMMM y');
-    },
-    editTransaction() {
+  setup(props) {
+    const { getTransactionTypeById } = useTransactionTypesStore();
+    const { getCategoryTypeById } = useCategoriesStore();
+
+    const txType = computed(
+      () => getTransactionTypeById(props.tx.transactionTypeId),
+    );
+
+    const category = computed(
+      () => getCategoryTypeById(props.tx.categoryId),
+    );
+
+    const formateDate = date => format(new Date(date), 'd MMMM y');
+
+    const editTransaction = () => {
       eventBus.emit(eventBus.eventsList.modalOpen, {
         type: MODAL_TYPES.systemTxForm,
-        data: { transaction: this.tx },
+        data: { transaction: props.tx },
       });
-    },
-    amountFormatter(amount, type) {
-      switch (type) {
-        case (TRANSACTIONS_TYPES.expense):
-          return `-${amount}`;
-        case (TRANSACTIONS_TYPES.income):
-          return `+${amount}`;
-        case (TRANSACTIONS_TYPES.transfer):
-          return amount;
-        default:
-          return amount;
-      }
-    },
+    };
+
+    return {
+      TRANSACTIONS_TYPES,
+      txType,
+      category,
+      formatAmount,
+      formateDate,
+      editTransaction,
+    };
   },
 });
 </script>

@@ -1,7 +1,7 @@
 interface Record {
   id?: number;
   name?: string;
-  type?: string;
+  type?: number;
 }
 
 export class TransactionTypeRecord {
@@ -11,7 +11,7 @@ export class TransactionTypeRecord {
 
   name: string;
 
-  type: string;
+  type: number;
 
   constructor(record: Record = {}) {
     this._record = record;

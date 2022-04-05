@@ -28,9 +28,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { mapActions } from 'vuex';
-import { authVuexTypes } from '@/store';
+import { defineComponent, reactive } from 'vue';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores';
 import { MODAL_TYPES } from '@/components/Modal.vue';
 import { eventBus } from '@/js/utils';
 import Button from '@/components/common/Button.vue';
@@ -41,24 +41,29 @@ export default defineComponent({
     Button,
     InputField,
   },
-  data: () => ({
-    form: {
+  setup() {
+    const router = useRouter();
+    const form = reactive({
       search: '',
-    },
-  }),
-  methods: {
-    ...mapActions('auth', {
-      logOut: authVuexTypes.LOG_OUT,
-    }),
-    openFormModal() {
+    });
+
+    const openFormModal = () => {
       eventBus.emit(eventBus.eventsList.modalOpen, {
         type: MODAL_TYPES.systemTxForm,
       });
-    },
-    logOutHandler() {
-      this.logOut();
-      this.$router.push('/sign-in');
-    },
+    };
+
+    const logOutHandler = () => {
+      useAuthStore().logout();
+      router.push({ name: 'auth/sign-in' });
+    };
+
+    return {
+      form,
+
+      openFormModal,
+      logOutHandler,
+    };
   },
 });
 </script>
