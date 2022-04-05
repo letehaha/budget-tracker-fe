@@ -33,7 +33,7 @@ import { format } from 'date-fns';
 import { defineComponent, computed } from 'vue';
 import { TRANSACTIONS_TYPES } from 'shared-types';
 
-import { useTransactionTypesStore, useCategoriesStore } from '@/newStore';
+import { useTransactionTypesStore, useCategoriesStore } from '@/stores';
 
 import { eventBus } from '@/js/utils';
 import { formatAmount } from '@/js/helpers';

@@ -38,9 +38,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { mapActions } from 'vuex';
-import { bankMonobankVuexTypes } from '@/store';
+import { defineComponent, reactive, ref } from 'vue';
+import { useBanksMonobankStore } from '@/stores';
 import InputField from '@/components/fields/InputField.vue';
 import Button from '@/components/common/Button.vue';
 
@@ -57,30 +56,33 @@ export default defineComponent({
   props: {
     isUpdate: { type: Boolean, default: false },
   },
-  data: () => ({
-    EVENTS,
-    form: {
-      token: null,
-    },
-    isLoading: false,
-  }),
-  methods: {
-    ...mapActions('bankMonobank', {
-      pairAccount: bankMonobankVuexTypes.PAIR_ACCOUNT,
-      updateMonoUser: bankMonobankVuexTypes.UPDATE_USER,
-    }),
-    async submit() {
-      this.isLoading = true;
+  setup(props, { emit }) {
+    const monobankStore = useBanksMonobankStore();
 
-      if (this.isUpdate) {
-        await this.updateMonoUser({ token: this.form.token });
+    const isLoading = ref(false);
+    const form = reactive({
+      token: null,
+    });
+
+    const submit = async () => {
+      isLoading.value = true;
+
+      if (props.isUpdate) {
+        await monobankStore.updateUser({ token: form.token });
       } else {
-        await this.pairAccount({ token: this.form.token });
+        await monobankStore.pairAccount({ token: form.token });
       }
 
-      this.isLoading = false;
-      this.$emit(EVENTS.closeModal);
-    },
+      isLoading.value = false;
+      emit(EVENTS.closeModal);
+    };
+
+    return {
+      EVENTS,
+      form,
+      isLoading,
+      submit,
+    };
   },
 });
 </script>

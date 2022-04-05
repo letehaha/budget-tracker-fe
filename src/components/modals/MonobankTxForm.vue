@@ -51,7 +51,8 @@ import {
   useTransactionTypesStore,
   useAccountsStore,
   useCategoriesStore,
-} from '@/newStore';
+  useBanksMonobankStore,
+} from '@/stores';
 
 import { MONOTransactionRecord } from '@/js/records';
 
@@ -81,6 +82,7 @@ export default defineComponent({
     const transactionTypesStore = useTransactionTypesStore();
     const accountsStore = useAccountsStore();
     const categoriesStore = useCategoriesStore();
+    const monobankStore = useBanksMonobankStore();
 
     const { paymentTypes } = storeToRefs(paymentTypesStore);
     const { accounts } = storeToRefs(accountsStore);
@@ -94,12 +96,6 @@ export default defineComponent({
     });
     const isLoading = ref(false);
 
-    const editTransaction = (tx) => {
-      // ...mapActions('bankMonobank', {
-      //   editTransaction: bankMonobankVuexTypes.UPDATE_TRANSACTION_BY_ID,
-      // }),
-    };
-
     const submit = async () => {
       isLoading.value = true;
       const { note, category } = form;
@@ -109,7 +105,7 @@ export default defineComponent({
         categoryId: category.id,
       };
 
-      await editTransaction({
+      await monobankStore.updateTransactionById({
         id: props.transaction.id,
         ...params,
       });

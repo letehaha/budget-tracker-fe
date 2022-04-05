@@ -55,7 +55,7 @@ import {
   defineComponent, ref, Ref, watch,
 } from 'vue';
 import { useRouter } from 'vue-router';
-import { useAuthStore } from '@/newStore';
+import { useAuthStore } from '@/stores';
 import { useFormValidation } from '@/composable';
 import { required, minLength } from '@/js/helpers/validators.helper';
 

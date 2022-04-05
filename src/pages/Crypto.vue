@@ -29,7 +29,7 @@ import {
 } from 'vue';
 import { formatFiat } from '@/js/helpers';
 import { ApiErrorResponseError } from '@/js/errors';
-import { useCryptoBinanceStore } from '@/newStore';
+import { useCryptoBinanceStore } from '@/stores';
 import GeneralList from '@/components/page-sections/crypto/GeneralList.vue';
 import APIKeysForm from '@/components/page-sections/crypto/APIKeysForm.vue';
 

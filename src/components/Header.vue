@@ -30,7 +30,7 @@
 <script lang="ts">
 import { defineComponent, reactive } from 'vue';
 import { useRouter } from 'vue-router';
-import { useAuthStore } from '@/newStore';
+import { useAuthStore } from '@/stores';
 import { MODAL_TYPES } from '@/components/Modal.vue';
 import { eventBus } from '@/js/utils';
 import Button from '@/components/common/Button.vue';

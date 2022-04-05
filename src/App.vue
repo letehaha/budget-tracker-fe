@@ -31,7 +31,7 @@ import {
 } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useRouter, useRoute } from 'vue-router';
-import { useAuthStore } from '@/newStore';
+import { useAuthStore } from '@/stores';
 import { ROUTER_LAYOUTS } from '@/routes';
 import { eventBus } from '@/js/utils';
 import Modal from '@/components/Modal.vue';

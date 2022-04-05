@@ -47,7 +47,7 @@
 <script lang="ts">
 import { defineComponent, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { useAuthStore } from '@/newStore';
+import { useAuthStore } from '@/stores';
 import Button from '@/components/common/Button.vue';
 import InputField from '@/components/fields/InputField.vue';
 

@@ -25,13 +25,8 @@
 
 <script lang="ts">
 import { defineComponent, onMounted } from 'vue';
-import { mapActions, mapGetters } from 'vuex';
 import { storeToRefs } from 'pinia';
-import {
-  indexVuexTypes,
-  bankMonobankVuexTypes,
-} from '@/store';
-import { useRootStore } from '@/newStore';
+import { useRootStore, useBanksMonobankStore } from '@/stores';
 import { TooManyRequestsError } from '@/js/errors';
 import { ErrorHandler } from '@/js/utils';
 import TransactionsList from '@/components/page-sections/dashboard/TransactionsList.vue';
@@ -45,43 +40,27 @@ export default defineComponent({
   },
   setup() {
     const rootStore = useRootStore();
+    const monobankStore = useBanksMonobankStore();
 
-    const { isAppInitialized: isNewAppInitialized } = storeToRefs(rootStore);
+    const { isAppInitialized } = storeToRefs(rootStore);
+
+    const {
+      sortedAccounts: accounts,
+      user: monoUser,
+    } = storeToRefs(monobankStore);
 
     onMounted(async () => {
-      rootStore.fetchInitialData();
+      if (!isAppInitialized.value) {
+        await rootStore.fetchInitialData();
+      }
+      monobankStore.loadAccounts();
     });
 
-    return {
-      isNewAppInitialized,
-    };
-  },
-  computed: {
-    ...mapGetters({
-      isAppInitialized: indexVuexTypes.GET_APP_INIT_STATUS,
-    }),
-    ...mapGetters('bankMonobank', {
-      monoUser: bankMonobankVuexTypes.GET_USER,
-      accounts: bankMonobankVuexTypes.GET_ACCOUNTS,
-    }),
-  },
-  async mounted() {
-    if (!this.isAppInitialized) {
-      await this.fetchInitialData();
-    }
-    this.fetchAccounts();
-  },
-  methods: {
-    ...mapActions({
-      fetchInitialData: indexVuexTypes.FETCH_INITIAL_DATA,
-    }),
-    ...mapActions('bankMonobank', {
-      updateWebhook: bankMonobankVuexTypes.UPDATE_WEBHOOK,
-      fetchAccounts: bankMonobankVuexTypes.FETCH_ACCOUNTS,
-    }),
-    async updateWebhookHandler() {
+    const updateWebhookHandler = async () => {
       try {
-        await this.updateWebhook({ clientId: this.monoUser.clientId });
+        await monobankStore.updateWebhook({
+          clientId: monoUser.value.clientId,
+        });
       } catch (e) {
         if (e instanceof TooManyRequestsError) {
           ErrorHandler.process(e, e.data.message);
@@ -89,7 +68,14 @@ export default defineComponent({
         }
         ErrorHandler.processWithoutFeedback(e);
       }
-    },
+    };
+
+    return {
+      isAppInitialized,
+      accounts,
+      monoUser,
+      updateWebhookHandler,
+    };
   },
 });
 </script>

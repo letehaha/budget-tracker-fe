@@ -13,15 +13,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { mapActions, mapGetters } from 'vuex';
+import { defineComponent, computed, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
-import { useAccountsStore } from '@/newStore';
-import { ACCOUNT_TYPES } from '@/js/const';
 import {
-  indexVuexTypes,
-  bankMonobankVuexTypes,
-} from '@/store';
+  useRootStore,
+  useAccountsStore,
+  useBanksMonobankStore,
+} from '@/stores';
+import { ACCOUNT_TYPES } from '@/js/const';
 import Account from './Account.vue';
 
 export default defineComponent({
@@ -29,41 +29,43 @@ export default defineComponent({
     Account,
   },
   setup() {
+    const router = useRouter();
+    const rootStore = useRootStore();
     const accountsStore = useAccountsStore();
+    const monobankStore = useBanksMonobankStore();
+    const { activeAccounts: monoAccounts } = storeToRefs(monobankStore);
     const { accounts } = storeToRefs(accountsStore);
+    const { isAppInitialized } = storeToRefs(rootStore);
+
+    watch(
+      isAppInitialized,
+      (value) => {
+        if (value) {
+          monobankStore.loadAccounts();
+        }
+      },
+      { immediate: true },
+    );
+
+    const allAccounts = computed(
+      () => [...monoAccounts.value, ...accounts.value],
+    );
+
+    const redirectToAccount = (account) => {
+      router.push({
+        name: 'account',
+        query: {
+          id: account.accountId,
+          type: ACCOUNT_TYPES.mono,
+        },
+      });
+    };
 
     return {
       accounts,
+      allAccounts,
+      redirectToAccount,
     };
-  },
-  computed: {
-    ...mapGetters({
-      isAppInitialized: indexVuexTypes.GET_APP_INIT_STATUS,
-    }),
-    ...mapGetters('bankMonobank', {
-      monoAccounts: bankMonobankVuexTypes.GET_ACTIVE_ACCOUNTS,
-    }),
-    allAccounts() {
-      return [...this.monoAccounts, ...this.accounts];
-    },
-  },
-  watch: {
-    isAppInitialized: {
-      immediate: true,
-      handler(value) {
-        if (value) {
-          this.fetchAccounts();
-        }
-      },
-    },
-  },
-  methods: {
-    ...mapActions('bankMonobank', {
-      fetchAccounts: bankMonobankVuexTypes.FETCH_ACCOUNTS,
-    }),
-    redirectToAccount(account) {
-      this.$router.push({ path: '/account', query: { id: account.accountId, type: ACCOUNT_TYPES.mono } });
-    },
   },
 });
 </script>

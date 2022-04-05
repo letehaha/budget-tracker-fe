@@ -27,7 +27,7 @@
 <script lang="ts">
 import { format } from 'date-fns';
 import { defineComponent, computed } from 'vue';
-import { useTransactionTypesStore, useCategoriesStore } from '@/newStore';
+import { useTransactionTypesStore, useCategoriesStore } from '@/stores';
 import { eventBus } from '@/js/utils';
 import { MODAL_TYPES } from '@/components/Modal.vue';
 

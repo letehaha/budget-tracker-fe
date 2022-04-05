@@ -22,7 +22,7 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
-import { useCryptoBinanceStore } from '@/newStore';
+import { useCryptoBinanceStore } from '@/stores';
 import { useFormValidation } from '@/composable';
 import { required } from '@/js/helpers/validators.helper';
 import InputField from '@/components/fields/InputField.vue';

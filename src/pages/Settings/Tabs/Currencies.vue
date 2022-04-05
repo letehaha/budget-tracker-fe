@@ -27,7 +27,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useCurrenciesStore } from '@/newStore';
+import { useCurrenciesStore } from '@/stores';
 
 export default defineComponent({
   setup() {

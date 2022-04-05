@@ -15,7 +15,7 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useTransactionsStore } from '@/newStore';
+import { useTransactionsStore } from '@/stores';
 
 import TransactionsList from '@/components/TransactionsList/TransactionsList.vue';
 

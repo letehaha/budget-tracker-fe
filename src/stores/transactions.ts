@@ -7,9 +7,12 @@ import {
   TransactionModelRecord,
   MONOTransactionRecord,
 } from '@/js/records';
+import { useBanksMonobankStore } from './integrations/banks/monobank';
 
 export const useTransactionsStore = defineStore('transactions', () => {
   const transactions: Ref<TransactionModelRecord[]> = ref([]);
+
+  const monobankStore = useBanksMonobankStore();
 
   const loadTransactions = async (
     { limit = 8, from = 0 } = {},
@@ -37,8 +40,7 @@ export const useTransactionsStore = defineStore('transactions', () => {
       });
 
       transactions.value = resultTxs;
-      // TODO:
-      // commit(`bankMonobank/${bankMonobankVuexTypes.SET_TRANSACTIONS}`, monoTxs, { root: true });
+      monobankStore.setTransactions(monoTxs);
 
       return resultTxs;
     } catch (e) {

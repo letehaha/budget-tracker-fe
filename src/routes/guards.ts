@@ -4,7 +4,7 @@ import {
   useUserStore,
   useCategoriesStore,
   useAuthStore,
-} from '@/newStore';
+} from '@/stores';
 
 export const authPageGuard: NavigationGuard = (to, from, next): void => {
   const token = localStorage.getItem('user-token');

@@ -5,6 +5,7 @@ import { useAccountTypesStore } from './account-types';
 import { usePaymentTypesStore } from './payment-types';
 import { useTransactionTypesStore } from './transaction-types';
 import { useAccountsStore } from './accounts';
+import { useBanksMonobankStore } from './integrations/banks/monobank';
 
 export const useRootStore = defineStore('root', () => {
   const isAppInitialized = ref(false);
@@ -14,6 +15,7 @@ export const useRootStore = defineStore('root', () => {
     const { loadAccountTypes } = useAccountTypesStore();
     const { loadPaymentTypes } = usePaymentTypesStore();
     const { loadTransactionTypes } = useTransactionTypesStore();
+    const { loadUserData } = useBanksMonobankStore();
 
     isAppInitialized.value = false;
 
@@ -23,6 +25,7 @@ export const useRootStore = defineStore('root', () => {
       loadPaymentTypes(),
       loadTransactionTypes(),
       useAccountsStore(),
+      loadUserData(),
     ]);
 
     isAppInitialized.value = true;

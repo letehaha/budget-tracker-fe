@@ -69,16 +69,15 @@
 
 <script lang="ts">
 import {
-  defineComponent, computed, watch, onMounted,
+  defineComponent, watch, onMounted,
 } from 'vue';
-import { useStore } from 'vuex';
 import { storeToRefs } from 'pinia';
 import { useRouter } from 'vue-router';
 import {
-  indexVuexTypes,
-  bankMonobankVuexTypes,
-} from '@/store';
-import { useRootStore } from '@/newStore';
+  useRootStore,
+  useBanksMonobankStore,
+  useAccountsStore,
+} from '@/stores';
 import { formatAmount } from '@/js/helpers';
 import { eventBus } from '@/js/utils';
 import { MODAL_TYPES } from '@/components/Modal.vue';
@@ -86,42 +85,38 @@ import { ACCOUNT_TYPES } from '@/js/const';
 
 export default defineComponent({
   setup() {
-    const store = useStore();
     const router = useRouter();
     const rootStore = useRootStore();
+    const monobankStore = useBanksMonobankStore();
+    const accountsStore = useAccountsStore();
 
+    const { isAppInitialized } = storeToRefs(rootStore);
+    const { accounts } = storeToRefs(accountsStore);
     const {
-      isAppInitialized: isNewAppInitialized,
-    } = storeToRefs(rootStore);
-
-    const isAppInitialized = computed(
-      () => store.getters[indexVuexTypes.GET_APP_INIT_STATUS],
-    );
-    const monoAccounts = computed(() => store.getters[`bankMonobank/${bankMonobankVuexTypes.GET_ACCOUNTS}`]);
-    const isPaired = computed(() => store.getters[`bankMonobank/${bankMonobankVuexTypes.GET_ACCOUNT_PAIRED_STATUS}`]);
-    const isTokenPresent = computed(() => store.getters[`bankMonobank/${bankMonobankVuexTypes.IS_TOKEN_PRESENT}`]);
-    const accounts = computed(() => store.getters[`accounts/${bankMonobankVuexTypes.GET_ACCOUNTS}`]);
+      isMonoAccountPaired: isPaired,
+      isTokenPresent,
+      sortedAccounts: monoAccounts,
+    } = storeToRefs(monobankStore);
 
     watch(
       isAppInitialized,
       (value) => {
         if (value) {
-          store.dispatch(`bankMonobank/${bankMonobankVuexTypes.FETCH_ACCOUNTS}`);
+          monobankStore.loadAccounts();
         }
       },
       { immediate: true },
     );
 
     onMounted(async () => {
-      if (!isAppInitialized.value && !isNewAppInitialized.value) {
-        await store.dispatch(indexVuexTypes.FETCH_INITIAL_DATA);
+      if (!isAppInitialized.value) {
         await rootStore.fetchInitialData();
       }
-      store.dispatch(`bankMonobank/${bankMonobankVuexTypes.FETCH_ACCOUNTS}`);
+      monobankStore.loadAccounts();
     });
 
     const refreshMonoAccounts = () => {
-      store.dispatch(`bankMonobank/${bankMonobankVuexTypes.REFRESH_ACCOUNTS}`);
+      monobankStore.refreshAccounts();
     };
 
     const setMonobankToken = ({ isUpdate = false } = {}) => {
@@ -135,7 +130,7 @@ export default defineComponent({
 
     const redirectToAccount = account => {
       router.push({
-        path: '/account',
+        name: 'account',
         query: { id: account.accountId, type: ACCOUNT_TYPES.mono },
       });
     };
@@ -146,15 +141,13 @@ export default defineComponent({
 
     return {
       setMonobankToken,
-      isAppInitialized,
       monoAccounts,
+      accounts,
       isPaired,
       isTokenPresent,
-      accounts,
       refreshMonoAccounts,
       formatBalance,
       redirectToAccount,
-      isNewAppInitialized,
     };
   },
 });

@@ -95,7 +95,7 @@ import {
   useAccountsStore,
   useTransactionsStore,
   useCategoriesStore,
-} from '@/newStore';
+} from '@/stores';
 import { TransactionRecord } from '@/js/records';
 import InputField from '@/components/fields/InputField.vue';
 import SelectField from '@/components/fields/SelectField.vue';

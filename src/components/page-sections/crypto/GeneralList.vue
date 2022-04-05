@@ -29,7 +29,7 @@
 import { defineComponent, computed } from 'vue';
 import { formatFiat } from '@/js/helpers';
 import { storeToRefs } from 'pinia';
-import { useCryptoBinanceStore } from '@/newStore';
+import { useCryptoBinanceStore } from '@/stores';
 
 export default defineComponent({
   setup() {
