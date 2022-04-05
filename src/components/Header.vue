@@ -42,6 +42,7 @@ export default defineComponent({
     InputField,
   },
   setup() {
+    const router = useRouter();
     const form = reactive({
       search: '',
     });
@@ -54,7 +55,7 @@ export default defineComponent({
 
     const logOutHandler = () => {
       useAuthStore().logout();
-      useRouter().push({ name: 'auth/sign-in' });
+      router.push({ name: 'auth/sign-in' });
     };
 
     return {

@@ -31,13 +31,8 @@ const API_VER = process.env.VUE_APP_API_VER;
 console.log('API_HTTP', API_HTTP);
 // eslint-disable-next-line no-console
 console.log('API_VER', API_VER);
-/**
- * ApiCaller performs the request to the API
- */
 class ApiCaller {
-  actions: {
-    logout: () => void;
-  };
+  logout: () => void;
 
   router: Router;
 
@@ -48,7 +43,6 @@ class ApiCaller {
   constructor() {
     this._baseURL = process.env.API_HTTP;
     this.authToken = null;
-    this.actions = {};
     this.router = null;
   }
 
@@ -157,7 +151,7 @@ class ApiCaller {
       const { addNotification } = useNotificationCenter();
 
       if (response.code === ERROR_CODES.unauthorized) {
-        await this.actions.logout();
+        await this.logout();
 
         addNotification({
           id: 'authorization-error',
@@ -165,7 +159,7 @@ class ApiCaller {
           type: NotificationType.error,
         });
 
-        this.router.push('/sign-in');
+        this.router.push({ name: 'auth/sign-in' });
 
         throw new errors.AuthError(
           response.statusText,
@@ -191,7 +185,7 @@ class ApiCaller {
   }
 
   setRequiredActions({ logout }) {
-    this.actions.logout = logout;
+    this.logout = logout;
   }
 
   setRouter({ router }: { router: Router }) {

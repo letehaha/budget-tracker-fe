@@ -5,10 +5,10 @@ import { api } from '@/api';
 import { useUserStore } from './user';
 import { useCategoriesStore } from './categories/categories';
 
-const userStore = useUserStore();
-const categoriesStore = useCategoriesStore();
-
 export const useAuthStore = defineStore('auth', () => {
+  const userStore = useUserStore();
+  const categoriesStore = useCategoriesStore();
+
   const user = ref(null);
   const isLoggedIn = ref(false);
   const userToken: Ref<string | null> = ref(null);
