@@ -24,14 +24,16 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, onMounted } from 'vue';
 import { mapActions, mapGetters } from 'vuex';
+import { storeToRefs } from 'pinia';
 import {
   indexVuexTypes,
   userVuexTypes,
   categoriesVuexTypes,
   bankMonobankVuexTypes,
 } from '@/store';
+import { useRootStore } from '@/newStore';
 import { TooManyRequestsError } from '@/js/errors';
 import { ErrorHandler } from '@/js/utils';
 import TransactionsList from '@/components/page-sections/dashboard/TransactionsList.vue';
@@ -43,12 +45,22 @@ export default defineComponent({
     TransactionsList,
     AccountsList,
   },
+  setup() {
+    const rootStore = useRootStore();
+
+    const { isAppInitialized: isNewAppInitialized } = storeToRefs(rootStore);
+
+    onMounted(async () => {
+      rootStore.fetchInitialData();
+    });
+
+    return {
+      isNewAppInitialized,
+    };
+  },
   computed: {
     ...mapGetters({
       isAppInitialized: indexVuexTypes.GET_APP_INIT_STATUS,
-      accountTypes: indexVuexTypes.GET_ACCOUNT_TYPES,
-      paymentTypes: indexVuexTypes.GET_PAYMENT_TYPES,
-      txTypes: indexVuexTypes.GET_TRANSACTION_TYPES,
     }),
     ...mapGetters('user', {
       user: userVuexTypes.GET_USER,

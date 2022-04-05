@@ -72,11 +72,13 @@ import {
   defineComponent, computed, watch, onMounted,
 } from 'vue';
 import { useStore } from 'vuex';
+import { storeToRefs } from 'pinia';
 import { useRouter } from 'vue-router';
 import {
   indexVuexTypes,
   bankMonobankVuexTypes,
 } from '@/store';
+import { useRootStore } from '@/newStore';
 import { formatAmount } from '@/js/helpers';
 import { eventBus } from '@/js/utils';
 import { MODAL_TYPES } from '@/components/Modal.vue';
@@ -86,6 +88,11 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const router = useRouter();
+    const rootStore = useRootStore();
+
+    const {
+      isAppInitialized: isNewAppInitialized,
+    } = storeToRefs(rootStore);
 
     const isAppInitialized = computed(
       () => store.getters[indexVuexTypes.GET_APP_INIT_STATUS],
@@ -106,8 +113,9 @@ export default defineComponent({
     );
 
     onMounted(async () => {
-      if (!isAppInitialized.value) {
+      if (!isAppInitialized.value && !isNewAppInitialized.value) {
         await store.dispatch(indexVuexTypes.FETCH_INITIAL_DATA);
+        await rootStore.fetchInitialData();
       }
       store.dispatch(`bankMonobank/${bankMonobankVuexTypes.FETCH_ACCOUNTS}`);
     });
@@ -146,6 +154,7 @@ export default defineComponent({
       refreshMonoAccounts,
       formatBalance,
       redirectToAccount,
+      isNewAppInitialized,
     };
   },
 });

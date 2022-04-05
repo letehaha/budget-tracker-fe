@@ -1,4 +1,5 @@
 import { createApp } from 'vue';
+import { createPinia } from 'pinia';
 import { router } from '@/routes';
 import { store } from '@/store';
 import { clickOutside } from '@/directives';
@@ -16,6 +17,7 @@ app.directive('click-outside', clickOutside);
 
 app.use(router);
 app.use(store);
+app.use(createPinia());
 
 app.mount('#app');
 

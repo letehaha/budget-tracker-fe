@@ -26,27 +26,33 @@
 
 <script lang="ts">
 import { format } from 'date-fns';
-import { defineComponent } from 'vue';
+import { defineComponent, computed } from 'vue';
 import { mapGetters } from 'vuex';
+import { useTransactionTypesStore } from '@/newStore';
 import { TRANSACTIONS_TYPES } from 'shared-types';
 import { eventBus } from '@/js/utils';
-import { indexVuexTypes, categoriesVuexTypes } from '@/store';
+import { categoriesVuexTypes } from '@/store';
 import { MODAL_TYPES } from '@/components/Modal.vue';
 
 export default defineComponent({
   props: {
     tx: { type: Object, required: true },
   },
+  setup(props) {
+    const { getTransactionTypeById } = useTransactionTypesStore();
+
+    const txType = computed(
+      () => getTransactionTypeById(props.tx.transactionTypeId),
+    );
+
+    return {
+      txType,
+    };
+  },
   computed: {
-    ...mapGetters({
-      getTxTypeById: indexVuexTypes.GET_TRANSACTION_TYPE_BY_ID,
-    }),
     ...mapGetters('categories', {
       categoryById: categoriesVuexTypes.GET_CATEGORY_BY_ID,
     }),
-    txType() {
-      return this.getTxTypeById(this.tx.transactionTypeId);
-    },
     category() {
       return this.categoryById(this.tx.categoryId);
     },

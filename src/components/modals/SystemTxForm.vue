@@ -85,8 +85,9 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { mapActions, mapGetters } from 'vuex';
+import { storeToRefs } from 'pinia';
+import { usePaymentTypesStore, useTransactionTypesStore } from '@/newStore';
 import {
-  indexVuexTypes,
   accountsVuexTypes,
   categoriesVuexTypes,
   transactionsVuexTypes,
@@ -116,6 +117,18 @@ export default defineComponent({
       default: undefined,
     },
   },
+  setup() {
+    const store = usePaymentTypesStore();
+    const transactionTypesStore = useTransactionTypesStore();
+
+    const { paymentTypes } = storeToRefs(store);
+    const { transactionTypes } = storeToRefs(transactionTypesStore);
+
+    return {
+      paymentTypes,
+      transactionTypes,
+    };
+  },
   data: () => ({
     EVENTS,
     form: {
@@ -130,10 +143,6 @@ export default defineComponent({
     isLoading: false,
   }),
   computed: {
-    ...mapGetters({
-      paymentTypes: indexVuexTypes.GET_PAYMENT_TYPES,
-      transactionTypes: indexVuexTypes.GET_TRANSACTION_TYPES,
-    }),
     ...mapGetters('accounts', {
       accounts: accountsVuexTypes.GET_ACCOUNTS,
     }),
