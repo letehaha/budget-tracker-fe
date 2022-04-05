@@ -3,9 +3,10 @@ import { api } from '@/api';
 import {
   store,
   authVuexTypes,
-  userVuexTypes,
   categoriesVuexTypes,
 } from '@/store';
+
+import { useUserStore } from '@/newStore';
 
 export const authPageGuard: NavigationGuard = (to, from, next): void => {
   const isLoggedIn = store.getters[`auth/${authVuexTypes.GET_IS_LOGGED_IN}`];
@@ -20,14 +21,14 @@ export const authPageGuard: NavigationGuard = (to, from, next): void => {
 };
 
 export const redirectRouteGuard: NavigationGuard = (to, from, next): void => {
+  const userStore = useUserStore();
   const isLoggedIn = store.getters[`auth/${authVuexTypes.GET_IS_LOGGED_IN}`];
-  const user = store.getters[`user/${userVuexTypes.GET_USER}`];
   const token = localStorage.getItem('user-token');
 
   if (isLoggedIn || token) {
     api.setToken(token);
-    if (!user) {
-      store.dispatch(`user/${userVuexTypes.FETCH_USER}`);
+    if (!userStore.user) {
+      userStore.loadUser();
       store.dispatch(`categories/${categoriesVuexTypes.FETCH_CATEGORIES}`, null, { root: true });
     }
     next();

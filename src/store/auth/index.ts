@@ -1,12 +1,14 @@
 import { ERROR_CODES } from 'shared-types';
 import { MutationTree, ActionTree, GetterTree } from 'vuex';
+// import { useUserStore } from '@/newStore';
 import { RootState } from '@/store/types';
 import { api } from '@/api';
-import { userVuexTypes } from '@/store/user';
 import { categoriesVuexTypes } from '@/store/categories';
 import { bankMonobankVuexTypes } from '@/store/banksIntegrations/monobank';
 import { transactionsVuexTypes } from '@/store/transactions';
 import { authVuexTypes } from './types';
+
+// const userStore = useUserStore();
 
 interface State {
   user: null;
@@ -46,7 +48,8 @@ const actions: ActionTree<State, RootState> = {
       if (result.token) {
         api.setToken(result.token);
 
-        await dispatch(`user/${userVuexTypes.FETCH_USER}`, null, { root: true });
+        // TODO:
+        // userStore.loadUser();
         await dispatch(`categories/${categoriesVuexTypes.FETCH_CATEGORIES}`, null, { root: true });
 
         commit(authVuexTypes.SET_TOKEN, result.token);
@@ -84,7 +87,7 @@ const actions: ActionTree<State, RootState> = {
     commit(`bankMonobank/${bankMonobankVuexTypes.RESET_STORE}`, null, { root: true });
     commit(`categories/${categoriesVuexTypes.RESET_STORE}`, null, { root: true });
     commit(`transactions/${transactionsVuexTypes.RESET_STORE}`, null, { root: true });
-    commit(`user/${userVuexTypes.RESET_STORE}`, null, { root: true });
+    // commit(`user/${userVuexTypes.RESET_STORE}`, null, { root: true });
   },
 };
 

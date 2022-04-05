@@ -29,7 +29,6 @@ import { mapActions, mapGetters } from 'vuex';
 import { storeToRefs } from 'pinia';
 import {
   indexVuexTypes,
-  userVuexTypes,
   categoriesVuexTypes,
   bankMonobankVuexTypes,
 } from '@/store';
@@ -61,9 +60,6 @@ export default defineComponent({
   computed: {
     ...mapGetters({
       isAppInitialized: indexVuexTypes.GET_APP_INIT_STATUS,
-    }),
-    ...mapGetters('user', {
-      user: userVuexTypes.GET_USER,
     }),
     ...mapGetters('categories', {
       categories: categoriesVuexTypes.GET_CATEGORIES,
