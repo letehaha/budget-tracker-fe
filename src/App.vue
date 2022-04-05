@@ -22,9 +22,16 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { mapGetters } from 'vuex';
-import { authVuexTypes } from '@/store';
+import {
+  defineComponent,
+  watch,
+  ref,
+  onMounted,
+  computed,
+} from 'vue';
+import { storeToRefs } from 'pinia';
+import { useRouter, useRoute } from 'vue-router';
+import { useAuthStore } from '@/newStore';
 import { ROUTER_LAYOUTS } from '@/routes';
 import { eventBus } from '@/js/utils';
 import Modal from '@/components/Modal.vue';
@@ -40,42 +47,51 @@ export default defineComponent({
     Sidebar,
     NotificationsCenter,
   },
-  data: () => ({
-    isModalVisible: false,
-    modalData: undefined,
-    ROUTER_LAYOUTS,
-  }),
-  computed: {
-    ...mapGetters('auth', {
-      isLoggedIn: authVuexTypes.GET_IS_LOGGED_IN,
-    }),
-    currentLayout() {
-      return this.$route.meta.layout;
-    },
-  },
-  watch: {
-    isLoggedIn: {
-      immediate: true,
-      handler(value) {
+  setup() {
+    const route = useRoute();
+    const authStore = useAuthStore();
+
+    const { isLoggedIn } = storeToRefs(authStore);
+
+    watch(
+      isLoggedIn,
+      (value) => {
         if (!value) {
-          this.$router.push('/sign-in');
+          useRouter().push({ name: 'auth/sign-in' });
         }
       },
-    },
-  },
-  mounted() {
-    eventBus.on(eventBus.eventsList.modalOpen, this.onOpenMessage);
-    eventBus.on(eventBus.eventsList.modalClose, this.closeModal);
-  },
-  methods: {
-    onOpenMessage(data) {
-      this.isModalVisible = true;
-      this.modalData = data;
-    },
-    closeModal() {
-      this.modalData = {};
-      this.isModalVisible = false;
-    },
+      { immediate: true },
+    );
+
+    const isModalVisible = ref(false);
+    const modalData = ref(undefined);
+
+    const onOpenMessage = (data) => {
+      isModalVisible.value = true;
+      modalData.value = data;
+    };
+    const closeModal = () => {
+      modalData.value = {};
+      isModalVisible.value = false;
+    };
+
+    onMounted(() => {
+      eventBus.on(eventBus.eventsList.modalOpen, onOpenMessage);
+      eventBus.on(eventBus.eventsList.modalClose, closeModal);
+    });
+
+    const currentLayout = computed(() => route.meta.layout);
+
+    return {
+      ROUTER_LAYOUTS,
+      isLoggedIn,
+      isModalVisible,
+      modalData,
+      currentLayout,
+
+      onOpenMessage,
+      closeModal,
+    };
   },
 });
 </script>

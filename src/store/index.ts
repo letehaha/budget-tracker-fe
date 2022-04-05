@@ -3,7 +3,6 @@ import {
 } from 'vuex';
 
 import { indexVuexTypes, RootState } from './types';
-import auth, { namespace as authNamespace } from './auth';
 import bankMonobank, {
   bankMonobankVuexTypes,
   namespace as bankMonobankNamespace,
@@ -43,7 +42,6 @@ export const store = createStore({
   mutations,
   actions,
   modules: {
-    [authNamespace]: auth,
     [bankMonobankNamespace]: bankMonobank,
     cryptoBinance,
   },
@@ -51,6 +49,5 @@ export const store = createStore({
 
 export { useRootStore } from './composable';
 export { indexVuexTypes } from './types';
-export { authVuexTypes, useAuthStore } from './auth';
 export { bankMonobankVuexTypes, useBankMonobankStore } from './banksIntegrations/monobank';
 export { cryptoBinanceVuexTypes } from './cryptoIntegrations/binance';

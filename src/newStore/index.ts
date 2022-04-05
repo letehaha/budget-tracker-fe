@@ -7,3 +7,4 @@ export { useAccountsStore } from '@/newStore/accounts';
 export { useUserStore } from '@/newStore/user';
 export { useTransactionsStore } from '@/newStore/transactions';
 export { useCategoriesStore } from '@/newStore/categories/categories';
+export { useAuthStore } from '@/newStore/auth';

@@ -45,9 +45,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { mapActions } from 'vuex';
-import { authVuexTypes } from '@/store';
+import { defineComponent, reactive, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/newStore';
 import Button from '@/components/common/Button.vue';
 import InputField from '@/components/fields/InputField.vue';
 
@@ -56,27 +56,32 @@ export default defineComponent({
     Button,
     InputField,
   },
-  data: () => ({
-    form: {
+  setup() {
+    const form = reactive({
       username: '',
       password: '',
       verifyPassowrd: '',
-    },
-  }),
-  methods: {
-    ...mapActions('auth', {
-      signUp: authVuexTypes.SIGN_UP,
-    }),
-    async submit() {
-      const { password, username } = this.form;
-      this.isFormLoading = true;
+    });
 
-      await this.signUp({ password, username });
+    const isFormLoading = ref(false);
 
-      this.$router.push('/');
+    const submit = async () => {
+      const { password, username } = form;
 
-      this.isFormLoading = false;
-    },
+      isFormLoading.value = true;
+
+      await useAuthStore().signup({ password, username });
+
+      useRouter().push({ name: 'dashboard' });
+
+      isFormLoading.value = false;
+    };
+
+    return {
+      form,
+
+      submit,
+    };
   },
 });
 </script>
