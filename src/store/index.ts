@@ -4,7 +4,6 @@ import {
 
 import { indexVuexTypes, RootState } from './types';
 import auth, { namespace as authNamespace } from './auth';
-import transactions, { namespace as txsNamespace } from './transactions';
 import categories from './categories';
 import bankMonobank, {
   bankMonobankVuexTypes,
@@ -47,7 +46,6 @@ export const store = createStore({
   modules: {
     [authNamespace]: auth,
     categories,
-    [txsNamespace]: transactions,
     [bankMonobankNamespace]: bankMonobank,
     cryptoBinance,
   },
@@ -56,7 +54,6 @@ export const store = createStore({
 export { useRootStore } from './composable';
 export { indexVuexTypes } from './types';
 export { authVuexTypes, useAuthStore } from './auth';
-export { transactionsVuexTypes, useTransactionsStore } from './transactions';
 export { categoriesVuexTypes } from './categories';
 export { bankMonobankVuexTypes, useBankMonobankStore } from './banksIntegrations/monobank';
 export { cryptoBinanceVuexTypes } from './cryptoIntegrations/binance';

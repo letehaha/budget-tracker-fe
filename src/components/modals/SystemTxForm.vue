@@ -84,17 +84,15 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { mapActions, mapGetters } from 'vuex';
+import { mapGetters } from 'vuex';
 import { storeToRefs } from 'pinia';
 import {
   usePaymentTypesStore,
   useTransactionTypesStore,
   useAccountsStore,
+  useTransactionsStore,
 } from '@/newStore';
-import {
-  categoriesVuexTypes,
-  transactionsVuexTypes,
-} from '@/store';
+import { categoriesVuexTypes } from '@/store';
 import { TransactionRecord } from '@/js/records';
 import InputField from '@/components/fields/InputField.vue';
 import SelectField from '@/components/fields/SelectField.vue';
@@ -124,6 +122,11 @@ export default defineComponent({
     const store = usePaymentTypesStore();
     const transactionTypesStore = useTransactionTypesStore();
     const accountsStore = useAccountsStore();
+    const {
+      createTransaction,
+      editTransaction,
+      deleteTransaction,
+    } = useTransactionsStore();
 
     const { paymentTypes } = storeToRefs(store);
     const { accounts } = storeToRefs(accountsStore);
@@ -133,6 +136,9 @@ export default defineComponent({
       accounts,
       paymentTypes,
       transactionTypes,
+      createTransaction,
+      editTransaction,
+      deleteTransaction,
     };
   },
   data: () => ({
@@ -175,11 +181,6 @@ export default defineComponent({
     },
   },
   methods: {
-    ...mapActions('transactions', {
-      createTransaction: transactionsVuexTypes.CREATE_TRANSACTION,
-      editTransaction: transactionsVuexTypes.EDIT_TRANSACTION,
-      deleteTransaction: transactionsVuexTypes.DELETE_TRANSACTION,
-    }),
     async submit() {
       this.isLoading = true;
       const {
