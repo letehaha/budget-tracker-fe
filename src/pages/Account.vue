@@ -13,8 +13,11 @@
         type="checkbox"
       >
     </label>
-    <button @click="loadLatestTransactionsHandler">
-      Refresh
+    <button
+      :disabled="isRefreshDisabled"
+      @click="loadLatestTransactionsHandler"
+    >
+      {{ isRefreshDisabled ? 'Loading...' : 'Refresh' }}
     </button>
     <DateField
       v-model="form.period"
@@ -31,11 +34,12 @@
 import { ERROR_CODES } from 'shared-types';
 import _debounce from 'lodash/debounce';
 import {
-  defineComponent, reactive, computed, watch,
+  defineComponent, reactive, computed, ref, watchEffect,
 } from 'vue';
 import { useRoute } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { useBanksMonobankStore } from '@/stores';
+import { useLocalStorage } from '@/composable';
 
 import {
   useNotificationCenter,
@@ -51,6 +55,7 @@ export default defineComponent({
   setup() {
     const route = useRoute();
     const { addNotification } = useNotificationCenter();
+    const { addLSItem, removeLSItem, getLSItem } = useLocalStorage();
     const monobankStore = useBanksMonobankStore();
 
     const { getAccountById } = storeToRefs(monobankStore);
@@ -61,9 +66,24 @@ export default defineComponent({
       period: null,
     });
 
+    const isRefreshDisabled = ref(false);
+
     const account = computed(
       () => getAccountById.value(route.query.id as string),
     );
+    const accountLSKey = computed(() => `monobank-${account.value.accountId}-txs-loading-end`);
+
+    const setLoadingTimer = (wait: number) => {
+      isRefreshDisabled.value = true;
+
+      addLSItem(accountLSKey.value, String(new Date().getTime() + wait));
+
+      setTimeout(() => {
+        removeLSItem(accountLSKey.value);
+
+        isRefreshDisabled.value = false;
+      }, wait);
+    };
 
     const loadLatestTransactionsHandler = async () => {
       try {
@@ -71,8 +91,14 @@ export default defineComponent({
           accountId: account.value.accountId,
         });
 
+        const isUserNeedToWait = response.minutesToFinish >= 1;
+
+        if (isUserNeedToWait) {
+          setLoadingTimer(response.minutesToFinish * 60 * 1000);
+        }
+
         addNotification({
-          text: response.minutesToFinish >= 1
+          text: isUserNeedToWait
             ? `Loading started. Estimated loading time is ${response.minutesToFinish} minute(s).`
             : 'Loaded successfully',
           type: NotificationType.success,
@@ -110,44 +136,39 @@ export default defineComponent({
       1000,
     );
 
-    watch(
-      () => account.value,
-      (value) => {
-        if (value) {
-          form.name = value.name;
-          form.isEnabled = value.isEnabled;
-        }
-      },
-      { immediate: true },
-    );
+    watchEffect(() => {
+      if (account.value) {
+        form.name = account.value.name;
+        form.isEnabled = account.value.isEnabled;
 
-    watch(
-      () => form.name,
-      (value) => {
-        if (value !== account.value.name) {
-          debouncedUpdateMonoAccHandler({
-            id: account.value.accountId,
-            name: value,
-          });
+        const curr = new Date().getTime();
+        const timestamp = Number(getLSItem(accountLSKey.value)) || curr;
+        if (curr < timestamp) {
+          setLoadingTimer(timestamp - curr);
         }
-      },
-    );
+      }
+    });
 
-    watch(
-      () => form.isEnabled,
-      (value) => {
-        if (value !== account.value.isEnabled) {
-          debouncedUpdateMonoAccHandler({
-            id: account.value.accountId,
-            isEnabled: value,
-          });
-        }
-      },
-    );
+    watchEffect(() => {
+      if (form.name !== account.value.name) {
+        debouncedUpdateMonoAccHandler({
+          id: account.value.accountId,
+          name: form.name,
+        });
+      }
+
+      if (form.isEnabled !== account.value.isEnabled) {
+        debouncedUpdateMonoAccHandler({
+          id: account.value.accountId,
+          isEnabled: form.isEnabled,
+        });
+      }
+    });
 
     return {
       form,
       account,
+      isRefreshDisabled,
       loadLatestTransactionsHandler,
       loadTransactionsForPeriod,
     };
