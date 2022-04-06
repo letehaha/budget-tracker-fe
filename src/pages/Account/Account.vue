@@ -13,12 +13,9 @@
         type="checkbox"
       >
     </label>
-    <button
-      :disabled="isRefreshDisabled"
-      @click="loadLatestTransactionsHandler"
-    >
-      {{ isRefreshDisabled ? 'Loading...' : 'Refresh' }}
-    </button>
+
+    <load-latest-tranactions :account="account" />
+
     <DateField
       v-model="form.period"
       :disable-after="new Date()"
@@ -31,15 +28,13 @@
 </template>
 
 <script lang="ts">
-import { ERROR_CODES } from 'shared-types';
 import _debounce from 'lodash/debounce';
 import {
-  defineComponent, reactive, computed, ref, watchEffect,
+  defineComponent, reactive, computed, watchEffect, watch,
 } from 'vue';
 import { useRoute } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { useBanksMonobankStore } from '@/stores';
-import { useLocalStorage } from '@/composable';
 
 import {
   useNotificationCenter,
@@ -48,14 +43,16 @@ import {
 
 import DateField from '@/components/fields/DateField.vue';
 
+import LoadLatestTranactions from './LoadLatestTranactions.vue';
+
 export default defineComponent({
   components: {
     DateField,
+    LoadLatestTranactions,
   },
   setup() {
     const route = useRoute();
     const { addNotification } = useNotificationCenter();
-    const { addLSItem, removeLSItem, getLSItem } = useLocalStorage();
     const monobankStore = useBanksMonobankStore();
 
     const { getAccountById } = storeToRefs(monobankStore);
@@ -66,52 +63,9 @@ export default defineComponent({
       period: null,
     });
 
-    const isRefreshDisabled = ref(false);
-
     const account = computed(
       () => getAccountById.value(route.query.id as string),
     );
-    const accountLSKey = computed(() => `monobank-${account.value.accountId}-txs-loading-end`);
-
-    const setLoadingTimer = (wait: number) => {
-      isRefreshDisabled.value = true;
-
-      addLSItem(accountLSKey.value, String(new Date().getTime() + wait));
-
-      setTimeout(() => {
-        removeLSItem(accountLSKey.value);
-
-        isRefreshDisabled.value = false;
-      }, wait);
-    };
-
-    const loadLatestTransactionsHandler = async () => {
-      try {
-        const response = await monobankStore.loadTransactionsFromLatest({
-          accountId: account.value.accountId,
-        });
-
-        const isUserNeedToWait = response.minutesToFinish >= 1;
-
-        if (isUserNeedToWait) {
-          setLoadingTimer(response.minutesToFinish * 60 * 1000);
-        }
-
-        addNotification({
-          text: isUserNeedToWait
-            ? `Loading started. Estimated loading time is ${response.minutesToFinish} minute(s).`
-            : 'Loaded successfully',
-          type: NotificationType.success,
-        });
-      } catch (e) {
-        if (e.data.code === ERROR_CODES.forbidden) {
-          addNotification({
-            text: e.data.message,
-            type: NotificationType.error,
-          });
-        }
-      }
-    };
 
     const loadTransactionsForPeriod = async () => {
       if (form.period) {
@@ -140,38 +94,37 @@ export default defineComponent({
       if (account.value) {
         form.name = account.value.name;
         form.isEnabled = account.value.isEnabled;
-
-        const curr = new Date().getTime();
-        const timestamp = Number(getLSItem(accountLSKey.value)) || curr;
-        if (curr < timestamp) {
-          setLoadingTimer(timestamp - curr);
-        }
       }
     });
 
-    watchEffect(() => {
-      if (account.value) {
-        if (form.name !== account.value.name) {
+    watch(
+      () => form.name,
+      (value) => {
+        if (value !== account.value.name) {
           debouncedUpdateMonoAccHandler({
             id: account.value.accountId,
-            name: form.name,
+            name: value,
           });
         }
-
-        if (form.isEnabled !== account.value.isEnabled) {
+      },
+      { immediate: true },
+    );
+    watch(
+      () => form.isEnabled,
+      (value) => {
+        if (value !== account.value.isEnabled) {
           debouncedUpdateMonoAccHandler({
             id: account.value.accountId,
-            isEnabled: form.isEnabled,
+            name: value,
           });
         }
-      }
-    });
+      },
+      { immediate: true },
+    );
 
     return {
       form,
       account,
-      isRefreshDisabled,
-      loadLatestTransactionsHandler,
       loadTransactionsForPeriod,
     };
   },

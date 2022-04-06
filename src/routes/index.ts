@@ -28,7 +28,7 @@ const routes = [
   {
     path: '/account',
     name: 'account',
-    component: () => import('@/pages/Account.vue'),
+    component: () => import('@/pages/Account/Account.vue'),
     beforeEnter: redirectRouteGuard,
     meta: {
       layout: ROUTER_LAYOUTS.dashboard,
