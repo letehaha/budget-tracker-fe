@@ -150,18 +150,20 @@ export default defineComponent({
     });
 
     watchEffect(() => {
-      if (form.name !== account.value.name) {
-        debouncedUpdateMonoAccHandler({
-          id: account.value.accountId,
-          name: form.name,
-        });
-      }
+      if (account.value) {
+        if (form.name !== account.value.name) {
+          debouncedUpdateMonoAccHandler({
+            id: account.value.accountId,
+            name: form.name,
+          });
+        }
 
-      if (form.isEnabled !== account.value.isEnabled) {
-        debouncedUpdateMonoAccHandler({
-          id: account.value.accountId,
-          isEnabled: form.isEnabled,
-        });
+        if (form.isEnabled !== account.value.isEnabled) {
+          debouncedUpdateMonoAccHandler({
+            id: account.value.accountId,
+            isEnabled: form.isEnabled,
+          });
+        }
       }
     });
 
