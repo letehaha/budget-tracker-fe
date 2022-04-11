@@ -54,7 +54,7 @@
         </button>
       </template>
     </h2>
-    <template v-if="!monoAccounts.length">
+    <template v-if="monoAccounts.length">
       <div class="accounts__list">
         <template
           v-for="account in monoAccounts"
