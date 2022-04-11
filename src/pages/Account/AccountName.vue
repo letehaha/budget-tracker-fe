@@ -1,15 +1,16 @@
 <template>
-  <div class="account-name">
+  <label class="account-name">
     <h4 class="account-name__title">
       Account name:
     </h4>
-    <input
+
+    <InputField
       v-model="form.name"
       class="account-name__field"
       type="text"
       placeholder="No name set..."
-    >
-  </div>
+    />
+  </label>
 </template>
 
 <script lang="ts">
@@ -24,8 +25,10 @@ import {
   useNotificationCenter,
   NotificationType,
 } from '@/components/notification-center';
+import InputField from '@/components/fields/InputField.vue';
 
 export default defineComponent({
+  components: { InputField },
   props: {
     account: {
       type: Object as PropType<MONOAccountRecord>,
@@ -83,17 +86,15 @@ export default defineComponent({
 <style lang="scss" scoped>
 .account-name {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 4px;
 }
 .account-name__title {
   color: var(--app-on-surface-color);
 }
 .account-name__field {
-  border: none;
   background-color: transparent;
   font-size: 18px;
-  padding: 8px;
   outline: none;
   color: var(--app-on-bg-color);
 }

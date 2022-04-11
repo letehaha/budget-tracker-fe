@@ -108,7 +108,7 @@ export default defineComponent({
 }
 .account__container {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
 }
 .account__visibility {
