@@ -1,8 +1,5 @@
 import { ApiBaseError, RESPONSE_STATUS, ERROR_CODES } from 'shared-types';
 import { Router } from 'vue-router';
-import { CustomStore } from '@/store/types';
-import { authVuexTypes } from '@/store/auth/types';
-
 import {
   useNotificationCenter,
   NotificationType,
@@ -34,11 +31,8 @@ const API_VER = process.env.VUE_APP_API_VER;
 console.log('API_HTTP', API_HTTP);
 // eslint-disable-next-line no-console
 console.log('API_VER', API_VER);
-/**
- * ApiCaller performs the request to the API
- */
 class ApiCaller {
-  store: CustomStore;
+  logout: () => void;
 
   router: Router;
 
@@ -49,7 +43,6 @@ class ApiCaller {
   constructor() {
     this._baseURL = process.env.API_HTTP;
     this.authToken = null;
-    this.store = null;
     this.router = null;
   }
 
@@ -158,7 +151,7 @@ class ApiCaller {
       const { addNotification } = useNotificationCenter();
 
       if (response.code === ERROR_CODES.unauthorized) {
-        await this.store.dispatch(`auth/${authVuexTypes.LOG_OUT}`);
+        await this.logout();
 
         addNotification({
           id: 'authorization-error',
@@ -166,7 +159,7 @@ class ApiCaller {
           type: NotificationType.error,
         });
 
-        this.router.push('/sign-in');
+        this.router.push({ name: 'auth/sign-in' });
 
         throw new errors.AuthError(
           response.statusText,
@@ -191,8 +184,8 @@ class ApiCaller {
     return undefined;
   }
 
-  setStore({ store }) {
-    this.store = store;
+  setRequiredActions({ logout }) {
+    this.logout = logout;
   }
 
   setRouter({ router }: { router: Router }) {
@@ -203,8 +196,8 @@ class ApiCaller {
 export const api = new ApiCaller();
 
 export function initApiCaller(
-  { store, router }: { store: CustomStore; router: Router },
+  { logout, router }: { logout: () => void; router: Router },
 ): void {
-  api.setStore({ store });
+  api.setRequiredActions({ logout });
   api.setRouter({ router });
 }

@@ -1,12 +1,12 @@
 interface Record {
-  id?: string;
+  id?: number;
   name?: string;
 }
 
 export class PaymentTypeRecord {
   _record: Record;
 
-  id: string;
+  id: number;
 
   name: string;
 

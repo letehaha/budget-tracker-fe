@@ -13,51 +13,59 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { mapActions, mapGetters } from 'vuex';
-import { ACCOUNT_TYPES } from '@/js/const';
+import { defineComponent, computed, watch } from 'vue';
+import { useRouter } from 'vue-router';
+import { storeToRefs } from 'pinia';
 import {
-  indexVuexTypes,
-  bankMonobankVuexTypes,
-  accountsVuexTypes,
-} from '@/store';
+  useRootStore,
+  useAccountsStore,
+  useBanksMonobankStore,
+} from '@/stores';
+import { ACCOUNT_TYPES } from '@/js/const';
 import Account from './Account.vue';
 
 export default defineComponent({
   components: {
     Account,
   },
-  computed: {
-    ...mapGetters({
-      isAppInitialized: indexVuexTypes.GET_APP_INIT_STATUS,
-    }),
-    ...mapGetters('bankMonobank', {
-      monoAccounts: bankMonobankVuexTypes.GET_ACTIVE_ACCOUNTS,
-    }),
-    ...mapGetters('accounts', {
-      accounts: accountsVuexTypes.GET_ACCOUNTS,
-    }),
-    allAccounts() {
-      return [...this.monoAccounts, ...this.accounts];
-    },
-  },
-  watch: {
-    isAppInitialized: {
-      immediate: true,
-      handler(value) {
+  setup() {
+    const router = useRouter();
+    const rootStore = useRootStore();
+    const accountsStore = useAccountsStore();
+    const monobankStore = useBanksMonobankStore();
+    const { activeAccounts: monoAccounts } = storeToRefs(monobankStore);
+    const { accounts } = storeToRefs(accountsStore);
+    const { isAppInitialized } = storeToRefs(rootStore);
+
+    watch(
+      isAppInitialized,
+      (value) => {
         if (value) {
-          this.fetchAccounts();
+          monobankStore.loadAccounts();
         }
       },
-    },
-  },
-  methods: {
-    ...mapActions('bankMonobank', {
-      fetchAccounts: bankMonobankVuexTypes.FETCH_ACCOUNTS,
-    }),
-    redirectToAccount(account) {
-      this.$router.push({ path: '/account', query: { id: account.accountId, type: ACCOUNT_TYPES.mono } });
-    },
+      { immediate: true },
+    );
+
+    const allAccounts = computed(
+      () => [...monoAccounts.value, ...accounts.value],
+    );
+
+    const redirectToAccount = (account) => {
+      router.push({
+        name: 'account',
+        query: {
+          id: account.accountId,
+          type: ACCOUNT_TYPES.mono,
+        },
+      });
+    };
+
+    return {
+      accounts,
+      allAccounts,
+      redirectToAccount,
+    };
   },
 });
 </script>

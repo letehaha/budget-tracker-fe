@@ -1,2 +1,2 @@
-export * from './store-helpers';
 export * from './form-validator';
+export * from './local-storage';

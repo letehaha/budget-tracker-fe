@@ -26,30 +26,31 @@
 
 <script lang="ts">
 import { format } from 'date-fns';
-import { defineComponent } from 'vue';
-import { mapGetters } from 'vuex';
-import { TRANSACTIONS_TYPES } from 'shared-types';
+import { defineComponent, computed } from 'vue';
+import { useTransactionTypesStore, useCategoriesStore } from '@/stores';
 import { eventBus } from '@/js/utils';
-import { indexVuexTypes, categoriesVuexTypes } from '@/store';
 import { MODAL_TYPES } from '@/components/Modal.vue';
 
 export default defineComponent({
   props: {
     tx: { type: Object, required: true },
   },
-  computed: {
-    ...mapGetters({
-      getTxTypeById: indexVuexTypes.GET_TRANSACTION_TYPE_BY_ID,
-    }),
-    ...mapGetters('categories', {
-      categoryById: categoriesVuexTypes.GET_CATEGORY_BY_ID,
-    }),
-    txType() {
-      return this.getTxTypeById(this.tx.transactionTypeId);
-    },
-    category() {
-      return this.categoryById(this.tx.categoryId);
-    },
+  setup(props) {
+    const { getTransactionTypeById } = useTransactionTypesStore();
+    const { getCategoryTypeById } = useCategoriesStore();
+
+    const txType = computed(
+      () => getTransactionTypeById(props.tx.transactionTypeId),
+    );
+
+    const category = computed(
+      () => getCategoryTypeById(props.tx.categoryId),
+    );
+
+    return {
+      txType,
+      category,
+    };
   },
   methods: {
     formateDate(date) {
@@ -60,18 +61,6 @@ export default defineComponent({
         type: MODAL_TYPES.monobankTxForm,
         data: { transaction: this.tx },
       });
-    },
-    amountFormatter(amount, type) {
-      switch (type) {
-        case (TRANSACTIONS_TYPES.expense):
-          return `-${amount}`;
-        case (TRANSACTIONS_TYPES.income):
-          return `+${amount}`;
-        case (TRANSACTIONS_TYPES.transfer):
-          return amount;
-        default:
-          return amount;
-      }
     },
   },
 });

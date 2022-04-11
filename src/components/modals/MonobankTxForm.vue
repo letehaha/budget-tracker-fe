@@ -43,15 +43,19 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { mapActions, mapGetters } from 'vuex';
+import { defineComponent, ref, reactive } from 'vue';
+import { storeToRefs } from 'pinia';
+
 import {
-  indexVuexTypes,
-  accountsVuexTypes,
-  categoriesVuexTypes,
-  bankMonobankVuexTypes,
-} from '@/store';
+  usePaymentTypesStore,
+  useTransactionTypesStore,
+  useAccountsStore,
+  useCategoriesStore,
+  useBanksMonobankStore,
+} from '@/stores';
+
 import { MONOTransactionRecord } from '@/js/records';
+
 import CategorySelectField from '@/components/fields/CategorySelectField.vue';
 import TextareaField from '@/components/fields/TextareaField.vue';
 import Button from '@/components/common/Button.vue';
@@ -73,51 +77,52 @@ export default defineComponent({
       default: undefined,
     },
   },
-  data: () => ({
-    EVENTS,
-    form: {
-      category: null,
-      note: null,
-    },
-    isLoading: false,
-  }),
-  computed: {
-    ...mapGetters({
-      paymentTypes: indexVuexTypes.GET_PAYMENT_TYPES,
-      transactionTypes: indexVuexTypes.GET_TRANSACTION_TYPES,
-    }),
-    ...mapGetters('accounts', {
-      accounts: accountsVuexTypes.GET_ACCOUNTS,
-    }),
-    ...mapGetters('categories', {
-      categories: categoriesVuexTypes.GET_CATEGORIES,
-      rawCategories: categoriesVuexTypes.GET_RAW_CATEGORIES,
-    }),
-  },
-  created() {
-    this.form.note = this.transaction.note;
-    this.form.category = this.rawCategories
-      .find(item => item.id === this.transaction.categoryId);
-  },
-  methods: {
-    ...mapActions('bankMonobank', {
-      editTransaction: bankMonobankVuexTypes.UPDATE_TRANSACTION_BY_ID,
-    }),
-    async submit() {
-      this.isLoading = true;
-      const { note, category } = this.form;
+  setup(props) {
+    const paymentTypesStore = usePaymentTypesStore();
+    const transactionTypesStore = useTransactionTypesStore();
+    const accountsStore = useAccountsStore();
+    const categoriesStore = useCategoriesStore();
+    const monobankStore = useBanksMonobankStore();
+
+    const { paymentTypes } = storeToRefs(paymentTypesStore);
+    const { accounts } = storeToRefs(accountsStore);
+    const { transactionTypes } = storeToRefs(transactionTypesStore);
+    const { rawCategories, categories } = storeToRefs(categoriesStore);
+
+    const form = reactive({
+      category: rawCategories.value
+        .find(item => item.id === props.transaction.categoryId),
+      note: props.transaction.note,
+    });
+    const isLoading = ref(false);
+
+    const submit = async () => {
+      isLoading.value = true;
+      const { note, category } = form;
 
       const params = {
         note,
         categoryId: category.id,
       };
 
-      await this.editTransaction({
-        id: this.transaction.id,
+      await monobankStore.updateTransactionById({
+        id: props.transaction.id,
         ...params,
       });
-      this.isLoading = false;
-    },
+
+      isLoading.value = false;
+    };
+
+    return {
+      EVENTS,
+      form,
+      isLoading,
+      categories,
+      accounts,
+      paymentTypes,
+      transactionTypes,
+      submit,
+    };
   },
 });
 </script>
