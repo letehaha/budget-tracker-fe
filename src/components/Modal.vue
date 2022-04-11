@@ -31,7 +31,7 @@ const EVENTS = {
 };
 
 type ModalDataProp = {
-  data: unknown;
+  data: Record<string, unknown>;
   type: AsyncComponentLoader;
   hideOnWidth?: number;
 }
