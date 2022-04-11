@@ -5,6 +5,16 @@
     </h1>
     <h2 class="accounts__subtitle">
       System
+
+      <router-link
+        class="accounts__action-link"
+        :to="{
+          name: 'create-account',
+        }"
+        tag="h4"
+      >
+        Create account
+      </router-link>
     </h2>
     <div class="accounts__list">
       <template
@@ -20,6 +30,7 @@
     </div>
     <h2 class="accounts__subtitle">
       Monobank
+
       <template v-if="!isPaired">
         <button @click="() => setMonobankToken()">
           Pair account
@@ -208,5 +219,12 @@ export default defineComponent({
   padding: 2px 4px;
   font-size: 12px;
   border-radius: 4px;
+}
+.accounts__action-link {
+  @extend %heading-h4;
+
+  color: var(--primary-500);
+  text-decoration: underline;
+  margin-left: 16px;
 }
 </style>
