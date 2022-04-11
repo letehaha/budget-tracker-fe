@@ -1,10 +1,10 @@
 <template>
-  <button
+  <Button
     :disabled="isRefreshDisabled"
     @click="loadLatestTransactionsHandler"
   >
-    {{ isRefreshDisabled ? 'Loading...' : 'Refresh' }}
-  </button>
+    {{ isRefreshDisabled ? 'Loading...' : 'Load latest transactions' }}
+  </Button>
 </template>
 
 <script lang="ts">
@@ -21,8 +21,12 @@ import {
   useNotificationCenter,
   NotificationType,
 } from '@/components/notification-center';
+import Button from '@/components/common/Button.vue';
 
 export default defineComponent({
+  components: {
+    Button,
+  },
   props: {
     account: {
       type: MONOAccountRecord,

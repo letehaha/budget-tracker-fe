@@ -134,7 +134,9 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
     }
   };
 
-  const updateAccountById = async ({ id, name, isEnabled }) => {
+  const updateAccountById = async (
+    { id, name, isEnabled }: { id: string, name?: string, isEnabled?: boolean },
+  ) => {
     if (!isMonoAccountPaired.value) {
       return;
     }
