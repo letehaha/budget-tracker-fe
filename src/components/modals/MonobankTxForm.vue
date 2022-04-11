@@ -55,6 +55,10 @@ import {
 } from '@/stores';
 
 import { MONOTransactionRecord } from '@/js/records';
+import {
+  useNotificationCenter,
+  NotificationType,
+} from '@/components/notification-center';
 
 import CategorySelectField from '@/components/fields/CategorySelectField.vue';
 import TextareaField from '@/components/fields/TextareaField.vue';
@@ -83,6 +87,7 @@ export default defineComponent({
     const accountsStore = useAccountsStore();
     const categoriesStore = useCategoriesStore();
     const monobankStore = useBanksMonobankStore();
+    const { addNotification } = useNotificationCenter();
 
     const { paymentTypes } = storeToRefs(paymentTypesStore);
     const { accounts } = storeToRefs(accountsStore);
@@ -98,19 +103,31 @@ export default defineComponent({
 
     const submit = async () => {
       isLoading.value = true;
-      const { note, category } = form;
+      try {
+        const { note, category } = form;
 
-      const params = {
-        note,
-        categoryId: category.id,
-      };
+        const params = {
+          note,
+          categoryId: category.id,
+        };
 
-      await monobankStore.updateTransactionById({
-        id: props.transaction.id,
-        ...params,
-      });
+        await monobankStore.updateTransactionById({
+          id: props.transaction.id,
+          ...params,
+        });
 
-      isLoading.value = false;
+        addNotification({
+          text: 'Updated successfully',
+          type: NotificationType.success,
+        });
+      } catch (e) {
+        addNotification({
+          text: 'Unexpected error occured',
+          type: NotificationType.error,
+        });
+      } finally {
+        isLoading.value = false;
+      }
     };
 
     return {
