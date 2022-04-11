@@ -75,7 +75,7 @@ export default defineComponent({
   position: fixed;
   top: 85px;
   right: 4px;
-  z-index: 2;
+  z-index: var(--z-notifications);
 
   display: grid;
   grid-gap: 8px;
