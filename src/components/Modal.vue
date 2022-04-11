@@ -6,7 +6,7 @@
   >
     <template v-if="data">
       <component
-        :is="data.type"
+        :is="MODAL_COMPONENTS[data.type]"
         v-bind="data.data"
         class="modal__component"
         @close-modal="$emit(EVENTS.close)"
@@ -16,14 +16,18 @@
 </template>
 
 <script lang="ts">
-import {
-  defineAsyncComponent, PropType, AsyncComponentLoader, defineComponent,
-} from 'vue';
+import { defineAsyncComponent, PropType, defineComponent } from 'vue';
 
-export const MODAL_TYPES = Object.freeze({
-  systemTxForm: defineAsyncComponent(() => import('@/components/modals/SystemTxForm.vue')),
-  monobankTxForm: defineAsyncComponent(() => import('@/components/modals/MonobankTxForm.vue')),
-  monobankSetToken: defineAsyncComponent(() => import('@/components/modals/MonobankSetToken.vue')),
+export enum MODAL_TYPES {
+  systemTxForm = 'systemTxForm',
+  monobankTxForm = 'monobankTxForm',
+  monobankSetToken = 'monobankSetToken',
+}
+
+const MODAL_COMPONENTS = Object.freeze({
+  [MODAL_TYPES.systemTxForm]: defineAsyncComponent(() => import('@/components/modals/SystemTxForm.vue')),
+  [MODAL_TYPES.monobankTxForm]: defineAsyncComponent(() => import('@/components/modals/MonobankTxForm.vue')),
+  [MODAL_TYPES.monobankSetToken]: defineAsyncComponent(() => import('@/components/modals/MonobankSetToken.vue')),
 });
 
 const EVENTS = {
@@ -32,7 +36,7 @@ const EVENTS = {
 
 type ModalDataProp = {
   data: Record<string, unknown>;
-  type: AsyncComponentLoader;
+  type: MODAL_TYPES;
   hideOnWidth?: number;
 }
 
@@ -63,6 +67,7 @@ export default defineComponent({
   },
   data: () => ({
     EVENTS,
+    MODAL_COMPONENTS,
   }),
   created() {
     window.addEventListener('resize', this.windowResize);
