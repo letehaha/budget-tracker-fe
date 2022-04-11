@@ -16,18 +16,25 @@
         Create account
       </router-link>
     </h2>
-    <div class="accounts__list">
-      <template
-        v-for="account in accounts"
-        :key="account.id"
-      >
-        <div class="accounts__item">
-          <div class="accounts__item-name">
-            {{ account.name }}
+    <template v-if="accounts.length">
+      <div class="accounts__list">
+        <template
+          v-for="account in accounts"
+          :key="account.id"
+        >
+          <div class="accounts__item">
+            <div class="accounts__item-name">
+              {{ account.name }}
+            </div>
           </div>
-        </div>
-      </template>
-    </div>
+        </template>
+      </div>
+    </template>
+    <template v-else>
+      <p class="accounts__no-data">
+        System accounts do not exist.
+      </p>
+    </template>
     <h2 class="accounts__subtitle">
       Monobank
 
@@ -47,34 +54,41 @@
         </button>
       </template>
     </h2>
-    <div class="accounts__list">
-      <template
-        v-for="account in monoAccounts"
-        :key="account.id"
-      >
-        <div
-          class="accounts__item"
-          :class="{ 'accounts__item--disabled': !account.isEnabled }"
-          @click="redirectToAccount(account)"
+    <template v-if="!monoAccounts.length">
+      <div class="accounts__list">
+        <template
+          v-for="account in monoAccounts"
+          :key="account.id"
         >
           <div
-            v-if="!account.isEnabled"
-            class="accounts__state"
+            class="accounts__item"
+            :class="{ 'accounts__item--disabled': !account.isEnabled }"
+            @click="redirectToAccount(account)"
           >
-            Disabled
+            <div
+              v-if="!account.isEnabled"
+              class="accounts__state"
+            >
+              Disabled
+            </div>
+            <div class="accounts__item-name">
+              {{ account.name || 'No name set...' }}
+            </div>
+            <div class="accounts__item-code">
+              {{ account.maskedPan[0] || account.iban }}
+            </div>
+            <div class="accounts__item-balance">
+              {{ formatBalance(account) }}
+            </div>
           </div>
-          <div class="accounts__item-name">
-            {{ account.name || 'No name set...' }}
-          </div>
-          <div class="accounts__item-code">
-            {{ account.maskedPan[0] || account.iban }}
-          </div>
-          <div class="accounts__item-balance">
-            {{ formatBalance(account) }}
-          </div>
-        </div>
-      </template>
-    </div>
+        </template>
+      </div>
+    </template>
+    <template v-else>
+      <p class="accounts__no-data">
+        Monobank accounts do not exist.
+      </p>
+    </template>
   </div>
 </template>
 
@@ -226,5 +240,9 @@ export default defineComponent({
   color: var(--primary-500);
   text-decoration: underline;
   margin-left: 16px;
+}
+.accounts__no-data {
+  color: var(--app-on-surface-color);
+  margin: 0 0 24px;
 }
 </style>
