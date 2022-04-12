@@ -123,21 +123,19 @@ export default defineComponent({
       sortedAccounts: monoAccounts,
     } = storeToRefs(monobankStore);
 
-    watch(
-      isAppInitialized,
-      (value) => {
-        if (value) {
-          monobankStore.loadAccounts();
-        }
-      },
-      { immediate: true },
-    );
+    watch(isAppInitialized, (value) => {
+      if (value) {
+        monobankStore.loadAccounts();
+        accountsStore.loadAccounts();
+      }
+    });
 
     onMounted(async () => {
       if (!isAppInitialized.value) {
         await rootStore.fetchInitialData();
       }
       monobankStore.loadAccounts();
+      accountsStore.loadAccounts();
     });
 
     const refreshMonoAccounts = () => {
@@ -194,6 +192,7 @@ export default defineComponent({
   display: grid;
   grid-gap: 12px;
   grid-template-columns: repeat(auto-fit, 240px);
+  margin-bottom: 24px;
 }
 .accounts__item {
   padding: 16px;
