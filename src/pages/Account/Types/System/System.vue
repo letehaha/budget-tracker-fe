@@ -1,51 +1,70 @@
 <template>
   <div class="account">
-    <AccountName
-      :account="account"
-      class="account__field"
-    />
+    <template v-if="account">
+      <div class="account__form">
+        <AccountName
+          :account="account"
+          class="account__field"
+        />
 
-    <InputField
-      :model-value="account.balance / 100"
-      class="account__field"
-      label="Balance"
-      type="number"
-      placeholder="Balance"
-      @[MODEL_EVENTS.input]="updateBalance"
-    />
+        <InputField
+          :model-value="account.balance / 100"
+          class="account__field"
+          label="Balance"
+          type="number"
+          placeholder="Balance"
+          @[MODEL_EVENTS.input]="updateBalance"
+        />
 
-    <InputField
-      :model-value="account.creditLimit / 100"
-      class="account__field"
-      label="Credit limit"
-      type="number"
-      placeholder="Credit limit"
-      @[MODEL_EVENTS.input]="updateCreditLimit"
-    />
+        <InputField
+          :model-value="account.creditLimit / 100"
+          class="account__field"
+          label="Credit limit"
+          type="number"
+          placeholder="Credit limit"
+          @[MODEL_EVENTS.input]="updateCreditLimit"
+        />
+      </div>
+    </template>
+
+    <div class="account__actions">
+      <Button
+        class="account__delete-action"
+        @click="deleteAccount"
+      >
+        Delete
+      </Button>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 import _debounce from 'lodash/debounce';
 import { defineComponent, computed } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
 
 import { useAccountsStore } from '@/stores';
 
 import { useNotificationCenter } from '@/components/notification-center';
 
+import Button from '@/components/common/Button.vue';
 import InputField, { MODEL_EVENTS } from '@/components/fields/InputField.vue';
 import AccountName from '@/pages/Account/AccountName.vue';
 
 export default defineComponent({
   components: {
-    AccountName,
+    Button,
     InputField,
+    AccountName,
   },
   setup() {
     const route = useRoute();
-    const { addSuccessNotification } = useNotificationCenter();
+    const router = useRouter();
+    const {
+      addSuccessNotification,
+      addErrorNotification,
+    } = useNotificationCenter();
     const accountsStore = useAccountsStore();
 
     const { getAccountById } = storeToRefs(accountsStore);
@@ -82,11 +101,28 @@ export default defineComponent({
       2000,
     );
 
+    const deleteAccount = async () => {
+      const accountName = account.value.name;
+
+      try {
+        await accountsStore.delteAccount({
+          id: account.value.id,
+        });
+
+        addSuccessNotification(`Account ${accountName} removed successfully`);
+
+        router.push({ name: 'accounts' });
+      } catch (e) {
+        addErrorNotification('An error occured while trying to delete account');
+      }
+    };
+
     return {
       MODEL_EVENTS,
       account,
       updateBalance,
       updateCreditLimit,
+      deleteAccount,
     };
   },
 });
@@ -100,5 +136,8 @@ export default defineComponent({
   &:not(:last-child) {
     margin-bottom: 24px;
   }
+}
+.account__actions {
+  margin-top: 64px;
 }
 </style>
