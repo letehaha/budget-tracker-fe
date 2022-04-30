@@ -45,6 +45,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
 
 import { useAccountsStore } from '@/stores';
+import { toSystemAmount } from '@/js/helpers';
 
 import { useNotificationCenter } from '@/components/notification-center';
 
@@ -75,11 +76,9 @@ export default defineComponent({
 
     const updateBalance = _debounce(
       async (value: string) => {
-        const balance = Number((Number(value) * 100).toFixed(0));
-
         await accountsStore.editAccount({
           id: account.value.id,
-          currentBalance: balance,
+          currentBalance: toSystemAmount(Number(value)),
         });
 
         addSuccessNotification('Account balance changed successfully');
@@ -89,11 +88,9 @@ export default defineComponent({
 
     const updateCreditLimit = _debounce(
       async (value: string) => {
-        const creditLimit = Number((Number(value) * 100).toFixed(0));
-
         await accountsStore.editAccount({
           id: account.value.id,
-          creditLimit,
+          creditLimit: toSystemAmount(Number(value)),
         });
 
         addSuccessNotification('Account credit limit changed successfully');
