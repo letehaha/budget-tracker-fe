@@ -13,7 +13,7 @@
       />
     </div>
     <div class="system-tx-form__row">
-      <template v-if="form.account">
+      <template v-if="accounts.length">
         <SelectField
           v-model="form.account"
           label="Account"
