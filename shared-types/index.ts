@@ -17,6 +17,11 @@ export enum TRANSACTIONS_TYPES {
   transfer = 3,
 }
 
+export enum ACCOUNT_TYPES {
+  mono = 'mono',
+  system = 'system',
+}
+
 export interface CategoryModel {
   color: string;
   id: number;

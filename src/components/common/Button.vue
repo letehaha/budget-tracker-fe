@@ -31,7 +31,7 @@ export enum SIZES {
   default = 'default',
 }
 
-enum BUTTON_TYPES {
+export enum BUTTON_TYPES {
   button = 'button',
   submit = 'submit',
   reset = 'reset',

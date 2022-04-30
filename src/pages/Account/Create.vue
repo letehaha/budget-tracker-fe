@@ -1,0 +1,159 @@
+<template>
+  <div class="account-create">
+    <form
+      class="account-create__form"
+      @submit.prevent="submit"
+    >
+      <InputField
+        v-model="form.name"
+        label="Account name"
+        placeholder="Account name"
+        class="account-create__form-field"
+      />
+
+      <SelectField
+        v-model="form.currency"
+        label="Currency"
+        :values="formattedCurrencies"
+        is-value-preselected
+        class="account-create__form-field"
+      />
+
+      <SelectField
+        v-model="form.accountType"
+        label="Account type"
+        :values="accountTypes"
+        label-key="name"
+        is-value-preselected
+        class="account-create__form-field"
+      />
+
+      <InputField
+        v-model="form.currentBalance"
+        label="Initial balance"
+        placeholder="Initial balance"
+        class="account-create__form-field"
+      />
+
+      <InputField
+        v-model="form.creditLimit"
+        label="Credit limit"
+        placeholder="Credit limit"
+        class="account-create__form-field"
+      />
+
+      <Button
+        :type="BUTTON_TYPES.submit"
+        class="account-create__form-submit"
+        :disabled="isLoading"
+      >
+        {{ isLoading ? 'Creating...' : 'Create' }}
+      </Button>
+    </form>
+  </div>
+</template>
+
+<script lang="ts">
+import {
+  defineComponent, reactive, computed, ref,
+} from 'vue';
+import { useRouter } from 'vue-router';
+import { storeToRefs } from 'pinia';
+import { useAccountsStore, useCurrenciesStore, useAccountTypesStore } from '@/stores';
+
+import {
+  useNotificationCenter,
+  NotificationType,
+} from '@/components/notification-center';
+
+import InputField from '@/components/fields/InputField.vue';
+import SelectField from '@/components/fields/SelectField.vue';
+import Button, { BUTTON_TYPES } from '@/components/common/Button.vue';
+
+export default defineComponent({
+  name: 'CreateAccount',
+  components: {
+    Button,
+    InputField,
+    SelectField,
+  },
+  setup() {
+    const router = useRouter();
+    const accountsStore = useAccountsStore();
+    const currenciesStore = useCurrenciesStore();
+    const accountTypesStore = useAccountTypesStore();
+    const { addNotification } = useNotificationCenter();
+
+    const { currencies } = storeToRefs(currenciesStore);
+    const { accountTypes } = storeToRefs(accountTypesStore);
+
+    const formattedCurrencies = computed(
+      () => currencies.value.map(currency => ({
+        ...currency,
+        label: `${currency.currency} (${currency.code})`,
+      })),
+    );
+
+    const form = reactive({
+      name: '',
+      currency: null,
+      accountType: null,
+      currentBalance: 0,
+      creditLimit: 0,
+    });
+
+    const isLoading = ref(false);
+
+    const submit = async () => {
+      try {
+        isLoading.value = true;
+
+        await accountsStore.createAccount({
+          currencyId: form.currency.id,
+          accountTypeId: form.accountType.id,
+          name: form.name,
+          creditLimit: Number(form.creditLimit),
+          currentBalance: Number(form.currentBalance),
+        });
+
+        addNotification({
+          text: 'Created successfully.',
+          type: NotificationType.success,
+        });
+
+        router.push({ name: 'accounts' });
+      } catch (e) {
+        addNotification({
+          text: 'Unexpected error.',
+          type: NotificationType.error,
+        });
+      } finally {
+        isLoading.value = false;
+      }
+    };
+
+    return {
+      BUTTON_TYPES,
+      form,
+      isLoading,
+      accountTypes,
+      formattedCurrencies,
+      submit,
+    };
+  },
+});
+</script>
+
+<style lang="scss" scoped>
+.account-create {
+  padding: 24px;
+}
+.account-create__form-field {
+  &:not(:last-child) {
+    margin-bottom: 24px;
+  }
+}
+.account-create__form-submit {
+  margin-left: auto;
+}
+</style>

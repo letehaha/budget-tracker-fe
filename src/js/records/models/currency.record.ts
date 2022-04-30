@@ -1,5 +1,5 @@
 interface Record {
-  _id?: string;
+  id?: string;
   currency?: string;
   digits?: number;
   number?: string;
@@ -25,7 +25,7 @@ export class CurrencyRecord {
   constructor(record: Record = {}) {
     this._record = record;
 
-    this.id = record._id;
+    this.id = record.id;
     this.currency = record.currency;
     this.digits = record.digits;
     this.number = record.number;

@@ -47,7 +47,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 
-const MODEL_EVENTS = {
+export const MODEL_EVENTS = {
   input: 'update:modelValue',
 };
 

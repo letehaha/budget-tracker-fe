@@ -5,21 +5,48 @@
     </h1>
     <h2 class="accounts__subtitle">
       System
-    </h2>
-    <div class="accounts__list">
-      <template
-        v-for="account in accounts"
-        :key="account.id"
+
+      <router-link
+        class="accounts__action-link"
+        :to="{
+          name: 'create-account',
+        }"
+        tag="h4"
       >
-        <div class="accounts__item">
-          <div class="accounts__item-name">
-            {{ account.name }}
-          </div>
-        </div>
-      </template>
-    </div>
+        Create account
+      </router-link>
+    </h2>
+    <template v-if="accounts.length">
+      <div class="accounts__list">
+        <template
+          v-for="account in accounts"
+          :key="account.id"
+        >
+          <router-link
+            :to="{
+              name: 'account',
+              query: { id: account.id, type: ACCOUNT_TYPES.system },
+            }"
+            class="accounts__item"
+          >
+            <div class="accounts__item-name">
+              {{ account.name }}
+            </div>
+            <div class="accounts__item-balance">
+              {{ formatBalance(account) }}
+            </div>
+          </router-link>
+        </template>
+      </div>
+    </template>
+    <template v-else>
+      <p class="accounts__no-data">
+        System accounts do not exist.
+      </p>
+    </template>
     <h2 class="accounts__subtitle">
       Monobank
+
       <template v-if="!isPaired">
         <button @click="() => setMonobankToken()">
           Pair account
@@ -36,43 +63,53 @@
         </button>
       </template>
     </h2>
-    <div class="accounts__list">
-      <template
-        v-for="account in monoAccounts"
-        :key="account.id"
-      >
-        <div
-          class="accounts__item"
-          :class="{ 'accounts__item--disabled': !account.isEnabled }"
-          @click="redirectToAccount(account)"
+    <template v-if="monoAccounts.length">
+      <div class="accounts__list">
+        <template
+          v-for="account in monoAccounts"
+          :key="account.id"
         >
-          <div
-            v-if="!account.isEnabled"
-            class="accounts__state"
+          <router-link
+            :to="{
+              name: 'account',
+              query: { id: account.accountId, type: ACCOUNT_TYPES.mono },
+            }"
+            class="accounts__item"
+            :class="{ 'accounts__item--disabled': !account.isEnabled }"
           >
-            Disabled
-          </div>
-          <div class="accounts__item-name">
-            {{ account.name || 'No name set...' }}
-          </div>
-          <div class="accounts__item-code">
-            {{ account.maskedPan[0] || account.iban }}
-          </div>
-          <div class="accounts__item-balance">
-            {{ formatBalance(account) }}
-          </div>
-        </div>
-      </template>
-    </div>
+            <div
+              v-if="!account.isEnabled"
+              class="accounts__state"
+            >
+              Disabled
+            </div>
+            <div class="accounts__item-name">
+              {{ account.name || 'No name set...' }}
+            </div>
+            <div class="accounts__item-code">
+              {{ account.maskedPan[0] || account.iban }}
+            </div>
+            <div class="accounts__item-balance">
+              {{ formatBalance(account) }}
+            </div>
+          </router-link>
+        </template>
+      </div>
+    </template>
+    <template v-else>
+      <p class="accounts__no-data">
+        Monobank accounts do not exist.
+      </p>
+    </template>
   </div>
 </template>
 
 <script lang="ts">
+import { ACCOUNT_TYPES } from 'shared-types';
 import {
   defineComponent, watch, onMounted,
 } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useRouter } from 'vue-router';
 import {
   useRootStore,
   useBanksMonobankStore,
@@ -81,11 +118,10 @@ import {
 import { formatAmount } from '@/js/helpers';
 import { eventBus } from '@/js/utils';
 import { MODAL_TYPES } from '@/components/Modal.vue';
-import { ACCOUNT_TYPES } from '@/js/const';
+import { AccountRecord, MONOAccountRecord } from '@/js/records';
 
 export default defineComponent({
   setup() {
-    const router = useRouter();
     const rootStore = useRootStore();
     const monobankStore = useBanksMonobankStore();
     const accountsStore = useAccountsStore();
@@ -98,21 +134,19 @@ export default defineComponent({
       sortedAccounts: monoAccounts,
     } = storeToRefs(monobankStore);
 
-    watch(
-      isAppInitialized,
-      (value) => {
-        if (value) {
-          monobankStore.loadAccounts();
-        }
-      },
-      { immediate: true },
-    );
+    watch(isAppInitialized, (value) => {
+      if (value) {
+        monobankStore.loadAccounts();
+        accountsStore.loadAccounts();
+      }
+    });
 
     onMounted(async () => {
       if (!isAppInitialized.value) {
         await rootStore.fetchInitialData();
       }
       monobankStore.loadAccounts();
+      accountsStore.loadAccounts();
     });
 
     const refreshMonoAccounts = () => {
@@ -128,18 +162,12 @@ export default defineComponent({
       });
     };
 
-    const redirectToAccount = account => {
-      router.push({
-        name: 'account',
-        query: { id: account.accountId, type: ACCOUNT_TYPES.mono },
-      });
-    };
-
-    const formatBalance = account => (
+    const formatBalance = (account: MONOAccountRecord | AccountRecord) => (
       formatAmount(account.balance - account.creditLimit)
     );
 
     return {
+      ACCOUNT_TYPES,
       setMonobankToken,
       monoAccounts,
       accounts,
@@ -147,7 +175,6 @@ export default defineComponent({
       isTokenPresent,
       refreshMonoAccounts,
       formatBalance,
-      redirectToAccount,
     };
   },
 });
@@ -169,6 +196,7 @@ export default defineComponent({
   display: grid;
   grid-gap: 12px;
   grid-template-columns: repeat(auto-fit, 240px);
+  margin-bottom: 24px;
 }
 .accounts__item {
   padding: 16px;
@@ -208,5 +236,16 @@ export default defineComponent({
   padding: 2px 4px;
   font-size: 12px;
   border-radius: 4px;
+}
+.accounts__action-link {
+  @extend %heading-h4;
+
+  color: var(--primary-500);
+  text-decoration: underline;
+  margin-left: 16px;
+}
+.accounts__no-data {
+  color: var(--app-on-surface-color);
+  margin: 0 0 24px;
 }
 </style>

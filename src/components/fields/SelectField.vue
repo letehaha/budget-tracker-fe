@@ -121,8 +121,7 @@ export default defineComponent({
         this.selectedValue = this.modelValue;
       }
     } else if (this.isValuePreselected) {
-      // eslint-disable-next-line prefer-destructuring
-      this.selectedValue = this.labels[0];
+      this.selectItem(0);
     }
   },
   methods: {

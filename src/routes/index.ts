@@ -10,7 +10,7 @@ const routes = [
   {
     path: '/',
     name: 'dashboard',
-    component: () => import('@/pages/Dashboard.vue'),
+    component: () => import('@/pages/Dashboard/Dashboard.vue'),
     beforeEnter: redirectRouteGuard,
     meta: {
       layout: ROUTER_LAYOUTS.dashboard,
@@ -19,7 +19,7 @@ const routes = [
   {
     path: '/accounts',
     name: 'accounts',
-    component: () => import('@/pages/Accounts.vue'),
+    component: () => import('@/pages/Accounts/Accounts.vue'),
     beforeEnter: redirectRouteGuard,
     meta: {
       layout: ROUTER_LAYOUTS.dashboard,
@@ -29,6 +29,15 @@ const routes = [
     path: '/account',
     name: 'account',
     component: () => import('@/pages/Account/Account.vue'),
+    beforeEnter: redirectRouteGuard,
+    meta: {
+      layout: ROUTER_LAYOUTS.dashboard,
+    },
+  },
+  {
+    path: '/create-account',
+    name: 'create-account',
+    component: () => import('@/pages/Account/Create.vue'),
     beforeEnter: redirectRouteGuard,
     meta: {
       layout: ROUTER_LAYOUTS.dashboard,
