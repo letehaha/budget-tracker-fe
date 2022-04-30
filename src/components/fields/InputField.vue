@@ -7,12 +7,15 @@
     class="input-field"
   >
     <label class="input-field__input-focusable">
-      <span
-        v-if="label"
-        class="input-field__label"
-      >
-        {{ label }}
-      </span>
+      <template v-if="label">
+        <div class="input-field__label">
+          <span>{{ label }}</span>
+
+          <template v-if="$slots['label-right']">
+            <slot name="label-right" />
+          </template>
+        </div>
+      </template>
       <div class="input-field__input-wrapper">
         <input
           :type="type"
@@ -112,7 +115,9 @@ export default defineComponent({
   line-height: 1;
   color: var(--app-on-surface-color);
   margin-bottom: 5px;
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 .input-field__err-mes {
   color: var(--app-danger-color);

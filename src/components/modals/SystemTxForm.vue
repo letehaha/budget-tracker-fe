@@ -13,13 +13,31 @@
       />
     </div>
     <div class="system-tx-form__row">
-      <SelectField
-        v-model="form.account"
-        label="Account"
-        :values="accounts"
-        label-key="name"
-        is-value-preselected
-      />
+      <template v-if="form.account">
+        <SelectField
+          v-model="form.account"
+          label="Account"
+          :values="accounts"
+          label-key="name"
+          is-value-preselected
+        />
+      </template>
+      <template v-else>
+        <InputField
+          model-value="No account exists"
+          label="Account"
+          readonly
+        >
+          <template #label-right>
+            <div
+              class="system-tx-form__create-account"
+              @click="redirectToCreateAccountPage"
+            >
+              Create account
+            </div>
+          </template>
+        </InputField>
+      </template>
     </div>
     <div class="system-tx-form__row">
       <SelectField
@@ -89,6 +107,7 @@ import {
   watch,
 } from 'vue';
 import { storeToRefs } from 'pinia';
+import { useRouter } from 'vue-router';
 import {
   usePaymentTypesStore,
   useTransactionTypesStore,
@@ -122,6 +141,7 @@ export default defineComponent({
     },
   },
   setup(props, { emit }) {
+    const router = useRouter();
     const store = usePaymentTypesStore();
     const transactionTypesStore = useTransactionTypesStore();
     const accountsStore = useAccountsStore();
@@ -214,6 +234,12 @@ export default defineComponent({
       isLoading.value = false;
     };
 
+    const redirectToCreateAccountPage = async () => {
+      await router.push({ name: 'create-account' });
+
+      emit(EVENTS.closeModal);
+    };
+
     return {
       EVENTS,
       form,
@@ -227,6 +253,7 @@ export default defineComponent({
       deleteTransaction,
       deleteTransactionHandler,
       submit,
+      redirectToCreateAccountPage,
     };
   },
 });
@@ -249,5 +276,13 @@ export default defineComponent({
 }
 .system-tx-form__action--submit {
   margin-left: auto;
+}
+.system-tx-form__create-account {
+  color: var(--primary-500);
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }
 </style>
