@@ -61,6 +61,8 @@ import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { useAccountsStore, useCurrenciesStore, useAccountTypesStore } from '@/stores';
 
+import { toSystemAmount } from '@/js/helpers';
+
 import {
   useNotificationCenter,
   NotificationType,
@@ -112,8 +114,8 @@ export default defineComponent({
           currencyId: form.currency.id,
           accountTypeId: form.accountType.id,
           name: form.name,
-          creditLimit: Number(form.creditLimit),
-          currentBalance: Number(form.currentBalance),
+          creditLimit: toSystemAmount(Number(form.creditLimit)),
+          currentBalance: toSystemAmount(Number(form.currentBalance)),
         });
 
         addNotification({
