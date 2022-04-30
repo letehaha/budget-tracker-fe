@@ -13,6 +13,7 @@
 </template>
 
 <script lang="ts">
+import { ACCOUNT_TYPES } from 'shared-types';
 import { defineComponent, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
@@ -21,7 +22,6 @@ import {
   useAccountsStore,
   useBanksMonobankStore,
 } from '@/stores';
-import { ACCOUNT_TYPES } from '@/js/const';
 import Account from './Account.vue';
 
 export default defineComponent({

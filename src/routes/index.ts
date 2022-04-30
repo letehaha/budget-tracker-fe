@@ -10,7 +10,7 @@ const routes = [
   {
     path: '/',
     name: 'dashboard',
-    component: () => import('@/pages/Dashboard.vue'),
+    component: () => import('@/pages/Dashboard/Dashboard.vue'),
     beforeEnter: redirectRouteGuard,
     meta: {
       layout: ROUTER_LAYOUTS.dashboard,

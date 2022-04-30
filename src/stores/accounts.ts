@@ -1,10 +1,16 @@
-import { ref } from 'vue';
+import { ref, WritableComputedRef, computed } from 'vue';
 import { defineStore } from 'pinia';
 import { api } from '@/api';
 import { AccountRecord } from '@/js/records';
 
 export const useAccountsStore = defineStore('system-accounts', () => {
-  const accounts = ref([]);
+  const accounts = ref<AccountRecord[]>([]);
+
+  const getAccountById: WritableComputedRef<
+    (id: number) => AccountRecord
+  > = computed(
+    () => (id: number) => accounts.value.find(i => i.id === id),
+  );
 
   const loadAccounts = async () => {
     try {
@@ -95,6 +101,9 @@ export const useAccountsStore = defineStore('system-accounts', () => {
 
   return {
     accounts,
+
+    getAccountById,
+
     createAccount,
     loadAccounts,
     editAccount,

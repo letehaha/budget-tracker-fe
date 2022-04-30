@@ -29,8 +29,9 @@ import { storeToRefs } from 'pinia';
 import { useRootStore, useBanksMonobankStore } from '@/stores';
 import { TooManyRequestsError } from '@/js/errors';
 import { ErrorHandler } from '@/js/utils';
-import TransactionsList from '@/components/page-sections/dashboard/TransactionsList.vue';
-import AccountsList from '@/components/page-sections/dashboard/AccountsList/AccountsList.vue';
+
+import TransactionsList from './TransactionsList.vue';
+import AccountsList from './AccountsList/AccountsList.vue';
 
 export default defineComponent({
   name: 'Dashboard',

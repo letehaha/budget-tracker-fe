@@ -18,6 +18,10 @@ export const useNotificationCenter = (): {
   notifications: Ref<Notification[]>;
   addNotification: (notification: Notification) => NotificationID;
   removeNotification: (id: NotificationID) => void;
+  addSuccessNotification: (message: string) => void;
+  addWarningNotification: (message: string) => void;
+  addErrorNotification: (message: string) => void;
+  addInfoNotification: (message: string) => void;
 } => {
   const removeNotification = (id: NotificationID) => {
     notifications.value = notifications.value.filter(item => item.id !== id);
@@ -47,9 +51,42 @@ export const useNotificationCenter = (): {
     return id;
   };
 
+  const addSuccessNotification = (message) => {
+    addNotification({
+      text: message,
+      type: NotificationType.success,
+    });
+  };
+
+  const addWarningNotification = (message) => {
+    addNotification({
+      text: message,
+      type: NotificationType.warning,
+    });
+  };
+
+  const addErrorNotification = (message) => {
+    addNotification({
+      text: message,
+      type: NotificationType.error,
+    });
+  };
+
+  const addInfoNotification = (message) => {
+    addNotification({
+      text: message,
+      type: NotificationType.info,
+    });
+  };
+
   return {
     notifications,
     addNotification,
     removeNotification,
+
+    addSuccessNotification,
+    addWarningNotification,
+    addErrorNotification,
+    addInfoNotification,
   };
 };

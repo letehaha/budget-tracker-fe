@@ -1,6 +1,4 @@
-import {
-  ref, Ref, computed, WritableComputedRef,
-} from 'vue';
+import { ref, computed, WritableComputedRef } from 'vue';
 import { defineStore } from 'pinia';
 import { api } from '@/api';
 import { TRANSACTION_TYPES as TYPES, ERROR_CODES } from '@/js/const';
@@ -15,9 +13,9 @@ import { TooManyRequestsError } from '@/js/errors';
 import { useTransactionsStore } from '@/stores';
 
 export const useBanksMonobankStore = defineStore('banks-monobank', () => {
-  const transactions: Ref<MONOTransactionRecord[]> = ref([]);
-  const accounts: Ref<MONOAccountRecord[]> = ref([]);
-  const user: Ref<MONOUserRecord> = ref();
+  const transactions = ref<MONOTransactionRecord[]>([]);
+  const accounts = ref<MONOAccountRecord[]>([]);
+  const user = ref<MONOUserRecord>();
   const isUserExist = ref(false);
   const isMonoAccountPaired = ref(true);
 

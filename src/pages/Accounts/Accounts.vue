@@ -22,11 +22,20 @@
           v-for="account in accounts"
           :key="account.id"
         >
-          <div class="accounts__item">
+          <router-link
+            :to="{
+              name: 'account',
+              query: { id: account.id, type: ACCOUNT_TYPES.system },
+            }"
+            class="accounts__item"
+          >
             <div class="accounts__item-name">
               {{ account.name }}
             </div>
-          </div>
+            <div class="accounts__item-balance">
+              {{ formatBalance(account) }}
+            </div>
+          </router-link>
         </template>
       </div>
     </template>
@@ -60,10 +69,13 @@
           v-for="account in monoAccounts"
           :key="account.id"
         >
-          <div
+          <router-link
+            :to="{
+              name: 'account',
+              query: { id: account.accountId, type: ACCOUNT_TYPES.mono },
+            }"
             class="accounts__item"
             :class="{ 'accounts__item--disabled': !account.isEnabled }"
-            @click="redirectToAccount(account)"
           >
             <div
               v-if="!account.isEnabled"
@@ -80,7 +92,7 @@
             <div class="accounts__item-balance">
               {{ formatBalance(account) }}
             </div>
-          </div>
+          </router-link>
         </template>
       </div>
     </template>
@@ -93,11 +105,11 @@
 </template>
 
 <script lang="ts">
+import { ACCOUNT_TYPES } from 'shared-types';
 import {
   defineComponent, watch, onMounted,
 } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useRouter } from 'vue-router';
 import {
   useRootStore,
   useBanksMonobankStore,
@@ -106,11 +118,10 @@ import {
 import { formatAmount } from '@/js/helpers';
 import { eventBus } from '@/js/utils';
 import { MODAL_TYPES } from '@/components/Modal.vue';
-import { ACCOUNT_TYPES } from '@/js/const';
+import { AccountRecord, MONOAccountRecord } from '@/js/records';
 
 export default defineComponent({
   setup() {
-    const router = useRouter();
     const rootStore = useRootStore();
     const monobankStore = useBanksMonobankStore();
     const accountsStore = useAccountsStore();
@@ -151,18 +162,12 @@ export default defineComponent({
       });
     };
 
-    const redirectToAccount = account => {
-      router.push({
-        name: 'account',
-        query: { id: account.accountId, type: ACCOUNT_TYPES.mono },
-      });
-    };
-
-    const formatBalance = account => (
+    const formatBalance = (account: MONOAccountRecord | AccountRecord) => (
       formatAmount(account.balance - account.creditLimit)
     );
 
     return {
+      ACCOUNT_TYPES,
       setMonobankToken,
       monoAccounts,
       accounts,
@@ -170,7 +175,6 @@ export default defineComponent({
       isTokenPresent,
       refreshMonoAccounts,
       formatBalance,
-      redirectToAccount,
     };
   },
 });

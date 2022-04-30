@@ -16,10 +16,10 @@
 <script lang="ts">
 import _debounce from 'lodash/debounce';
 import {
-  defineComponent, reactive, watchEffect, watch, PropType,
+  defineComponent, reactive, watchEffect, watch,
 } from 'vue';
-import { useBanksMonobankStore } from '@/stores';
-import { MONOAccountRecord } from '@/js/records';
+import { useBanksMonobankStore, useAccountsStore } from '@/stores';
+import { AccountRecord, MONOAccountRecord } from '@/js/records';
 
 import {
   useNotificationCenter,
@@ -31,29 +31,32 @@ export default defineComponent({
   components: { InputField },
   props: {
     account: {
-      type: Object as PropType<MONOAccountRecord>,
+      type: [MONOAccountRecord, AccountRecord],
       required: true,
     },
   },
   setup(props) {
     const { addNotification } = useNotificationCenter();
     const monobankStore = useBanksMonobankStore();
+    const accountsStore = useAccountsStore();
 
     const form = reactive({
       name: '',
     });
 
-    const updateAccount = async ({ id, name }) => {
-      await monobankStore.updateAccountById({ id, name });
+    const updateName = _debounce(
+      async ({ id, name }) => {
+        if (props.account instanceof MONOAccountRecord) {
+          await monobankStore.updateAccountById({ id, name });
+        } else if (props.account instanceof AccountRecord) {
+          await accountsStore.editAccount({ id, name });
+        }
 
-      addNotification({
-        text: 'Account name changed successfully',
-        type: NotificationType.success,
-      });
-    };
-
-    const debouncedUpdateMonoAccHandler = _debounce(
-      updateAccount,
+        addNotification({
+          text: 'Account name changed successfully',
+          type: NotificationType.success,
+        });
+      },
       2000,
     );
 
@@ -67,10 +70,11 @@ export default defineComponent({
       () => form.name,
       (value) => {
         if (value !== props.account.name) {
-          debouncedUpdateMonoAccHandler({
-            id: props.account.accountId,
-            name: value,
-          });
+          if (props.account instanceof MONOAccountRecord) {
+            updateName({ id: props.account.accountId, name: value });
+          } else if (props.account instanceof AccountRecord) {
+            updateName({ id: props.account.id, name: value });
+          }
         }
       },
       { immediate: true },
