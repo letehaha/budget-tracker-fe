@@ -26,7 +26,7 @@
 <script lang="ts">
 import { defineComponent, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useRootStore, useBanksMonobankStore } from '@/stores';
+import { useRootStore, useBanksMonobankStore, useAccountsStore } from '@/stores';
 import { TooManyRequestsError } from '@/js/errors';
 import { ErrorHandler } from '@/js/utils';
 
@@ -42,6 +42,7 @@ export default defineComponent({
   setup() {
     const rootStore = useRootStore();
     const monobankStore = useBanksMonobankStore();
+    const accountsStore = useAccountsStore();
 
     const { isAppInitialized } = storeToRefs(rootStore);
 
@@ -55,6 +56,7 @@ export default defineComponent({
         await rootStore.fetchInitialData();
       }
       monobankStore.loadAccounts();
+      accountsStore.loadAccounts();
     });
 
     const updateWebhookHandler = async () => {
