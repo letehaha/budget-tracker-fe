@@ -221,11 +221,11 @@ export default defineComponent({
   cursor: pointer;
 
   &--highlighed {
-    background-color: #dbe1e2;
+    background-color: var(--app-bg-color);
   }
 
   &:hover {
-    background-color: #dbe1e2;
+    background-color: var(--app-bg-color);
   }
 }
 
