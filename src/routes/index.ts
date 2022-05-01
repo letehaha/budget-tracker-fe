@@ -55,7 +55,7 @@ const routes = [
   {
     path: '/records',
     name: 'records',
-    component: () => import('@/pages/Records.vue'),
+    component: () => import('@/pages/Records/Records.vue'),
     beforeEnter: redirectRouteGuard,
     meta: {
       layout: ROUTER_LAYOUTS.dashboard,
