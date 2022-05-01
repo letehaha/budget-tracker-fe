@@ -116,6 +116,7 @@ import {
   useCategoriesStore,
 } from '@/stores';
 import { TransactionRecord } from '@/js/records';
+import { toSystemAmount, fromSystemAmount } from '@/js/helpers';
 import InputField from '@/components/fields/InputField.vue';
 import SelectField from '@/components/fields/SelectField.vue';
 import TextareaField from '@/components/fields/TextareaField.vue';
@@ -173,7 +174,7 @@ export default defineComponent({
       (value) => {
         if (value) {
           form.value = {
-            amount: value.amount,
+            amount: fromSystemAmount(value.amount),
             account: accounts.value.find(i => i.id === value.accountId),
             type: transactionTypes.value
               .find(i => i.id === value.transactionTypeId),
@@ -194,35 +195,38 @@ export default defineComponent({
     const submit = async () => {
       isLoading.value = true;
 
-      const {
-        amount,
-        note,
-        time,
-        type: { id: transactionTypeId },
-        paymentType: { id: paymentTypeId },
-        account: { id: accountId },
-        category: { id: categoryId },
-      } = form.value;
+      try {
+        const {
+          amount,
+          note,
+          time,
+          type: { id: transactionTypeId },
+          paymentType: { id: paymentTypeId },
+          account: { id: accountId },
+          category: { id: categoryId },
+        } = form.value;
 
-      const params = {
-        amount,
-        note,
-        time,
-        transactionTypeId,
-        paymentTypeId,
-        accountId,
-        categoryId,
-      };
+        const params = {
+          amount: toSystemAmount(Number(amount)),
+          note,
+          time,
+          transactionTypeId,
+          paymentTypeId,
+          accountId,
+          categoryId,
+        };
 
-      if (props.transaction) {
-        await editTransaction({
-          txId: props.transaction.id,
-          ...params,
-        });
-      } else {
-        await createTransaction(params);
+        if (props.transaction) {
+          await editTransaction({
+            txId: props.transaction.id,
+            ...params,
+          });
+        } else {
+          await createTransaction(params);
+        }
+      } catch (e) {
+        isLoading.value = false;
       }
-      isLoading.value = false;
     };
     const deleteTransactionHandler = async () => {
       isLoading.value = true;
