@@ -22,6 +22,7 @@ import {
   useAccountsStore,
   useBanksMonobankStore,
 } from '@/stores';
+import { AccountRecord, MONOAccountRecord } from '@/js/records';
 import Account from './Account.vue';
 
 export default defineComponent({
@@ -51,14 +52,16 @@ export default defineComponent({
       () => [...monoAccounts.value, ...accounts.value],
     );
 
-    const redirectToAccount = (account) => {
-      router.push({
-        name: 'account',
-        query: {
-          id: account.accountId,
-          type: ACCOUNT_TYPES.mono,
-        },
-      });
+    const redirectToAccount = (account: AccountRecord | MONOAccountRecord) => {
+      let query = {};
+
+      if (account instanceof AccountRecord) {
+        query = { id: account.id, type: ACCOUNT_TYPES.system };
+      } else if (account instanceof MONOAccountRecord) {
+        query = { id: account.accountId, type: ACCOUNT_TYPES.mono };
+      }
+
+      router.push({ name: 'account', query });
     };
 
     return {
