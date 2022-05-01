@@ -31,8 +31,7 @@
 import { defineComponent, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores';
-import { MODAL_TYPES } from '@/components/Modal.vue';
-import { eventBus } from '@/js/utils';
+import { MODAL_TYPES, useModalCenter } from '@/components/modal-center/index';
 import Button from '@/components/common/Button.vue';
 import InputField from '@/components/fields/InputField.vue';
 
@@ -46,9 +45,10 @@ export default defineComponent({
     const form = reactive({
       search: '',
     });
+    const { addModal } = useModalCenter();
 
     const openFormModal = () => {
-      eventBus.emit(eventBus.eventsList.modalOpen, {
+      addModal({
         type: MODAL_TYPES.systemTxForm,
       });
     };
