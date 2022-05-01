@@ -8,7 +8,6 @@ export { useTransactionTypesStore } from './transaction-types';
 export { useAccountsStore } from './accounts';
 export { useUserStore } from './user';
 // eslint-disable-next-line
-export { useTransactionsStore } from './transactions';
 export { useCategoriesStore } from './categories/categories';
 export { useAuthStore } from './auth';
 

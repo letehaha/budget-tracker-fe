@@ -17,7 +17,7 @@
 <script lang="ts">
 import { defineComponent, onBeforeUnmount, ref } from 'vue';
 
-import TransactionsList from '@/components/page-sections/records/List.vue';
+import TransactionsList from './List.vue';
 
 export default defineComponent({
   components: {

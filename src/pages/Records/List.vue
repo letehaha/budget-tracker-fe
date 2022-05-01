@@ -14,8 +14,7 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
-import { storeToRefs } from 'pinia';
-import { useTransactionsStore } from '@/stores';
+import { loadTransactions } from '@/api/transactions';
 
 import TransactionsList from '@/components/TransactionsList/TransactionsList.vue';
 
@@ -24,14 +23,15 @@ export default defineComponent({
     TransactionsList,
   },
   setup() {
-    const transactionsStore = useTransactionsStore();
-    const { transactions } = storeToRefs(transactionsStore);
-
     const limit = 20;
     const from = ref(0);
+    const transactions = ref([]);
 
-    const loadNext = () => {
-      transactionsStore.loadTransactions({ limit, from: from.value });
+    const loadNext = async () => {
+      const result = await loadTransactions({ limit, from: from.value });
+
+      transactions.value.push(...result);
+
       from.value += limit;
     };
 
