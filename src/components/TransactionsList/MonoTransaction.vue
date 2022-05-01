@@ -28,8 +28,7 @@
 import { format } from 'date-fns';
 import { defineComponent, computed } from 'vue';
 import { useTransactionTypesStore, useCategoriesStore } from '@/stores';
-import { eventBus } from '@/js/utils';
-import { MODAL_TYPES } from '@/components/Modal.vue';
+import { MODAL_TYPES, useModalCenter } from '@/components/modal-center/index';
 
 export default defineComponent({
   props: {
@@ -38,6 +37,7 @@ export default defineComponent({
   setup(props) {
     const { getTransactionTypeById } = useTransactionTypesStore();
     const { getCategoryTypeById } = useCategoriesStore();
+    const { addModal } = useModalCenter();
 
     const txType = computed(
       () => getTransactionTypeById(props.tx.transactionTypeId),
@@ -47,21 +47,21 @@ export default defineComponent({
       () => getCategoryTypeById(props.tx.categoryId),
     );
 
+    const formateDate = (date) => format(new Date(date), 'd MMMM y');
+
+    const editTransaction = () => {
+      addModal({
+        type: MODAL_TYPES.monobankTxForm,
+        data: { transaction: props.tx },
+      });
+    };
+
     return {
       txType,
       category,
+      formateDate,
+      editTransaction,
     };
-  },
-  methods: {
-    formateDate(date) {
-      return format(new Date(date), 'd MMMM y');
-    },
-    editTransaction() {
-      eventBus.emit(eventBus.eventsList.modalOpen, {
-        type: MODAL_TYPES.monobankTxForm,
-        data: { transaction: this.tx },
-      });
-    },
   },
 });
 </script>

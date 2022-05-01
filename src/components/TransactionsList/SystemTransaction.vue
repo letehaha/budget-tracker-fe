@@ -35,10 +35,9 @@ import { TRANSACTIONS_TYPES } from 'shared-types';
 
 import { useTransactionTypesStore, useCategoriesStore } from '@/stores';
 
-import { eventBus } from '@/js/utils';
 import { formatAmount } from '@/js/helpers';
 
-import { MODAL_TYPES } from '@/components/Modal.vue';
+import { MODAL_TYPES, useModalCenter } from '@/components/modal-center/index';
 
 export default defineComponent({
   props: {
@@ -47,6 +46,7 @@ export default defineComponent({
   setup(props) {
     const { getTransactionTypeById } = useTransactionTypesStore();
     const { getCategoryTypeById } = useCategoriesStore();
+    const { addModal } = useModalCenter();
 
     const txType = computed(
       () => getTransactionTypeById(props.tx.transactionTypeId),
@@ -59,7 +59,7 @@ export default defineComponent({
     const formateDate = date => format(new Date(date), 'd MMMM y');
 
     const editTransaction = () => {
-      eventBus.emit(eventBus.eventsList.modalOpen, {
+      addModal({
         type: MODAL_TYPES.systemTxForm,
         data: { transaction: props.tx },
       });

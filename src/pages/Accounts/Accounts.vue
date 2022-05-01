@@ -116,8 +116,7 @@ import {
   useAccountsStore,
 } from '@/stores';
 import { formatAmount } from '@/js/helpers';
-import { eventBus } from '@/js/utils';
-import { MODAL_TYPES } from '@/components/Modal.vue';
+import { MODAL_TYPES, useModalCenter } from '@/components/modal-center/index';
 import { AccountRecord, MONOAccountRecord } from '@/js/records';
 
 export default defineComponent({
@@ -133,6 +132,8 @@ export default defineComponent({
       isTokenPresent,
       sortedAccounts: monoAccounts,
     } = storeToRefs(monobankStore);
+
+    const { addModal } = useModalCenter();
 
     watch(isAppInitialized, (value) => {
       if (value) {
@@ -154,7 +155,7 @@ export default defineComponent({
     };
 
     const setMonobankToken = ({ isUpdate = false } = {}) => {
-      eventBus.emit(eventBus.eventsList.modalOpen, {
+      addModal({
         type: MODAL_TYPES.monobankSetToken,
         data: {
           isUpdate,

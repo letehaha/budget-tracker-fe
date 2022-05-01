@@ -12,29 +12,18 @@
         </div>
       </div>
     </template>
-    <Modal
-      :data="modalData"
-      :is-active="isModalVisible"
-      @close="closeModal"
-    />
+    <Modal />
     <NotificationsCenter />
   </main>
 </template>
 
 <script lang="ts">
-import {
-  defineComponent,
-  watch,
-  ref,
-  onMounted,
-  computed,
-} from 'vue';
+import { defineComponent, watch, computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores';
 import { ROUTER_LAYOUTS } from '@/routes';
-import { eventBus } from '@/js/utils';
-import Modal from '@/components/Modal.vue';
+import Modal from '@/components/modal-center/Modal.vue';
 import UIHeader from '@/components/Header.vue';
 import Sidebar from '@/components/Sidebar.vue';
 
@@ -63,34 +52,12 @@ export default defineComponent({
       { immediate: true },
     );
 
-    const isModalVisible = ref(false);
-    const modalData = ref(undefined);
-
-    const onOpenMessage = (data) => {
-      isModalVisible.value = true;
-      modalData.value = data;
-    };
-    const closeModal = () => {
-      modalData.value = {};
-      isModalVisible.value = false;
-    };
-
-    onMounted(() => {
-      eventBus.on(eventBus.eventsList.modalOpen, onOpenMessage);
-      eventBus.on(eventBus.eventsList.modalClose, closeModal);
-    });
-
     const currentLayout = computed(() => route.meta.layout);
 
     return {
       ROUTER_LAYOUTS,
       isLoggedIn,
-      isModalVisible,
-      modalData,
       currentLayout,
-
-      onOpenMessage,
-      closeModal,
     };
   },
 });
