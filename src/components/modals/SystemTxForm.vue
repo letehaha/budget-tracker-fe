@@ -112,9 +112,15 @@ import {
   usePaymentTypesStore,
   useTransactionTypesStore,
   useAccountsStore,
-  useTransactionsStore,
   useCategoriesStore,
 } from '@/stores';
+
+import {
+  createTransaction,
+  editTransaction,
+  deleteTransaction,
+} from '@/api/transactions';
+
 import { TransactionRecord } from '@/js/records';
 import { toSystemAmount, fromSystemAmount } from '@/js/helpers';
 import InputField from '@/components/fields/InputField.vue';
@@ -147,11 +153,6 @@ export default defineComponent({
     const transactionTypesStore = useTransactionTypesStore();
     const accountsStore = useAccountsStore();
     const categoriesStore = useCategoriesStore();
-    const {
-      createTransaction,
-      editTransaction,
-      deleteTransaction,
-    } = useTransactionsStore();
 
     const form = ref({
       amount: null,
@@ -231,7 +232,7 @@ export default defineComponent({
     const deleteTransactionHandler = async () => {
       isLoading.value = true;
 
-      await deleteTransaction({ txId: props.transaction.id });
+      await deleteTransaction(props.transaction.id);
 
       emit(EVENTS.closeModal);
 

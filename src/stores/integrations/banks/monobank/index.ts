@@ -10,8 +10,6 @@ import {
 } from '@/js/records';
 import { TooManyRequestsError } from '@/js/errors';
 
-import { useTransactionsStore } from '@/stores';
-
 export const useBanksMonobankStore = defineStore('banks-monobank', () => {
   const transactions = ref<MONOTransactionRecord[]>([]);
   const accounts = ref<MONOAccountRecord[]>([]);
@@ -92,9 +90,6 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
   };
 
   const updateTransactionById = async ({ id, note, categoryId }) => {
-    const {
-      replaceTransaction: replaceSystemTransaction,
-    } = useTransactionsStore();
     if (!isMonoAccountPaired.value) {
       return;
     }
@@ -106,7 +101,6 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
       });
 
       replaceTransaction(new MONOTransactionRecord(result));
-      replaceSystemTransaction(new MONOTransactionRecord(result));
     } catch (e) {
       if (e?.data?.code === ERROR_CODES.monobankUserNotPaired) {
         isMonoAccountPaired.value = false;

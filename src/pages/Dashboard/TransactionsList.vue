@@ -5,9 +5,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, watch } from 'vue';
+import { defineComponent, watch, ref } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useRootStore, useTransactionsStore } from '@/stores';
+import { useRootStore } from '@/stores';
+import { loadTransactions } from '@/api/transactions';
 
 import TransactionsList from '@/components/TransactionsList/TransactionsList.vue';
 
@@ -17,16 +18,17 @@ export default defineComponent({
   },
   setup() {
     const rootStore = useRootStore();
-    const transactionsStore = useTransactionsStore();
 
     const { isAppInitialized } = storeToRefs(rootStore);
-    const { transactions } = storeToRefs(transactionsStore);
+    const transactions = ref([]);
 
     watch(
       isAppInitialized,
-      (value) => {
+      async (value) => {
         if (value) {
-          transactionsStore.loadTransactions({ limit: 8 });
+          const result = await loadTransactions({ limit: 8 });
+
+          transactions.value = result;
         }
       },
       { immediate: true },
