@@ -1,8 +1,16 @@
 <template>
   <div class="system-tx-form">
-    <div>
-      <button @click="$emit(EVENTS.closeModal)">
-        Close
+    <div class="system-tx-form__header">
+      <div />
+      <div class="system-tx-form__header-title">
+        Add Record
+      </div>
+      <button
+        class="system-tx-form__header-action"
+        type="button"
+        @click="closeModal"
+      >
+        Cancel
       </button>
     </div>
     <div class="system-tx-form__row">
@@ -249,11 +257,16 @@ export default defineComponent({
       emit(EVENTS.closeModal);
     };
 
+    const closeModal = () => {
+      emit(EVENTS.closeModal);
+    };
+
     return {
       EVENTS,
       form,
       isLoading,
       accounts,
+      closeModal,
       categories,
       paymentTypes,
       transactionTypes,
@@ -271,9 +284,37 @@ export default defineComponent({
 <style lang="scss" scoped>
 .system-tx-form {
   background-color: var(--app-bg-color);
-  padding: 60px;
+  padding: 24px;
   width: 100%;
   max-width: 600px;
+}
+.system-tx-form__header {
+  display: grid;
+  align-items: center;
+  grid-template-columns: 60px 1fr min-content;
+  grid-gap: 8px;
+
+  margin-bottom: 24px;
+}
+.system-tx-form__header-title {
+  font-size: 18px;
+  color: var(--app-on-surface-color);
+  text-align: center;
+}
+.system-tx-form__header-action {
+  @include button-style-reset();
+
+  color: var(--app-on-surface-color);
+
+  font-size: 18px;
+
+  padding: 4px 8px;
+  border-radius: 5px;
+  transition: background-color .1s ease-out;
+
+  &:hover {
+    background-color: rgba(var(--app-on-surface-color-rgb), 0.2);
+  }
 }
 .system-tx-form__row {
   margin-bottom: 20px;
