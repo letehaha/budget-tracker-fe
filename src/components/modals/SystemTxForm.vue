@@ -9,6 +9,7 @@
       <InputField
         v-model="form.amount"
         type="number"
+        label="Amount"
         placeholder="Amount"
       />
     </div>
