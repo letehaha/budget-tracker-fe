@@ -226,6 +226,9 @@ export default defineComponent({
           await createTransaction(params);
         }
       } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error(e);
+      } finally {
         isLoading.value = false;
       }
     };
