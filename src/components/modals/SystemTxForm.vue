@@ -1,91 +1,121 @@
 <template>
-  <div class="system-tx-form">
+  <div
+    class="system-tx-form"
+    :class="{
+      'system-tx-form--income': currentTxType.type === TRANSACTIONS_TYPES.income,
+      'system-tx-form--expense': currentTxType.type === TRANSACTIONS_TYPES.expense,
+      'system-tx-form--transfer': currentTxType.type === TRANSACTIONS_TYPES.transfer,
+    }"
+  >
     <div class="system-tx-form__header">
-      <div />
-      <div class="system-tx-form__header-title">
-        Add Record
+      <div class="system-tx-form__header-info">
+        <div />
+        <div class="system-tx-form__header-title">
+          Add Record
+        </div>
+        <button
+          class="system-tx-form__header-action"
+          type="button"
+          @click="closeModal"
+        >
+          Cancel
+        </button>
       </div>
-      <button
-        class="system-tx-form__header-action"
-        type="button"
-        @click="closeModal"
-      >
-        Cancel
-      </button>
+      <div class="system-tx-form__type-selector">
+        <div
+          class="system-tx-form__type-selector-item"
+          :class="{
+            'system-tx-form__type-selector-item--active': currentTxType.type === TRANSACTIONS_TYPES.expense,
+          }"
+          @click="selectTransactionType(TRANSACTIONS_TYPES.expense)"
+        >
+          Expense
+        </div>
+        <div
+          class="system-tx-form__type-selector-item"
+          :class="{
+            'system-tx-form__type-selector-item--active': currentTxType.type === TRANSACTIONS_TYPES.income,
+          }"
+          @click="selectTransactionType(TRANSACTIONS_TYPES.income)"
+        >
+          Income
+        </div>
+        <div
+          class="system-tx-form__type-selector-item"
+          :class="{
+            'system-tx-form__type-selector-item--active': currentTxType.type === TRANSACTIONS_TYPES.transfer,
+          }"
+          disabled
+        >
+          Transfer
+        </div>
+      </div>
     </div>
-    <div class="system-tx-form__row">
-      <InputField
-        v-model="form.amount"
-        type="number"
-        label="Amount"
-        placeholder="Amount"
-      />
-    </div>
-    <div class="system-tx-form__row">
-      <template v-if="accounts.length">
+    <div class="system-tx-form__form">
+      <div class="system-tx-form__row">
+        <InputField
+          v-model="form.amount"
+          label="Amount"
+          placeholder="Amount"
+        />
+      </div>
+      <div class="system-tx-form__row">
+        <template v-if="accounts.length">
+          <SelectField
+            v-model="form.account"
+            label="Account"
+            :values="accounts"
+            label-key="name"
+            is-value-preselected
+          />
+        </template>
+        <template v-else>
+          <InputField
+            model-value="No account exists"
+            label="Account"
+            readonly
+          >
+            <template #label-right>
+              <div
+                class="system-tx-form__create-account"
+                @click="redirectToCreateAccountPage"
+              >
+                Create account
+              </div>
+            </template>
+          </InputField>
+        </template>
+      </div>
+      <div class="system-tx-form__row">
         <SelectField
-          v-model="form.account"
-          label="Account"
-          :values="accounts"
+          v-model="form.category"
+          label="Category"
+          :values="categories"
           label-key="name"
           is-value-preselected
         />
-      </template>
-      <template v-else>
-        <InputField
-          model-value="No account exists"
-          label="Account"
-          readonly
-        >
-          <template #label-right>
-            <div
-              class="system-tx-form__create-account"
-              @click="redirectToCreateAccountPage"
-            >
-              Create account
-            </div>
-          </template>
-        </InputField>
-      </template>
-    </div>
-    <div class="system-tx-form__row">
-      <SelectField
-        v-model="form.category"
-        label="Category"
-        :values="categories"
-        label-key="name"
-        is-value-preselected
-      />
-    </div>
-    <div class="system-tx-form__row">
-      <SelectField
-        v-model="form.type"
-        label="Transaction Type"
-        :values="transactionTypes"
-        label-key="name"
-        is-value-preselected
-      />
-    </div>
-    <div class="system-tx-form__row">
-      <DateField
-        v-model="form.time"
-      />
-    </div>
-    <div class="system-tx-form__row">
-      <SelectField
-        v-model="form.paymentType"
-        label="Payment Type"
-        :values="paymentTypes"
-        label-key="name"
-        is-value-preselected
-      />
-    </div>
-    <div class="system-tx-form__row">
-      <TextareaField
-        v-model="form.note"
-        placeholder="Note"
-        label="Note (optional)"
-      />
+      </div>
+      <div class="system-tx-form__row">
+        <DateField
+          v-model="form.time"
+        />
+      </div>
+      <div class="system-tx-form__row">
+        <SelectField
+          v-model="form.paymentType"
+          label="Payment Type"
+          :values="paymentTypes"
+          label-key="name"
+          is-value-preselected
+        />
+      </div>
+      <div class="system-tx-form__row">
+        <TextareaField
+          v-model="form.note"
+          placeholder="Note"
+          label="Note (optional)"
+        />
+      </div>
     </div>
     <div class="system-tx-form__actions">
       <Button
@@ -110,10 +140,12 @@
 </template>
 
 <script lang="ts">
+import { TRANSACTIONS_TYPES } from 'shared-types';
 import {
   defineComponent,
   ref,
   watch,
+  computed,
 } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useRouter } from 'vue-router';
@@ -178,6 +210,12 @@ export default defineComponent({
     const { accounts } = storeToRefs(accountsStore);
     const { transactionTypes } = storeToRefs(transactionTypesStore);
     const { categories } = storeToRefs(categoriesStore);
+
+    const currentTxType = computed(
+      () => transactionTypes.value.find(
+        item => item.type === form.value.type.type,
+      ),
+    );
 
     watch(
       () => props.transaction,
@@ -261,7 +299,12 @@ export default defineComponent({
       emit(EVENTS.closeModal);
     };
 
+    const selectTransactionType = (type: TRANSACTIONS_TYPES) => {
+      form.value.type = transactionTypes.value.find(item => item.type === type);
+    };
+
     return {
+      TRANSACTIONS_TYPES,
       EVENTS,
       form,
       isLoading,
@@ -269,6 +312,8 @@ export default defineComponent({
       closeModal,
       categories,
       paymentTypes,
+      currentTxType,
+      selectTransactionType,
       transactionTypes,
       createTransaction,
       editTransaction,
@@ -282,39 +327,89 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+$border-top-radius: 10px;
 .system-tx-form {
   background-color: var(--app-bg-color);
-  padding: 24px;
   width: 100%;
   max-width: 600px;
+  border-top-right-radius: $border-top-radius;
+  border-top-left-radius: $border-top-radius;
 }
 .system-tx-form__header {
+  padding: 24px;
+  margin-bottom: 24px;
+
+  border-top-right-radius: $border-top-radius;
+  border-top-left-radius: $border-top-radius;
+
+  transition: .2s ease-out;
+
+  .system-tx-form--income & {
+    background-color: var(--app-income-color);
+  }
+  .system-tx-form--expense & {
+    background-color: var(--app-expense-color);
+  }
+  .system-tx-form--transfer & {
+    background-color: var(--app-transfer-color);
+  }
+}
+.system-tx-form__header-info {
   display: grid;
   align-items: center;
   grid-template-columns: 60px 1fr min-content;
   grid-gap: 8px;
+}
+.system-tx-form__type-selector {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 
-  margin-bottom: 24px;
+  background-color: rgba(#000, .4);
+  border-radius: 10px;
+  margin-top: 24px;
+}
+.system-tx-form__type-selector-item {
+  padding: 6px;
+
+  font-size: 16px;
+  text-align: center;
+  cursor: pointer;
+
+  transition: .1s ease-out;
+  color: #fff;
+
+  &[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+.system-tx-form__type-selector-item--active {
+  background-color: #fff;
+  border-radius: 10px;
+  color: #000;
 }
 .system-tx-form__header-title {
-  font-size: 18px;
-  color: var(--app-on-surface-color);
+  font-size: 19px;
+  color: #fff;
   text-align: center;
 }
 .system-tx-form__header-action {
   @include button-style-reset();
 
-  color: var(--app-on-surface-color);
+  color: #fff;
 
-  font-size: 18px;
+  font-size: 16px;
 
   padding: 4px 8px;
   border-radius: 5px;
   transition: background-color .1s ease-out;
 
   &:hover {
-    background-color: rgba(var(--app-on-surface-color-rgb), 0.2);
+    background-color: rgba(#fff, 0.3);
   }
+}
+.system-tx-form__form {
+  padding: 0 24px;
 }
 .system-tx-form__row {
   margin-bottom: 20px;
@@ -323,6 +418,8 @@ export default defineComponent({
   display: flex;
   align-items: center;
   justify-content: space-between;
+
+  padding: 24px;
 }
 .system-tx-form__action--submit {
   margin-left: auto;

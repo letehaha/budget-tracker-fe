@@ -1,7 +1,9 @@
+import { TRANSACTIONS_TYPES } from 'shared-types';
+
 interface Record {
   id?: number;
   name?: string;
-  type?: number;
+  type?: TRANSACTIONS_TYPES;
 }
 
 export class TransactionTypeRecord {
@@ -11,7 +13,7 @@ export class TransactionTypeRecord {
 
   name: string;
 
-  type: number;
+  type: TRANSACTIONS_TYPES;
 
   constructor(record: Record = {}) {
     this._record = record;

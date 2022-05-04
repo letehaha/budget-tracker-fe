@@ -90,12 +90,17 @@ export default defineComponent({
   right: 0;
   bottom: 0;
   left: 0;
-  background-color: rgba(#1b1f26, 0.9);
   display: flex;
   align-items: flex-start;
   justify-content: center;
   padding: 80px 24px 24px;
   cursor: pointer;
+  overflow: auto;
+  background-color: rgba(#1b1f26, 0.4);
+
+  body.dark & {
+    background-color: rgba(#1b1f26, 0.9);
+  }
 }
 .modal__component {
   cursor: initial;

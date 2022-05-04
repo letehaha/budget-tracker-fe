@@ -9,7 +9,13 @@ body {
   }
 
   // app elements color
+  --app-income-color: var(--primary-500);
+  --app-income-color-rgb: var(--primary-500-rgb);
+
   @each $cssVar, $value in (
+    --app-expense-color: #e74c3c,
+    --app-transfer-color: #95a5a6,
+
     --app-danger-color: #e1301c,
     --app-warning-color: #e5971c,
     --app-success-color: #059134,
