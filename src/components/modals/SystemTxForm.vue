@@ -100,6 +100,7 @@
       <div class="system-tx-form__row">
         <DateField
           v-model="form.time"
+          label="Datetime"
         />
       </div>
       <div class="system-tx-form__row">
@@ -164,7 +165,13 @@ import {
   deleteTransaction,
 } from '@/api/transactions';
 
-import { TransactionRecord } from '@/js/records';
+import {
+  AccountRecord,
+  TransactionTypeRecord,
+  TransactionRecord,
+  CategoryRecord,
+  PaymentTypeRecord,
+} from '@/js/records';
 import { toSystemAmount, fromSystemAmount } from '@/js/helpers';
 import InputField from '@/components/fields/InputField.vue';
 import SelectField from '@/components/fields/SelectField.vue';
@@ -197,7 +204,15 @@ export default defineComponent({
     const accountsStore = useAccountsStore();
     const categoriesStore = useCategoriesStore();
 
-    const form = ref({
+    const form = ref<{
+      amount: number;
+      account: AccountRecord;
+      category: CategoryRecord;
+      time: string;
+      paymentType: PaymentTypeRecord;
+      note?: string;
+      type: TransactionTypeRecord;
+    }>({
       amount: null,
       account: null,
       category: null,
@@ -229,7 +244,7 @@ export default defineComponent({
             type: transactionTypes.value
               .find(i => i.id === value.transactionTypeId),
             category: categories.value.find(i => i.id === value.categoryId),
-            time: value.time,
+            time: new Date(value.time).toISOString().substring(0, 19),
             paymentType: paymentTypes.value
               .find(i => i.id === value.paymentTypeId),
             note: value.note,
@@ -259,7 +274,7 @@ export default defineComponent({
         const params = {
           amount: toSystemAmount(Number(amount)),
           note,
-          time,
+          time: new Date(time).toISOString(),
           transactionTypeId,
           paymentTypeId,
           accountId,
