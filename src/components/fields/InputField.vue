@@ -18,12 +18,12 @@
       </template>
       <div class="input-field__input-wrapper">
         <input
+          v-bind="computedAttrs"
           :type="type"
           :value="modelValue"
-          :placeholder="$attrs.placeholder || ''"
           :style="inputFieldStyles"
           :tabindex="tabindex"
-          v-bind="attrs"
+          :min="minValue"
           class="input-field__input"
           autocomplete="off"
           autocorrect="off"
@@ -48,7 +48,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { KEYBOARD_CODES } from 'shared-types';
+import { defineComponent, computed } from 'vue';
 
 export const MODEL_EVENTS = {
   input: 'update:modelValue',
@@ -62,23 +63,53 @@ export default defineComponent({
     tabindex: { type: String, default: undefined },
     errorMessage: { type: String, default: undefined },
     inputFieldStyles: { type: Object, default: undefined },
+    onlyPositive: Boolean,
   },
-  computed: {
-    attrs() {
-      return {
-        ...this.$attrs,
-        onInput: event => {
-          if (this.modelValue === event.target.value) return;
-          this.$emit(MODEL_EVENTS.input, event.target.value);
-        },
-      };
-    },
-    isSubLabelExist() {
-      return !!this.$slots.subLabel;
-    },
-  },
-  methods: {
+  setup(props, { attrs, emit, slots }) {
+    const computedAttrs = {
+      ...attrs,
+      onInput: event => {
+        if (props.modelValue === event.target.value) return;
+        emit(MODEL_EVENTS.input, event.target.value);
+      },
+      onkeypress: (event: KeyboardEvent) => {
+        if (props.type === 'number') {
+          if (event.keyCode === KEYBOARD_CODES.keyE) {
+            event.preventDefault();
+          }
+        }
+        if (props.onlyPositive) {
+          if (
+            [
+              KEYBOARD_CODES.minus,
+              KEYBOARD_CODES.equal,
+              KEYBOARD_CODES.plus,
+            ].includes(event.keyCode)
+          ) {
+            event.preventDefault();
+          }
+        }
+      },
+    };
 
+    const minValue = computed<number>(() => {
+      if (props.onlyPositive && !attrs.min) {
+        return 0;
+      }
+      if (attrs.min < 0) {
+        return 0;
+      }
+
+      return attrs.min as number;
+    });
+
+    const isSubLabelExist = computed(() => !!slots.subLabel);
+
+    return {
+      minValue,
+      computedAttrs,
+      isSubLabelExist,
+    };
   },
 });
 </script>

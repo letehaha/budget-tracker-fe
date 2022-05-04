@@ -56,6 +56,8 @@
         <InputField
           v-model="form.amount"
           label="Amount"
+          type="number"
+          only-positive
           placeholder="Amount"
         />
       </div>
