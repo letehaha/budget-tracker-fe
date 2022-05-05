@@ -6,32 +6,27 @@
     }"
     class="input-field"
   >
-    <label class="input-field__input-focusable">
-      <template v-if="label">
-        <div class="input-field__label">
-          <span>{{ label }}</span>
-
-          <template v-if="$slots['label-right']">
-            <slot name="label-right" />
-          </template>
-        </div>
+    <FieldLabel :label="label">
+      <template #label-right>
+        <template v-if="$slots['label-right']">
+          <slot name="label-right" />
+        </template>
       </template>
-      <div class="input-field__input-wrapper">
-        <input
-          v-bind="computedAttrs"
-          :type="type"
-          :value="modelValue"
-          :style="inputFieldStyles"
-          :tabindex="tabindex"
-          :min="minValue"
-          class="input-field__input"
-          autocomplete="off"
-          autocorrect="off"
-          autocapitalize="off"
-          spellcheck="false"
-        >
-      </div>
-    </label>
+
+      <input
+        v-bind="computedAttrs"
+        :type="type"
+        :value="modelValue"
+        :style="inputFieldStyles"
+        :tabindex="tabindex"
+        :min="minValue"
+        class="input-field__input"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="off"
+        spellcheck="false"
+      >
+    </FieldLabel>
     <div
       v-if="isSubLabelExist"
       class="input-fields__sublabel"
@@ -51,11 +46,16 @@
 import { KEYBOARD_CODES } from 'shared-types';
 import { defineComponent, computed } from 'vue';
 
+import FieldLabel from './components/FieldLabel.vue';
+
 export const MODEL_EVENTS = {
   input: 'update:modelValue',
 };
 
 export default defineComponent({
+  components: {
+    FieldLabel,
+  },
   props: {
     label: { type: String, default: undefined },
     modelValue: { type: [String, Number], default: undefined },
@@ -120,9 +120,6 @@ export default defineComponent({
   width: 100%;
   flex: 1;
 }
-.input-field__input-wrapper {
-  position: relative;
-}
 .input-field__input {
   font-size: 16px;
   line-height: 1;
@@ -138,17 +135,6 @@ export default defineComponent({
   width: 100%;
 
   @include placeholder-custom(rgba(var(--app-on-surface-color-rgb), 0.6));
-}
-.input-field__label {
-  font-size: 16px;
-  font-weight: 400;
-  letter-spacing: 0.5px;
-  line-height: 1;
-  color: var(--app-on-surface-color);
-  margin-bottom: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
 }
 .input-field__err-mes {
   color: var(--app-danger-color);

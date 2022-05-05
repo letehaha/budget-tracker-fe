@@ -6,27 +6,23 @@
     }"
     class="date-field"
   >
-    <label class="date-field__input-focusable">
-      <template v-if="label">
-        <div class="date-field__label">
-          <span>{{ label }}</span>
-
-          <template v-if="$slots['label-right']">
-            <slot name="label-right" />
-          </template>
-        </div>
+    <FieldLabel :label="label">
+      <template #label-right>
+        <template v-if="$slots['label-right']">
+          <slot name="label-right" />
+        </template>
       </template>
-      <div class="date-field__input-wrapper">
-        <input
-          v-bind="computedAttrs"
-          type="datetime-local"
-          :value="modelValue"
-          :style="inputFieldStyles"
-          :tabindex="tabindex"
-          class="date-field__input"
-        >
-      </div>
-    </label>
+
+      <input
+        v-bind="computedAttrs"
+        type="datetime-local"
+        :value="modelValue"
+        :style="inputFieldStyles"
+        :tabindex="tabindex"
+        class="date-field__input"
+      >
+    </FieldLabel>
+
     <div
       v-if="isSubLabelExist"
       class="date-fields__sublabel"
@@ -45,11 +41,16 @@
 <script lang="ts">
 import { defineComponent, computed } from 'vue';
 
+import FieldLabel from './components/FieldLabel.vue';
+
 export const MODEL_EVENTS = {
   input: 'update:modelValue',
 };
 
 export default defineComponent({
+  components: {
+    FieldLabel,
+  },
   props: {
     label: { type: String, default: undefined },
     modelValue: { type: [String, Number], default: undefined },
@@ -84,9 +85,6 @@ export default defineComponent({
   width: 100%;
   flex: 1;
 }
-.date-field__input-wrapper {
-  position: relative;
-}
 .date-field__input {
   font-size: 16px;
   line-height: 1;
@@ -115,17 +113,6 @@ export default defineComponent({
       background: url('~@/assets/icons/colored/calendar-white.svg') no-repeat;
     }
 }
-}
-.date-field__label {
-  font-size: 16px;
-  font-weight: 400;
-  letter-spacing: 0.5px;
-  line-height: 1;
-  color: var(--app-on-surface-color);
-  margin-bottom: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
 }
 .date-field__err-mes {
   color: var(--app-danger-color);

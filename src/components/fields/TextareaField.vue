@@ -9,28 +9,29 @@
     }
     "
   >
-    <span
-      class="text-field__label"
-      :class="{'text-field__label--hidden': !label}"
-    >
-      {{ label }}
-    </span>
+    <FieldLabel :label="label">
+      <template #label-right>
+        <template v-if="$slots['label-right']">
+          <slot name="label-right" />
+        </template>
+      </template>
 
-    <textarea
-      class="text-field__input"
-      :placeholder="placeholder || ''"
-      :value="modelValue"
-      :disabled="disabled"
-      :name="name"
-      :autofocus="autofocus"
-      :maxlength="maxlength"
-      :required="required"
-      :readonly="readonly"
-      :title="title"
-      :rows="rows"
-      :cols="cols"
-      @input="onInput"
-    />
+      <textarea
+        class="text-field__input"
+        :placeholder="placeholder || ''"
+        :value="modelValue"
+        :disabled="disabled"
+        :name="name"
+        :autofocus="autofocus"
+        :maxlength="maxlength"
+        :required="required"
+        :readonly="readonly"
+        :title="title"
+        :rows="rows"
+        :cols="cols"
+        @input="onInput"
+      />
+    </FieldLabel>
 
     <span
       v-if="maxlength"
@@ -51,11 +52,16 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 
+import FieldLabel from './components/FieldLabel.vue';
+
 const MODEL_EVENTS = Object.freeze({
   input: 'update:modelValue',
 });
 
 export default defineComponent({
+  components: {
+    FieldLabel,
+  },
   props: {
     label: { type: String, default: undefined },
     modelValue: { type: [String, Number], default: undefined },
@@ -105,14 +111,6 @@ export default defineComponent({
     filter: grayscale(100%);
     border-style: dashed;
   }
-}
-
-.text-field__label {
-  margin-bottom: 8px;
-  font-weight: 400;
-  font-size: 13px;
-  line-height: 1.2;
-  color: var(--app-on-surface-color);
 }
 
 .text-field__input {
