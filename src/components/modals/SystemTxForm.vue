@@ -205,6 +205,11 @@ export default defineComponent({
     const accountsStore = useAccountsStore();
     const categoriesStore = useCategoriesStore();
 
+    const { paymentTypes } = storeToRefs(store);
+    const { accounts } = storeToRefs(accountsStore);
+    const { transactionTypes } = storeToRefs(transactionTypesStore);
+    const { categories, rawCategories } = storeToRefs(categoriesStore);
+
     const form = ref<{
       amount: number;
       account: AccountRecord;
@@ -216,18 +221,13 @@ export default defineComponent({
     }>({
       amount: null,
       account: null,
-      category: null,
+      category: categories.value[0],
       time: null,
       paymentType: null,
       note: null,
       type: null,
     });
     const isLoading = ref(false);
-
-    const { paymentTypes } = storeToRefs(store);
-    const { accounts } = storeToRefs(accountsStore);
-    const { transactionTypes } = storeToRefs(transactionTypesStore);
-    const { categories } = storeToRefs(categoriesStore);
 
     const currentTxType = computed(
       () => transactionTypes.value.find(
@@ -244,7 +244,7 @@ export default defineComponent({
             account: accounts.value.find(i => i.id === value.accountId),
             type: transactionTypes.value
               .find(i => i.id === value.transactionTypeId),
-            category: categories.value.find(i => i.id === value.categoryId),
+            category: rawCategories.value.find(i => i.id === value.categoryId),
             time: new Date(value.time).toISOString().substring(0, 19),
             paymentType: paymentTypes.value
               .find(i => i.id === value.paymentTypeId),
