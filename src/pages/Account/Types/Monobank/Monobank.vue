@@ -14,7 +14,10 @@
       >
     </label>
 
-    <LoadTransactions :account="account" />
+    <LoadTransactions
+      class="mono-account__load-tx"
+      :account="account"
+    />
   </div>
 </template>
 
@@ -115,5 +118,8 @@ export default defineComponent({
   color: var(--app-on-surface-color);
   margin: 24px 0;
   display: block;
+}
+.mono-account__load-tx {
+  margin-top: 48px;
 }
 </style>
