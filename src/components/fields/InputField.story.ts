@@ -8,6 +8,7 @@ interface Args {
   errorMessage?: string;
   inputFieldStyles?: unknown;
   subLabelSlot?: string;
+  placeholder?: string;
 }
 
 interface Story {

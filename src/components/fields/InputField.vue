@@ -6,55 +6,54 @@
     }"
     class="input-field"
   >
-    <label class="input-field__input-focusable">
-      <template v-if="label">
-        <div class="input-field__label">
-          <span>{{ label }}</span>
-
-          <template v-if="$slots['label-right']">
-            <slot name="label-right" />
-          </template>
-        </div>
+    <FieldLabel :label="label">
+      <template #label-right>
+        <template v-if="$slots['label-right']">
+          <slot name="label-right" />
+        </template>
       </template>
-      <div class="input-field__input-wrapper">
-        <input
-          :type="type"
-          :value="modelValue"
-          :placeholder="$attrs.placeholder || ''"
-          :style="inputFieldStyles"
-          :tabindex="tabindex"
-          v-bind="attrs"
-          class="input-field__input"
-          autocomplete="off"
-          autocorrect="off"
-          autocapitalize="off"
-          spellcheck="false"
-        >
+
+      <input
+        v-bind="computedAttrs"
+        :type="type"
+        :value="modelValue"
+        :style="inputFieldStyles"
+        :tabindex="tabindex"
+        :min="minValue"
+        class="input-field__input"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="off"
+        spellcheck="false"
+      >
+    </FieldLabel>
+
+    <template v-if="isSubLabelExist">
+      <div class="input-fields__sublabel">
+        <slot name="subLabel" />
       </div>
-    </label>
-    <div
-      v-if="isSubLabelExist"
-      class="input-fields__sublabel"
-    >
-      <slot name="subLabel" />
-    </div>
-    <p
-      v-if="errorMessage"
-      class="input-field__err-mes"
-    >
-      {{ errorMessage }}
-    </p>
+    </template>
+
+    <FieldError :error-message="errorMessage" />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { KEYBOARD_CODES } from 'shared-types';
+import { defineComponent, computed } from 'vue';
+
+import FieldLabel from './components/FieldLabel.vue';
+import FieldError from './components/FieldError.vue';
 
 export const MODEL_EVENTS = {
   input: 'update:modelValue',
 };
 
 export default defineComponent({
+  components: {
+    FieldLabel,
+    FieldError,
+  },
   props: {
     label: { type: String, default: undefined },
     modelValue: { type: [String, Number], default: undefined },
@@ -62,23 +61,53 @@ export default defineComponent({
     tabindex: { type: String, default: undefined },
     errorMessage: { type: String, default: undefined },
     inputFieldStyles: { type: Object, default: undefined },
+    onlyPositive: Boolean,
   },
-  computed: {
-    attrs() {
-      return {
-        ...this.$attrs,
-        onInput: event => {
-          if (this.modelValue === event.target.value) return;
-          this.$emit(MODEL_EVENTS.input, event.target.value);
-        },
-      };
-    },
-    isSubLabelExist() {
-      return !!this.$slots.subLabel;
-    },
-  },
-  methods: {
+  setup(props, { attrs, emit, slots }) {
+    const computedAttrs = {
+      ...attrs,
+      onInput: event => {
+        if (props.modelValue === event.target.value) return;
+        emit(MODEL_EVENTS.input, event.target.value);
+      },
+      onkeypress: (event: KeyboardEvent) => {
+        if (props.type === 'number') {
+          if (event.keyCode === KEYBOARD_CODES.keyE) {
+            event.preventDefault();
+          }
+        }
+        if (props.onlyPositive) {
+          if (
+            [
+              KEYBOARD_CODES.minus,
+              KEYBOARD_CODES.equal,
+              KEYBOARD_CODES.plus,
+            ].includes(event.keyCode)
+          ) {
+            event.preventDefault();
+          }
+        }
+      },
+    };
 
+    const minValue = computed<number>(() => {
+      if (props.onlyPositive && !attrs.min) {
+        return 0;
+      }
+      if (attrs.min < 0) {
+        return 0;
+      }
+
+      return attrs.min as number;
+    });
+
+    const isSubLabelExist = computed(() => !!slots.subLabel);
+
+    return {
+      minValue,
+      computedAttrs,
+      isSubLabelExist,
+    };
   },
 });
 </script>
@@ -88,9 +117,6 @@ export default defineComponent({
   position: relative;
   width: 100%;
   flex: 1;
-}
-.input-field__input-wrapper {
-  position: relative;
 }
 .input-field__input {
   font-size: 16px;
@@ -107,23 +133,6 @@ export default defineComponent({
   width: 100%;
 
   @include placeholder-custom(rgba(var(--app-on-surface-color-rgb), 0.6));
-}
-.input-field__label {
-  font-size: 16px;
-  font-weight: 400;
-  letter-spacing: 0.5px;
-  line-height: 1;
-  color: var(--app-on-surface-color);
-  margin-bottom: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.input-field__err-mes {
-  color: var(--app-danger-color);
-  font-size: 14px;
-  margin-top: 4px;
-  margin-left: 8px;
 }
 .input-fields__sublabel {
   position: absolute;

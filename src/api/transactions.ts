@@ -52,7 +52,7 @@ export const createTransaction = async ({
 }: {
   amount: number;
   note?: string;
-  time: Date;
+  time: string;
   transactionTypeId: number;
   paymentTypeId: number;
   accountId: number;
@@ -86,7 +86,7 @@ export const editTransaction = async ({
   txId: number;
   amount: number;
   note?: string;
-  time: Date;
+  time: string;
   transactionTypeId: number;
   paymentTypeId: number;
   accountId: number;

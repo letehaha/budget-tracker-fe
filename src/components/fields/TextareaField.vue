@@ -9,28 +9,29 @@
     }
     "
   >
-    <span
-      class="text-field__label"
-      :class="{'text-field__label--hidden': !label}"
-    >
-      {{ label }}
-    </span>
+    <FieldLabel :label="label">
+      <template #label-right>
+        <template v-if="$slots['label-right']">
+          <slot name="label-right" />
+        </template>
+      </template>
 
-    <textarea
-      class="text-field__input"
-      :placeholder="placeholder || ''"
-      :value="modelValue"
-      :disabled="disabled"
-      :name="name"
-      :autofocus="autofocus"
-      :maxlength="maxlength"
-      :required="required"
-      :readonly="readonly"
-      :title="title"
-      :rows="rows"
-      :cols="cols"
-      @input="onInput"
-    />
+      <textarea
+        class="text-field__input"
+        :placeholder="placeholder || ''"
+        :value="modelValue"
+        :disabled="disabled"
+        :name="name"
+        :autofocus="autofocus"
+        :maxlength="maxlength"
+        :required="required"
+        :readonly="readonly"
+        :title="title"
+        :rows="rows"
+        :cols="cols"
+        @input="onInput"
+      />
+    </FieldLabel>
 
     <span
       v-if="maxlength"
@@ -39,23 +40,25 @@
       {{ `${currentLength}/${maxlength}` }}
     </span>
 
-    <p
-      v-if="errorMessage"
-      class="text-field__err-mes"
-    >
-      {{ errorMessage }}
-    </p>
+    <FieldError :error-message="errorMessage" />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
 
+import FieldLabel from './components/FieldLabel.vue';
+import FieldError from './components/FieldError.vue';
+
 const MODEL_EVENTS = Object.freeze({
   input: 'update:modelValue',
 });
 
 export default defineComponent({
+  components: {
+    FieldLabel,
+    FieldError,
+  },
   props: {
     label: { type: String, default: undefined },
     modelValue: { type: [String, Number], default: undefined },
@@ -107,14 +110,6 @@ export default defineComponent({
   }
 }
 
-.text-field__label {
-  margin-bottom: 8px;
-  font-weight: 400;
-  font-size: 13px;
-  line-height: 1.2;
-  color: var(--app-on-surface-color);
-}
-
 .text-field__input {
   width: 100%;
   position: relative;
@@ -129,10 +124,5 @@ export default defineComponent({
   color: var(--app-on-surface-color);
 
   @include placeholder-custom(rgba(var(--app-on-surface-color-rgb), 0.4));
-}
-
-.text-field__err-mes {
-  color: var(--app-danger-color);
-  font-size: 12px;
 }
 </style>

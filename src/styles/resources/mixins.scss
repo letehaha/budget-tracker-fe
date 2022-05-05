@@ -49,3 +49,10 @@
     @content;
   }
 }
+@mixin button-style-reset() {
+  border: none;
+  padding: 0;
+  outline: none;
+  background-color: transparent;
+  cursor: pointer;
+}

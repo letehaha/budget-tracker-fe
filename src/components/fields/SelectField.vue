@@ -48,17 +48,15 @@
         </div>
       </div>
     </div>
-    <p
-      v-if="errorMessage"
-      class="select-field__err-mes"
-    >
-      {{ errorMessage }}
-    </p>
+
+    <FieldError :error-message="errorMessage" />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+
+import FieldError from './components/FieldError.vue';
 
 const MODEL_EVENTS = {
   input: 'update:modelValue',
@@ -70,6 +68,9 @@ export const POSITIONS = Object.freeze({
 });
 
 export default defineComponent({
+  components: {
+    FieldError,
+  },
   props: {
     label: { type: String, default: undefined },
     modelValue: { type: [Object, String], default: undefined },
@@ -259,10 +260,5 @@ export default defineComponent({
     &:before { transform: rotate(45deg); }
     &:after { transform: rotate(-45deg); }
   }
-}
-
-.select-field__err-mes {
-  color: var(--app-danger-color);
-  font-size: 12px;
 }
 </style>

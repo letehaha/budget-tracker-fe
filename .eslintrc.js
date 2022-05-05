@@ -80,6 +80,7 @@ module.exports = {
     'global-require': 'off',
     'no-plusplus': 'off',
     'max-len': 'off',
+    'prefer-destructuring': 'off',
     'vue/max-len': ['warn', {
       code: 80,
       template: 80,

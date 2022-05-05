@@ -1,13 +1,24 @@
 <template>
   <div class="load-transactions">
-    <DateField
-      v-model="form.period"
-      :disable-after="new Date()"
-      mode="range"
-    />
-    <Button @click="loadTransactionsForPeriod">
-      Load transactions
-    </Button>
+    <div class="load-transactions__title">
+      Load transactions for selected period
+    </div>
+    <div class="load-transactions__wrapper">
+      <DateField
+        v-model="form.from"
+        label="From"
+      />
+      <DateField
+        v-model="form.to"
+        label="To"
+      />
+      <Button
+        :disabled="!isPeriodSelected"
+        @click="loadTransactionsForPeriod"
+      >
+        {{ isPeriodSelected ? 'Load transactions' : 'Select period' }}
+      </Button>
+    </div>
   </div>
 </template>
 
@@ -46,33 +57,39 @@ export default defineComponent({
     const { getAccountById } = storeToRefs(monobankStore);
 
     const form = reactive({
-      period: null,
+      from: null,
+      to: null,
     });
+
+    const isPeriodSelected = computed(() => form.from && form.to);
 
     const account = computed(
       () => getAccountById.value(route.query.id as string),
     );
 
     const loadTransactionsForPeriod = async () => {
-      if (form.period) {
-        const dates = form.period.split(' to ');
-        const from = new Date(dates[0]).getTime();
-        const to = new Date(dates[1]).getTime();
+      if (isPeriodSelected.value) {
+        const from = new Date(form.from).getTime();
+        const to = new Date(form.to).getTime();
         await monobankStore.loadTransactionsForPeriod({
           accountId: account.value.accountId,
           from,
           to,
         });
+
         addNotification({
           text: 'Loaded successfully',
           type: NotificationType.success,
         });
-        form.period = null;
+
+        form.from = null;
+        form.to = null;
       }
     };
 
     return {
       form,
+      isPeriodSelected,
       loadTransactionsForPeriod,
     };
   },
@@ -80,9 +97,14 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.load-transactions {
+.load-transactions__title {
+  font-size: 24px;
+  color: var(--app-on-surface-color);
+  margin-bottom: 16px;
+}
+.load-transactions__wrapper {
   display: flex;
   gap: 12px;
-  align-items: center;
+  align-items: flex-end;
 }
 </style>
