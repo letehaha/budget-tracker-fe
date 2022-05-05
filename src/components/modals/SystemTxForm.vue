@@ -89,13 +89,6 @@
         </template>
       </div>
       <div class="system-tx-form__row">
-        <!-- <SelectField
-          v-model="form.category"
-          label="Category"
-          :values="categories"
-          label-key="name"
-          is-value-preselected
-        /> -->
         <CategorySelectField
           v-model="form.category"
           label="Category"
