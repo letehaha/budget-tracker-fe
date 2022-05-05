@@ -7,72 +7,72 @@
     class="category-select-field"
   >
     <FieldLabel :label="label">
-      <template v-if="selectedValue">
-        <div class="category-select-field__wrapper">
-          <div
-            v-bind="$attrs"
-            class="category-select-field__input"
-            @click="() => toggleDropdown()"
-          >
-            {{ selectedValue.name || placeholder }}
-            <div class="category-select-field__arrow" />
-          </div>
-          <div
-            v-if="isDropdownOpened"
-            :class="`category-select-field__dropdown--${position}`"
-            class="category-select-field__dropdown"
-          >
-            <div class="category-select-field__dropdown-values">
-              <!-- Show top parent category at the top of list of child categories -->
-              <template v-if="previousLevelsIndices.length">
-                <button
-                  class="category-select-field__dropdown-back-level"
-                  @click="backLevelUp"
-                >
-                  <ChevronLeftIcon />
-                  Previous level
-                </button>
-                <button
-                  class="category-select-field__dropdown-item"
-                  :class="{
-                    'category-select-field__dropdown-item--highlighed': selectedValue.id === topLevelCategory.id
-                  }"
-                  @click="selectItem(topLevelCategory, true)"
-                >
-                  {{ topLevelCategory.name }}
-                </button>
-
-                <h3 class="category-select-field__dropdown-subcategories-title">
-                  Subcategories
-                </h3>
-              </template>
-
-              <!-- Show list of categories -->
-              <template
-                v-for="item in levelValues"
-                :key="item.id"
+      <div
+        class="category-select-field__wrapper"
+      >
+        <div
+          v-bind="$attrs"
+          class="category-select-field__input"
+          @click="() => toggleDropdown()"
+        >
+          {{ selectedValue.name || placeholder }}
+          <div class="category-select-field__arrow" />
+        </div>
+        <div
+          v-if="isDropdownOpened"
+          :class="`category-select-field__dropdown--${position}`"
+          class="category-select-field__dropdown"
+        >
+          <div class="category-select-field__dropdown-values">
+            <!-- Show top parent category at the top of list of child categories -->
+            <template v-if="previousLevelsIndices.length">
+              <button
+                class="category-select-field__dropdown-back-level"
+                @click="backLevelUp"
               >
-                <button
-                  class="category-select-field__dropdown-item"
-                  :class="{
-                    'category-select-field__dropdown-item--highlighed': selectedValue.id === item.id,
-                  }"
-                  @click="selectItem(item)"
-                >
-                  {{ item.name }}
+                <ChevronLeftIcon />
+                Previous level
+              </button>
+              <button
+                class="category-select-field__dropdown-item"
+                :class="{
+                  'category-select-field__dropdown-item--highlighed': selectedValue.id === topLevelCategory.id
+                }"
+                @click="selectItem(topLevelCategory, true)"
+              >
+                {{ topLevelCategory.name }}
+              </button>
 
-                  <template v-if="item.subCategories.length">
-                    <div class="category-select-field__dropdown-child-amount">
-                      <span>({{ item.subCategories.length }})</span>
-                      <ChevronRightIcon />
-                    </div>
-                  </template>
-                </button>
-              </template>
-            </div>
+              <h3 class="category-select-field__dropdown-subcategories-title">
+                Subcategories
+              </h3>
+            </template>
+
+            <!-- Show list of categories -->
+            <template
+              v-for="item in levelValues"
+              :key="item.id"
+            >
+              <button
+                class="category-select-field__dropdown-item"
+                :class="{
+                  'category-select-field__dropdown-item--highlighed': selectedValue.id === item.id,
+                }"
+                @click="selectItem(item)"
+              >
+                {{ item.name }}
+
+                <template v-if="item.subCategories.length">
+                  <div class="category-select-field__dropdown-child-amount">
+                    <span>({{ item.subCategories.length }})</span>
+                    <ChevronRightIcon />
+                  </div>
+                </template>
+              </button>
+            </template>
           </div>
         </div>
-      </template>
+      </div>
     </FieldLabel>
 
     <FieldError :error-message="errorMessage" />
@@ -123,7 +123,7 @@ export default defineComponent({
     position: { type: String, default: POSITIONS.bottom },
   },
   setup(props, { emit }) {
-    const selectedValue = ref(props.modelValue);
+    const selectedValue = ref(props.modelValue || props.values[0]);
     // not sure why it works only using `as`
     const levelValues = ref(props.values) as Ref<CategoryModel[]>;
 

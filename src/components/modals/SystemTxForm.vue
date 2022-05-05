@@ -89,12 +89,18 @@
         </template>
       </div>
       <div class="system-tx-form__row">
-        <SelectField
+        <!-- <SelectField
           v-model="form.category"
           label="Category"
           :values="categories"
           label-key="name"
           is-value-preselected
+        /> -->
+        <CategorySelectField
+          v-model="form.category"
+          label="Category"
+          :values="categories"
+          label-key="name"
         />
       </div>
       <div class="system-tx-form__row">
@@ -175,6 +181,7 @@ import {
 import { toSystemAmount, fromSystemAmount } from '@/js/helpers';
 import InputField from '@/components/fields/InputField.vue';
 import SelectField from '@/components/fields/SelectField.vue';
+import CategorySelectField from '@/components/fields/CategorySelectField.vue';
 import TextareaField from '@/components/fields/TextareaField.vue';
 import DateField from '@/components/fields/DateField.vue';
 import Button from '@/components/common/Button.vue';
@@ -188,6 +195,7 @@ export default defineComponent({
     DateField,
     InputField,
     SelectField,
+    CategorySelectField,
     TextareaField,
     Button,
   },
