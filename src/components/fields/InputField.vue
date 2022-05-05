@@ -27,18 +27,14 @@
         spellcheck="false"
       >
     </FieldLabel>
-    <div
-      v-if="isSubLabelExist"
-      class="input-fields__sublabel"
-    >
-      <slot name="subLabel" />
-    </div>
-    <p
-      v-if="errorMessage"
-      class="input-field__err-mes"
-    >
-      {{ errorMessage }}
-    </p>
+
+    <template v-if="isSubLabelExist">
+      <div class="input-fields__sublabel">
+        <slot name="subLabel" />
+      </div>
+    </template>
+
+    <FieldError :error-message="errorMessage" />
   </div>
 </template>
 
@@ -47,6 +43,7 @@ import { KEYBOARD_CODES } from 'shared-types';
 import { defineComponent, computed } from 'vue';
 
 import FieldLabel from './components/FieldLabel.vue';
+import FieldError from './components/FieldError.vue';
 
 export const MODEL_EVENTS = {
   input: 'update:modelValue',
@@ -55,6 +52,7 @@ export const MODEL_EVENTS = {
 export default defineComponent({
   components: {
     FieldLabel,
+    FieldError,
   },
   props: {
     label: { type: String, default: undefined },
@@ -135,12 +133,6 @@ export default defineComponent({
   width: 100%;
 
   @include placeholder-custom(rgba(var(--app-on-surface-color-rgb), 0.6));
-}
-.input-field__err-mes {
-  color: var(--app-danger-color);
-  font-size: 14px;
-  margin-top: 4px;
-  margin-left: 8px;
 }
 .input-fields__sublabel {
   position: absolute;

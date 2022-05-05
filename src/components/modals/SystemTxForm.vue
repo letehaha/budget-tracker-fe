@@ -230,8 +230,8 @@ export default defineComponent({
 
     const currentTxType = computed(
       () => transactionTypes.value.find(
-        item => item.type === form.value.type.type,
-      ),
+        item => item.type === form.value.type?.type,
+      ) || transactionTypes.value[0],
     );
 
     watch(

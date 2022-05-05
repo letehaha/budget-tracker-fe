@@ -29,12 +29,8 @@
     >
       <slot name="subLabel" />
     </div>
-    <p
-      v-if="errorMessage"
-      class="date-field__err-mes"
-    >
-      {{ errorMessage }}
-    </p>
+
+    <FieldError :error-message="errorMessage" />
   </div>
 </template>
 
@@ -42,6 +38,7 @@
 import { defineComponent, computed } from 'vue';
 
 import FieldLabel from './components/FieldLabel.vue';
+import FieldError from './components/FieldError.vue';
 
 export const MODEL_EVENTS = {
   input: 'update:modelValue',
@@ -50,6 +47,7 @@ export const MODEL_EVENTS = {
 export default defineComponent({
   components: {
     FieldLabel,
+    FieldError,
   },
   props: {
     label: { type: String, default: undefined },
@@ -113,12 +111,6 @@ export default defineComponent({
       background: url('~@/assets/icons/colored/calendar-white.svg') no-repeat;
     }
 }
-}
-.date-field__err-mes {
-  color: var(--app-danger-color);
-  font-size: 14px;
-  margin-top: 4px;
-  margin-left: 8px;
 }
 .date-fields__sublabel {
   position: absolute;

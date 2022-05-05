@@ -40,12 +40,7 @@
       {{ `${currentLength}/${maxlength}` }}
     </span>
 
-    <p
-      v-if="errorMessage"
-      class="text-field__err-mes"
-    >
-      {{ errorMessage }}
-    </p>
+    <FieldError :error-message="errorMessage" />
   </div>
 </template>
 
@@ -53,6 +48,7 @@
 import { defineComponent } from 'vue';
 
 import FieldLabel from './components/FieldLabel.vue';
+import FieldError from './components/FieldError.vue';
 
 const MODEL_EVENTS = Object.freeze({
   input: 'update:modelValue',
@@ -61,6 +57,7 @@ const MODEL_EVENTS = Object.freeze({
 export default defineComponent({
   components: {
     FieldLabel,
+    FieldError,
   },
   props: {
     label: { type: String, default: undefined },
@@ -127,10 +124,5 @@ export default defineComponent({
   color: var(--app-on-surface-color);
 
   @include placeholder-custom(rgba(var(--app-on-surface-color-rgb), 0.4));
-}
-
-.text-field__err-mes {
-  color: var(--app-danger-color);
-  font-size: 12px;
 }
 </style>
