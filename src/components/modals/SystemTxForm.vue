@@ -136,7 +136,7 @@
         :disabled="isLoading"
         @click="submit"
       >
-        {{ transaction ? 'Edit' : 'Submit' }}
+        {{ isLoading ? 'Loading...' : transaction ? 'Edit' : 'Submit' }}
       </Button>
     </div>
   </div>
@@ -289,6 +289,8 @@ export default defineComponent({
         } else {
           await createTransaction(params);
         }
+
+        emit(EVENTS.closeModal);
       } catch (e) {
         // eslint-disable-next-line no-console
         console.error(e);
