@@ -119,7 +119,7 @@ export default defineComponent({
     color: #e74c3c;
   }
   .transaction--transfer & {
-    color: #34495e;
+    color: var(--app-on-surface-color);
   }
 }
 </style>
