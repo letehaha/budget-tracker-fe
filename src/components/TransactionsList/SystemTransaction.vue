@@ -2,9 +2,9 @@
   <div
     class="transaction"
     :class="{
-      'transaction--income': tx.type === TRANSACTION_TYPES.income,
-      'transaction--expense': tx.type === TRANSACTION_TYPES.expense,
-      'transaction--transfer': tx.type === TRANSACTION_TYPES.transfer,
+      'transaction--income': tx.transactionType === TRANSACTION_TYPES.income,
+      'transaction--expense': tx.transactionType === TRANSACTION_TYPES.expense,
+      'transaction--transfer': tx.transactionType === TRANSACTION_TYPES.transfer,
     }"
     @click="editTransaction"
   >
@@ -18,7 +18,7 @@
     </div>
     <div class="transaction__right">
       <div class="transaction__amount">
-        {{ formatAmount(tx.amount) }}
+        {{ formattedAmount }}
         <!-- {{ tx.account.currency.asset }} -->
       </div>
       <div class="transaction__time">
@@ -60,11 +60,22 @@ export default defineComponent({
       });
     };
 
+    const formattedAmount = computed(() => {
+      let amount = props.tx.amount;
+
+      if (props.tx.transactionType === TRANSACTION_TYPES.expense) {
+        amount *= -1;
+      }
+
+      return formatAmount(amount);
+    });
+
     return {
       TRANSACTION_TYPES,
       category,
       formatAmount,
       formateDate,
+      formattedAmount,
       editTransaction,
     };
   },
