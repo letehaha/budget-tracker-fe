@@ -266,6 +266,7 @@ export default defineComponent({
           paymentType,
           accountId,
           categoryId,
+          currencyId: 1,
         };
 
         if (props.transaction) {

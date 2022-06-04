@@ -50,6 +50,7 @@ export const createTransaction = async ({
   paymentType,
   accountId,
   categoryId,
+  currencyId,
 }: {
   amount: number;
   note?: string;
@@ -58,6 +59,7 @@ export const createTransaction = async ({
   paymentType: PAYMENT_TYPES;
   accountId: number;
   categoryId: number;
+  currencyId: number;
 }): Promise<void> => {
   try {
     await api.post('/transactions', {
@@ -68,6 +70,7 @@ export const createTransaction = async ({
       paymentType,
       accountId,
       categoryId,
+      currencyId,
     });
   } catch (e) {
     throw new Error(e);
@@ -83,6 +86,7 @@ export const editTransaction = async ({
   paymentType,
   accountId,
   categoryId,
+  currencyId,
 }: {
   txId: number;
   amount: number;
@@ -92,6 +96,7 @@ export const editTransaction = async ({
   paymentType: PAYMENT_TYPES;
   accountId: number;
   categoryId: number;
+  currencyId?: number;
 }): Promise<void> => {
   try {
     await api.put(`/transactions/${txId}`, {
@@ -102,6 +107,7 @@ export const editTransaction = async ({
       paymentType,
       accountId,
       categoryId,
+      currencyId,
     });
   } catch (e) {
     throw new Error(e);
