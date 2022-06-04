@@ -2,9 +2,9 @@
   <div
     class="system-tx-form"
     :class="{
-      'system-tx-form--income': currentTxType.type === TRANSACTIONS_TYPES.income,
-      'system-tx-form--expense': currentTxType.type === TRANSACTIONS_TYPES.expense,
-      'system-tx-form--transfer': currentTxType.type === TRANSACTIONS_TYPES.transfer,
+      'system-tx-form--income': currentTxType === TRANSACTION_TYPES.income,
+      'system-tx-form--expense': currentTxType === TRANSACTION_TYPES.expense,
+      'system-tx-form--transfer': currentTxType === TRANSACTION_TYPES.transfer,
     }"
   >
     <div class="system-tx-form__header">
@@ -25,25 +25,25 @@
         <div
           class="system-tx-form__type-selector-item"
           :class="{
-            'system-tx-form__type-selector-item--active': currentTxType.type === TRANSACTIONS_TYPES.expense,
+            'system-tx-form__type-selector-item--active': currentTxType === TRANSACTION_TYPES.expense,
           }"
-          @click="selectTransactionType(TRANSACTIONS_TYPES.expense)"
+          @click="selectTransactionType(TRANSACTION_TYPES.expense)"
         >
           Expense
         </div>
         <div
           class="system-tx-form__type-selector-item"
           :class="{
-            'system-tx-form__type-selector-item--active': currentTxType.type === TRANSACTIONS_TYPES.income,
+            'system-tx-form__type-selector-item--active': currentTxType === TRANSACTION_TYPES.income,
           }"
-          @click="selectTransactionType(TRANSACTIONS_TYPES.income)"
+          @click="selectTransactionType(TRANSACTION_TYPES.income)"
         >
           Income
         </div>
         <div
           class="system-tx-form__type-selector-item"
           :class="{
-            'system-tx-form__type-selector-item--active': currentTxType.type === TRANSACTIONS_TYPES.transfer,
+            'system-tx-form__type-selector-item--active': currentTxType === TRANSACTION_TYPES.transfer,
           }"
           disabled
         >
@@ -106,7 +106,7 @@
         <SelectField
           v-model="form.paymentType"
           label="Payment Type"
-          :values="paymentTypes"
+          :values="PAYMENT_TYPES"
           label-key="name"
           is-value-preselected
         />
@@ -142,7 +142,7 @@
 </template>
 
 <script lang="ts">
-import { TRANSACTIONS_TYPES } from 'shared-types';
+import { TRANSACTION_TYPES, PAYMENT_TYPES } from 'shared-types';
 import {
   defineComponent,
   ref,
@@ -152,8 +152,6 @@ import {
 import { storeToRefs } from 'pinia';
 import { useRouter } from 'vue-router';
 import {
-  usePaymentTypesStore,
-  useTransactionTypesStore,
   useAccountsStore,
   useCategoriesStore,
 } from '@/stores';
@@ -166,10 +164,8 @@ import {
 
 import {
   AccountRecord,
-  TransactionTypeRecord,
   TransactionRecord,
   CategoryRecord,
-  PaymentTypeRecord,
 } from '@/js/records';
 import { toSystemAmount, fromSystemAmount } from '@/js/helpers';
 import InputField from '@/components/fields/InputField.vue';
@@ -200,14 +196,10 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const router = useRouter();
-    const store = usePaymentTypesStore();
-    const transactionTypesStore = useTransactionTypesStore();
     const accountsStore = useAccountsStore();
     const categoriesStore = useCategoriesStore();
 
-    const { paymentTypes } = storeToRefs(store);
     const { accounts } = storeToRefs(accountsStore);
-    const { transactionTypes } = storeToRefs(transactionTypesStore);
     const { categories, rawCategories } = storeToRefs(categoriesStore);
 
     const form = ref<{
@@ -215,25 +207,21 @@ export default defineComponent({
       account: AccountRecord;
       category: CategoryRecord;
       time: string;
-      paymentType: PaymentTypeRecord;
+      paymentType: PAYMENT_TYPES;
       note?: string;
-      type: TransactionTypeRecord;
+      type: TRANSACTION_TYPES;
     }>({
       amount: null,
       account: null,
       category: categories.value[0],
       time: null,
-      paymentType: null,
+      paymentType: PAYMENT_TYPES.creditCard,
       note: null,
-      type: null,
+      type: TRANSACTION_TYPES.expense,
     });
     const isLoading = ref(false);
 
-    const currentTxType = computed(
-      () => transactionTypes.value.find(
-        item => item.type === form.value.type?.type,
-      ) || transactionTypes.value[0],
-    );
+    const currentTxType = computed(() => form.value.type);
 
     watch(
       () => props.transaction,
@@ -242,12 +230,10 @@ export default defineComponent({
           form.value = {
             amount: fromSystemAmount(value.amount),
             account: accounts.value.find(i => i.id === value.accountId),
-            type: transactionTypes.value
-              .find(i => i.id === value.transactionTypeId),
+            type: value.transactionType,
             category: rawCategories.value.find(i => i.id === value.categoryId),
             time: new Date(value.time).toISOString().substring(0, 19),
-            paymentType: paymentTypes.value
-              .find(i => i.id === value.paymentTypeId),
+            paymentType: value.paymentType,
             note: value.note,
           };
         }
@@ -266,8 +252,8 @@ export default defineComponent({
           amount,
           note,
           time,
-          type: { id: transactionTypeId },
-          paymentType: { id: paymentTypeId },
+          type: transactionType,
+          paymentType,
           account: { id: accountId },
           category: { id: categoryId },
         } = form.value;
@@ -276,8 +262,8 @@ export default defineComponent({
           amount: toSystemAmount(Number(amount)),
           note,
           time: new Date(time).toISOString(),
-          transactionTypeId,
-          paymentTypeId,
+          transactionType,
+          paymentType,
           accountId,
           categoryId,
         };
@@ -319,22 +305,21 @@ export default defineComponent({
       emit(EVENTS.closeModal);
     };
 
-    const selectTransactionType = (type: TRANSACTIONS_TYPES) => {
-      form.value.type = transactionTypes.value.find(item => item.type === type);
+    const selectTransactionType = (type: TRANSACTION_TYPES) => {
+      form.value.type = type;
     };
 
     return {
-      TRANSACTIONS_TYPES,
+      TRANSACTION_TYPES,
+      PAYMENT_TYPES,
       EVENTS,
       form,
       isLoading,
       accounts,
       closeModal,
       categories,
-      paymentTypes,
       currentTxType,
       selectTransactionType,
-      transactionTypes,
       createTransaction,
       editTransaction,
       deleteTransaction,

@@ -58,7 +58,7 @@ export default defineComponent({
       if (account instanceof AccountRecord) {
         query = { id: account.id, type: ACCOUNT_TYPES.system };
       } else if (account instanceof MONOAccountRecord) {
-        query = { id: account.accountId, type: ACCOUNT_TYPES.mono };
+        query = { id: account.accountId, type: ACCOUNT_TYPES.monobank };
       }
 
       router.push({ name: 'account', query });

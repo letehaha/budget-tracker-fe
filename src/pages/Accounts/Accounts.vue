@@ -72,7 +72,7 @@
           <router-link
             :to="{
               name: 'account',
-              query: { id: account.accountId, type: ACCOUNT_TYPES.mono },
+              query: { id: account.accountId, type: ACCOUNT_TYPES.monobank },
             }"
             class="accounts__item"
             :class="{ 'accounts__item--disabled': !account.isEnabled }"

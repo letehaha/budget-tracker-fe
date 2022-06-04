@@ -2,9 +2,9 @@
   <div
     class="transaction"
     :class="{
-      'transaction--income': txType.type === TRANSACTIONS_TYPES.income,
-      'transaction--expense': txType.type === TRANSACTIONS_TYPES.expense,
-      'transaction--transfer': txType.type === TRANSACTIONS_TYPES.transfer,
+      'transaction--income': tx.type === TRANSACTION_TYPES.income,
+      'transaction--expense': tx.type === TRANSACTION_TYPES.expense,
+      'transaction--transfer': tx.type === TRANSACTION_TYPES.transfer,
     }"
     @click="editTransaction"
   >
@@ -31,9 +31,9 @@
 <script lang="ts">
 import { format } from 'date-fns';
 import { defineComponent, computed } from 'vue';
-import { TRANSACTIONS_TYPES } from 'shared-types';
+import { TRANSACTION_TYPES } from 'shared-types';
 
-import { useTransactionTypesStore, useCategoriesStore } from '@/stores';
+import { useCategoriesStore } from '@/stores';
 
 import { formatAmount } from '@/js/helpers';
 
@@ -44,13 +44,8 @@ export default defineComponent({
     tx: { type: Object, required: true },
   },
   setup(props) {
-    const { getTransactionTypeById } = useTransactionTypesStore();
     const { getCategoryTypeById } = useCategoriesStore();
     const { addModal } = useModalCenter();
-
-    const txType = computed(
-      () => getTransactionTypeById(props.tx.transactionTypeId),
-    );
 
     const category = computed(
       () => getCategoryTypeById(props.tx.categoryId),
@@ -66,8 +61,7 @@ export default defineComponent({
     };
 
     return {
-      TRANSACTIONS_TYPES,
-      txType,
+      TRANSACTION_TYPES,
       category,
       formatAmount,
       formateDate,

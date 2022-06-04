@@ -1,7 +1,7 @@
 <template>
   <div
     class="transaction"
-    :class="`transaction--${txType.name.toLowerCase()}`"
+    :class="`transaction--${tx.transactionType}`"
     @click="editTransaction"
   >
     <div class="transaction__info">
@@ -27,7 +27,7 @@
 <script lang="ts">
 import { format } from 'date-fns';
 import { defineComponent, computed } from 'vue';
-import { useTransactionTypesStore, useCategoriesStore } from '@/stores';
+import { useCategoriesStore } from '@/stores';
 import { MODAL_TYPES, useModalCenter } from '@/components/modal-center/index';
 
 export default defineComponent({
@@ -35,14 +35,8 @@ export default defineComponent({
     tx: { type: Object, required: true },
   },
   setup(props) {
-    const { getTransactionTypeById } = useTransactionTypesStore();
     const { getCategoryTypeById } = useCategoriesStore();
     const { addModal } = useModalCenter();
-
-    const txType = computed(
-      () => getTransactionTypeById(props.tx.transactionTypeId),
-    );
-
     const category = computed(
       () => getCategoryTypeById(props.tx.categoryId),
     );
@@ -57,7 +51,6 @@ export default defineComponent({
     };
 
     return {
-      txType,
       category,
       formateDate,
       editTransaction,

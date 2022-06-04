@@ -1,6 +1,6 @@
 <template>
   <div class="account">
-    <template v-if="accountType === ACCOUNT_TYPES.mono">
+    <template v-if="accountType === ACCOUNT_TYPES.monobank">
       <MonobankAccount />
     </template>
     <template v-else-if="accountType === ACCOUNT_TYPES.system">

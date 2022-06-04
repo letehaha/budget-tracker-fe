@@ -1,10 +1,12 @@
+import { TRANSACTION_TYPES, PAYMENT_TYPES } from 'shared-types';
+
 interface Record {
   id?: number;
   amount?: number;
   accountId?: number;
   categoryId?: number;
-  paymentTypeId?: number;
-  transactionTypeId?: number;
+  paymentType?: PAYMENT_TYPES;
+  transactionType?: TRANSACTION_TYPES;
   userId?: number;
   time?: Date;
   note?: string;
@@ -21,9 +23,9 @@ export class TransactionRecord {
 
   categoryId: number;
 
-  paymentTypeId: number;
+  paymentType: PAYMENT_TYPES;
 
-  transactionTypeId: number;
+  transactionType: TRANSACTION_TYPES;
 
   userId: number;
 
@@ -38,8 +40,8 @@ export class TransactionRecord {
     this.amount = record.amount;
     this.accountId = record.accountId;
     this.categoryId = record.categoryId;
-    this.paymentTypeId = record.paymentTypeId;
-    this.transactionTypeId = record.transactionTypeId;
+    this.paymentType = record.paymentType;
+    this.transactionType = record.transactionType;
     this.userId = record.userId;
     this.time = record.time;
     this.note = record.note;

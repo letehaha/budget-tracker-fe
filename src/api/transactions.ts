@@ -1,3 +1,4 @@
+import { TRANSACTION_TYPES, PAYMENT_TYPES, ACCOUNT_TYPES } from 'shared-types';
 import { api } from '@/api';
 import { TRANSACTION_TYPES as TYPES } from '@/js/const';
 import {
@@ -21,13 +22,13 @@ export const loadTransactions = async (
     const resultTxs: TransactionModelRecord[] = [];
 
     result.forEach(item => {
-      if (item.transactionEntityId === TYPES.system) {
+      if (item.accountType === ACCOUNT_TYPES.system) {
         resultTxs.push(new TransactionModelRecord(
           TYPES.system,
           new TransactionRecord(item),
         ));
       }
-      if (item.transactionEntityId === TYPES.monobank) {
+      if (item.accountType === ACCOUNT_TYPES.monobank) {
         resultTxs.push(new TransactionModelRecord(
           TYPES.monobank,
           new MONOTransactionRecord(item),
@@ -45,16 +46,16 @@ export const createTransaction = async ({
   amount,
   note = '',
   time,
-  transactionTypeId,
-  paymentTypeId,
+  transactionType,
+  paymentType,
   accountId,
   categoryId,
 }: {
   amount: number;
   note?: string;
   time: string;
-  transactionTypeId: number;
-  paymentTypeId: number;
+  transactionType: TRANSACTION_TYPES;
+  paymentType: PAYMENT_TYPES;
   accountId: number;
   categoryId: number;
 }): Promise<void> => {
@@ -63,8 +64,8 @@ export const createTransaction = async ({
       amount,
       note,
       time,
-      transactionTypeId,
-      paymentTypeId,
+      transactionType,
+      paymentType,
       accountId,
       categoryId,
     });
@@ -78,8 +79,8 @@ export const editTransaction = async ({
   amount,
   note = '',
   time,
-  transactionTypeId,
-  paymentTypeId,
+  transactionType,
+  paymentType,
   accountId,
   categoryId,
 }: {
@@ -87,8 +88,8 @@ export const editTransaction = async ({
   amount: number;
   note?: string;
   time: string;
-  transactionTypeId: number;
-  paymentTypeId: number;
+  transactionType: TRANSACTION_TYPES;
+  paymentType: PAYMENT_TYPES;
   accountId: number;
   categoryId: number;
 }): Promise<void> => {
@@ -97,8 +98,8 @@ export const editTransaction = async ({
       amount,
       note,
       time,
-      transactionTypeId,
-      paymentTypeId,
+      transactionType,
+      paymentType,
       accountId,
       categoryId,
     });
