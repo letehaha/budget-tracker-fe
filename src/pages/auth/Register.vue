@@ -57,6 +57,7 @@ export default defineComponent({
     InputField,
   },
   setup() {
+    const router = useRouter();
     const form = reactive({
       username: '',
       password: '',
@@ -72,7 +73,7 @@ export default defineComponent({
 
       await useAuthStore().signup({ password, username });
 
-      useRouter().push({ name: 'dashboard' });
+      router.push({ name: 'dashboard' });
 
       isFormLoading.value = false;
     };
