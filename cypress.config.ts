@@ -1,9 +1,12 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
+import 'dotenv/config';
 import { defineConfig } from 'cypress';
 
 export default defineConfig({
   e2e: {
-    baseUrl: 'http://budget-tracker.com:8100',
+    baseUrl: process.env.BASE_URL,
+
+    specPattern: 'cypress/e2e/**/*.cy.{js,jsx,ts,tsx}',
+
     viewportWidth: 1280,
     viewportHeight: 970,
     videoUploadOnPasses: false,
