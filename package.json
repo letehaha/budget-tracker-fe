@@ -11,7 +11,9 @@
     "docker-compose": "npm run docker-build && npm run docker-push",
     "start": "npm run dev",
     "test": "jest --passWithNoTests --config ./jest.config.js",
-    "storybook": "start-storybook -p 6006"
+    "storybook": "start-storybook -p 6006",
+    "test:e2e": "cypress run",
+    "test:e2e:interact": "cypress open"
   },
   "dependencies": {
     "@vuelidate/core": "2.0.0-alpha.28",
@@ -53,6 +55,7 @@
     "babel-jest": "^27.4.6",
     "babel-loader": "^8.2.3",
     "css-loader": "^4.3.0",
+    "cypress": "^10.0.2",
     "eslint": "^6.8.0",
     "eslint-friendly-formatter": "^4.0.1",
     "eslint-import-resolver-alias": "^1.1.2",
