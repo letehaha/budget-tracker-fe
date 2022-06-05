@@ -13,6 +13,7 @@
       >
         <InputField
           v-model="form.username"
+          name="username"
           label="Your username"
           placeholder="ie. johnsnow"
           class="login__field"
