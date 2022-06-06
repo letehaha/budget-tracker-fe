@@ -1,17 +1,15 @@
 <template>
   <div
     :class="{
-      'select-field--disabled': $attrs.disabled,
+      'select-field--disabled': disabled,
       'select-field--active': isDropdownOpened
     }"
     class="select-field"
   >
-    <span
-      v-if="label"
-      class="select-field__label"
-    >
-      {{ label }}
-    </span>
+    <template v-if="label">
+      <FieldLabel :label="label" />
+    </template>
+
     <div
       v-click-outside="closeDropdown"
       class="select-field__wrapper"
@@ -57,6 +55,7 @@
 import { defineComponent } from 'vue';
 
 import FieldError from './components/FieldError.vue';
+import FieldLabel from './components/FieldLabel.vue';
 
 const MODEL_EVENTS = {
   input: 'update:modelValue',
@@ -70,6 +69,7 @@ export const POSITIONS = Object.freeze({
 export default defineComponent({
   components: {
     FieldError,
+    FieldLabel,
   },
   props: {
     label: { type: String, default: undefined },
@@ -78,6 +78,7 @@ export default defineComponent({
     labelKey: { type: String, default: undefined },
     placeholder: { type: String, default: undefined },
     withSearchField: { type: Boolean, default: false },
+    disabled: { type: Boolean, default: false },
     errorMessage: { type: String, default: undefined },
     position: { type: String, default: POSITIONS.bottom },
     isValuePreselected: { type: Boolean, default: false },
@@ -112,31 +113,43 @@ export default defineComponent({
       return this.values;
     },
   },
-  mounted() {
-    if (this.modelValue) {
-      if (typeof this.values[0] === 'object' && this.values[0] !== null) {
-        this.selectedValue = this.labelKey
-          ? this.modelValue[this.labelKey]
-          : this.modelValue.label;
-      } else {
-        this.selectedValue = this.modelValue;
-      }
-    } else if (this.isValuePreselected) {
-      this.selectItem(0);
-    }
+  watch: {
+    modelValue: {
+      deep: true,
+      immediate: true,
+      handler(value) {
+        if (value) {
+          if (typeof this.values[0] === 'object' && this.values[0] !== null) {
+            this.selectedValue = this.labelKey
+              ? value[this.labelKey]
+              : value.label;
+          } else {
+            this.selectedValue = value;
+          }
+        } else if (value === null) {
+          this.selectedValue = null;
+        } else if (value === undefined && this.isValuePreselected) {
+          this.selectItem(0);
+        }
+      },
+    },
   },
   methods: {
     toggleDropdown() {
-      this.isDropdownOpened = !this.isDropdownOpened;
+      if (!this.disabled) {
+        this.isDropdownOpened = !this.isDropdownOpened;
+      }
     },
     closeDropdown() {
       this.isDropdownOpened = false;
     },
     selectItem(index) {
-      this.selectedValue = this.labels[index];
-      this.filterQuery = '';
-      this.$emit(MODEL_EVENTS.input, this.values[index]);
-      this.closeDropdown();
+      if (!this.disabled) {
+        this.selectedValue = this.labels[index];
+        this.filterQuery = '';
+        this.$emit(MODEL_EVENTS.input, this.values[index]);
+        this.closeDropdown();
+      }
     },
     filterLabels(event) {
       const { value } = event.target;
@@ -165,15 +178,11 @@ export default defineComponent({
   outline: none;
   width: 100%;
   cursor: pointer;
-}
 
-.select-field__label {
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 1;
-  color: var(--app-on-surface-color);
-  margin-bottom: 10px;
-  display: block;
+  .select-field--disabled & {
+    opacity: 0.3;
+    cursor: initial;
+  }
 }
 
 .select-field__wrapper {
