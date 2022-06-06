@@ -51,6 +51,10 @@ export const createTransaction = async ({
   accountId,
   categoryId,
   currencyId,
+  fromAccountId,
+  fromAccountType,
+  toAccountId,
+  toAccountType,
 }: {
   amount: number;
   note?: string;
@@ -60,6 +64,10 @@ export const createTransaction = async ({
   accountId: number;
   categoryId: number;
   currencyId: number;
+  fromAccountId?: number;
+  fromAccountType?: ACCOUNT_TYPES;
+  toAccountId?: number;
+  toAccountType?: ACCOUNT_TYPES;
 }): Promise<void> => {
   try {
     await api.post('/transactions', {
@@ -71,6 +79,10 @@ export const createTransaction = async ({
       accountId,
       categoryId,
       currencyId,
+      fromAccountId,
+      fromAccountType,
+      toAccountId,
+      toAccountType,
     });
   } catch (e) {
     throw new Error(e);
