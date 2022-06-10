@@ -5,6 +5,7 @@ import { AccountRecord } from '@/js/records';
 
 export const useAccountsStore = defineStore('system-accounts', () => {
   const accounts = ref<AccountRecord[]>([]);
+  const accountsRecord = ref<Record<number, AccountRecord>>({});
 
   const getAccountById: WritableComputedRef<
     (id: number) => AccountRecord
@@ -16,7 +17,12 @@ export const useAccountsStore = defineStore('system-accounts', () => {
     try {
       const result = await api.get('/accounts');
 
-      accounts.value = result.map(i => new AccountRecord(i));
+      for (const acc of result) {
+        const formatted = new AccountRecord(acc);
+
+        accounts.value.push(formatted);
+        accountsRecord.value[formatted.id] = formatted;
+      }
     } catch (e) {
       // eslint-disable-next-line no-console
       console.log(e);
@@ -45,7 +51,9 @@ export const useAccountsStore = defineStore('system-accounts', () => {
         creditLimit,
       });
 
-      accounts.value.push(new AccountRecord(result));
+      const formatted = new AccountRecord(result);
+      accounts.value.push(formatted);
+      accountsRecord.value[formatted.id] = formatted;
     } catch (e) {
       // eslint-disable-next-line no-console
       console.log(e);
@@ -76,12 +84,15 @@ export const useAccountsStore = defineStore('system-accounts', () => {
         creditLimit,
       });
 
+      const temp = new AccountRecord(result);
+
       accounts.value = accounts.value.map(item => {
         if (item.id === id) {
-          return new AccountRecord(result);
+          return temp;
         }
         return item;
       });
+      accounts.value[id] = temp;
     } catch (e) {
       // eslint-disable-next-line no-console
       console.log(e);
@@ -93,6 +104,7 @@ export const useAccountsStore = defineStore('system-accounts', () => {
       await api.delete(`/accounts/${id}`);
 
       accounts.value = accounts.value.filter(item => item.id !== id);
+      delete accountsRecord.value[id];
     } catch (e) {
       // eslint-disable-next-line no-console
       console.log(e);
@@ -101,6 +113,7 @@ export const useAccountsStore = defineStore('system-accounts', () => {
 
   return {
     accounts,
+    accountsRecord,
 
     getAccountById,
 

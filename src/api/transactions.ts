@@ -42,6 +42,15 @@ export const loadTransactions = async (
   }
 };
 
+export const loadTransactionById = async (
+  { id }: { id: number },
+): Promise<TransactionRecord> => {
+  let result = await api.get(`/transactions/${id}`);
+  result = new TransactionRecord(result);
+
+  return result;
+};
+
 export const createTransaction = async ({
   amount,
   note = '',
@@ -62,7 +71,7 @@ export const createTransaction = async ({
   transactionType: TRANSACTION_TYPES;
   paymentType: PAYMENT_TYPES;
   accountId: number;
-  categoryId: number;
+  categoryId?: number;
   currencyId: number;
   fromAccountId?: number;
   fromAccountType?: ACCOUNT_TYPES;
@@ -107,7 +116,7 @@ export const editTransaction = async ({
   transactionType: TRANSACTION_TYPES;
   paymentType: PAYMENT_TYPES;
   accountId: number;
-  categoryId: number;
+  categoryId?: number;
   currencyId?: number;
 }): Promise<void> => {
   try {

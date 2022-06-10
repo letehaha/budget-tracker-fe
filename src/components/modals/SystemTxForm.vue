@@ -73,14 +73,14 @@
           placeholder="Amount"
         />
       </div>
-      <template v-if="accounts.length">
+      <template v-if="accountsArray.length">
         <template v-if="isTransferTx">
           <div class="system-tx-form__row">
             <SelectField
               v-model="form.account"
               label="From account"
               placeholder="Select account"
-              :values="accounts"
+              :values="accountsArray"
               label-key="name"
               is-value-preselected
               :disabled="!isFormCreation"
@@ -166,6 +166,7 @@
       <Button
         v-if="transaction"
         class="system-tx-form__action"
+        :disabled="currentTxType === TRANSACTION_TYPES.transfer"
         @click="deleteTransactionHandler"
       >
         Delete
@@ -175,7 +176,10 @@
           system-tx-form__action
           system-tx-form__action--submit
         "
-        :disabled="isLoading"
+        :disabled="
+          (transaction && currentTxType === TRANSACTION_TYPES.transfer)
+            || isLoading
+        "
         @click="submit"
       >
         {{ isLoading ? 'Loading...' : transaction ? 'Edit' : 'Submit' }}
@@ -242,7 +246,7 @@ export default defineComponent({
     const accountsStore = useAccountsStore();
     const categoriesStore = useCategoriesStore();
 
-    const { accounts } = storeToRefs(accountsStore);
+    const { accountsRecord } = storeToRefs(accountsStore);
     const { categories, rawCategories } = storeToRefs(categoriesStore);
 
     const isFormCreation = computed(() => !props.transaction);
@@ -272,10 +276,16 @@ export default defineComponent({
     const isTransferTx = computed(
       () => currentTxType.value === TRANSACTION_TYPES.transfer,
     );
+    const isExpenseTx = computed(
+      () => currentTxType.value === TRANSACTION_TYPES.expense,
+    );
 
-    const filteredAccounts = computed(() => accounts.value.filter(
-      (item) => item.id !== form.value.account?.id,
-    ));
+    const accountsArray = computed(() => Object.values(accountsRecord.value));
+    const filteredAccounts = computed(
+      () => accountsArray.value.filter(
+        (item) => item.id !== form.value.account?.id,
+      ),
+    );
 
     watch(
       () => props.transaction,
@@ -283,8 +293,8 @@ export default defineComponent({
         if (value) {
           form.value = {
             amount: fromSystemAmount(value.amount),
-            account: accounts.value.find(i => i.id === value.accountId),
-            toAccount: null,
+            account: accountsRecord.value[value.accountId],
+            toAccount: accountsRecord.value[value.toAccountId],
             type: value.transactionType,
             category: rawCategories.value.find(i => i.id === value.categoryId),
             time: new Date(value.time).toISOString().substring(0, 19),
@@ -324,8 +334,8 @@ export default defineComponent({
           type: transactionType,
           paymentType,
           account: { id: accountId },
-          toAccount: { id: toAccountId },
-          category: { id: categoryId },
+          toAccount,
+          category,
         } = form.value;
 
         const params: {
@@ -335,7 +345,7 @@ export default defineComponent({
           transactionType: TRANSACTION_TYPES;
           paymentType: PAYMENT_TYPES;
           accountId: number;
-          categoryId: number;
+          categoryId?: number;
           currencyId: number;
 
           fromAccountId?: number;
@@ -349,7 +359,6 @@ export default defineComponent({
           transactionType,
           paymentType,
           accountId,
-          categoryId,
           currencyId: 1,
         };
 
@@ -357,8 +366,14 @@ export default defineComponent({
           if (isTransferTx.value) {
             params.fromAccountId = accountId;
             params.fromAccountType = ACCOUNT_TYPES.system;
-            params.toAccountId = toAccountId;
+            params.toAccountId = toAccount.id;
             params.toAccountType = ACCOUNT_TYPES.system;
+          } else {
+            params.categoryId = category.id;
+          }
+
+          if (isExpenseTx.value) {
+            params.amount *= -1;
           }
 
           await createTransaction(params);
@@ -432,7 +447,7 @@ export default defineComponent({
       isTransferSwitchDisabled,
       isTransferTx,
       isLoading,
-      accounts,
+      accountsArray,
       closeModal,
       categories,
       currentTxType,

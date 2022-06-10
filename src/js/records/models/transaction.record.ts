@@ -1,4 +1,4 @@
-import { TRANSACTION_TYPES, PAYMENT_TYPES } from 'shared-types';
+import { ACCOUNT_TYPES, TRANSACTION_TYPES, PAYMENT_TYPES } from 'shared-types';
 
 interface Record {
   id?: number;
@@ -10,6 +10,12 @@ interface Record {
   userId?: number;
   time?: Date;
   note?: string;
+  currencyId?: number;
+  fromAccountId?: number;
+  fromAccountType?: ACCOUNT_TYPES;
+  toAccountId?: number;
+  toAccountType?: ACCOUNT_TYPES;
+  oppositeId?: number;
 }
 
 export class TransactionRecord {
@@ -33,6 +39,18 @@ export class TransactionRecord {
 
   note: string;
 
+  fromAccountId?: number;
+
+  fromAccountType?: ACCOUNT_TYPES;
+
+  toAccountId?: number;
+
+  toAccountType?: ACCOUNT_TYPES;
+
+  oppositeId?: number;
+
+  currencyId: number;
+
   constructor(record: Record = {}) {
     this._record = record;
 
@@ -45,5 +63,11 @@ export class TransactionRecord {
     this.userId = record.userId;
     this.time = record.time;
     this.note = record.note;
+    this.fromAccountId = record.fromAccountId;
+    this.fromAccountType = record.fromAccountType;
+    this.toAccountId = record.toAccountId;
+    this.toAccountType = record.toAccountType;
+    this.oppositeId = record.oppositeId;
+    this.currencyId = record.currencyId;
   }
 }

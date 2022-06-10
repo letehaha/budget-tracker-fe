@@ -2,18 +2,29 @@
   <div
     class="transaction"
     :class="{
-      'transaction--income': tx.transactionType === TRANSACTION_TYPES.income,
-      'transaction--expense': tx.transactionType === TRANSACTION_TYPES.expense,
-      'transaction--transfer': tx.transactionType === TRANSACTION_TYPES.transfer,
+      'transaction--income': transaction.transactionType === TRANSACTION_TYPES.income,
+      'transaction--expense': transaction.transactionType === TRANSACTION_TYPES.expense,
+      'transaction--transfer': transaction.transactionType === TRANSACTION_TYPES.transfer,
     }"
     @click="editTransaction"
   >
     <div class="transaction__info">
-      <div class="transaction__category">
-        {{ category.name }}
-      </div>
+      <template
+        v-if="transaction.transactionType === TRANSACTION_TYPES.transfer"
+      >
+        <div class="transaction__category">
+          {{ accountMovement }}
+        </div>
+      </template>
+      <template v-else>
+        <template v-if="category">
+          <div class="transaction__category">
+            {{ category.name }}
+          </div>
+        </template>
+      </template>
       <div class="transaction__note">
-        {{ tx.note }}
+        {{ transaction.note }}
       </div>
     </div>
     <div class="transaction__right">
@@ -22,7 +33,7 @@
         <!-- {{ tx.account.currency.asset }} -->
       </div>
       <div class="transaction__time">
-        {{ formateDate(tx.time) }}
+        {{ formateDate(transaction.time) }}
       </div>
     </div>
   </div>
@@ -30,40 +41,79 @@
 
 <script lang="ts">
 import { format } from 'date-fns';
-import { defineComponent, computed } from 'vue';
+import {
+  defineComponent, computed, reactive, PropType,
+} from 'vue';
+import { storeToRefs } from 'pinia';
 import { TRANSACTION_TYPES } from 'shared-types';
 
-import { useCategoriesStore } from '@/stores';
+import { useCategoriesStore, useAccountsStore } from '@/stores';
+import { loadTransactionById } from '@/api/transactions';
 
 import { formatAmount } from '@/js/helpers';
+import { TransactionRecord } from '@/js/records';
 
 import { MODAL_TYPES, useModalCenter } from '@/components/modal-center/index';
 
+import {
+  useNotificationCenter,
+  NotificationType,
+} from '@/components/notification-center';
+
 export default defineComponent({
   props: {
-    tx: { type: Object, required: true },
+    tx: { type: Object as PropType<TransactionRecord>, required: true },
   },
   setup(props) {
     const { getCategoryTypeById } = useCategoriesStore();
+    const accountsStore = useAccountsStore();
     const { addModal } = useModalCenter();
+    const { accountsRecord } = storeToRefs(accountsStore);
+    const { addNotification } = useNotificationCenter();
+
+    const transaction = reactive(props.tx);
 
     const category = computed(
-      () => getCategoryTypeById(props.tx.categoryId),
+      () => getCategoryTypeById(transaction.categoryId),
+    );
+    const accountFrom = computed(
+      () => accountsRecord.value[transaction.fromAccountId],
+    );
+    const accountTo = computed(
+      () => accountsRecord.value[transaction.toAccountId],
+    );
+
+    const accountMovement = computed(
+      () => `${accountFrom.value.name} => ${accountTo.value.name}`,
     );
 
     const formateDate = date => format(new Date(date), 'd MMMM y');
 
-    const editTransaction = () => {
+    const editTransaction = async () => {
+      let txToEdit = transaction;
+
+      if (txToEdit.accountId === txToEdit.toAccountId) {
+        try {
+          txToEdit = await loadTransactionById({ id: txToEdit.oppositeId });
+        } catch (e) {
+          // TODO: add logger
+          addNotification({
+            text: 'Cannot load transaction to edit.',
+            type: NotificationType.error,
+          });
+        }
+      }
+
       addModal({
         type: MODAL_TYPES.systemTxForm,
-        data: { transaction: props.tx },
+        data: { transaction: txToEdit },
       });
     };
 
     const formattedAmount = computed(() => {
-      let amount = props.tx.amount;
+      let amount = transaction.amount;
 
-      if (props.tx.transactionType === TRANSACTION_TYPES.expense) {
+      if (transaction.transactionType === TRANSACTION_TYPES.expense) {
         amount *= -1;
       }
 
@@ -77,6 +127,10 @@ export default defineComponent({
       formateDate,
       formattedAmount,
       editTransaction,
+      accountFrom,
+      accountTo,
+      transaction,
+      accountMovement,
     };
   },
 });
