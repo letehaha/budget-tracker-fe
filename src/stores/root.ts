@@ -10,12 +10,13 @@ export const useRootStore = defineStore('root', () => {
   const fetchInitialData = async () => {
     const { loadCurrencies } = useCurrenciesStore();
     const { loadUserData } = useBanksMonobankStore();
+    const { loadAccounts } = useAccountsStore();
 
     isAppInitialized.value = false;
 
     await Promise.all([
       loadCurrencies(),
-      useAccountsStore(),
+      loadAccounts(),
       loadUserData(),
     ]);
 

@@ -14,11 +14,10 @@
 
 <script lang="ts">
 import { ACCOUNT_TYPES } from 'shared-types';
-import { defineComponent, computed, watch } from 'vue';
+import { defineComponent, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import {
-  useRootStore,
   useAccountsStore,
   useBanksMonobankStore,
 } from '@/stores';
@@ -31,22 +30,10 @@ export default defineComponent({
   },
   setup() {
     const router = useRouter();
-    const rootStore = useRootStore();
     const accountsStore = useAccountsStore();
     const monobankStore = useBanksMonobankStore();
     const { activeAccounts: monoAccounts } = storeToRefs(monobankStore);
     const { accounts } = storeToRefs(accountsStore);
-    const { isAppInitialized } = storeToRefs(rootStore);
-
-    watch(
-      isAppInitialized,
-      (value) => {
-        if (value) {
-          monobankStore.loadAccounts();
-        }
-      },
-      { immediate: true },
-    );
 
     const allAccounts = computed(
       () => [...monoAccounts.value, ...accounts.value],

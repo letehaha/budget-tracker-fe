@@ -166,7 +166,6 @@
       <Button
         v-if="transaction"
         class="system-tx-form__action"
-        :disabled="currentTxType === TRANSACTION_TYPES.transfer"
         @click="deleteTransactionHandler"
       >
         Delete
@@ -292,7 +291,7 @@ export default defineComponent({
       (value) => {
         if (value) {
           form.value = {
-            amount: fromSystemAmount(value.amount),
+            amount: Math.abs(fromSystemAmount(value.amount)),
             account: accountsRecord.value[value.accountId],
             toAccount: accountsRecord.value[value.toAccountId],
             type: value.transactionType,

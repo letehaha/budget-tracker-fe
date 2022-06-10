@@ -17,6 +17,8 @@ export const useAccountsStore = defineStore('system-accounts', () => {
     try {
       const result = await api.get('/accounts');
 
+      accounts.value = [];
+
       for (const acc of result) {
         const formatted = new AccountRecord(acc);
 

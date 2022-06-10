@@ -138,7 +138,6 @@ export default defineComponent({
     watch(isAppInitialized, (value) => {
       if (value) {
         monobankStore.loadAccounts();
-        accountsStore.loadAccounts();
       }
     });
 
@@ -147,7 +146,6 @@ export default defineComponent({
         await rootStore.fetchInitialData();
       }
       monobankStore.loadAccounts();
-      accountsStore.loadAccounts();
     });
 
     const refreshMonoAccounts = () => {
