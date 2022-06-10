@@ -265,7 +265,7 @@ export default defineComponent({
       account: null,
       toAccount: null,
       category: categories.value[0],
-      time: null,
+      time: new Date().toISOString().substring(0, 19),
       paymentType: PAYMENT_TYPES.creditCard,
       note: null,
       type: TRANSACTION_TYPES.expense,
