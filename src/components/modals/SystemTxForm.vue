@@ -166,6 +166,7 @@
       <Button
         v-if="transaction"
         class="system-tx-form__action"
+        :disabled="isLoading"
         @click="deleteTransactionHandler"
       >
         Delete
@@ -175,10 +176,7 @@
           system-tx-form__action
           system-tx-form__action--submit
         "
-        :disabled="
-          (transaction && currentTxType === TRANSACTION_TYPES.transfer)
-            || isLoading
-        "
+        :disabled="isLoading"
         @click="submit"
       >
         {{ isLoading ? 'Loading...' : transaction ? 'Edit' : 'Submit' }}
@@ -278,6 +276,9 @@ export default defineComponent({
     const isExpenseTx = computed(
       () => currentTxType.value === TRANSACTION_TYPES.expense,
     );
+    const isIncomeTx = computed(
+      () => currentTxType.value === TRANSACTION_TYPES.income,
+    );
 
     const accountsArray = computed(() => Object.values(accountsRecord.value));
     const filteredAccounts = computed(
@@ -361,6 +362,12 @@ export default defineComponent({
           currencyId: 1,
         };
 
+        if (isExpenseTx.value) {
+          params.amount = Math.abs(params.amount) * -1;
+        } else if (isIncomeTx.value) {
+          params.amount = Math.abs(params.amount);
+        }
+
         if (isFormCreation.value) {
           if (isTransferTx.value) {
             params.fromAccountId = accountId;
@@ -369,10 +376,6 @@ export default defineComponent({
             params.toAccountType = ACCOUNT_TYPES.system;
           } else {
             params.categoryId = category.id;
-          }
-
-          if (isExpenseTx.value) {
-            params.amount *= -1;
           }
 
           await createTransaction(params);
