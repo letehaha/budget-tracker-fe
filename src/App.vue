@@ -45,8 +45,8 @@ export default defineComponent({
 
     watch(
       isLoggedIn,
-      (value) => {
-        if (!value) {
+      (value, prevValue) => {
+        if (prevValue && !value) {
           router.push({ name: 'auth/sign-in' });
         }
       },
