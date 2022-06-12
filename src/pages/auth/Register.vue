@@ -58,6 +58,7 @@ export default defineComponent({
   },
   setup() {
     const router = useRouter();
+    const autoStore = useAuthStore();
     const form = reactive({
       username: '',
       password: '',
@@ -71,7 +72,7 @@ export default defineComponent({
 
       isFormLoading.value = true;
 
-      await useAuthStore().signup({ password, username });
+      await autoStore.signup({ password, username });
 
       router.push({ name: 'dashboard' });
 

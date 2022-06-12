@@ -72,7 +72,7 @@
           <router-link
             :to="{
               name: 'account',
-              query: { id: account.accountId, type: ACCOUNT_TYPES.mono },
+              query: { id: account.accountId, type: ACCOUNT_TYPES.monobank },
             }"
             class="accounts__item"
             :class="{ 'accounts__item--disabled': !account.isEnabled }"
@@ -138,7 +138,6 @@ export default defineComponent({
     watch(isAppInitialized, (value) => {
       if (value) {
         monobankStore.loadAccounts();
-        accountsStore.loadAccounts();
       }
     });
 
@@ -147,7 +146,6 @@ export default defineComponent({
         await rootStore.fetchInitialData();
       }
       monobankStore.loadAccounts();
-      accountsStore.loadAccounts();
     });
 
     const refreshMonoAccounts = () => {

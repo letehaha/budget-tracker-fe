@@ -11,15 +11,25 @@ export enum CATEGORY_TYPES {
   custom = 'custom',
 }
 
-export enum TRANSACTIONS_TYPES {
-  expense = 2,
-  income = 1,
-  transfer = 3,
+export enum ACCOUNT_TYPES {
+  monobank = 'monobank',
+  system = 'system',
 }
 
-export enum ACCOUNT_TYPES {
-  mono = 'mono',
-  system = 'system',
+export enum PAYMENT_TYPES {
+  bankTransfer = 'bankTransfer',
+  voucher = 'voucher',
+  webPayment = 'webPayment',
+  cash = 'cash',
+  mobilePayment = 'mobilePayment',
+  creditCard = 'creditCard',
+  debitCard = 'debitCard',
+}
+
+export enum TRANSACTION_TYPES {
+  income = 'income',
+  expense = 'expense',
+  transfer = 'transfer',
 }
 
 export interface CategoryModel {
@@ -31,11 +41,6 @@ export interface CategoryModel {
   subCategories: CategoryModel[];
   type: CATEGORY_TYPES;
   userId: number;
-}
-
-export enum TRANSACTION_TYPES {
-  system = 1,
-  monobank = 2,
 }
 
 export interface TransactionModel {

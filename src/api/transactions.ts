@@ -1,3 +1,4 @@
+import { TRANSACTION_TYPES, PAYMENT_TYPES, ACCOUNT_TYPES } from 'shared-types';
 import { api } from '@/api';
 import { TRANSACTION_TYPES as TYPES } from '@/js/const';
 import {
@@ -21,13 +22,13 @@ export const loadTransactions = async (
     const resultTxs: TransactionModelRecord[] = [];
 
     result.forEach(item => {
-      if (item.transactionEntityId === TYPES.system) {
+      if (item.accountType === ACCOUNT_TYPES.system) {
         resultTxs.push(new TransactionModelRecord(
           TYPES.system,
           new TransactionRecord(item),
         ));
       }
-      if (item.transactionEntityId === TYPES.monobank) {
+      if (item.accountType === ACCOUNT_TYPES.monobank) {
         resultTxs.push(new TransactionModelRecord(
           TYPES.monobank,
           new MONOTransactionRecord(item),
@@ -41,32 +42,56 @@ export const loadTransactions = async (
   }
 };
 
+export const loadTransactionById = async (
+  { id }: { id: number },
+): Promise<TransactionRecord> => {
+  let result = await api.get(`/transactions/${id}`);
+  result = new TransactionRecord(result);
+
+  return result;
+};
+
 export const createTransaction = async ({
   amount,
   note = '',
   time,
-  transactionTypeId,
-  paymentTypeId,
+  transactionType,
+  paymentType,
   accountId,
   categoryId,
+  currencyId,
+  fromAccountId,
+  fromAccountType,
+  toAccountId,
+  toAccountType,
 }: {
   amount: number;
   note?: string;
   time: string;
-  transactionTypeId: number;
-  paymentTypeId: number;
+  transactionType: TRANSACTION_TYPES;
+  paymentType: PAYMENT_TYPES;
   accountId: number;
-  categoryId: number;
+  categoryId?: number;
+  currencyId: number;
+  fromAccountId?: number;
+  fromAccountType?: ACCOUNT_TYPES;
+  toAccountId?: number;
+  toAccountType?: ACCOUNT_TYPES;
 }): Promise<void> => {
   try {
     await api.post('/transactions', {
       amount,
       note,
       time,
-      transactionTypeId,
-      paymentTypeId,
+      transactionType,
+      paymentType,
       accountId,
       categoryId,
+      currencyId,
+      fromAccountId,
+      fromAccountType,
+      toAccountId,
+      toAccountType,
     });
   } catch (e) {
     throw new Error(e);
@@ -78,29 +103,32 @@ export const editTransaction = async ({
   amount,
   note = '',
   time,
-  transactionTypeId,
-  paymentTypeId,
+  transactionType,
+  paymentType,
   accountId,
   categoryId,
+  currencyId,
 }: {
   txId: number;
   amount: number;
   note?: string;
   time: string;
-  transactionTypeId: number;
-  paymentTypeId: number;
+  transactionType: TRANSACTION_TYPES;
+  paymentType: PAYMENT_TYPES;
   accountId: number;
-  categoryId: number;
+  categoryId?: number;
+  currencyId?: number;
 }): Promise<void> => {
   try {
     await api.put(`/transactions/${txId}`, {
       amount,
       note,
       time,
-      transactionTypeId,
-      paymentTypeId,
+      transactionType,
+      paymentType,
       accountId,
       categoryId,
+      currencyId,
     });
   } catch (e) {
     throw new Error(e);

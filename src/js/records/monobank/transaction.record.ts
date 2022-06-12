@@ -1,4 +1,5 @@
 import { formatAmount } from '@/js/helpers';
+import { TRANSACTION_TYPES, PAYMENT_TYPES, ACCOUNT_TYPES } from 'shared-types';
 
 interface Record {
   id?: number;
@@ -13,10 +14,10 @@ interface Record {
   hold?: number;
   userId?: number;
   categoryId?: number;
-  transactionTypeId?: number;
-  paymentTypeId?: number;
+  transactionType?: TRANSACTION_TYPES;
+  paymentType?: PAYMENT_TYPES;
   monoAccountId?: number;
-  transactionEntityId?: number;
+  accountType?: ACCOUNT_TYPES;
   note?: string;
 }
 
@@ -47,13 +48,13 @@ export class MONOTransactionRecord {
 
   categoryId: number;
 
-  transactionTypeId: number;
+  transactionType: TRANSACTION_TYPES;
 
-  paymentTypeId: number;
+  paymentType: PAYMENT_TYPES;
 
   monoAccountId: number;
 
-  transactionEntityId: number;
+  accountType: ACCOUNT_TYPES;
 
   note: string;
 
@@ -72,10 +73,10 @@ export class MONOTransactionRecord {
     this.hold = record.hold;
     this.userId = record.userId;
     this.categoryId = record.categoryId;
-    this.transactionTypeId = record.transactionTypeId;
-    this.paymentTypeId = record.paymentTypeId;
+    this.transactionType = record.transactionType;
+    this.paymentType = record.paymentType;
     this.monoAccountId = record.monoAccountId;
-    this.transactionEntityId = record.transactionEntityId;
+    this.accountType = record.accountType;
     this.note = record.note;
   }
 

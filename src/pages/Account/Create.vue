@@ -19,14 +19,14 @@
         class="account-create__form-field"
       />
 
-      <SelectField
+      <!-- <SelectField
         v-model="form.accountType"
         label="Account type"
-        :values="accountTypes"
+        :values="ACCOUNT_TYPES"
         label-key="name"
         is-value-preselected
         class="account-create__form-field"
-      />
+      /> -->
 
       <InputField
         v-model="form.currentBalance"
@@ -54,12 +54,13 @@
 </template>
 
 <script lang="ts">
+import { ACCOUNT_TYPES } from 'shared-types';
 import {
   defineComponent, reactive, computed, ref,
 } from 'vue';
 import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
-import { useAccountsStore, useCurrenciesStore, useAccountTypesStore } from '@/stores';
+import { useAccountsStore, useCurrenciesStore } from '@/stores';
 
 import { toSystemAmount } from '@/js/helpers';
 
@@ -83,11 +84,9 @@ export default defineComponent({
     const router = useRouter();
     const accountsStore = useAccountsStore();
     const currenciesStore = useCurrenciesStore();
-    const accountTypesStore = useAccountTypesStore();
     const { addNotification } = useNotificationCenter();
 
     const { currencies } = storeToRefs(currenciesStore);
-    const { accountTypes } = storeToRefs(accountTypesStore);
 
     const formattedCurrencies = computed(
       () => currencies.value.map(currency => ({
@@ -99,7 +98,7 @@ export default defineComponent({
     const form = reactive({
       name: '',
       currency: null,
-      accountType: null,
+      accountType: 1,
       currentBalance: 0,
       creditLimit: 0,
     });
@@ -112,7 +111,7 @@ export default defineComponent({
 
         await accountsStore.createAccount({
           currencyId: form.currency.id,
-          accountTypeId: form.accountType.id,
+          accountTypeId: form.accountType,
           name: form.name,
           creditLimit: toSystemAmount(Number(form.creditLimit)),
           currentBalance: toSystemAmount(Number(form.currentBalance)),
@@ -135,10 +134,10 @@ export default defineComponent({
     };
 
     return {
+      ACCOUNT_TYPES,
       BUTTON_TYPES,
       form,
       isLoading,
-      accountTypes,
       formattedCurrencies,
       submit,
     };

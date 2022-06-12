@@ -7,9 +7,9 @@
     </div>
     <div class="monobank-tx-form__row">
       <p>Amount: {{ transaction.formattedAmount }}</p>
-      <p>Type: {{ transaction.transactionTypeId }}</p>
+      <p>Type: {{ transaction.transactionType }}</p>
       <p>Time: {{ transaction.time }}</p>
-      <p>Payment Type: {{ transaction.paymentTypeId }}</p>
+      <p>Payment Type: {{ transaction.paymentType }}</p>
       <p>Cashback: {{ +transaction.formattedCashback ? transaction.formattedCashback : '-' }}</p>
       <p>Description: {{ transaction.description }}</p>
     </div>
@@ -47,8 +47,6 @@ import { defineComponent, ref, reactive } from 'vue';
 import { storeToRefs } from 'pinia';
 
 import {
-  usePaymentTypesStore,
-  useTransactionTypesStore,
   useAccountsStore,
   useCategoriesStore,
   useBanksMonobankStore,
@@ -82,16 +80,12 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const paymentTypesStore = usePaymentTypesStore();
-    const transactionTypesStore = useTransactionTypesStore();
     const accountsStore = useAccountsStore();
     const categoriesStore = useCategoriesStore();
     const monobankStore = useBanksMonobankStore();
     const { addNotification } = useNotificationCenter();
 
-    const { paymentTypes } = storeToRefs(paymentTypesStore);
     const { accounts } = storeToRefs(accountsStore);
-    const { transactionTypes } = storeToRefs(transactionTypesStore);
     const { rawCategories, categories } = storeToRefs(categoriesStore);
 
     const form = reactive({
@@ -136,8 +130,6 @@ export default defineComponent({
       isLoading,
       categories,
       accounts,
-      paymentTypes,
-      transactionTypes,
       submit,
     };
   },

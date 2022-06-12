@@ -38,6 +38,7 @@ export default defineComponent({
   },
   setup() {
     const route = useRoute();
+    const router = useRouter();
     const authStore = useAuthStore();
 
     const { isLoggedIn } = storeToRefs(authStore);
@@ -46,7 +47,7 @@ export default defineComponent({
       isLoggedIn,
       (value) => {
         if (!value) {
-          useRouter().push({ name: 'auth/sign-in' });
+          router.push({ name: 'auth/sign-in' });
         }
       },
       { immediate: true },

@@ -2,9 +2,6 @@
 export { useCurrenciesStore } from './currencies';
 // eslint-disable-next-line
 export { useRootStore } from './root';
-export { useAccountTypesStore } from './account-types';
-export { usePaymentTypesStore } from './payment-types';
-export { useTransactionTypesStore } from './transaction-types';
 export { useAccountsStore } from './accounts';
 export { useUserStore } from './user';
 // eslint-disable-next-line
