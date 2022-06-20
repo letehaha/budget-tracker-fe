@@ -15,7 +15,7 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
   const accounts = ref<MONOAccountRecord[]>([]);
   const user = ref<MONOUserRecord>();
   const isUserExist = ref(false);
-  const isMonoAccountPaired = ref(true);
+  const isMonoAccountPaired = ref(false);
 
   const isTokenPresent = computed(() => !!user.value?.apiToken);
 
@@ -36,9 +36,6 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
   );
 
   const loadUserData = async () => {
-    if (!isMonoAccountPaired.value) {
-      return;
-    }
     try {
       isUserExist.value = false;
 
@@ -225,9 +222,8 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
   };
 
   const pairAccount = async ({ token }) => {
-    if (!isMonoAccountPaired.value) {
-      return;
-    }
+    if (isMonoAccountPaired.value) return;
+
     try {
       await api.post('/banks/monobank/pair-user', { token });
     } catch (e) {
