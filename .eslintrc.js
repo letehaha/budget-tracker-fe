@@ -17,7 +17,18 @@ module.exports = {
         project: ['./tsconfig.json'],
       },
     },
+    {
+      files: [
+        '**/__tests__/*.{j,t}s?(x)',
+        '**/tests/unit/**/*.spec.{j,t}s?(x)',
+      ],
+      env: {
+        jest: true,
+      },
+    },
   ],
+
+  ignorePatterns: ['cypress/**/*'],
 
   extends: [
     'plugin:vue/vue3-essential',
@@ -39,18 +50,6 @@ module.exports = {
       ],
     },
   },
-
-  overrides: [
-    {
-      files: [
-        '**/__tests__/*.{j,t}s?(x)',
-        '**/tests/unit/**/*.spec.{j,t}s?(x)',
-      ],
-      env: {
-        jest: true,
-      },
-    },
-  ],
 
   // add your custom rules here
   rules: {

@@ -30,6 +30,7 @@
         />
       </FormWrapper>
       <Button
+        :type="BUTTON_TYPES.submit"
         class="login__submit"
         :disabled="isFormLoading"
         @click="submit"
@@ -61,7 +62,7 @@ import { useFormValidation } from '@/composable';
 import { required, minLength } from '@/js/helpers/validators.helper';
 
 import FormWrapper from '@/components/fields/FormWrapper.vue';
-import Button from '@/components/common/Button.vue';
+import Button, { BUTTON_TYPES } from '@/components/common/Button.vue';
 import InputField from '@/components/fields/InputField.vue';
 
 export default defineComponent({
@@ -129,6 +130,7 @@ export default defineComponent({
     };
 
     return {
+      BUTTON_TYPES,
       form,
       formError,
       isFormLoading,

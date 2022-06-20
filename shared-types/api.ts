@@ -11,7 +11,7 @@ export enum API_STATUS_CODES {
 
 export interface ApiBaseError {
   statusText?: string;
-  code: number;
+  code: number | string;
 }
 
 export type ApiBadRequestError = ApiBaseError;
