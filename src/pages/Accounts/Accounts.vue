@@ -48,7 +48,10 @@
       Monobank
 
       <template v-if="!isPaired">
-        <button @click="() => setMonobankToken()">
+        <button
+          data-cy="pair-monobank-account"
+          @click="() => setMonobankToken()"
+        >
           Pair account
         </button>
       </template>

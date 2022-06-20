@@ -1,5 +1,8 @@
 <template>
-  <div class="monobank-set-token">
+  <div
+    class="monobank-set-token"
+    data-cy="monobank-set-token-modal"
+  >
     <div>
       <button @click="$emit(EVENTS.closeModal)">
         Close
@@ -14,6 +17,7 @@
     <div class="monobank-set-token__row">
       <InputField
         v-model="form.token"
+        name="token"
         label="Token"
       />
     </div>
@@ -23,6 +27,7 @@
           monobank-set-token__action
           monobank-set-token__action--submit
         "
+        :type="BUTTON_TYPES.submit"
         :disabled="isLoading"
         @click="submit"
       >
@@ -38,10 +43,17 @@
 </template>
 
 <script lang="ts">
+import { ERROR_CODES } from 'shared-types';
 import { defineComponent, reactive, ref } from 'vue';
 import { useBanksMonobankStore } from '@/stores';
+import { ApiErrorResponseError } from '@/js/errors';
 import InputField from '@/components/fields/InputField.vue';
-import Button from '@/components/common/Button.vue';
+import Button, { BUTTON_TYPES } from '@/components/common/Button.vue';
+
+import {
+  useNotificationCenter,
+  NotificationType,
+} from '@/components/notification-center';
 
 const EVENTS = {
   closeModal: 'close-modal',
@@ -58,6 +70,7 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const monobankStore = useBanksMonobankStore();
+    const { addNotification } = useNotificationCenter();
 
     const isLoading = ref(false);
     const form = reactive({
@@ -65,19 +78,44 @@ export default defineComponent({
     });
 
     const submit = async () => {
-      isLoading.value = true;
+      try {
+        isLoading.value = true;
 
-      if (props.isUpdate) {
-        await monobankStore.updateUser({ token: form.token });
-      } else {
-        await monobankStore.pairAccount({ token: form.token });
+        if (props.isUpdate) {
+          await monobankStore.updateUser({ token: form.token });
+        } else {
+          await monobankStore.pairAccount({ token: form.token });
+        }
+
+        emit(EVENTS.closeModal);
+
+        addNotification({
+          text: 'Paired',
+          type: NotificationType.success,
+        });
+      } catch (e) {
+        if (e instanceof ApiErrorResponseError) {
+          if (e.data.code === ERROR_CODES.monobankUserAlreadyConnected) {
+            addNotification({
+              text: 'Account already connected',
+              type: NotificationType.error,
+            });
+
+            return;
+          }
+        }
+
+        addNotification({
+          text: 'Unexpected error',
+          type: NotificationType.error,
+        });
+      } finally {
+        isLoading.value = false;
       }
-
-      isLoading.value = false;
-      emit(EVENTS.closeModal);
     };
 
     return {
+      BUTTON_TYPES,
       EVENTS,
       form,
       isLoading,

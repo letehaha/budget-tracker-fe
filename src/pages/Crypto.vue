@@ -58,7 +58,7 @@ export default defineComponent({
               ERROR_CODES.cryptoBinanceBothAPIKeysDoesNotexist,
               ERROR_CODES.cryptoBinancePublicAPIKeyNotDefined,
               ERROR_CODES.cryptoBinanceSecretAPIKeyNotDefined,
-            ].includes(e.data.code)
+            ].includes(e.data.code as number)
           ) {
             isAPIKeysDefined.value = false;
           }
