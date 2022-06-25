@@ -1,0 +1,74 @@
+name: Lint, Test and Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  prepare-dependencies:
+    name: Prepare local deps
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - id: prepare-env
+        uses: ./.github/actions/prepare-local-env
+      - name: Install dependencies
+        if: steps.prepare-env.outputs.cache-hit != 'true'
+        run: npm ci
+
+  lint:
+    name: Lint source code
+    needs: prepare-dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./.github/actions/prepare-local-env
+      - name: Lint source code
+        run: npm run lint
+
+  unit-tests:
+    name: Unit testing
+    needs: prepare-dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./.github/actions/prepare-local-env
+      - name: Unit testing
+        run: npm run test:unit
+
+  build:
+    name: Build source code
+    needs: prepare-dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./.github/actions/prepare-local-env
+      - name: Build source code
+        run: npm run build
+
+  integration-tests:
+    name: Integration testing
+    needs: prepare-dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./.github/actions/prepare-local-env
+      - name: Run Cypress e2e tests
+        uses: cypress-io/github-action@v4
+        with:
+          start: npm run dev
+          wait-on: http://budget-tracker.com:8100
+          install: false
+          config-file: cypress.config.ts
+          browser: chrome
+          quiet: true
+        env:
+          # pass GitHub token to detect new build vs re-run build
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BASE_URL: http://budget-tracker.com:8100
+          PORT: 8100
+          HOST: budget-tracker.com
+          VUE_APP_API_HTTP: http://206.81.20.28:8081
+          VUE_APP_API_VER: /api/v1

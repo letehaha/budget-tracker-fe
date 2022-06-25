@@ -1,3 +1,5 @@
+import { TEST_USERS } from '@/cypress/fixtures/users';
+
 describe('SignIn.cy.ts', () => {
   it('should redirect here if user is not authorized', () => {
     cy.visit('/');
@@ -10,10 +12,10 @@ describe('SignIn.cy.ts', () => {
   it('user should be able to sign in', () => {
     cy.visit('/sign-in');
 
-    cy.get('input[name="username"]').type('letehaha');
-    cy.get('input[type="password"]').type('password');
+    cy.get('input[name="username"]').type(TEST_USERS.noData.username);
+    cy.get('input[type="password"]').type(TEST_USERS.noData.password);
 
-    cy.get('button[type="button"').click();
+    cy.get('button[type="submit"]').click();
 
     cy.location().should((location) => {
       expect(location.pathname).to.eq('/');
@@ -26,7 +28,7 @@ describe('SignIn.cy.ts', () => {
     cy.get('input[name="username"]').type('invalid');
     cy.get('input[type="password"]').type('invalid');
 
-    cy.get('button[type="button"]').click();
+    cy.get('button[type="submit"]').click();
 
     cy.location().should((location) => {
       expect(location.pathname).to.eq('/sign-in');
@@ -39,7 +41,7 @@ describe('SignIn.cy.ts', () => {
     cy.get('input[name="username"]').type('invalid');
     cy.get('input[type="password"]').type('invalid');
 
-    cy.get('button[type="button"]').click();
+    cy.get('button[type="submit"]').click();
 
     cy.get('.form-wrapper__error').should('be.visible');
   });

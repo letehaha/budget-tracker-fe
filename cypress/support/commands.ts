@@ -1,27 +1,18 @@
 /// <reference types="cypress" />
 
-const signInUser = ({
-  username,
-  password,
-}: {
-  username: string;
-  password: string;
-}) => {
-  cy.intercept(`${Cypress.env('baseApiUrl')}/**/auth/login*`).as('signIn')
-
-  cy.visit('/sign-in');
-
-  cy.get('input[name=username]').type(username);
-  cy.get('input[type=password]').type(password);
-  cy.get('button[type=submit]').click();
-
-  cy.wait('@signIn');
-};
-
 Cypress.Commands.add(
   'signInUser',
   ({ username, password }: { username: string; password: string }) => {
-    signInUser({ username, password });
+    cy.intercept(`${Cypress.env('baseApiUrl')}/**/auth/login*`).as('signIn');
+
+    cy.visit('/sign-in');
+
+    cy.get('input[name=username]').type(username);
+    cy.get('input[type=password]').type(password);
+    cy.get('button[type=submit]').click();
+
+    cy.wait('@signIn');
+    cy.url().should('eq', `${Cypress.env('baseUrl')}/`)
   },
 );
 
