@@ -46,6 +46,10 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+.transactions-list {
+  overflow-y: scroll;
+  max-height: calc(100vh - 160px);
+}
 .transactions-list__load-more {
   background-color: transparent;
   border: none;
