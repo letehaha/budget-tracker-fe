@@ -78,11 +78,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: ./.github/actions/docker-build
+      - id: docker-build
+        uses: ./.github/actions/docker-build
         with:
           vps-host: ${{ secrets.VPS_HOST }}
           vue-app-api-ver: ${{ secrets.VUE_APP_API_VER }}
           docker-hub-username: ${{ secrets.DOCKER_HUB_USERNAME }}
           docker-hub-access-token: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
       - name: Image digest
-        run: echo ${{ steps.docker_build.outputs.digest }}
+        run: echo ${{ steps.docker-build.outputs.docker-build-digest }}
