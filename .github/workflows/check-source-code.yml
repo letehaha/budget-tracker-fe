@@ -49,7 +49,7 @@ jobs:
         run: npm run build
 
   docker-build:
-    name: Build source code
+    name: Build source code using Docker
     needs: prepare-dependencies
     runs-on: ubuntu-latest
     steps:
