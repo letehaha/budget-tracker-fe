@@ -1,4 +1,4 @@
-import Button, { THEMES, SIZES } from './Button.vue';
+import Button, { THEMES, SIZES, BUTTON_TYPES } from './Button.vue';
 
 interface Args {
   size?: SIZES;

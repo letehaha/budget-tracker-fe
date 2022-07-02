@@ -21,7 +21,9 @@ module.exports = {
   testMatch: ['**/?(*.)+(spec|test).[jt]s?(x)'],
   modulePathIgnorePatterns: ['<rootDir>/cypress/'],
   // https://github.com/facebook/jest/issues/6766
-  testURL: 'http://localhost/',
+  testEnvironmentOptions: {
+    url: 'http://localhost/',
+  },
   testEnvironment: 'jsdom',
   globals: {
     NODE_ENV: 'test',

@@ -7,11 +7,8 @@
       System
 
       <router-link
+        :to="{ name: 'create-account' }"
         class="accounts__action-link"
-        :to="{
-          name: 'create-account',
-        }"
-        tag="h4"
       >
         Create account
       </router-link>
