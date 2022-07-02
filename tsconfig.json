@@ -12,7 +12,9 @@
     "sourceMap": true,
     "baseUrl": ".",
     "types": [
-      "webpack-env"
+      "webpack-env",
+      "node",
+      "jest"
     ],
     "paths": {
       "@/*": ["src/*"],
@@ -31,11 +33,11 @@
     "src/**/*.tsx",
     "src/**/*.vue",
     "tests/**/*.ts",
-    "tests/**/*.tsx",
-    "cypress.config.ts"
+    "tests/**/*.tsx"
   ],
   "exclude": [
     "node_modules",
-    "cypress"
+    "cypress",
+    "cypress.config.ts"
   ],
 }

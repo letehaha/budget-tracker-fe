@@ -7,13 +7,13 @@
       System
 
       <router-link
-        class="accounts__action-link"
         :to="{
           name: 'create-account',
         }"
-        tag="h4"
       >
-        Create account
+        <h4 class="accounts__action-link">
+          Create account
+        </h4>
       </router-link>
     </h2>
     <template v-if="accounts.length">

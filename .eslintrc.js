@@ -28,7 +28,7 @@ module.exports = {
     },
   ],
 
-  ignorePatterns: ['cypress/**/*'],
+  ignorePatterns: ['cypress/**/*', 'cypress.config.ts'],
 
   extends: [
     'plugin:vue/vue3-essential',
@@ -104,5 +104,11 @@ module.exports = {
     '@typescript-eslint/no-shadow': ['error', {
       allow: ['state', 'getters'],
     }],
+    'vue/multi-word-component-names': 'off',
+    'vue/no-reserved-component-names': 'off',
+    'vuejs-accessibility/click-events-have-key-events': 'off',
+    'vuejs-accessibility/form-control-has-label': 'off',
+    'vuejs-accessibility/no-autofocus': 'off',
+    'vuejs-accessibility/label-has-for': 'off',
   },
 };

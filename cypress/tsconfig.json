@@ -8,5 +8,8 @@
       "@/cypress/*": ["./*"],
     },
   },
-  "include": ["**/*.ts"]
+  "include": [
+    "**/*.ts",
+    "../cypress.config.ts"
+  ]
 }

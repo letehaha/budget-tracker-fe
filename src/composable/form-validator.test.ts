@@ -1,6 +1,6 @@
 import { ref, computed } from 'vue';
-import { useFormValidation } from './form-validator';
 import { email } from '@/js/helpers/validators.helper';
+import { useFormValidation } from './form-validator';
 
 describe('useFormValidation', () => {
   const validEmail = 'test@example.com';

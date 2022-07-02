@@ -68,9 +68,8 @@ export const useFormValidation = <
   getFieldErrorMessage: (fieldPath: string) => string;
   resetValidation: () => void;
 } => {
-  // for some reason TS says $touch methods are no defined on returned type
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const instance: any = useVuelidate(rules, form, vuelidateOptions);
+  const instance = useVuelidate(rules, form as any, vuelidateOptions);
 
   /**
    * isFormValid touches the whole form or part of it and returns validation status
