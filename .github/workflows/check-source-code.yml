@@ -70,8 +70,8 @@ jobs:
           BASE_URL: http://budget-tracker.com:8100
           PORT: 8100
           HOST: budget-tracker.com
-          VUE_APP_API_HTTP: http://206.81.20.28:8081
-          VUE_APP_API_VER: /api/v1
+          VUE_APP_API_HTTP: http://${{ 206.81.20.28 }}:8081
+          VUE_APP_API_VER: ${{ secrets.VUE_APP_API_VER }}
 
   docker-build:
     name: Build source code using Docker
@@ -79,5 +79,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: ./.github/actions/docker-build
+        with:
+          vps-host: ${{ secrets.VPS_HOST }}
+          vue-app-api-ver: ${{ secrets.VUE_APP_API_VER }}
+          docker-hub-username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          docker-hub-access-token: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
