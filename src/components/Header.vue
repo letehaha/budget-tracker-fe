@@ -46,6 +46,7 @@ export default defineComponent({
       search: '',
     });
     const { addModal } = useModalCenter();
+    const { logout } = useAuthStore();
 
     const openFormModal = () => {
       addModal({
@@ -54,7 +55,7 @@ export default defineComponent({
     };
 
     const logOutHandler = () => {
-      useAuthStore().logout();
+      logout();
       router.push({ name: 'auth/sign-in' });
     };
 
