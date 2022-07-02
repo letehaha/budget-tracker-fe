@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts">
-import _debounce from 'lodash/debounce';
+import { debounce } from 'lodash-es';
 import {
   defineComponent, reactive, watchEffect, watch,
 } from 'vue';
@@ -44,7 +44,7 @@ export default defineComponent({
       name: '',
     });
 
-    const updateName = _debounce(
+    const updateName = debounce(
       async ({ id, name }) => {
         if (props.account instanceof MONOAccountRecord) {
           await monobankStore.updateAccountById({ id, name });
