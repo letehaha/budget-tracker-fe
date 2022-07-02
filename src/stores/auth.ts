@@ -4,6 +4,7 @@ import { ERROR_CODES } from 'shared-types';
 import { api } from '@/api';
 import { useUserStore } from './user';
 import { useCategoriesStore } from './categories/categories';
+import { resetAllDefinedStores } from './setup';
 
 export const useAuthStore = defineStore('auth', () => {
   const userStore = useUserStore();
@@ -59,11 +60,7 @@ export const useAuthStore = defineStore('auth', () => {
     userToken.value = null;
     isLoggedIn.value = false;
 
-    // commit(`accounts/${accountsVuexTypes.RESET_STATE}`, null, { root: true });
-    // commit(`bankMonobank/${bankMonobankVuexTypes.RESET_STORE}`, null, { root: true });
-    // commit(`categories/${categoriesVuexTypes.RESET_STORE}`, null, { root: true });
-    // commit(`transactions/${transactionsVuexTypes.RESET_STORE}`, null, { root: true });
-    // commit(`user/${userVuexTypes.RESET_STORE}`, null, { root: true });
+    resetAllDefinedStores();
   };
 
   return {

@@ -6,7 +6,7 @@ import useVuelidate, {
   ValidationArgs,
   ExtractState,
 } from '@vuelidate/core';
-import safeGet from 'lodash/get';
+import { get as safeGet } from 'lodash-es';
 
 const GENERIC_VALIDATION_MESSAGES = Object.freeze({
   email: 'Email field is required',

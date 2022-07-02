@@ -25,7 +25,7 @@
 </template>
 
 <script lang="ts">
-import _debounce from 'lodash/debounce';
+import { debounce } from 'lodash-es';
 
 import {
   defineAsyncComponent,
@@ -49,7 +49,7 @@ export default defineComponent({
   setup() {
     const { activeModals, removeModal } = useModalCenter();
 
-    const windowResize = _debounce(() => {
+    const windowResize = debounce(() => {
       for (const modal of activeModals.value) {
         if (modal.hideOnWidth < window.innerWidth) {
           removeModal(modal);

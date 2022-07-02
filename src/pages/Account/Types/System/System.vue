@@ -39,7 +39,7 @@
 </template>
 
 <script lang="ts">
-import _debounce from 'lodash/debounce';
+import { debounce } from 'lodash-es';
 import { defineComponent, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
@@ -74,7 +74,7 @@ export default defineComponent({
       () => getAccountById.value(Number(route.query.id)),
     );
 
-    const updateBalance = _debounce(
+    const updateBalance = debounce(
       async (value: string) => {
         await accountsStore.editAccount({
           id: account.value.id,
@@ -86,7 +86,7 @@ export default defineComponent({
       2000,
     );
 
-    const updateCreditLimit = _debounce(
+    const updateCreditLimit = debounce(
       async (value: string) => {
         await accountsStore.editAccount({
           id: account.value.id,

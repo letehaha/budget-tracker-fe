@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts">
-import _debounce from 'lodash/debounce';
+import { debounce } from 'lodash-es';
 import {
   defineComponent, reactive, computed, watchEffect, watch,
 } from 'vue';
@@ -73,7 +73,7 @@ export default defineComponent({
       });
     };
 
-    const debouncedUpdateMonoAccHandler = _debounce(
+    const debouncedUpdateMonoAccHandler = debounce(
       updateVisibility,
       1000,
     );

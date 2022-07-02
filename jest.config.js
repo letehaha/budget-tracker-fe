@@ -13,6 +13,9 @@ module.exports = {
     '^@/(.*)$': '<rootDir>/src/$1',
     '^tests/(.*)$': '<rootDir>/tests/$1',
     '\\.(css|scss|less)$': 'identity-obj-proxy',
+    // Jest doesn't work with lodash-es directly. This option will replace
+    // lodash-es with the commonjs version during testing runtime.
+    '^lodash-es$': 'lodash',
   },
   moduleDirectories: ['node_modules', 'src'],
   testMatch: ['**/?(*.)+(spec|test).[jt]s?(x)'],

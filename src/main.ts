@@ -1,8 +1,8 @@
 import { createApp } from 'vue';
-import { createPinia } from 'pinia';
 import { router } from '@/routes';
 import { clickOutside } from '@/directives';
 import { initApiCaller } from '@/api';
+import { store } from '@/stores/setup';
 import { useAuthStore } from '@/stores';
 import App from './App.vue';
 import '@/styles/index.scss';
@@ -16,7 +16,7 @@ const app = createApp(App);
 app.directive('click-outside', clickOutside);
 
 app.use(router);
-app.use(createPinia());
+app.use(store);
 
 app.mount('#app');
 
