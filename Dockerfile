@@ -1,4 +1,4 @@
-FROM node:14.13.1 as build-stage
+FROM node:16.15.1 as build-stage
 WORKDIR /app
 COPY . .
 RUN npm ci
