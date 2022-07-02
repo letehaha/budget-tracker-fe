@@ -18,15 +18,15 @@ module.exports = {
     config.resolve.alias
       .set('shared-types', path.resolve(__dirname, './shared-types'));
 
-    const svgRule = config.module.rule('svg');
+    config.module.rules.delete('svg')
 
-    svgRule.uses.clear();
-
-    svgRule
+    config.module
+      .rule('svg')
+      .test(/\.(svg)(\?.*)?$/)
       .use('vue-loader')
       .loader('vue-loader')
       .end()
       .use('vue-svg-loader')
-      .loader('vue-svg-loader');
+      .loader('vue-svg-loader')
   },
 };

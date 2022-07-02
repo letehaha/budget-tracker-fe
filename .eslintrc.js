@@ -110,5 +110,6 @@ module.exports = {
     'vuejs-accessibility/form-control-has-label': 'off',
     'vuejs-accessibility/no-autofocus': 'off',
     'vuejs-accessibility/label-has-for': 'off',
+    'vue/no-deprecated-router-link-tag-prop': 'warn',
   },
 };
