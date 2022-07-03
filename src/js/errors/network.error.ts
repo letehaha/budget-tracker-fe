@@ -8,7 +8,7 @@ import { ApiBaseError } from 'shared-types';
 export class NetworkError extends Error {
   data;
 
-  constructor(message: string, data: ApiBaseError) {
+  constructor(message: string, data?: ApiBaseError) {
     super(message);
 
     this.data = data;
