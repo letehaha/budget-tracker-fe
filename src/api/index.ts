@@ -132,7 +132,31 @@ class ApiCaller {
       delete config.headers.Authorization;
     }
 
-    const result = await fetch(url, config);
+    let result: Response;
+
+    const { addNotification } = useNotificationCenter();
+
+    try {
+      result = await fetch(url, config);
+    } catch (e) {
+      if (e instanceof TypeError && e.toString().includes('Failed to fetch')) {
+        addNotification({
+          id: 'api-fetching-error',
+          text: 'Failed to fetch data from the server.',
+          type: NotificationType.error,
+        });
+
+        throw new errors.NetworkError('Failed to fetch data from the server.');
+      } else {
+        addNotification({
+          id: 'unexpected-api-error',
+          text: 'Unexpected error.',
+          type: NotificationType.error,
+        });
+
+        throw new errors.UnexpectedError('Unexpected error.', {});
+      }
+    }
 
     const {
       status,
@@ -148,8 +172,6 @@ class ApiCaller {
     }
 
     if (status === RESPONSE_STATUS.error) {
-      const { addNotification } = useNotificationCenter();
-
       if (response.code === ERROR_CODES.unauthorized) {
         await this.logout();
 

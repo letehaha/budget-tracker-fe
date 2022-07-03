@@ -45,4 +45,20 @@ describe('SignIn.cy.ts', () => {
 
     cy.get('.form-wrapper__error').should('be.visible');
   });
+
+  it('should handle Network error', () => {
+    cy.intercept(`${Cypress.env('baseApiUrl')}/**/login`, {
+      forceNetworkError: true,
+    }).as('signIn');
+
+    cy.get('input[name="username"]').type(TEST_USERS.noData.username);
+    cy.get('input[type="password"]').type(TEST_USERS.noData.password);
+
+    cy.get('button[type="submit"]').click();
+
+    cy.wait('@signIn');
+
+    cy.get('.form-wrapper__error').should('be.visible');
+    cy.get('.notifications-center__item--error').should('be.visible');
+  });
 });
