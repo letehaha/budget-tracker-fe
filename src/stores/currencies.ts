@@ -12,8 +12,13 @@ export const useCurrenciesStore = defineStore('currencies', () => {
     currencies.value = result.map(item => new CurrencyRecord(item));
   };
 
+  const getCurrency = (currencyId: number) => (
+    currencies.value.find(currency => currency.id === currencyId)
+  );
+
   return {
     currencies,
     loadCurrencies,
+    getCurrency,
   };
 });

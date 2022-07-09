@@ -12,6 +12,9 @@
       <p>Payment Type: {{ transaction.paymentType }}</p>
       <p>Cashback: {{ +transaction.formattedCashback ? transaction.formattedCashback : '-' }}</p>
       <p>Description: {{ transaction.description }}</p>
+      <p>
+        Currency: {{ currentCurrency.currency }} ({{ currentCurrency.code }})
+      </p>
     </div>
     <div class="monobank-tx-form__row">
       <CategorySelectField
@@ -43,11 +46,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive } from 'vue';
+import {
+  defineComponent, ref, reactive, computed,
+} from 'vue';
 import { storeToRefs } from 'pinia';
 
 import {
   useAccountsStore,
+  useCurrenciesStore,
   useCategoriesStore,
   useBanksMonobankStore,
 } from '@/stores';
@@ -80,10 +86,15 @@ export default defineComponent({
     const accountsStore = useAccountsStore();
     const categoriesStore = useCategoriesStore();
     const monobankStore = useBanksMonobankStore();
+    const { getCurrency } = useCurrenciesStore();
     const { addNotification } = useNotificationCenter();
 
     const { accounts } = storeToRefs(accountsStore);
     const { rawCategories, categories } = storeToRefs(categoriesStore);
+
+    const currentCurrency = computed(
+      () => getCurrency(props.transaction.currencyId),
+    );
 
     const form = reactive({
       category: rawCategories.value
@@ -129,6 +140,7 @@ export default defineComponent({
       categories,
       accounts,
       submit,
+      currentCurrency,
     };
   },
 });
