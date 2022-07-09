@@ -106,26 +106,18 @@
 
 <script lang="ts">
 import { ACCOUNT_TYPES } from 'shared-types';
-import {
-  defineComponent, watch, onMounted,
-} from 'vue';
+import { defineComponent } from 'vue';
 import { storeToRefs } from 'pinia';
-import {
-  useRootStore,
-  useBanksMonobankStore,
-  useAccountsStore,
-} from '@/stores';
+import { useBanksMonobankStore, useAccountsStore } from '@/stores';
 import { formatAmount } from '@/js/helpers';
 import { MODAL_TYPES, useModalCenter } from '@/components/modal-center/index';
 import { AccountRecord, MONOAccountRecord } from '@/js/records';
 
 export default defineComponent({
   setup() {
-    const rootStore = useRootStore();
     const monobankStore = useBanksMonobankStore();
     const accountsStore = useAccountsStore();
 
-    const { isAppInitialized } = storeToRefs(rootStore);
     const { accounts } = storeToRefs(accountsStore);
     const {
       isMonoAccountPaired: isPaired,
@@ -134,19 +126,6 @@ export default defineComponent({
     } = storeToRefs(monobankStore);
 
     const { addModal } = useModalCenter();
-
-    watch(isAppInitialized, (value) => {
-      if (value) {
-        monobankStore.loadAccounts();
-      }
-    });
-
-    onMounted(async () => {
-      if (!isAppInitialized.value) {
-        await rootStore.fetchInitialData();
-      }
-      monobankStore.loadAccounts();
-    });
 
     const refreshMonoAccounts = () => {
       monobankStore.refreshAccounts();

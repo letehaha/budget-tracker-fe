@@ -24,9 +24,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted } from 'vue';
+import { defineComponent } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useRootStore, useBanksMonobankStore } from '@/stores';
+import { useBanksMonobankStore } from '@/stores';
 import { TooManyRequestsError } from '@/js/errors';
 import { ErrorHandler } from '@/js/utils';
 
@@ -40,22 +40,12 @@ export default defineComponent({
     AccountsList,
   },
   setup() {
-    const rootStore = useRootStore();
     const monobankStore = useBanksMonobankStore();
-
-    const { isAppInitialized } = storeToRefs(rootStore);
 
     const {
       sortedAccounts: accounts,
       user: monoUser,
     } = storeToRefs(monobankStore);
-
-    onMounted(async () => {
-      if (!isAppInitialized.value) {
-        await rootStore.fetchInitialData();
-      }
-      monobankStore.loadAccounts();
-    });
 
     const updateWebhookHandler = async () => {
       try {
@@ -72,7 +62,6 @@ export default defineComponent({
     };
 
     return {
-      isAppInitialized,
       accounts,
       monoUser,
       updateWebhookHandler,

@@ -7,7 +7,7 @@ export const useCurrenciesStore = defineStore('currencies', () => {
   const currencies: Ref<CurrencyRecord[]> = ref([]);
 
   const loadCurrencies = async () => {
-    const result = await api.get('/models/currencies');
+    const result = await api.get('/user/currencies');
 
     currencies.value = result.map(item => new CurrencyRecord(item));
   };

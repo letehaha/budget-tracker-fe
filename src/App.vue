@@ -18,10 +18,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, watch, computed } from 'vue';
+import {
+  defineComponent,
+  watch,
+  computed,
+} from 'vue';
 import { storeToRefs } from 'pinia';
 import { useRouter, useRoute } from 'vue-router';
-import { useAuthStore } from '@/stores';
+import { useRootStore, useAuthStore, useBanksMonobankStore } from '@/stores';
 import { ROUTER_LAYOUTS } from '@/routes';
 import Modal from '@/components/modal-center/Modal.vue';
 import UIHeader from '@/components/Header.vue';
@@ -40,6 +44,8 @@ export default defineComponent({
     const route = useRoute();
     const router = useRouter();
     const authStore = useAuthStore();
+    const rootStore = useRootStore();
+    const monobankStore = useBanksMonobankStore();
 
     const { isLoggedIn } = storeToRefs(authStore);
 
@@ -48,6 +54,17 @@ export default defineComponent({
       (value, prevValue) => {
         if (prevValue && !value) {
           router.push({ name: 'auth/sign-in' });
+        }
+      },
+      { immediate: true },
+    );
+
+    watch(
+      isLoggedIn,
+      async (value) => {
+        if (value) {
+          await rootStore.fetchInitialData();
+          monobankStore.loadAccounts();
         }
       },
       { immediate: true },

@@ -1,35 +1,39 @@
 interface Record {
-  id?: string;
+  currencyId?: number;
+  exchangeRate?: number;
+  id?: number;
+  isDefaultCurrency?: boolean;
+  liveRateUpdate?: boolean;
   currency?: string;
-  digits?: number;
-  number?: string;
-  code?: string;
-  countries?: string;
+  code?: number;
 }
 
 export class CurrencyRecord {
   _record: Record;
 
-  id: string;
+  currencyId: number;
+
+  exchangeRate: number;
+
+  id: number;
+
+  isDefaultCurrency: boolean;
+
+  liveRateUpdate: boolean;
+
+  code: number;
 
   currency: string;
-
-  digits: number;
-
-  number: string;
-
-  code: string;
-
-  countries: string;
 
   constructor(record: Record = {}) {
     this._record = record;
 
+    this.currencyId = record.currencyId;
+    this.exchangeRate = record.exchangeRate;
     this.id = record.id;
+    this.isDefaultCurrency = record.isDefaultCurrency;
+    this.liveRateUpdate = record.liveRateUpdate;
     this.currency = record.currency;
-    this.digits = record.digits;
-    this.number = record.number;
     this.code = record.code;
-    this.countries = record.countries;
   }
 }
