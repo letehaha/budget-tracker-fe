@@ -8,51 +8,15 @@
     }"
   >
     <div class="system-tx-form__header">
-      <div class="system-tx-form__header-info">
-        <div />
-        <div class="system-tx-form__header-title">
-          Add Record
-        </div>
-        <button
-          class="system-tx-form__header-action"
-          type="button"
-          @click="closeModal"
-        >
-          Cancel
-        </button>
-      </div>
-      <div class="system-tx-form__type-selector">
-        <div
-          class="system-tx-form__type-selector-item"
-          :class="{
-            'system-tx-form__type-selector-item--active': currentTxType === FORM_TYPES.expense,
-          }"
-          @click="selectTransactionType(FORM_TYPES.expense)"
-        >
-          Expense
-        </div>
-        <div
-          class="system-tx-form__type-selector-item"
-          :class="{
-            'system-tx-form__type-selector-item--active': currentTxType === FORM_TYPES.income,
-          }"
-          @click="selectTransactionType(FORM_TYPES.income)"
-        >
-          Income
-        </div>
-        <div
-          class="system-tx-form__type-selector-item"
-          :class="{
-            'system-tx-form__type-selector-item--active': currentTxType === FORM_TYPES.transfer,
-          }"
-          @click="selectTransactionType(FORM_TYPES.transfer)"
-        >
-          Transfer
-        </div>
-      </div>
+      <form-header @close="closeModal" />
+
+      <type-selector
+        :selected-transaction-type="currentTxType"
+        @change-tx-type="selectTransactionType"
+      />
     </div>
     <div class="system-tx-form__form">
-      <div class="system-tx-form__row">
+      <form-row>
         <InputField
           v-model="form.amount"
           label="Amount"
@@ -60,62 +24,17 @@
           only-positive
           placeholder="Amount"
         />
-      </div>
-      <template v-if="accountsArray.length">
-        <template v-if="isTransferTx">
-          <div class="system-tx-form__row">
-            <SelectField
-              v-model="form.account"
-              label="From account"
-              placeholder="Select account"
-              :values="accountsArray"
-              label-key="name"
-              is-value-preselected
-            />
-          </div>
+      </form-row>
 
-          <div class="system-tx-form__row">
-            <SelectField
-              v-model="form.toAccount"
-              label="To account"
-              placeholder="Select account"
-              :values="filteredAccounts"
-              label-key="name"
-            />
-          </div>
-        </template>
-        <template v-else>
-          <div class="system-tx-form__row">
-            <SelectField
-              v-model="form.account"
-              label="Account"
-              placeholder="Select account"
-              :values="filteredAccounts"
-              label-key="name"
-              is-value-preselected
-            />
-          </div>
-        </template>
-      </template>
-      <template v-else>
-        <div class="system-tx-form__row">
-          <InputField
-            model-value="No account exists"
-            label="Account"
-            readonly
-          >
-            <template #label-right>
-              <div
-                class="system-tx-form__create-account"
-                @click="redirectToCreateAccountPage"
-              >
-                Create account
-              </div>
-            </template>
-          </InputField>
-        </div>
-      </template>
-      <template v-if="!isTransferTx">
+      <account-field
+        v-model:form-account="form.account"
+        v-model:form-to-account="form.toAccount"
+        :is-transfer-transaction="isTransferTx"
+        :accounts="accountsArray"
+        :filtered-accounts="filteredAccounts"
+      />
+
+      <template v-if="currentTxType !== FORM_TYPES.transfer">
         <div class="system-tx-form__row">
           <CategorySelectField
             v-model="form.category"
@@ -180,7 +99,6 @@ import {
   computed,
 } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useRouter } from 'vue-router';
 import {
   useAccountsStore,
   useCategoriesStore,
@@ -207,11 +125,12 @@ import DateField from '@/components/fields/DateField.vue';
 import Button from '@/components/common/Button.vue';
 import { EVENTS as MODAL_EVENTS } from '@/components/modal-center/Modal.vue';
 
-enum FORM_TYPES {
-  income = 'income',
-  expense = 'expense',
-  transfer = 'transfer',
-}
+import FormHeader from './form-header.vue';
+import TypeSelector from './type-selector.vue';
+import FormRow from './form-row.vue';
+import AccountField from './account-field.vue';
+
+import { FORM_TYPES } from './types';
 
 const getFormTypeFromTransaction = (tx: TransactionRecord): FORM_TYPES => {
   if (tx.isTransfer) return FORM_TYPES.transfer;
@@ -230,7 +149,12 @@ const getTxTypeFromFormType = (formType: FORM_TYPES): TRANSACTION_TYPES => {
 };
 
 export default defineComponent({
+  name: 'SystemTxForm',
   components: {
+    FormHeader,
+    FormRow,
+    AccountField,
+    TypeSelector,
     DateField,
     InputField,
     SelectField,
@@ -249,7 +173,6 @@ export default defineComponent({
     },
   },
   setup(props, { emit }) {
-    const router = useRouter();
     const accountsStore = useAccountsStore();
     const categoriesStore = useCategoriesStore();
 
@@ -285,6 +208,7 @@ export default defineComponent({
     );
 
     const accountsArray = computed(() => Object.values(accountsRecord.value));
+
     const filteredAccounts = computed(
       () => accountsArray.value.filter(
         (item) => item.id !== form.value.account?.id,
@@ -426,12 +350,6 @@ export default defineComponent({
       }
     };
 
-    const redirectToCreateAccountPage = async () => {
-      await router.push({ name: 'create-account' });
-
-      emit(MODAL_EVENTS.closeModal);
-    };
-
     const closeModal = () => {
       emit(MODAL_EVENTS.closeModal);
     };
@@ -455,7 +373,6 @@ export default defineComponent({
       selectTransactionType,
       deleteTransactionHandler,
       submit,
-      redirectToCreateAccountPage,
     };
   },
 });
@@ -489,60 +406,6 @@ $border-top-radius: 10px;
     background-color: var(--app-transfer-color);
   }
 }
-.system-tx-form__header-info {
-  display: grid;
-  align-items: center;
-  grid-template-columns: 60px 1fr min-content;
-  grid-gap: 8px;
-}
-.system-tx-form__type-selector {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-
-  background-color: rgba(#000, .4);
-  border-radius: 10px;
-  margin-top: 24px;
-}
-.system-tx-form__type-selector-item {
-  padding: 6px;
-
-  font-size: 16px;
-  text-align: center;
-  cursor: pointer;
-
-  transition: .1s ease-out;
-  color: #fff;
-
-  &[disabled="true"] {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-}
-.system-tx-form__type-selector-item--active {
-  background-color: #fff;
-  border-radius: 10px;
-  color: #000;
-}
-.system-tx-form__header-title {
-  font-size: 19px;
-  color: #fff;
-  text-align: center;
-}
-.system-tx-form__header-action {
-  @include button-style-reset();
-
-  color: #fff;
-
-  font-size: 16px;
-
-  padding: 4px 8px;
-  border-radius: 5px;
-  transition: background-color .1s ease-out;
-
-  &:hover {
-    background-color: rgba(#fff, 0.3);
-  }
-}
 .system-tx-form__form {
   padding: 0 24px;
 }
@@ -558,13 +421,5 @@ $border-top-radius: 10px;
 }
 .system-tx-form__action--submit {
   margin-left: auto;
-}
-.system-tx-form__create-account {
-  color: var(--primary-500);
-  cursor: pointer;
-
-  &:hover {
-    text-decoration: underline;
-  }
 }
 </style>

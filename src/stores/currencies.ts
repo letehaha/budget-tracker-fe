@@ -13,7 +13,7 @@ export const useCurrenciesStore = defineStore('currencies', () => {
   };
 
   const getCurrency = (currencyId: number) => (
-    currencies.value.find(currency => currency.id === currencyId)
+    currencies.value.find(currency => currency.currencyId === currencyId)
   );
 
   return {

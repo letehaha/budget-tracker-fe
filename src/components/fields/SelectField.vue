@@ -58,7 +58,7 @@ import FieldError from './components/FieldError.vue';
 import FieldLabel from './components/FieldLabel.vue';
 
 const MODEL_EVENTS = {
-  input: 'update:modelValue',
+  input: 'update:model-value',
 };
 
 export const POSITIONS = Object.freeze({
