@@ -35,22 +35,22 @@
       />
 
       <template v-if="currentTxType !== FORM_TYPES.transfer">
-        <div class="system-tx-form__row">
+        <form-row>
           <CategorySelectField
             v-model="form.category"
             label="Category"
             :values="categories"
             label-key="name"
           />
-        </div>
+        </form-row>
       </template>
-      <div class="system-tx-form__row">
+      <form-row>
         <DateField
           v-model="form.time"
           label="Datetime"
         />
-      </div>
-      <div class="system-tx-form__row">
+      </form-row>
+      <form-row>
         <SelectField
           v-model="form.paymentType"
           label="Payment Type"
@@ -58,14 +58,14 @@
           label-key="name"
           is-value-preselected
         />
-      </div>
-      <div class="system-tx-form__row">
+      </form-row>
+      <form-row>
         <TextareaField
           v-model="form.note"
           placeholder="Note"
           label="Note (optional)"
         />
-      </div>
+      </form-row>
     </div>
     <div class="system-tx-form__actions">
       <Button
@@ -408,9 +408,6 @@ $border-top-radius: 10px;
 }
 .system-tx-form__form {
   padding: 0 24px;
-}
-.system-tx-form__row {
-  margin-bottom: 20px;
 }
 .system-tx-form__actions {
   display: flex;
