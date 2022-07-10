@@ -63,12 +63,21 @@ export default defineComponent({
     inputFieldStyles: { type: Object, default: undefined },
     onlyPositive: Boolean,
   },
+  emits: {
+    [MODEL_EVENTS.input]: (value: number | string) => (
+      typeof value === 'number' || typeof value === 'string'
+    ),
+  },
   setup(props, { attrs, emit, slots }) {
     const computedAttrs = {
       ...attrs,
       onInput: event => {
-        if (props.modelValue === event.target.value) return;
-        emit(MODEL_EVENTS.input, event.target.value);
+        let value: string | number = event.target.value;
+
+        if (props.modelValue === value) return;
+        if (props.type === 'number') value = Number(value);
+
+        emit(MODEL_EVENTS.input, value);
       },
       onkeypress: (event: KeyboardEvent) => {
         if (props.type === 'number') {
