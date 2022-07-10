@@ -1,13 +1,15 @@
 import { TRANSACTION_TYPES } from '@/js/const';
+import { TransactionRecord } from './models';
+import { MONOTransactionRecord } from './monobank';
 
 export class TransactionModelRecord {
-  _record: Record<string, unknown>;
+  _record: TransactionRecord | MONOTransactionRecord;
 
   type: number;
 
-  tx: Record<string, unknown>;
+  tx: TransactionRecord | MONOTransactionRecord;
 
-  constructor(type: number, record = {}) {
+  constructor(type: number, record: TransactionRecord | MONOTransactionRecord) {
     this._record = record;
 
     this.type = type || TRANSACTION_TYPES.system;

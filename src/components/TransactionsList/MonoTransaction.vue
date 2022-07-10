@@ -26,13 +26,17 @@
 
 <script lang="ts">
 import { format } from 'date-fns';
-import { defineComponent, computed } from 'vue';
+import { defineComponent, PropType, computed } from 'vue';
 import { useCategoriesStore } from '@/stores';
 import { MODAL_TYPES, useModalCenter } from '@/components/modal-center/index';
+import { MONOTransactionRecord } from '@/js/records';
 
 export default defineComponent({
   props: {
-    tx: { type: Object, required: true },
+    tx: {
+      type: Object as PropType<MONOTransactionRecord>,
+      required: true,
+    },
   },
   setup(props) {
     const { getCategoryTypeById } = useCategoriesStore();
