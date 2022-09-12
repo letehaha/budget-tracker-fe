@@ -4,7 +4,7 @@
     :class="{
       'system-tx-form--income': currentTxType === TRANSACTION_TYPES.income,
       'system-tx-form--expense': currentTxType === TRANSACTION_TYPES.expense,
-      'system-tx-form--transfer': currentTxType === TRANSACTION_TYPES.transfer,
+      'system-tx-form--transfer': isTransferTx,
     }"
   >
     <div class="system-tx-form__header">
@@ -51,7 +51,7 @@
         <div
           class="system-tx-form__type-selector-item"
           :class="{
-            'system-tx-form__type-selector-item--active': currentTxType === TRANSACTION_TYPES.transfer,
+            'system-tx-form__type-selector-item--active': isTransferTx,
           }"
           :disabled="isTransferSwitchDisabled"
           @click="selectTransactionType(
@@ -186,7 +186,7 @@
 </template>
 
 <script lang="ts">
-import { TRANSACTION_TYPES, PAYMENT_TYPES, ACCOUNT_TYPES } from 'shared-types';
+import { TRANSACTION_TYPES, PAYMENT_TYPES } from 'shared-types';
 import {
   defineComponent,
   ref,
@@ -237,6 +237,10 @@ export default defineComponent({
       type: TransactionRecord,
       default: undefined,
     },
+    oppositeTransaction: {
+      type: TransactionRecord,
+      default: undefined,
+    },
   },
   setup(props, { emit }) {
     const router = useRouter();
@@ -251,7 +255,7 @@ export default defineComponent({
     const form = ref<{
       amount: number;
       account: AccountRecord;
-      toAccount: AccountRecord;
+      toAccount?: AccountRecord;
       category: CategoryRecord;
       time: string;
       paymentType: PAYMENT_TYPES;
@@ -270,15 +274,7 @@ export default defineComponent({
     const isLoading = ref(false);
 
     const currentTxType = computed(() => form.value.type);
-    const isTransferTx = computed(
-      () => currentTxType.value === TRANSACTION_TYPES.transfer,
-    );
-    const isExpenseTx = computed(
-      () => currentTxType.value === TRANSACTION_TYPES.expense,
-    );
-    const isIncomeTx = computed(
-      () => currentTxType.value === TRANSACTION_TYPES.income,
-    );
+    const isTransferTx = computed(() => props.transaction.isTransfer);
 
     const accountsArray = computed(() => Object.values(accountsRecord.value));
     const filteredAccounts = computed(
@@ -294,13 +290,25 @@ export default defineComponent({
           form.value = {
             amount: Math.abs(fromSystemAmount(value.amount)),
             account: accountsRecord.value[value.accountId],
-            toAccount: accountsRecord.value[value.toAccountId],
             type: value.transactionType,
             category: rawCategories.value.find(i => i.id === value.categoryId),
             time: new Date(value.time).toISOString().substring(0, 19),
             paymentType: value.paymentType,
             note: value.note,
           };
+        }
+      },
+      {
+        immediate: true,
+        deep: true,
+      },
+    );
+
+    watch(
+      () => props.oppositeTransaction,
+      (value) => {
+        if (value) {
+          form.value.toAccount = accountsRecord.value[value.accountId];
         }
       },
       {
@@ -347,11 +355,13 @@ export default defineComponent({
           accountId: number;
           categoryId?: number;
           currencyId: number;
+          currencyCode: string;
 
-          fromAccountId?: number;
-          fromAccountType?: ACCOUNT_TYPES;
-          toAccountId?: number;
-          toAccountType?: ACCOUNT_TYPES;
+          isTransfer?: boolean;
+          destinationAmount?: number;
+          destinationAccountId?: number;
+          destinationCurrencyId?: number;
+          destinationCurrencyCode?: string;
         } = {
           amount: toSystemAmount(Number(amount)),
           note,
@@ -359,21 +369,17 @@ export default defineComponent({
           transactionType,
           paymentType,
           accountId,
-          currencyId: 1,
+          currencyId: 867,
+          currencyCode: 'UAH',
         };
-
-        if (isExpenseTx.value) {
-          params.amount = Math.abs(params.amount) * -1;
-        } else if (isIncomeTx.value) {
-          params.amount = Math.abs(params.amount);
-        }
 
         if (isFormCreation.value) {
           if (isTransferTx.value) {
-            params.fromAccountId = accountId;
-            params.fromAccountType = ACCOUNT_TYPES.system;
-            params.toAccountId = toAccount.id;
-            params.toAccountType = ACCOUNT_TYPES.system;
+            params.destinationAccountId = toAccount.id;
+            params.destinationAmount = toSystemAmount(Number(amount));
+            params.isTransfer = true;
+            params.destinationCurrencyId = 867;
+            params.destinationCurrencyCode = 'UAH';
           } else {
             params.categoryId = category.id;
           }

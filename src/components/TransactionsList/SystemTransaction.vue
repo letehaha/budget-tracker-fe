@@ -4,14 +4,11 @@
     :class="{
       'transaction--income': transaction.transactionType === TRANSACTION_TYPES.income,
       'transaction--expense': transaction.transactionType === TRANSACTION_TYPES.expense,
-      'transaction--transfer': transaction.transactionType === TRANSACTION_TYPES.transfer,
     }"
     @click="editTransaction"
   >
     <div class="transaction__info">
-      <template
-        v-if="transaction.transactionType === TRANSACTION_TYPES.transfer"
-      >
+      <template v-if="transaction.isTransfer">
         <div class="transaction__category">
           {{ accountMovement }}
         </div>
@@ -42,23 +39,26 @@
 <script lang="ts">
 import { format } from 'date-fns';
 import {
-  defineComponent, computed, reactive, PropType,
+  defineComponent, computed, reactive, PropType, ref,
 } from 'vue';
 import { storeToRefs } from 'pinia';
 import { TRANSACTION_TYPES } from 'shared-types';
 
 import { useCategoriesStore, useAccountsStore } from '@/stores';
-import { loadTransactionById } from '@/api/transactions';
+import { loadTransactionsByTransferId } from '@/api/transactions';
 
 import { formatAmount } from '@/js/helpers';
 import { TransactionRecord } from '@/js/records';
 
 import { MODAL_TYPES, useModalCenter } from '@/components/modal-center/index';
 
-import {
-  useNotificationCenter,
-  NotificationType,
-} from '@/components/notification-center';
+const setOppositeTransaction = async (transaction: TransactionRecord) => {
+  const transactions = await loadTransactionsByTransferId(
+    transaction.transferId,
+  );
+
+  return transactions.find(item => item.id !== transaction.id);
+};
 
 export default defineComponent({
   props: {
@@ -69,22 +69,30 @@ export default defineComponent({
     const accountsStore = useAccountsStore();
     const { addModal } = useModalCenter();
     const { accountsRecord } = storeToRefs(accountsStore);
-    const { addNotification } = useNotificationCenter();
 
     const transaction = reactive(props.tx);
+    const oppositeTransferTransaction = ref<TransactionRecord | null>(null);
+
+    if (transaction.isTransfer) {
+      (async () => {
+        oppositeTransferTransaction.value = (
+          await setOppositeTransaction(transaction)
+        );
+      })();
+    }
 
     const category = computed(
       () => getCategoryTypeById(transaction.categoryId),
     );
     const accountFrom = computed(
-      () => accountsRecord.value[transaction.fromAccountId],
+      () => accountsRecord.value[transaction.accountId],
     );
     const accountTo = computed(
-      () => accountsRecord.value[transaction.toAccountId],
+      () => accountsRecord.value[oppositeTransferTransaction.value?.accountId],
     );
 
     const accountMovement = computed(
-      () => `${accountFrom.value.name} => ${accountTo.value.name}`,
+      () => `${accountFrom.value.name} => ${accountTo.value?.name}`,
     );
 
     const formateDate = date => format(new Date(date), 'd MMMM y');
@@ -92,21 +100,19 @@ export default defineComponent({
     const editTransaction = async () => {
       let txToEdit = transaction;
 
-      if (txToEdit.accountId === txToEdit.toAccountId) {
-        try {
-          txToEdit = await loadTransactionById({ id: txToEdit.oppositeId });
-        } catch (e) {
-          // TODO: add logger
-          addNotification({
-            text: 'Cannot load transaction to edit.',
-            type: NotificationType.error,
-          });
-        }
+      if (
+        txToEdit.isTransfer
+        && txToEdit.transactionType !== TRANSACTION_TYPES.expense
+      ) {
+        txToEdit = oppositeTransferTransaction.value;
       }
 
       addModal({
         type: MODAL_TYPES.systemTxForm,
-        data: { transaction: txToEdit },
+        data: {
+          transaction: txToEdit,
+          oppositeTransaction: oppositeTransferTransaction.value,
+        },
       });
     };
 
@@ -127,8 +133,6 @@ export default defineComponent({
       formateDate,
       formattedAmount,
       editTransaction,
-      accountFrom,
-      accountTo,
       transaction,
       accountMovement,
     };
@@ -171,9 +175,6 @@ export default defineComponent({
   }
   .transaction--expense & {
     color: #e74c3c;
-  }
-  .transaction--transfer & {
-    color: var(--app-on-surface-color);
   }
 }
 </style>
