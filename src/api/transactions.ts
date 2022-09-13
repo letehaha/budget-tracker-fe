@@ -124,6 +124,7 @@ export const editTransaction = async ({
   categoryId,
   currencyId,
   currencyCode,
+  isTransfer,
   destinationAccountId,
   destinationAmount,
   destinationCurrencyId,
@@ -139,6 +140,7 @@ export const editTransaction = async ({
   categoryId?: number;
   currencyId?: number;
   currencyCode?: string;
+  isTransfer?: boolean;
   destinationAccountId?: number;
   destinationAmount?: number;
   destinationCurrencyId?: number;
@@ -154,6 +156,7 @@ export const editTransaction = async ({
       accountId,
       categoryId,
       currencyId,
+      isTransfer,
       currencyCode,
       destinationAccountId,
       destinationAmount,

@@ -98,21 +98,24 @@ export default defineComponent({
     const formateDate = date => format(new Date(date), 'd MMMM y');
 
     const editTransaction = async () => {
-      let txToEdit = transaction;
+      const baseTx = transaction;
+      const oppositeTx = oppositeTransferTransaction.value;
 
-      if (
-        txToEdit.isTransfer
-        && txToEdit.transactionType !== TRANSACTION_TYPES.expense
-      ) {
-        txToEdit = oppositeTransferTransaction.value;
+      const modalOptions = {
+        transaction: baseTx,
+        oppositeTransaction: undefined,
+      };
+
+      if (baseTx.isTransfer) {
+        const isValid = baseTx.transactionType === TRANSACTION_TYPES.expense;
+
+        modalOptions.transaction = isValid ? baseTx : oppositeTx;
+        modalOptions.oppositeTransaction = isValid ? oppositeTx : baseTx;
       }
 
       addModal({
         type: MODAL_TYPES.systemTxForm,
-        data: {
-          transaction: txToEdit,
-          oppositeTransaction: oppositeTransferTransaction.value,
-        },
+        data: modalOptions,
       });
     };
 

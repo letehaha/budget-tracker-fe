@@ -2,9 +2,9 @@
   <div
     class="system-tx-form"
     :class="{
-      'system-tx-form--income': currentTxType === TRANSACTION_TYPES.income,
-      'system-tx-form--expense': currentTxType === TRANSACTION_TYPES.expense,
-      'system-tx-form--transfer': isTransferTx,
+      'system-tx-form--income': currentTxType === FORM_TYPES.income,
+      'system-tx-form--expense': currentTxType === FORM_TYPES.expense,
+      'system-tx-form--transfer': currentTxType === FORM_TYPES.transfer,
     }"
   >
     <div class="system-tx-form__header">
@@ -25,11 +25,11 @@
         <div
           class="system-tx-form__type-selector-item"
           :class="{
-            'system-tx-form__type-selector-item--active': currentTxType === TRANSACTION_TYPES.expense,
+            'system-tx-form__type-selector-item--active': currentTxType === FORM_TYPES.expense,
           }"
           :disabled="isExpenseSwitchDisabled"
           @click="selectTransactionType(
-            TRANSACTION_TYPES.expense,
+            FORM_TYPES.expense,
             isExpenseSwitchDisabled,
           )"
         >
@@ -38,11 +38,11 @@
         <div
           class="system-tx-form__type-selector-item"
           :class="{
-            'system-tx-form__type-selector-item--active': currentTxType === TRANSACTION_TYPES.income,
+            'system-tx-form__type-selector-item--active': currentTxType === FORM_TYPES.income,
           }"
           :disabled="isIncomeSwitchDisabled"
           @click="selectTransactionType(
-            TRANSACTION_TYPES.income,
+            FORM_TYPES.income,
             isIncomeSwitchDisabled,
           )"
         >
@@ -51,11 +51,11 @@
         <div
           class="system-tx-form__type-selector-item"
           :class="{
-            'system-tx-form__type-selector-item--active': isTransferTx,
+            'system-tx-form__type-selector-item--active': currentTxType === FORM_TYPES.transfer,
           }"
           :disabled="isTransferSwitchDisabled"
           @click="selectTransactionType(
-            TRANSACTION_TYPES.transfer,
+            FORM_TYPES.transfer,
             isTransferSwitchDisabled,
           )"
         >
@@ -129,7 +129,7 @@
           </InputField>
         </div>
       </template>
-      <template v-if="currentTxType !== TRANSACTION_TYPES.transfer">
+      <template v-if="!isTransferTx">
         <div class="system-tx-form__row">
           <CategorySelectField
             v-model="form.category"
@@ -223,6 +223,28 @@ const EVENTS = {
   closeModal: 'close-modal',
 };
 
+enum FORM_TYPES {
+  income = 'income',
+  expense = 'expense',
+  transfer = 'transfer',
+}
+
+const getFormTypeFromTransaction = (tx: TransactionRecord): FORM_TYPES => {
+  if (tx.isTransfer) return FORM_TYPES.transfer;
+
+  return tx.transactionType === TRANSACTION_TYPES.expense
+    ? FORM_TYPES.expense
+    : FORM_TYPES.income;
+};
+
+const getTxTypeFromFormType = (formType: FORM_TYPES): TRANSACTION_TYPES => {
+  if (formType === FORM_TYPES.transfer) return TRANSACTION_TYPES.expense;
+
+  return formType === FORM_TYPES.expense
+    ? TRANSACTION_TYPES.expense
+    : TRANSACTION_TYPES.income;
+};
+
 export default defineComponent({
   components: {
     DateField,
@@ -260,7 +282,7 @@ export default defineComponent({
       time: string;
       paymentType: PAYMENT_TYPES;
       note?: string;
-      type: TRANSACTION_TYPES;
+      type: FORM_TYPES;
     }>({
       amount: null,
       account: null,
@@ -269,12 +291,14 @@ export default defineComponent({
       time: new Date().toISOString().substring(0, 19),
       paymentType: PAYMENT_TYPES.creditCard,
       note: null,
-      type: TRANSACTION_TYPES.expense,
+      type: FORM_TYPES.expense,
     });
     const isLoading = ref(false);
 
     const currentTxType = computed(() => form.value.type);
-    const isTransferTx = computed(() => props.transaction.isTransfer);
+    const isTransferTx = computed(
+      () => currentTxType.value === FORM_TYPES.transfer,
+    );
 
     const accountsArray = computed(() => Object.values(accountsRecord.value));
     const filteredAccounts = computed(
@@ -290,7 +314,7 @@ export default defineComponent({
           form.value = {
             amount: Math.abs(fromSystemAmount(value.amount)),
             account: accountsRecord.value[value.accountId],
-            type: value.transactionType,
+            type: getFormTypeFromTransaction(value),
             category: rawCategories.value.find(i => i.id === value.categoryId),
             time: new Date(value.time).toISOString().substring(0, 19),
             paymentType: value.paymentType,
@@ -339,7 +363,7 @@ export default defineComponent({
           amount,
           note,
           time,
-          type: transactionType,
+          type: formTxType,
           paymentType,
           account: { id: accountId },
           toAccount,
@@ -366,24 +390,24 @@ export default defineComponent({
           amount: toSystemAmount(Number(amount)),
           note,
           time: new Date(time).toISOString(),
-          transactionType,
+          transactionType: getTxTypeFromFormType(formTxType),
           paymentType,
           accountId,
           currencyId: 867,
           currencyCode: 'UAH',
         };
 
-        if (isFormCreation.value) {
-          if (isTransferTx.value) {
-            params.destinationAccountId = toAccount.id;
-            params.destinationAmount = toSystemAmount(Number(amount));
-            params.isTransfer = true;
-            params.destinationCurrencyId = 867;
-            params.destinationCurrencyCode = 'UAH';
-          } else {
-            params.categoryId = category.id;
-          }
+        if (isTransferTx.value) {
+          params.destinationAccountId = toAccount.id;
+          params.destinationAmount = toSystemAmount(Number(amount));
+          params.isTransfer = true;
+          params.destinationCurrencyId = 867;
+          params.destinationCurrencyCode = 'UAH';
+        } else {
+          params.categoryId = category.id;
+        }
 
+        if (isFormCreation.value) {
           await createTransaction(params);
         } else {
           await editTransaction({
@@ -420,30 +444,25 @@ export default defineComponent({
       emit(EVENTS.closeModal);
     };
 
-    const selectTransactionType = (
-      type: TRANSACTION_TYPES,
-      disabled = false,
-    ) => {
+    const selectTransactionType = (type: FORM_TYPES, disabled = false) => {
       if (!disabled) {
         form.value.type = type;
       }
     };
 
+    // For now disable editing transactionType. Backend is not ready
     const isExpenseSwitchDisabled = computed(() => (
-      !isFormCreation.value
-      && props.transaction.transactionType === TRANSACTION_TYPES.transfer
+      !isFormCreation.value && props.transaction?.isTransfer
     ));
     const isIncomeSwitchDisabled = computed(() => (
-      !isFormCreation.value
-      && props.transaction.transactionType === TRANSACTION_TYPES.transfer
+      !isFormCreation.value && props.transaction?.isTransfer
     ));
     const isTransferSwitchDisabled = computed(() => (
-      !isFormCreation.value
-      && [TRANSACTION_TYPES.income, TRANSACTION_TYPES.expense]
-        .includes(props.transaction.transactionType)
+      !isFormCreation.value && !props.transaction?.isTransfer
     ));
 
     return {
+      FORM_TYPES,
       TRANSACTION_TYPES,
       PAYMENT_TYPES,
       EVENTS,
