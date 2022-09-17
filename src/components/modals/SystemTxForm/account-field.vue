@@ -59,16 +59,10 @@
 </template>
 
 <script lang="ts">
-import { TRANSACTION_TYPES, PAYMENT_TYPES } from 'shared-types';
 import { defineComponent, PropType } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { AccountRecord } from '@/js/records';
-import {
-  createTransaction,
-  editTransaction,
-  deleteTransaction,
-} from '@/api/transactions';
 import SelectField from '@/components/fields/SelectField.vue';
 import InputField from '@/components/fields/InputField.vue';
 
@@ -118,11 +112,6 @@ export default defineComponent({
 
     return {
       emit,
-      TRANSACTION_TYPES,
-      PAYMENT_TYPES,
-      createTransaction,
-      editTransaction,
-      deleteTransaction,
       redirectToCreateAccountPage,
     };
   },
