@@ -3,8 +3,8 @@ import * as errors from '@/js/errors';
 import { eventBus } from './event-bus.util';
 
 export class ErrorHandler {
-  static process(error: Error, translationId = ''): void {
-    const msgTrId = translationId || ErrorHandler._getMessage(error);
+  static process(error: Error, message = ''): void {
+    const msgTrId = message || ErrorHandler._getMessage(error);
     eventBus.error(msgTrId);
 
     ErrorHandler.processWithoutFeedback(error);
