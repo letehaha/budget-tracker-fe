@@ -1,7 +1,7 @@
 <template>
   <div class="monobank-tx-form">
     <div>
-      <button @click="$emit(EVENTS.closeModal)">
+      <button @click="$emit(MODAL_EVENTS.closeModal)">
         Close
       </button>
     </div>
@@ -61,10 +61,7 @@ import {
 import CategorySelectField from '@/components/fields/CategorySelectField.vue';
 import TextareaField from '@/components/fields/TextareaField.vue';
 import Button from '@/components/common/Button.vue';
-
-const EVENTS = {
-  closeModal: 'close-modal',
-};
+import { EVENTS as MODAL_EVENTS } from '@/components/modal-center/Modal.vue';
 
 export default defineComponent({
   name: 'MonobankTxForm',
@@ -79,7 +76,7 @@ export default defineComponent({
       default: undefined,
     },
   },
-  setup(props) {
+  setup(props, { emit }) {
     const accountsStore = useAccountsStore();
     const categoriesStore = useCategoriesStore();
     const monobankStore = useBanksMonobankStore();
@@ -114,6 +111,7 @@ export default defineComponent({
           text: 'Updated successfully',
           type: NotificationType.success,
         });
+        emit(MODAL_EVENTS.closeModal);
       } catch (e) {
         addNotification({
           text: 'Unexpected error occured',
@@ -125,7 +123,7 @@ export default defineComponent({
     };
 
     return {
-      EVENTS,
+      MODAL_EVENTS,
       form,
       isLoading,
       categories,

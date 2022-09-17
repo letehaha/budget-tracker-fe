@@ -205,10 +205,7 @@ import CategorySelectField from '@/components/fields/CategorySelectField.vue';
 import TextareaField from '@/components/fields/TextareaField.vue';
 import DateField from '@/components/fields/DateField.vue';
 import Button from '@/components/common/Button.vue';
-
-const EVENTS = {
-  closeModal: 'close-modal',
-};
+import { EVENTS as MODAL_EVENTS } from '@/components/modal-center/Modal.vue';
 
 enum FORM_TYPES {
   income = 'income',
@@ -404,7 +401,7 @@ export default defineComponent({
           });
         }
 
-        emit(EVENTS.closeModal);
+        emit(MODAL_EVENTS.closeModal);
         eventBus.emit(BUS_EVENTS.transactionChange);
       } catch (e) {
         // eslint-disable-next-line no-console
@@ -419,7 +416,7 @@ export default defineComponent({
 
         await deleteTransaction(props.transaction.id);
 
-        emit(EVENTS.closeModal);
+        emit(MODAL_EVENTS.closeModal);
         eventBus.emit(BUS_EVENTS.transactionChange);
       } catch (e) {
         // eslint-disable-next-line no-console
@@ -432,11 +429,11 @@ export default defineComponent({
     const redirectToCreateAccountPage = async () => {
       await router.push({ name: 'create-account' });
 
-      emit(EVENTS.closeModal);
+      emit(MODAL_EVENTS.closeModal);
     };
 
     const closeModal = () => {
-      emit(EVENTS.closeModal);
+      emit(MODAL_EVENTS.closeModal);
     };
 
     const selectTransactionType = (type: FORM_TYPES, disabled = false) => {
@@ -447,9 +444,7 @@ export default defineComponent({
       FORM_TYPES,
       TRANSACTION_TYPES,
       PAYMENT_TYPES,
-      EVENTS,
       form,
-      isFormCreation,
       filteredAccounts,
       isTransferTx,
       isLoading,
@@ -458,9 +453,6 @@ export default defineComponent({
       categories,
       currentTxType,
       selectTransactionType,
-      createTransaction,
-      editTransaction,
-      deleteTransaction,
       deleteTransactionHandler,
       submit,
       redirectToCreateAccountPage,

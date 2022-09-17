@@ -4,7 +4,7 @@
     data-cy="monobank-set-token-modal"
   >
     <div>
-      <button @click="$emit(EVENTS.closeModal)">
+      <button @click="$emit(MODAL_EVENTS.closeModal)">
         Close
       </button>
     </div>
@@ -49,15 +49,12 @@ import { useBanksMonobankStore } from '@/stores';
 import { ApiErrorResponseError } from '@/js/errors';
 import InputField from '@/components/fields/InputField.vue';
 import Button, { BUTTON_TYPES } from '@/components/common/Button.vue';
+import { EVENTS as MODAL_EVENTS } from '@/components/modal-center/Modal.vue';
 
 import {
   useNotificationCenter,
   NotificationType,
 } from '@/components/notification-center';
-
-const EVENTS = {
-  closeModal: 'close-modal',
-};
 
 export default defineComponent({
   name: 'MonobankSetToken',
@@ -87,7 +84,7 @@ export default defineComponent({
           await monobankStore.pairAccount({ token: form.token });
         }
 
-        emit(EVENTS.closeModal);
+        emit(MODAL_EVENTS.closeModal);
 
         addNotification({
           text: 'Paired',
@@ -116,7 +113,7 @@ export default defineComponent({
 
     return {
       BUTTON_TYPES,
-      EVENTS,
+      MODAL_EVENTS,
       form,
       isLoading,
       submit,
