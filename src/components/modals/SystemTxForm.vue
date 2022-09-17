@@ -27,11 +27,7 @@
           :class="{
             'system-tx-form__type-selector-item--active': currentTxType === FORM_TYPES.expense,
           }"
-          :disabled="isExpenseSwitchDisabled"
-          @click="selectTransactionType(
-            FORM_TYPES.expense,
-            isExpenseSwitchDisabled,
-          )"
+          @click="selectTransactionType(FORM_TYPES.expense)"
         >
           Expense
         </div>
@@ -40,11 +36,7 @@
           :class="{
             'system-tx-form__type-selector-item--active': currentTxType === FORM_TYPES.income,
           }"
-          :disabled="isIncomeSwitchDisabled"
-          @click="selectTransactionType(
-            FORM_TYPES.income,
-            isIncomeSwitchDisabled,
-          )"
+          @click="selectTransactionType(FORM_TYPES.income)"
         >
           Income
         </div>
@@ -53,11 +45,7 @@
           :class="{
             'system-tx-form__type-selector-item--active': currentTxType === FORM_TYPES.transfer,
           }"
-          :disabled="isTransferSwitchDisabled"
-          @click="selectTransactionType(
-            FORM_TYPES.transfer,
-            isTransferSwitchDisabled,
-          )"
+          @click="selectTransactionType(FORM_TYPES.transfer)"
         >
           Transfer
         </div>
@@ -83,7 +71,6 @@
               :values="accountsArray"
               label-key="name"
               is-value-preselected
-              :disabled="!isFormCreation"
             />
           </div>
 
@@ -94,7 +81,6 @@
               placeholder="Select account"
               :values="filteredAccounts"
               label-key="name"
-              :disabled="!isFormCreation"
             />
           </div>
         </template>
@@ -393,6 +379,7 @@ export default defineComponent({
           transactionType: getTxTypeFromFormType(formTxType),
           paymentType,
           accountId,
+          // TODO: one day allow changing currency
           currencyId: 867,
           currencyCode: 'UAH',
         };
@@ -445,21 +432,8 @@ export default defineComponent({
     };
 
     const selectTransactionType = (type: FORM_TYPES, disabled = false) => {
-      if (!disabled) {
-        form.value.type = type;
-      }
+      if (!disabled) form.value.type = type;
     };
-
-    // For now disable editing transactionType. Backend is not ready
-    const isExpenseSwitchDisabled = computed(() => (
-      !isFormCreation.value && props.transaction?.isTransfer
-    ));
-    const isIncomeSwitchDisabled = computed(() => (
-      !isFormCreation.value && props.transaction?.isTransfer
-    ));
-    const isTransferSwitchDisabled = computed(() => (
-      !isFormCreation.value && !props.transaction?.isTransfer
-    ));
 
     return {
       FORM_TYPES,
@@ -469,9 +443,6 @@ export default defineComponent({
       form,
       isFormCreation,
       filteredAccounts,
-      isExpenseSwitchDisabled,
-      isIncomeSwitchDisabled,
-      isTransferSwitchDisabled,
       isTransferTx,
       isLoading,
       accountsArray,
