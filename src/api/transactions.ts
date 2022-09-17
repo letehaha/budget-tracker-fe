@@ -51,6 +51,15 @@ export const loadTransactionById = async (
   return result;
 };
 
+// Add cache
+export const loadTransactionsByTransferId = async (
+  transferId: string,
+): Promise<TransactionRecord[]> => {
+  const result = await api.get(`/transactions/transfer/${transferId}`);
+
+  return result.map(item => new TransactionRecord(item));
+};
+
 export const createTransaction = async ({
   amount,
   note = '',
@@ -60,10 +69,12 @@ export const createTransaction = async ({
   accountId,
   categoryId,
   currencyId,
-  fromAccountId,
-  fromAccountType,
-  toAccountId,
-  toAccountType,
+  currencyCode,
+  destinationAccountId,
+  destinationAmount,
+  isTransfer = false,
+  destinationCurrencyId,
+  destinationCurrencyCode,
 }: {
   amount: number;
   note?: string;
@@ -73,10 +84,12 @@ export const createTransaction = async ({
   accountId: number;
   categoryId?: number;
   currencyId: number;
-  fromAccountId?: number;
-  fromAccountType?: ACCOUNT_TYPES;
-  toAccountId?: number;
-  toAccountType?: ACCOUNT_TYPES;
+  currencyCode: string;
+  destinationAccountId?: number;
+  destinationAmount?: number;
+  isTransfer?: boolean;
+  destinationCurrencyId?: number;
+  destinationCurrencyCode?: string;
 }): Promise<void> => {
   try {
     await api.post('/transactions', {
@@ -88,10 +101,12 @@ export const createTransaction = async ({
       accountId,
       categoryId,
       currencyId,
-      fromAccountId,
-      fromAccountType,
-      toAccountId,
-      toAccountType,
+      currencyCode,
+      destinationAccountId,
+      destinationAmount,
+      destinationCurrencyId,
+      destinationCurrencyCode,
+      isTransfer,
     });
   } catch (e) {
     throw new Error(e);
@@ -108,6 +123,12 @@ export const editTransaction = async ({
   accountId,
   categoryId,
   currencyId,
+  currencyCode,
+  isTransfer,
+  destinationAccountId,
+  destinationAmount,
+  destinationCurrencyId,
+  destinationCurrencyCode,
 }: {
   txId: number;
   amount: number;
@@ -118,6 +139,12 @@ export const editTransaction = async ({
   accountId: number;
   categoryId?: number;
   currencyId?: number;
+  currencyCode?: string;
+  isTransfer?: boolean;
+  destinationAccountId?: number;
+  destinationAmount?: number;
+  destinationCurrencyId?: number;
+  destinationCurrencyCode?: string;
 }): Promise<void> => {
   try {
     await api.put(`/transactions/${txId}`, {
@@ -129,6 +156,12 @@ export const editTransaction = async ({
       accountId,
       categoryId,
       currencyId,
+      isTransfer,
+      currencyCode,
+      destinationAccountId,
+      destinationAmount,
+      destinationCurrencyId,
+      destinationCurrencyCode,
     });
   } catch (e) {
     throw new Error(e);

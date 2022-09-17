@@ -1,21 +1,21 @@
-import { ACCOUNT_TYPES, TRANSACTION_TYPES, PAYMENT_TYPES } from 'shared-types';
+import { TRANSACTION_TYPES, PAYMENT_TYPES } from 'shared-types';
 
 interface Record {
   id?: number;
   amount?: number;
+  refAmount?: number;
   accountId?: number;
   categoryId?: number;
   paymentType?: PAYMENT_TYPES;
   transactionType?: TRANSACTION_TYPES;
-  userId?: number;
+  authorId?: number;
   time?: Date;
   note?: string;
   currencyId?: number;
-  fromAccountId?: number;
-  fromAccountType?: ACCOUNT_TYPES;
-  toAccountId?: number;
-  toAccountType?: ACCOUNT_TYPES;
-  oppositeId?: number;
+  currencyCode?: string;
+  isTransfer?: boolean;
+  refCurrencyCode?: string;
+  transferId?: string;
 }
 
 export class TransactionRecord {
@@ -25,6 +25,8 @@ export class TransactionRecord {
 
   amount: number;
 
+  refAmount: number;
+
   accountId: number;
 
   categoryId: number;
@@ -33,41 +35,39 @@ export class TransactionRecord {
 
   transactionType: TRANSACTION_TYPES;
 
-  userId: number;
+  authorId: number;
 
   time: Date;
 
   note: string;
 
-  fromAccountId?: number;
-
-  fromAccountType?: ACCOUNT_TYPES;
-
-  toAccountId?: number;
-
-  toAccountType?: ACCOUNT_TYPES;
-
-  oppositeId?: number;
-
   currencyId: number;
+
+  currencyCode: string;
+
+  refCurrencyCode: string;
+
+  isTransfer: boolean;
+
+  transferId: string;
 
   constructor(record: Record = {}) {
     this._record = record;
 
     this.id = record.id;
     this.amount = record.amount;
+    this.refAmount = record.refAmount;
     this.accountId = record.accountId;
     this.categoryId = record.categoryId;
     this.paymentType = record.paymentType;
     this.transactionType = record.transactionType;
-    this.userId = record.userId;
+    this.authorId = record.authorId;
     this.time = record.time;
     this.note = record.note;
-    this.fromAccountId = record.fromAccountId;
-    this.fromAccountType = record.fromAccountType;
-    this.toAccountId = record.toAccountId;
-    this.toAccountType = record.toAccountType;
-    this.oppositeId = record.oppositeId;
     this.currencyId = record.currencyId;
+    this.currencyCode = record.currencyCode;
+    this.refCurrencyCode = record.refCurrencyCode;
+    this.isTransfer = record.isTransfer;
+    this.transferId = record.transferId;
   }
 }
