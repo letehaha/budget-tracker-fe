@@ -5,7 +5,7 @@ interface Record {
   isDefaultCurrency?: boolean;
   liveRateUpdate?: boolean;
   currency?: string;
-  code?: number;
+  code?: string;
 }
 
 export class CurrencyRecord {
@@ -21,7 +21,7 @@ export class CurrencyRecord {
 
   liveRateUpdate: boolean;
 
-  code: number;
+  code: string;
 
   currency: string;
 
