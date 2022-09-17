@@ -1,16 +1,21 @@
+export enum BUS_EVENTS {
+  transactionChange = 'transaction-change',
+  error = 'error',
+}
+
 class EventBus {
-  events: Record<string, ((data: unknown) => void)[]>;
+  events: Record<string, ((data?: unknown) => void)[]>;
 
   constructor() {
     this.events = {};
   }
 
-  on(eventName, fn) {
+  on(eventName: BUS_EVENTS, fn: () => void) {
     this.events[eventName] = this.events[eventName] || [];
     this.events[eventName].push(fn);
   }
 
-  emit(eventName, data) {
+  emit(eventName: BUS_EVENTS, data?: unknown) {
     if (this.events[eventName]) {
       this.events[eventName].forEach((fn) => {
         fn(data);
@@ -18,7 +23,7 @@ class EventBus {
     }
   }
 
-  off(eventName, fn) {
+  off(eventName: BUS_EVENTS, fn: () => void) {
     if (this.events[eventName]) {
       for (let i = 0; i < this.events[eventName].length; i++) {
         if (this.events[eventName][i] === fn) {
@@ -33,21 +38,7 @@ class EventBus {
     this.events = {};
   }
 
-  error(payload) { this.emit(this.eventsList.error, payload); }
-
-  get eventsList() {
-    return {
-      error: 'error',
-      modalOpen: 'modal-open',
-      modalClose: 'modal-close',
-    };
-  }
-
-  eventExists(eventName) {
-    return Object
-      .values(this.eventsList)
-      .includes(eventName);
-  }
+  error(payload: unknown) { this.emit(BUS_EVENTS.error, payload); }
 }
 
 export const eventBus = new EventBus();

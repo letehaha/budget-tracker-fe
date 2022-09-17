@@ -197,6 +197,7 @@ import {
   TransactionRecord,
   CategoryRecord,
 } from '@/js/records';
+import { eventBus, BUS_EVENTS } from '@/js/utils';
 import { toSystemAmount, fromSystemAmount } from '@/js/helpers';
 import InputField from '@/components/fields/InputField.vue';
 import SelectField from '@/components/fields/SelectField.vue';
@@ -404,6 +405,7 @@ export default defineComponent({
         }
 
         emit(EVENTS.closeModal);
+        eventBus.emit(BUS_EVENTS.transactionChange);
       } catch (e) {
         // eslint-disable-next-line no-console
         console.error(e);
@@ -412,13 +414,19 @@ export default defineComponent({
       }
     };
     const deleteTransactionHandler = async () => {
-      isLoading.value = true;
+      try {
+        isLoading.value = true;
 
-      await deleteTransaction(props.transaction.id);
+        await deleteTransaction(props.transaction.id);
 
-      emit(EVENTS.closeModal);
-
-      isLoading.value = false;
+        emit(EVENTS.closeModal);
+        eventBus.emit(BUS_EVENTS.transactionChange);
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error(e);
+      } finally {
+        isLoading.value = false;
+      }
     };
 
     const redirectToCreateAccountPage = async () => {

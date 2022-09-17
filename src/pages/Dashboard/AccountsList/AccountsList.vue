@@ -14,7 +14,7 @@
 
 <script lang="ts">
 import { ACCOUNT_TYPES } from 'shared-types';
-import { defineComponent, computed } from 'vue';
+import { defineComponent, computed, onBeforeUnmount } from 'vue';
 import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import {
@@ -22,6 +22,7 @@ import {
   useBanksMonobankStore,
 } from '@/stores';
 import { AccountRecord, MONOAccountRecord } from '@/js/records';
+import { eventBus, BUS_EVENTS } from '@/js/utils';
 import Account from './Account.vue';
 
 export default defineComponent({
@@ -34,6 +35,12 @@ export default defineComponent({
     const monobankStore = useBanksMonobankStore();
     const { activeAccounts: monoAccounts } = storeToRefs(monobankStore);
     const { accounts } = storeToRefs(accountsStore);
+
+    eventBus.on(BUS_EVENTS.transactionChange, accountsStore.loadAccounts);
+
+    onBeforeUnmount(() => {
+      eventBus.off(BUS_EVENTS.transactionChange, accountsStore.loadAccounts);
+    });
 
     const allAccounts = computed(
       () => [...monoAccounts.value, ...accounts.value]

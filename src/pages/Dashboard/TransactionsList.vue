@@ -5,10 +5,16 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, watch, ref } from 'vue';
+import {
+  defineComponent,
+  onBeforeUnmount,
+  watch,
+  ref,
+} from 'vue';
 import { storeToRefs } from 'pinia';
 import { useRootStore } from '@/stores';
-import { loadTransactions } from '@/api/transactions';
+import { loadTransactions as apiLoadTransactions } from '@/api/transactions';
+import { eventBus, BUS_EVENTS } from '@/js/utils';
 
 import TransactionsList from '@/components/TransactionsList/TransactionsList.vue';
 
@@ -22,13 +28,23 @@ export default defineComponent({
     const { isAppInitialized } = storeToRefs(rootStore);
     const transactions = ref([]);
 
+    const loadTransactions = async () => {
+      const result = await apiLoadTransactions({ limit: 8 });
+
+      transactions.value = result;
+    };
+
+    eventBus.on(BUS_EVENTS.transactionChange, loadTransactions);
+
+    onBeforeUnmount(() => {
+      eventBus.off(BUS_EVENTS.transactionChange, loadTransactions);
+    });
+
     watch(
       isAppInitialized,
       async (value) => {
         if (value) {
-          const result = await loadTransactions({ limit: 8 });
-
-          transactions.value = result;
+          loadTransactions();
         }
       },
       { immediate: true },
