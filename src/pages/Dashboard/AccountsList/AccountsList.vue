@@ -36,7 +36,8 @@ export default defineComponent({
     const { accounts } = storeToRefs(accountsStore);
 
     const allAccounts = computed(
-      () => [...monoAccounts.value, ...accounts.value],
+      () => [...monoAccounts.value, ...accounts.value]
+        .sort((a, b) => b.balance - a.balance),
     );
 
     const redirectToAccount = (account: AccountRecord | MONOAccountRecord) => {
