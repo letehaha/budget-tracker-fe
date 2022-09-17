@@ -16,7 +16,7 @@
             :is="MODAL_COMPONENTS[modal.type]"
             v-bind="modal.data"
             class="modal__component"
-            @close-modal="removeModal(modal)"
+            @[EVENTS.closeModal]="removeModal(modal)"
           />
         </div>
       </template>
@@ -41,9 +41,9 @@ const MODAL_COMPONENTS = Object.freeze({
   [MODAL_TYPES.monobankSetToken]: defineAsyncComponent(() => import('@/components/modals/MonobankSetToken.vue')),
 });
 
-const EVENTS = {
-  close: 'close',
-};
+export enum EVENTS {
+  closeModal = 'close'
+}
 
 export default defineComponent({
   setup() {
