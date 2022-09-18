@@ -22,8 +22,9 @@ enum EVENTS {
   click = 'click',
 }
 
-export enum THEMES {
+export enum BUTTON_THEMES {
   primary = 'primary',
+  danger = 'danger',
 }
 
 export enum SIZES {
@@ -49,8 +50,8 @@ export default defineComponent({
     },
     theme: {
       type: String,
-      default: THEMES.primary,
-      validator: (theme: THEMES) => Object.values(THEMES).includes(theme),
+      default: BUTTON_THEMES.primary,
+      validator: (t: BUTTON_THEMES) => Object.values(BUTTON_THEMES).includes(t),
     },
     outline: { type: Boolean, default: false },
   },
@@ -98,6 +99,26 @@ $transition: box-shadow 0.2s ease-out;
     background-color: transparent;
     border-color: var(--primary-500);
     color: var(--primary-500);
+  }
+}
+.button--danger {
+  background-color: var(--danger-500);
+  color: #fff;
+
+  &:hover {
+    background-color: var(--danger-700);
+  }
+  &:active {
+    background-color: var(--danger-600);
+  }
+  &[disabled] {
+    background-color: var(--danger-200);
+    cursor: not-allowed;
+  }
+  &:not([disabled]).button--outline {
+    background-color: transparent;
+    border-color: var(--danger-500);
+    color: var(--danger-500);
   }
 }
 </style>

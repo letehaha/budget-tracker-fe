@@ -1,8 +1,8 @@
-import UiButton, { THEMES, SIZES, BUTTON_TYPES } from './ui-button.vue';
+import UiButton, { BUTTON_THEMES, SIZES, BUTTON_TYPES } from './ui-button.vue';
 
 interface Args {
   size?: SIZES;
-  theme?: THEMES;
+  theme?: BUTTON_THEMES;
   type?: BUTTON_TYPES;
   disabled?: boolean;
   withShadow?: boolean;
