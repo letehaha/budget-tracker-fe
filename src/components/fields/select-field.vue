@@ -17,6 +17,7 @@
       <div
         v-bind="$attrs"
         class="select-field__input"
+        :title="selectedValue"
         @click="toggleDropdown"
       >
         {{ selectedValue || placeholder }}
@@ -66,9 +67,9 @@ import FieldError from './components/field-error.vue';
 import FieldLabel from './components/field-label.vue';
 import InputField from './input-field.vue';
 
-const MODEL_EVENTS = {
-  input: 'update:model-value',
-};
+enum MODEL_EVENTS {
+  input = 'update:model-value',
+}
 
 export const POSITIONS = Object.freeze({
   bottom: 'bottom',
@@ -145,6 +146,18 @@ export default defineComponent({
           this.selectedValue = null;
         } else if (value === undefined && this.isValuePreselected) {
           this.selectItem(0);
+        }
+      },
+    },
+    values: {
+      handler() {
+        const modelValueLabel = this.getLabelFromValue(this.modelValue);
+        if (
+          !this.values.find(
+            item => this.getLabelFromValue(item) === modelValueLabel,
+          )
+        ) {
+          this.$emit(MODEL_EVENTS.input, this.values[0]);
         }
       },
     },

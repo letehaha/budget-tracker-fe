@@ -57,6 +57,7 @@ import {
 } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useCurrenciesStore } from '@/stores';
+import { deleteUserCurrency } from '@/api/currencies';
 import { useNotificationCenter } from '@/components/notification-center';
 import EditCurrency from './edit-currency.vue';
 
@@ -84,9 +85,11 @@ export default defineComponent({
 
     const onDeleteHandler = async (index: ActiveItemIndex) => {
       try {
-        await currenciesStore.deleteCurrency(
+        await deleteUserCurrency(
           currencies.value[index].currencyId,
         );
+
+        activeItemIndex.value = null;
 
         await currenciesStore.loadCurrencies();
 
@@ -108,11 +111,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .currencies-list {
-  @include surface-container();
-
   --settings-currency-list-item-padding: 16px 32px;
-
-  padding: 16px 0;
 }
 .currencies-list__item {
   &:not(:last-child) {

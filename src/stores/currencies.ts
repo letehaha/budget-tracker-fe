@@ -1,7 +1,6 @@
 import { ref, Ref } from 'vue';
 import { defineStore } from 'pinia';
 import { api } from '@/api';
-import * as apiCurrencies from '@/api/currencies';
 import { UserCurrencyRecord } from '@/js/records';
 
 export const useCurrenciesStore = defineStore('currencies', () => {
@@ -17,14 +16,9 @@ export const useCurrenciesStore = defineStore('currencies', () => {
     currencies.value.find(currency => currency.currencyId === currencyId)
   );
 
-  const deleteCurrency = async (currencyId: number) => {
-    await apiCurrencies.deleteCurrency(currencyId);
-  };
-
   return {
     currencies,
     loadCurrencies,
     getCurrency,
-    deleteCurrency,
   };
 });
