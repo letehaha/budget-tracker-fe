@@ -15,7 +15,8 @@
     "test:unit": "jest --passWithNoTests --config ./jest.config.js",
     "storybook": "start-storybook -p 6006",
     "test:e2e": "cypress run",
-    "test:e2e:interact": "cypress open --browser chrome --e2e"
+    "test:e2e:interact": "cypress open --browser chrome --e2e",
+    "postinstall": "chmod +x ./post-install.sh && ./post-install.sh"
   },
   "browserslist": [
     "> 1%",
