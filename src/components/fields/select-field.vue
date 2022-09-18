@@ -27,6 +27,14 @@
         :class="`select-field__dropdown--${position}`"
         class="select-field__dropdown"
       >
+        <template v-if="withSearchField">
+          <div class="select-field__search">
+            <input-field
+              v-model="filterQuery"
+              placeholder="Search..."
+            />
+          </div>
+        </template>
         <div class="select-field__dropdown-values">
           <template
             v-for="(item, i) in labels"
@@ -56,6 +64,7 @@ import { defineComponent } from 'vue';
 
 import FieldError from './components/field-error.vue';
 import FieldLabel from './components/field-label.vue';
+import InputField from './input-field.vue';
 
 const MODEL_EVENTS = {
   input: 'update:model-value',
@@ -70,12 +79,13 @@ export default defineComponent({
   components: {
     FieldError,
     FieldLabel,
+    InputField,
   },
   props: {
     label: { type: String, default: undefined },
     modelValue: { type: [Object, String], default: undefined },
     values: { type: [Array, Object], required: true },
-    labelKey: { type: String, default: undefined },
+    labelKey: { type: [String, Function], default: undefined },
     placeholder: { type: String, default: undefined },
     withSearchField: { type: Boolean, default: false },
     disabled: { type: Boolean, default: false },
@@ -89,26 +99,33 @@ export default defineComponent({
     filterQuery: '',
   }),
   computed: {
-    labels() {
+    labels(): string[] {
       if (Array.isArray(this.values[0])) {
         if (this.withSearchField && this.filterQuery) {
-          return this.values
-            .filter(str => !str.toLowerCase().search(this.filterQuery));
+          return this.values.filter(
+            str => str.toLowerCase()
+              .search(this.filterQuery.toLowerCase()) > -1,
+          );
         }
         return this.values;
       }
+
       if (typeof this.values[0] === 'object' && this.values[0] !== null) {
-        const values = this.values
-          .map(obj => (this.labelKey ? obj[this.labelKey] : obj.label));
+        const values = this.values.map(obj => this.getLabelFromValue(obj));
+
         if (this.withSearchField && this.filterQuery) {
-          return values
-            .filter(str => !str.toLowerCase().search(this.filterQuery));
+          return values.filter(
+            str => str.toLowerCase()
+              .search(this.filterQuery.toLowerCase()) > -1,
+          );
         }
         return values;
       }
+
       if (this.withSearchField && this.filterQuery) {
-        return this.values
-          .filter(str => !str.toLowerCase().search(this.filterQuery));
+        return this.values.filter(
+          str => str.toLowerCase().search(this.filterQuery.toLowerCase()) > -1,
+        );
       }
       return this.values;
     },
@@ -120,9 +137,7 @@ export default defineComponent({
       handler(value) {
         if (value) {
           if (typeof this.values[0] === 'object' && this.values[0] !== null) {
-            this.selectedValue = this.labelKey
-              ? value[this.labelKey]
-              : value.label;
+            this.selectedValue = this.getLabelFromValue(value);
           } else {
             this.selectedValue = value;
           }
@@ -146,14 +161,24 @@ export default defineComponent({
     selectItem(index) {
       if (!this.disabled) {
         this.selectedValue = this.labels[index];
+        if (this.labels.length === this.values.length) {
+          this.$emit(MODEL_EVENTS.input, this.values[index]);
+        } else {
+          const matchLabelToItem = this.values.find(
+            item => this.getLabelFromValue(item) === this.labels[index],
+          );
+          this.$emit(MODEL_EVENTS.input, matchLabelToItem);
+        }
         this.filterQuery = '';
-        this.$emit(MODEL_EVENTS.input, this.values[index]);
         this.closeDropdown();
       }
     },
-    filterLabels(event) {
-      const { value } = event.target;
-      this.filterQuery = value.toLowerCase();
+    getLabelFromValue(value) {
+      if (!this.labelKey) return value.label;
+
+      if (typeof this.labelKey === 'function') return this.labelKey(value);
+
+      return value[this.labelKey];
     },
   },
 });
@@ -178,6 +203,10 @@ export default defineComponent({
   outline: none;
   width: 100%;
   cursor: pointer;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
   .select-field--disabled & {
     opacity: 0.3;
@@ -269,5 +298,8 @@ export default defineComponent({
     &:before { transform: rotate(45deg); }
     &:after { transform: rotate(-45deg); }
   }
+}
+.select-field__search {
+  padding: 0 8px 8px;
 }
 </style>
