@@ -56,3 +56,13 @@
   background-color: transparent;
   cursor: pointer;
 }
+@mixin block-shadow {
+  box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.1);
+}
+@mixin surface-container {
+  @include block-shadow();
+
+  background-color: var(--app-surface-color);
+  border-radius: 5px;
+  padding: 16px;
+}

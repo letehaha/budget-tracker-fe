@@ -19,7 +19,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import Tabs, { CSSJustifyContentValues } from '@/components/Tabs.vue';
-import Currencies from './Tabs/Currencies.vue';
+import Currencies from './tabs/currencies/list.vue';
 
 export default defineComponent({
   components: {
