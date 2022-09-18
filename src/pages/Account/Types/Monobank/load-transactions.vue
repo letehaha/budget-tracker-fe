@@ -4,20 +4,20 @@
       Load transactions for selected period
     </div>
     <div class="load-transactions__wrapper">
-      <DateField
+      <date-field
         v-model="form.from"
         label="From"
       />
-      <DateField
+      <date-field
         v-model="form.to"
         label="To"
       />
-      <Button
+      <ui-button
         :disabled="!isPeriodSelected"
         @click="loadTransactionsForPeriod"
       >
         {{ isPeriodSelected ? 'Load transactions' : 'Select period' }}
-      </Button>
+      </ui-button>
     </div>
   </div>
 </template>
@@ -35,13 +35,13 @@ import {
   useNotificationCenter,
   NotificationType,
 } from '@/components/notification-center';
-import Button from '@/components/common/Button.vue';
-import DateField from '@/components/fields/DateField.vue';
+import UiButton from '@/components/common/ui-button.vue';
+import DateField from '@/components/fields/date-field.vue';
 
 export default defineComponent({
   components: {
     DateField,
-    Button,
+    UiButton,
   },
   props: {
     account: {

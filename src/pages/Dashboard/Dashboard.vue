@@ -16,9 +16,9 @@
       </div>
     </div>
     <!-- <div class="dashboard__header">
-      <Button @click="updateWebhookHandler">
+      <ui-button @click="updateWebhookHandler">
         Update monobank webhook
-      </Button>
+      </ui-button>
     </div> -->
   </section>
 </template>
@@ -30,11 +30,11 @@ import { useBanksMonobankStore } from '@/stores';
 import { TooManyRequestsError } from '@/js/errors';
 import { ErrorHandler } from '@/js/utils';
 
-import TransactionsList from './TransactionsList.vue';
-import AccountsList from './AccountsList/AccountsList.vue';
+import TransactionsList from './transactions-list.vue';
+import AccountsList from './accounts-list/accounts-list.vue';
 
 export default defineComponent({
-  name: 'Dashboard',
+  name: 'dashboard',
   components: {
     TransactionsList,
     AccountsList,

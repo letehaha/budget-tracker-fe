@@ -10,7 +10,7 @@ const routes = [
   {
     path: '/',
     name: 'dashboard',
-    component: () => import('@/pages/Dashboard/Dashboard.vue'),
+    component: () => import('@/pages/dashboard/dashboard.vue'),
     beforeEnter: redirectRouteGuard,
     meta: {
       layout: ROUTER_LAYOUTS.dashboard,
@@ -19,7 +19,7 @@ const routes = [
   {
     path: '/accounts',
     name: 'accounts',
-    component: () => import('@/pages/Accounts/Accounts.vue'),
+    component: () => import('@/pages/accounts/accounts.vue'),
     beforeEnter: redirectRouteGuard,
     meta: {
       layout: ROUTER_LAYOUTS.dashboard,
@@ -28,7 +28,7 @@ const routes = [
   {
     path: '/account',
     name: 'account',
-    component: () => import('@/pages/Account/Account.vue'),
+    component: () => import('@/pages/account/account.vue'),
     beforeEnter: redirectRouteGuard,
     meta: {
       layout: ROUTER_LAYOUTS.dashboard,
@@ -37,7 +37,7 @@ const routes = [
   {
     path: '/create-account',
     name: 'create-account',
-    component: () => import('@/pages/Account/Create.vue'),
+    component: () => import('@/pages/account/create.vue'),
     beforeEnter: redirectRouteGuard,
     meta: {
       layout: ROUTER_LAYOUTS.dashboard,
@@ -46,7 +46,7 @@ const routes = [
   {
     path: '/crypto',
     name: 'crypto',
-    component: () => import('@/pages/Crypto.vue'),
+    component: () => import('@/pages/crypto/crypto.vue'),
     beforeEnter: redirectRouteGuard,
     meta: {
       layout: ROUTER_LAYOUTS.dashboard,
@@ -55,7 +55,7 @@ const routes = [
   {
     path: '/records',
     name: 'records',
-    component: () => import('@/pages/Records/Records.vue'),
+    component: () => import('@/pages/records/records.vue'),
     beforeEnter: redirectRouteGuard,
     meta: {
       layout: ROUTER_LAYOUTS.dashboard,
@@ -64,7 +64,7 @@ const routes = [
   {
     path: '/settings',
     name: 'settings',
-    component: () => import('@/pages/Settings/Settings.vue'),
+    component: () => import('@/pages/settings/settings.vue'),
     beforeEnter: redirectRouteGuard,
     meta: {
       layout: ROUTER_LAYOUTS.dashboard,
@@ -73,7 +73,7 @@ const routes = [
   {
     path: '/sign-up',
     name: 'auth/sign-up',
-    component: () => import('@/pages/auth/Register.vue'),
+    component: () => import('@/pages/auth/register.vue'),
     beforeEnter: authPageGuard,
     meta: {
       layout: ROUTER_LAYOUTS.auth,
@@ -82,7 +82,7 @@ const routes = [
   {
     path: '/sign-in',
     name: 'auth/sign-in',
-    component: () => import('@/pages/auth/Login.vue'),
+    component: () => import('@/pages/auth/login.vue'),
     beforeEnter: authPageGuard,
     meta: {
       layout: ROUTER_LAYOUTS.auth,

@@ -2,14 +2,12 @@
   <div class="header">
     <div class="header__actions">
       <div class="header__action header__create-transaction">
-        <Button
-          @click="openFormModal"
-        >
+        <ui-button @click="openFormModal">
           New Record
-        </Button>
+        </ui-button>
       </div>
       <div class="header__action header__search">
-        <InputField
+        <input-field
           v-model="form.search"
           placeholder="Search..."
         />
@@ -32,13 +30,13 @@ import { defineComponent, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores';
 import { MODAL_TYPES, useModalCenter } from '@/components/modal-center/index';
-import Button from '@/components/common/Button.vue';
-import InputField from '@/components/fields/InputField.vue';
+import Button from '@/components/common/ui-button.vue';
+import InputField from '@/components/fields/input-field.vue';
 
 export default defineComponent({
   components: {
-    Button,
-    InputField,
+    'ui-button': Button,
+    'input-field': InputField,
   },
   setup() {
     const router = useRouter();

@@ -4,7 +4,7 @@
       Account name:
     </h4>
 
-    <InputField
+    <input-field
       v-model="form.name"
       class="account-name__field"
       type="text"
@@ -25,7 +25,7 @@ import {
   useNotificationCenter,
   NotificationType,
 } from '@/components/notification-center';
-import InputField from '@/components/fields/InputField.vue';
+import InputField from '@/components/fields/input-field.vue';
 
 export default defineComponent({
   components: { InputField },

@@ -1,4 +1,4 @@
-import InputField from './InputField.vue';
+import InputField from './input-field.vue';
 
 interface Args {
   label?: string;
@@ -20,22 +20,24 @@ interface Story {
 
 // 👇 This default export determines where your story goes in the story list
 export default {
-  title: 'InputField',
+  title: 'input-field',
   component: InputField,
 };
 
 // 👇 We create a “template” of how args map to rendering
 const Template = (args: Args) => ({
-  components: { InputField },
+  components: {
+    'input-field': InputField,
+  },
   setup() {
     return { args };
   },
   template: `
-    <InputField v-bind="args">
+    <input-field v-bind="args">
       <template #subLabel>
         {{ args.subLabelSlot }}
       </template>
-    </InputField>
+    </input-field>
   `,
 });
 

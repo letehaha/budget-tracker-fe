@@ -35,9 +35,9 @@ import {
   NotificationType,
 } from '@/components/notification-center';
 
-import AccountName from '@/pages/Account/AccountName.vue';
-import LoadLatestTransactions from './LoadLatestTransactions.vue';
-import LoadTransactions from './LoadTransactions.vue';
+import AccountName from '@/pages/account/account-name.vue';
+import LoadLatestTransactions from './load-latest-transactions.vue';
+import LoadTransactions from './load-transactions.vue';
 
 export default defineComponent({
   components: {

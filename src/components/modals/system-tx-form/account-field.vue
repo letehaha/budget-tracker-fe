@@ -2,7 +2,7 @@
   <template v-if="accounts.length">
     <template v-if="isTransferTransaction">
       <form-row>
-        <SelectField
+        <select-field
           label="From account"
           placeholder="Select account"
           :values="accounts"
@@ -14,7 +14,7 @@
       </form-row>
 
       <form-row>
-        <SelectField
+        <select-field
           label="To account"
           placeholder="Select account"
           :values="filteredAccounts"
@@ -26,7 +26,7 @@
     </template>
     <template v-else>
       <form-row>
-        <SelectField
+        <select-field
           label="Account"
           placeholder="Select account"
           :values="filteredAccounts"
@@ -40,7 +40,7 @@
   </template>
   <template v-else>
     <form-row>
-      <InputField
+      <input-field
         model-value="No account exists"
         label="Account"
         readonly
@@ -53,7 +53,7 @@
             Create account
           </div>
         </template>
-      </InputField>
+      </input-field>
     </form-row>
   </template>
 </template>
@@ -63,13 +63,17 @@ import { defineComponent, PropType } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { AccountRecord } from '@/js/records';
-import SelectField from '@/components/fields/SelectField.vue';
-import InputField from '@/components/fields/InputField.vue';
+import SelectField from '@/components/fields/select-field.vue';
+import InputField from '@/components/fields/input-field.vue';
 
 import FormRow from './form-row.vue';
 
 export default defineComponent({
-  components: { InputField, SelectField, FormRow },
+  components: {
+    InputField,
+    SelectField,
+    FormRow,
+  },
   props: {
     formAccount: {
       type: Object as PropType<AccountRecord>,

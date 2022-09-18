@@ -88,8 +88,8 @@ import {
 import ChevronRightIcon from '@/assets/icons/chevron-right.svg?inline';
 import ChevronLeftIcon from '@/assets/icons/chevron-left.svg?inline';
 
-import FieldError from './components/FieldError.vue';
-import FieldLabel from './components/FieldLabel.vue';
+import FieldError from './components/field-error.vue';
+import FieldLabel from './components/field-label.vue';
 
 enum EVENTS {
   input = 'update:modelValue',

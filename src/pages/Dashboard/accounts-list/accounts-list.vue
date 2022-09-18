@@ -4,7 +4,7 @@
       v-for="account in allAccounts"
       :key="account.id"
     >
-      <Account
+      <account-card
         :account="account"
         @click="redirectToAccount(account)"
       />
@@ -23,11 +23,11 @@ import {
 } from '@/stores';
 import { AccountRecord, MONOAccountRecord } from '@/js/records';
 import { eventBus, BUS_EVENTS } from '@/js/utils';
-import Account from './Account.vue';
+import AccountCard from './account-card.vue';
 
 export default defineComponent({
   components: {
-    Account,
+    AccountCard,
   },
   setup() {
     const router = useRouter();

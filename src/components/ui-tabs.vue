@@ -41,7 +41,7 @@ export enum CSSJustifyContentValues {
 }
 
 export default defineComponent({
-  name: 'UiTabs',
+  name: 'ui-tabs',
   props: {
     options: {
       type: Array as PropType<Tab[]>,

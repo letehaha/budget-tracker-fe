@@ -30,8 +30,8 @@ import {
 import { formatFiat } from '@/js/helpers';
 import { ApiErrorResponseError } from '@/js/errors';
 import { useCryptoBinanceStore } from '@/stores';
-import GeneralList from '@/components/page-sections/crypto/GeneralList.vue';
-import APIKeysForm from '@/components/page-sections/crypto/APIKeysForm.vue';
+import GeneralList from './components/general-list.vue';
+import APIKeysForm from './components/api-keys-form.vue';
 
 export default defineComponent({
   components: {

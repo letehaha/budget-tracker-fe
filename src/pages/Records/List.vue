@@ -16,7 +16,7 @@
 import { defineComponent, ref } from 'vue';
 import { loadTransactions } from '@/api/transactions';
 
-import TransactionsList from '@/components/TransactionsList/TransactionsList.vue';
+import TransactionsList from '@/components/transactions-list/transactions-list.vue';
 
 export default defineComponent({
   components: {

@@ -17,7 +17,7 @@
       </p>
     </div>
     <div class="monobank-tx-form__row">
-      <CategorySelectField
+      <category-select-field
         v-model="form.category"
         label="Category"
         :values="categories"
@@ -25,13 +25,13 @@
       />
     </div>
     <div class="monobank-tx-form__row">
-      <TextareaField
+      <textarea-field
         v-model="form.note"
         label="Note"
       />
     </div>
     <div class="monobank-tx-form__actions">
-      <Button
+      <ui-button
         class="
           monobank-tx-form__action
           monobank-tx-form__action--submit
@@ -40,7 +40,7 @@
         @click="submit"
       >
         Save changes
-      </Button>
+      </ui-button>
     </div>
   </div>
 </template>
@@ -64,17 +64,17 @@ import {
   NotificationType,
 } from '@/components/notification-center';
 
-import CategorySelectField from '@/components/fields/CategorySelectField.vue';
-import TextareaField from '@/components/fields/TextareaField.vue';
-import Button from '@/components/common/Button.vue';
-import { EVENTS as MODAL_EVENTS } from '@/components/modal-center/Modal.vue';
+import CategorySelectField from '@/components/fields/category-select-field.vue';
+import TextareaField from '@/components/fields/textarea-field.vue';
+import UiButton from '@/components/common/ui-button.vue';
+import { EVENTS as MODAL_EVENTS } from '@/components/modal-center/ui-modal.vue';
 
 export default defineComponent({
-  name: 'MonobankTxForm',
+  name: 'monobank-tx-form',
   components: {
     CategorySelectField,
     TextareaField,
-    Button,
+    UiButton,
   },
   props: {
     transaction: {

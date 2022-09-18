@@ -38,6 +38,7 @@ export enum BUTTON_TYPES {
 }
 
 export default defineComponent({
+  name: 'ui-button',
   props: {
     type: { type: String as PropType<BUTTON_TYPES>, default: 'button' },
     disabled: { type: Boolean, default: false },

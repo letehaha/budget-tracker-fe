@@ -17,7 +17,7 @@
     </div>
     <div class="system-tx-form__form">
       <form-row>
-        <InputField
+        <input-field
           v-model="form.amount"
           label="Amount"
           type="number"
@@ -36,7 +36,7 @@
 
       <template v-if="currentTxType !== FORM_TYPES.transfer">
         <form-row>
-          <CategorySelectField
+          <category-select-field
             v-model="form.category"
             label="Category"
             :values="categories"
@@ -47,7 +47,7 @@
 
       <template v-if="isCurrenciesDifferent">
         <form-row>
-          <InputField
+          <input-field
             v-model="form.targetAmount"
             :label="`Target amount (${targetCurrency.code})`"
             type="number"
@@ -66,13 +66,13 @@
       /> -->
 
       <form-row>
-        <DateField
+        <date-field
           v-model="form.time"
           label="Datetime"
         />
       </form-row>
       <form-row>
-        <SelectField
+        <select-field
           v-model="form.paymentType"
           label="Payment Type"
           :values="PAYMENT_TYPES"
@@ -81,7 +81,7 @@
         />
       </form-row>
       <form-row>
-        <TextareaField
+        <textarea-field
           v-model="form.note"
           placeholder="Note"
           label="Note (optional)"
@@ -89,15 +89,15 @@
       </form-row>
     </div>
     <div class="system-tx-form__actions">
-      <Button
+      <ui-button
         v-if="transaction"
         class="system-tx-form__action"
         :disabled="isLoading"
         @click="deleteTransactionHandler"
       >
         Delete
-      </Button>
-      <Button
+      </ui-button>
+      <ui-button
         class="
           system-tx-form__action
           system-tx-form__action--submit
@@ -106,7 +106,7 @@
         @click="submit"
       >
         {{ isLoading ? 'Loading...' : transaction ? 'Edit' : 'Submit' }}
-      </Button>
+      </ui-button>
     </div>
   </div>
 </template>
@@ -140,13 +140,13 @@ import {
 } from '@/js/records';
 import { eventBus, BUS_EVENTS } from '@/js/utils';
 import { toSystemAmount, fromSystemAmount } from '@/js/helpers';
-import InputField from '@/components/fields/InputField.vue';
-import SelectField from '@/components/fields/SelectField.vue';
-import CategorySelectField from '@/components/fields/CategorySelectField.vue';
-import TextareaField from '@/components/fields/TextareaField.vue';
-import DateField from '@/components/fields/DateField.vue';
-import Button from '@/components/common/Button.vue';
-import { EVENTS as MODAL_EVENTS } from '@/components/modal-center/Modal.vue';
+import InputField from '@/components/fields/input-field.vue';
+import SelectField from '@/components/fields/select-field.vue';
+import CategorySelectField from '@/components/fields/category-select-field.vue';
+import TextareaField from '@/components/fields/textarea-field.vue';
+import DateField from '@/components/fields/date-field.vue';
+import UiButton from '@/components/common/ui-button.vue';
+import { EVENTS as MODAL_EVENTS } from '@/components/modal-center/ui-modal.vue';
 
 import FormHeader from './form-header.vue';
 import TypeSelector from './type-selector.vue';
@@ -173,7 +173,7 @@ const getTxTypeFromFormType = (formType: FORM_TYPES): TRANSACTION_TYPES => {
 };
 
 export default defineComponent({
-  name: 'SystemTxForm',
+  name: 'system-tx-form',
   components: {
     FormHeader,
     FormRow,
@@ -185,7 +185,7 @@ export default defineComponent({
     SelectField,
     CategorySelectField,
     TextareaField,
-    Button,
+    UiButton,
   },
   props: {
     transaction: {

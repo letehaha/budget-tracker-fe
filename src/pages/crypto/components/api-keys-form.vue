@@ -1,22 +1,22 @@
 <template>
   <div class="api-keys-form">
     <h3>Please define your API keys</h3>
-    <InputField
+    <input-field
       v-model="form.public"
       label="Public Key"
       :error-message="getFieldErrorMessage('form.public')"
     />
-    <InputField
+    <input-field
       v-model="form.secret"
       label="Secret Key"
       :error-message="getFieldErrorMessage('form.secret')"
     />
-    <Button
+    <ui-button
       :disabled="isFormLoading"
       @click="submit"
     >
       {{ isFormLoading ? 'Loading...' : 'Submit' }}
-    </Button>
+    </ui-button>
   </div>
 </template>
 
@@ -25,11 +25,11 @@ import { defineComponent, ref } from 'vue';
 import { useCryptoBinanceStore } from '@/stores';
 import { useFormValidation } from '@/composable';
 import { required } from '@/js/helpers/validators.helper';
-import InputField from '@/components/fields/InputField.vue';
-import Button from '@/components/common/Button.vue';
+import InputField from '@/components/fields/input-field.vue';
+import UiButton from '@/components/common/ui-button.vue';
 
 export default defineComponent({
-  components: { InputField, Button },
+  components: { InputField, UiButton },
   setup() {
     const cryptoBinanceStore = useCryptoBinanceStore();
 

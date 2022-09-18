@@ -47,8 +47,8 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 
-import FieldLabel from './components/FieldLabel.vue';
-import FieldError from './components/FieldError.vue';
+import FieldLabel from './components/field-label.vue';
+import FieldError from './components/field-error.vue';
 
 const MODEL_EVENTS = Object.freeze({
   input: 'update:modelValue',

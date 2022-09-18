@@ -54,8 +54,8 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 
-import FieldError from './components/FieldError.vue';
-import FieldLabel from './components/FieldLabel.vue';
+import FieldError from './components/field-error.vue';
+import FieldLabel from './components/field-label.vue';
 
 const MODEL_EVENTS = {
   input: 'update:model-value',

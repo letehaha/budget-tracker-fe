@@ -7,11 +7,11 @@
       <h1 class="login__title">
         Log in to account
       </h1>
-      <FormWrapper
+      <form-wrapper
         :error="formError"
         class="login__fields"
       >
-        <InputField
+        <input-field
           v-model="form.username"
           name="username"
           label="Your username"
@@ -20,7 +20,7 @@
           :disabled="isFormLoading"
           :error-message="getFieldErrorMessage('form.username')"
         />
-        <InputField
+        <input-field
           v-model="form.password"
           label="Your password"
           class="login__field"
@@ -28,15 +28,15 @@
           :disabled="isFormLoading"
           :error-message="getFieldErrorMessage('form.password')"
         />
-      </FormWrapper>
-      <Button
+      </form-wrapper>
+      <ui-button
         :type="BUTTON_TYPES.submit"
         class="login__submit"
         :disabled="isFormLoading"
         @click="submit"
       >
         {{ isFormLoading ? 'Loading...' : 'Log in' }}
-      </Button>
+      </ui-button>
       <div class="login__signup">
         Don’t have an account?
 
@@ -61,13 +61,13 @@ import { useAuthStore } from '@/stores';
 import { useFormValidation } from '@/composable';
 import { required, minLength } from '@/js/helpers/validators.helper';
 
-import FormWrapper from '@/components/fields/FormWrapper.vue';
-import Button, { BUTTON_TYPES } from '@/components/common/Button.vue';
-import InputField from '@/components/fields/InputField.vue';
+import FormWrapper from '@/components/fields/form-wrapper.vue';
+import UiButton, { BUTTON_TYPES } from '@/components/common/ui-button.vue';
+import InputField from '@/components/fields/input-field.vue';
 
 export default defineComponent({
   components: {
-    Button,
+    UiButton,
     InputField,
     FormWrapper,
   },

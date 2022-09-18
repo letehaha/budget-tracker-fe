@@ -4,7 +4,7 @@ import { clickOutside } from '@/directives';
 import { initApiCaller } from '@/api';
 import { store } from '@/stores/setup';
 import { useAuthStore } from '@/stores';
-import App from './App.vue';
+import App from './app.vue';
 import '@/styles/index.scss';
 import './registerServiceWorker';
 

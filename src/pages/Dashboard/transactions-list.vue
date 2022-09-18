@@ -16,7 +16,7 @@ import { useRootStore } from '@/stores';
 import { loadTransactions as apiLoadTransactions } from '@/api/transactions';
 import { eventBus, BUS_EVENTS } from '@/js/utils';
 
-import TransactionsList from '@/components/TransactionsList/TransactionsList.vue';
+import TransactionsList from '@/components/transactions-list/transactions-list.vue';
 
 export default defineComponent({
   components: {

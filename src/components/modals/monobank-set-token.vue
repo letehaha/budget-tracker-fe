@@ -15,14 +15,14 @@
       copied and pasted to the field below.
     </p>
     <div class="monobank-set-token__row">
-      <InputField
+      <input-field
         v-model="form.token"
         name="token"
         label="Token"
       />
     </div>
     <div class="monobank-set-token__actions">
-      <Button
+      <ui-button
         class="
           monobank-set-token__action
           monobank-set-token__action--submit
@@ -37,7 +37,7 @@
         <template v-else>
           Pair account
         </template>
-      </Button>
+      </ui-button>
     </div>
   </div>
 </template>
@@ -47,9 +47,9 @@ import { ERROR_CODES } from 'shared-types';
 import { defineComponent, reactive, ref } from 'vue';
 import { useBanksMonobankStore } from '@/stores';
 import { ApiErrorResponseError } from '@/js/errors';
-import InputField from '@/components/fields/InputField.vue';
-import Button, { BUTTON_TYPES } from '@/components/common/Button.vue';
-import { EVENTS as MODAL_EVENTS } from '@/components/modal-center/Modal.vue';
+import InputField from '@/components/fields/input-field.vue';
+import Button, { BUTTON_TYPES } from '@/components/common/ui-button.vue';
+import { EVENTS as MODAL_EVENTS } from '@/components/modal-center/ui-modal.vue';
 
 import {
   useNotificationCenter,
@@ -57,10 +57,10 @@ import {
 } from '@/components/notification-center';
 
 export default defineComponent({
-  name: 'MonobankSetToken',
+  name: 'monobank-set-token',
   components: {
-    InputField,
-    Button,
+    'input-field': InputField,
+    'ui-button': Button,
   },
   props: {
     isUpdate: { type: Boolean, default: false },

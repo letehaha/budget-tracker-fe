@@ -1,6 +1,6 @@
 <template>
   <form-row>
-    <SelectField
+    <select-field
       label="Currency"
       :values="currencies"
       label-key="code"
@@ -12,7 +12,7 @@
 
   <template v-if="showTargetAmountField">
     <form-row>
-      <InputField
+      <input-field
         :label="`Target amount (${targetCurrency.code})`"
         type="number"
         :model-value="formTargetAmount"
@@ -27,13 +27,17 @@ import { defineComponent, PropType, computed } from 'vue';
 
 import { useCurrenciesStore } from '@/stores';
 import { UserCurrencyRecord, AccountRecord } from '@/js/records';
-import SelectField from '@/components/fields/SelectField.vue';
-import InputField from '@/components/fields/InputField.vue';
+import SelectField from '@/components/fields/select-field.vue';
+import InputField from '@/components/fields/input-field.vue';
 
 import FormRow from './form-row.vue';
 
 export default defineComponent({
-  components: { InputField, SelectField, FormRow },
+  components: {
+    'input-field': InputField,
+    'select-field': SelectField,
+    'form-row': FormRow,
+  },
   props: {
     formCurrency: {
       type: Object as PropType<UserCurrencyRecord>,

@@ -24,8 +24,8 @@ import { TRANSACTION_TYPES } from '@/js/const';
 import { TransactionModelRecord } from '@/js/records';
 
 const components = {
-  [TRANSACTION_TYPES.system]: markRaw(defineAsyncComponent(() => import('./SystemTransaction.vue'))),
-  [TRANSACTION_TYPES.monobank]: markRaw(defineAsyncComponent(() => import('./MonoTransaction.vue'))),
+  [TRANSACTION_TYPES.system]: markRaw(defineAsyncComponent(() => import('./system-transaction.vue'))),
+  [TRANSACTION_TYPES.monobank]: markRaw(defineAsyncComponent(() => import('./mono-transaction.vue'))),
 };
 
 export default defineComponent({

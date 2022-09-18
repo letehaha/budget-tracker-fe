@@ -1,4 +1,4 @@
-import Button, { THEMES, SIZES, BUTTON_TYPES } from './Button.vue';
+import UiButton, { THEMES, SIZES, BUTTON_TYPES } from './ui-button.vue';
 
 interface Args {
   size?: SIZES;
@@ -20,17 +20,17 @@ interface Story {
 
 // 👇 This default export determines where your story goes in the story list
 export default {
-  title: 'Button',
-  component: Button,
+  title: 'ui-button',
+  component: UiButton,
 };
 
 // 👇 We create a “template” of how args map to rendering
 const Template = (args: Args) => ({
-  components: { Button },
+  components: { UiButton },
   setup() {
     return { args };
   },
-  template: '<Button v-bind="args">{{ args.slotContent || "Button" }}</Button>',
+  template: '<ui-button v-bind="args">{{ args.slotContent || "Button" }}</ui-button>',
 });
 
 export const Default = Template.bind({}) as Story;

@@ -1,17 +1,17 @@
 <template>
   <div class="settings-page">
-    <Tabs />
+    <settings-tabs />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
 
-import Tabs from './Tabs.vue';
+import SettingsTabs from './tabs.vue';
 
 export default defineComponent({
   components: {
-    Tabs,
+    SettingsTabs,
   },
   setup() {
     return {};

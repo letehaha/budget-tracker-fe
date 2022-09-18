@@ -2,12 +2,12 @@
   <div class="account">
     <template v-if="account">
       <div class="account__form">
-        <AccountName
+        <account-name
           :account="account"
           class="account__field"
         />
 
-        <InputField
+        <input-field
           :model-value="account.balance / 100"
           class="account__field"
           label="Balance"
@@ -16,7 +16,7 @@
           @[MODEL_EVENTS.input]="updateBalance"
         />
 
-        <InputField
+        <input-field
           :model-value="account.creditLimit / 100"
           class="account__field"
           label="Credit limit"
@@ -28,12 +28,12 @@
     </template>
 
     <div class="account__actions">
-      <Button
+      <ui-button
         class="account__delete-action"
         @click="deleteAccount"
       >
         Delete
-      </Button>
+      </ui-button>
     </div>
   </div>
 </template>
@@ -49,13 +49,13 @@ import { toSystemAmount } from '@/js/helpers';
 
 import { useNotificationCenter } from '@/components/notification-center';
 
-import Button from '@/components/common/Button.vue';
-import InputField, { MODEL_EVENTS } from '@/components/fields/InputField.vue';
-import AccountName from '@/pages/Account/AccountName.vue';
+import UiButton from '@/components/common/ui-button.vue';
+import InputField, { MODEL_EVENTS } from '@/components/fields/input-field.vue';
+import AccountName from '@/pages/account/account-name.vue';
 
 export default defineComponent({
   components: {
-    Button,
+    UiButton,
     InputField,
     AccountName,
   },

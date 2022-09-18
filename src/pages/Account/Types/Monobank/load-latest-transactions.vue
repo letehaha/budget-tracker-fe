@@ -1,10 +1,10 @@
 <template>
-  <Button
+  <ui-button
     :disabled="isRefreshDisabled"
     @click="loadLatestTransactionsHandler"
   >
     {{ isRefreshDisabled ? 'Loading...' : 'Load latest transactions' }}
-  </Button>
+  </ui-button>
 </template>
 
 <script lang="ts">
@@ -21,11 +21,11 @@ import {
   useNotificationCenter,
   NotificationType,
 } from '@/components/notification-center';
-import Button from '@/components/common/Button.vue';
+import UiButton from '@/components/common/ui-button.vue';
 
 export default defineComponent({
   components: {
-    Button,
+    UiButton,
   },
   props: {
     account: {
