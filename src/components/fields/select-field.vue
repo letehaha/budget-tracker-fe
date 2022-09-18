@@ -53,6 +53,11 @@
             </button>
           </template>
         </div>
+        <template v-if="withSearchField && values.length && !labels.length">
+          <div class="select-field__no-results">
+            No results found
+          </div>
+        </template>
       </div>
     </div>
 
@@ -315,5 +320,9 @@ export default defineComponent({
 }
 .select-field__search {
   padding: 0 8px 8px;
+}
+.select-field__no-results {
+  padding: 8px 16px;
+  font-size: 14px;
 }
 </style>
