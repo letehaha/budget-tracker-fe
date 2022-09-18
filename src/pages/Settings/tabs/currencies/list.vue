@@ -16,7 +16,10 @@
       <div class="currencies-list__item">
         <div
           class="currencies-list__row"
-          @click="toggleActiveItem(index)"
+          :class="{
+            'currencies-list__row--default': currency.isDefaultCurrency,
+          }"
+          @click="!currency.isDefaultCurrency && toggleActiveItem(index)"
         >
           <div class="currencies-list__column">
             {{ currency.code }}
@@ -37,12 +40,10 @@
         </div>
 
         <template v-if="activeItemIndex === index">
-          <div class="currencies-list__editing-form">
-            <label>
-              Make your base currency
-              <input type="checkbox">
-            </label>
-          </div>
+          <edit-currency
+            :currency="currency"
+            @delete="onDeleteHandler(index)"
+          />
         </template>
       </div>
     </template>
@@ -56,15 +57,24 @@ import {
 } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useCurrenciesStore } from '@/stores';
+import { useNotificationCenter } from '@/components/notification-center';
+import EditCurrency from './edit-currency.vue';
+
+type ActiveItemIndex = number;
 
 export default defineComponent({
+  components: { EditCurrency },
   setup() {
-    const store = useCurrenciesStore();
-    const { currencies } = storeToRefs(store);
+    const currenciesStore = useCurrenciesStore();
+    const {
+      addSuccessNotification,
+      addErrorNotification,
+    } = useNotificationCenter();
+    const { currencies } = storeToRefs(currenciesStore);
 
-    const activeItemIndex = ref<number>(null);
+    const activeItemIndex = ref<ActiveItemIndex>(null);
 
-    const toggleActiveItem = (index: number) => {
+    const toggleActiveItem = (index: ActiveItemIndex) => {
       if (activeItemIndex.value === index) {
         activeItemIndex.value = null;
       } else {
@@ -72,10 +82,25 @@ export default defineComponent({
       }
     };
 
+    const onDeleteHandler = async (index: ActiveItemIndex) => {
+      try {
+        await currenciesStore.deleteCurrency(
+          currencies.value[index].currencyId,
+        );
+
+        await currenciesStore.loadCurrencies();
+
+        addSuccessNotification('Successfully deleted.');
+      } catch (e) {
+        addErrorNotification('Unexpected error. Currency is not deleted.');
+      }
+    };
+
     return {
       currencies,
       toggleActiveItem,
       activeItemIndex,
+      onDeleteHandler,
     };
   },
 });
@@ -85,7 +110,7 @@ export default defineComponent({
 .currencies-list {
   @include surface-container();
 
-  --item-padding: 16px 32px;
+  --settings-currency-list-item-padding: 16px 32px;
 
   padding: 16px 0;
 }
@@ -95,8 +120,7 @@ export default defineComponent({
   }
 }
 .currencies-list__row {
-  color: var(--app-on-surface-color);
-  padding: var(--item-padding);
+  padding: var(--settings-currency-list-item-padding);
 
   display: grid;
   grid-template-columns: 50px 300px 1fr;
@@ -104,7 +128,7 @@ export default defineComponent({
 
   transition: background-color .2s ease-out;
 
-  &:not(.currencies-list__row--header) {
+  &:not(.currencies-list__row--header):not(.currencies-list__row--default) {
     cursor: pointer;
 
     &:hover {
@@ -114,9 +138,5 @@ export default defineComponent({
 }
 .currencies-list__note {
   opacity: 0.5;
-}
-.currencies-list__editing-form {
-  padding: var(--item-padding);
-  border-top: 1px solid #ccc;
 }
 </style>
