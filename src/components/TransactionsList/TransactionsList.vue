@@ -1,7 +1,7 @@
 <template>
   <template
     v-for="item in transactions"
-    :key="item.tx.id"
+    :key="item.tx.id + `render-id-${renderId}`"
   >
     <component
       :is="components[item.type]"
@@ -12,6 +12,8 @@
 
 <script lang="ts">
 import {
+  ref,
+  watch,
   markRaw,
   PropType,
   defineComponent,
@@ -33,8 +35,17 @@ export default defineComponent({
       required: true,
     },
   },
-  setup() {
+  setup(props) {
+    // Since transactions list might change inside but txId will remain the same
+    // there is no way expect this to rerender list elements
+    const renderId = ref(1);
+
+    watch(
+      () => props.transactions,
+      () => renderId.value++,
+    );
     return {
+      renderId,
       components,
       TRANSACTION_TYPES,
     };
