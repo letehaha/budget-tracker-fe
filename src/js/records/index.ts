@@ -1,7 +1,7 @@
 export {
   AccountRecord,
   CategoryRecord,
-  CurrencyRecord,
+  UserCurrencyRecord,
   TransactionRecord,
   UserRecord,
 } from './models';
@@ -9,6 +9,6 @@ export {
   MONOTransactionRecord,
   MONOAccountRecord,
   MONOUserRecord,
-  MONOCurrencyRecord,
+  MONOUserCurrencyRecord,
 } from './monobank';
 export { TransactionModelRecord } from './transaction-model.record';

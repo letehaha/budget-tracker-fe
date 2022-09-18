@@ -44,6 +44,27 @@
           />
         </form-row>
       </template>
+
+      <template v-if="isCurrenciesDifferent">
+        <form-row>
+          <InputField
+            v-model="form.targetAmount"
+            :label="`Target amount (${targetCurrency.code})`"
+            type="number"
+          />
+        </form-row>
+      </template>
+
+      <!-- <currency-field
+        v-model:form-currency="form.currency"
+        v-model:form-target-amount="form.targetAmount"
+        :currencies="currencies"
+        :is-form-creation="isFormCreation"
+        :is-transfer-transaction="isTransferTx"
+        :form-account="form.account"
+        :form-to-account="form.toAccount"
+      /> -->
+
       <form-row>
         <DateField
           v-model="form.time"
@@ -102,6 +123,7 @@ import { storeToRefs } from 'pinia';
 import {
   useAccountsStore,
   useCategoriesStore,
+  useCurrenciesStore,
 } from '@/stores';
 
 import {
@@ -114,6 +136,7 @@ import {
   AccountRecord,
   TransactionRecord,
   CategoryRecord,
+  // UserCurrencyRecord,
 } from '@/js/records';
 import { eventBus, BUS_EVENTS } from '@/js/utils';
 import { toSystemAmount, fromSystemAmount } from '@/js/helpers';
@@ -129,6 +152,7 @@ import FormHeader from './form-header.vue';
 import TypeSelector from './type-selector.vue';
 import FormRow from './form-row.vue';
 import AccountField from './account-field.vue';
+// import CurrencyField from './currency-field.vue';
 
 import { FORM_TYPES } from './types';
 
@@ -154,6 +178,7 @@ export default defineComponent({
     FormHeader,
     FormRow,
     AccountField,
+    // CurrencyField,
     TypeSelector,
     DateField,
     InputField,
@@ -175,8 +200,11 @@ export default defineComponent({
   setup(props, { emit }) {
     const accountsStore = useAccountsStore();
     const categoriesStore = useCategoriesStore();
+    const currenciesStore = useCurrenciesStore();
+    const { getCurrency } = useCurrenciesStore();
 
     const { accountsRecord } = storeToRefs(accountsStore);
+    const { currencies } = storeToRefs(currenciesStore);
     const { categories, rawCategories } = storeToRefs(categoriesStore);
 
     const isFormCreation = computed(() => !props.transaction);
@@ -190,10 +218,12 @@ export default defineComponent({
       paymentType: PAYMENT_TYPES;
       note?: string;
       type: FORM_TYPES;
+      targetAmount?: number;
     }>({
       amount: null,
       account: null,
       toAccount: null,
+      targetAmount: null,
       category: categories.value[0],
       time: new Date().toISOString().substring(0, 19),
       paymentType: PAYMENT_TYPES.creditCard,
@@ -206,6 +236,19 @@ export default defineComponent({
     const isTransferTx = computed(
       () => currentTxType.value === FORM_TYPES.transfer,
     );
+    const isCurrenciesDifferent = computed(() => {
+      if (!form.value.account || !form.value.toAccount) {
+        return false;
+      }
+
+      return form.value.account.currencyId !== form.value.toAccount.currencyId;
+    });
+    const targetCurrency = computed(() => {
+      if (form.value.toAccount?.currencyId) {
+        return getCurrency(form.value.toAccount.currencyId);
+      }
+      return undefined;
+    });
 
     const accountsArray = computed(() => Object.values(accountsRecord.value));
 
@@ -220,7 +263,7 @@ export default defineComponent({
       (value) => {
         if (value) {
           form.value = {
-            amount: Math.abs(fromSystemAmount(value.amount)),
+            amount: fromSystemAmount(value.amount),
             account: accountsRecord.value[value.accountId],
             type: getFormTypeFromTransaction(value),
             category: rawCategories.value.find(i => i.id === value.categoryId),
@@ -241,6 +284,7 @@ export default defineComponent({
       (value) => {
         if (value) {
           form.value.toAccount = accountsRecord.value[value.accountId];
+          form.value.targetAmount = fromSystemAmount(value.amount);
         }
       },
       {
@@ -286,8 +330,6 @@ export default defineComponent({
           paymentType: PAYMENT_TYPES;
           accountId: number;
           categoryId?: number;
-          currencyId: number;
-          currencyCode: string;
 
           isTransfer?: boolean;
           destinationAmount?: number;
@@ -301,17 +343,14 @@ export default defineComponent({
           transactionType: getTxTypeFromFormType(formTxType),
           paymentType,
           accountId,
-          // TODO: one day allow changing currency
-          currencyId: 867,
-          currencyCode: 'UAH',
         };
 
         if (isTransferTx.value) {
           params.destinationAccountId = toAccount.id;
-          params.destinationAmount = toSystemAmount(Number(amount));
+          params.destinationAmount = isCurrenciesDifferent.value
+            ? toSystemAmount(Number(form.value.targetAmount))
+            : toSystemAmount(Number(amount));
           params.isTransfer = true;
-          params.destinationCurrencyId = 867;
-          params.destinationCurrencyCode = 'UAH';
         } else {
           params.categoryId = category.id;
         }
@@ -363,6 +402,10 @@ export default defineComponent({
       TRANSACTION_TYPES,
       PAYMENT_TYPES,
       form,
+      currencies,
+      isCurrenciesDifferent,
+      targetCurrency,
+      isFormCreation,
       filteredAccounts,
       isTransferTx,
       isLoading,

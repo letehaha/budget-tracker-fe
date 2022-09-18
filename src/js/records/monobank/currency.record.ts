@@ -7,7 +7,7 @@ interface Record {
   rateCross?: number;
 }
 
-export class MONOCurrencyRecord {
+export class MONOUserCurrencyRecord {
   _record: Record;
 
   currencyCodeA?: string;
