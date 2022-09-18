@@ -112,6 +112,10 @@ export default defineComponent({
 <style lang="scss" scoped>
 .currencies-list {
   --settings-currency-list-item-padding: 16px 32px;
+
+  @include surface-container();
+
+  padding: 16px 0;
 }
 .currencies-list__item {
   &:not(:last-child) {

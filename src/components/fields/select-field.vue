@@ -232,6 +232,8 @@ export default defineComponent({
 }
 
 .select-field__dropdown {
+  @include dropdown-shadow();
+
   position: absolute;
   top: 100%;
   width: 100%;
@@ -241,7 +243,6 @@ export default defineComponent({
   padding: 8px 0;
   transition: 0.2s ease-out;
   background-color: var(--app-surface-color);
-  box-shadow: 0 3px 10px 2px rgba(0, 0, 0, 0.08);
   z-index: var(--z-select-field);
   border-radius: 4px;
 

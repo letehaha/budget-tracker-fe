@@ -16,16 +16,5 @@ export default defineComponent({
     AddNewCurrency,
     CurrenciesList,
   },
-  setup() {
-    return {};
-  },
 });
 </script>
-
-<style lang="scss" scoped>
-.settings-currencies {
-  @include surface-container();
-
-  padding: 16px 0;
-}
-</style>

@@ -93,8 +93,10 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .add-new-currency {
+  @include surface-container();
+
   margin-bottom: 32px;
-  padding: 0 32px;
+  padding: 16px;
 
   display: flex;
   gap: 16px;
