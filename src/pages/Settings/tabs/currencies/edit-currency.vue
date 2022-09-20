@@ -16,6 +16,7 @@
 
       <ui-button
         :theme="BUTTON_THEMES.danger"
+        :disabled="deletionDisabled"
         @click="onDeleteHandler"
       >
         Delete
@@ -36,6 +37,10 @@ export default defineComponent({
   props: {
     currency: {
       type: UserCurrencyRecord,
+      required: true,
+    },
+    deletionDisabled: {
+      type: Boolean,
       required: true,
     },
   },

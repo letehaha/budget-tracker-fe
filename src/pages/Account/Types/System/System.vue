@@ -102,7 +102,7 @@ export default defineComponent({
       const accountName = account.value.name;
 
       try {
-        await accountsStore.delteAccount({
+        await accountsStore.deleteAccount({
           id: account.value.id,
         });
 

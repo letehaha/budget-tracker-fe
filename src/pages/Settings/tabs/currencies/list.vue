@@ -42,6 +42,7 @@
         <template v-if="activeItemIndex === index">
           <edit-currency
             :currency="currency"
+            :deletion-disabled="isDeletionDisabled(currency)"
             @delete="onDeleteHandler(index)"
           />
         </template>
@@ -56,7 +57,8 @@ import {
   ref,
 } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useCurrenciesStore } from '@/stores';
+import { useCurrenciesStore, useAccountsStore } from '@/stores';
+import { UserCurrencyRecord } from '@/js/records';
 import { deleteUserCurrency } from '@/api/currencies';
 import { useNotificationCenter } from '@/components/notification-center';
 import EditCurrency from './edit-currency.vue';
@@ -67,20 +69,18 @@ export default defineComponent({
   components: { EditCurrency },
   setup() {
     const currenciesStore = useCurrenciesStore();
+    const accountsStore = useAccountsStore();
     const {
       addSuccessNotification,
       addErrorNotification,
     } = useNotificationCenter();
     const { currencies } = storeToRefs(currenciesStore);
+    const { accountsCurrencyIds } = storeToRefs(accountsStore);
 
-    const activeItemIndex = ref<ActiveItemIndex>(null);
+    const activeItemIndex = ref<ActiveItemIndex | null>(null);
 
     const toggleActiveItem = (index: ActiveItemIndex) => {
-      if (activeItemIndex.value === index) {
-        activeItemIndex.value = null;
-      } else {
-        activeItemIndex.value = index;
-      }
+      activeItemIndex.value = activeItemIndex.value === index ? null : index;
     };
 
     const onDeleteHandler = async (index: ActiveItemIndex) => {
@@ -99,11 +99,16 @@ export default defineComponent({
       }
     };
 
+    const isDeletionDisabled = (currency: UserCurrencyRecord) => (
+      accountsCurrencyIds.value.includes(currency.currencyId)
+    );
+
     return {
       currencies,
       toggleActiveItem,
       activeItemIndex,
       onDeleteHandler,
+      isDeletionDisabled,
     };
   },
 });
