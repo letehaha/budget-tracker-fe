@@ -79,21 +79,22 @@ $transition: box-shadow 0.2s ease-out;
   justify-content: center;
   padding: 12px 32px;
   transition: .2s ease-out;
+
+  &[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
 }
 
 .button--primary {
   background-color: var(--primary-500);
   color: #fff;
 
-  &:hover {
-    background-color: var(--primary-700);
+  &:not([disabled]):hover {
+    background-color: var(--primary-800);
   }
   &:active {
     background-color: var(--primary-600);
-  }
-  &[disabled] {
-    background-color: var(--primary-200);
-    cursor: not-allowed;
   }
   &:not([disabled]).button--outline {
     background-color: transparent;
@@ -105,15 +106,11 @@ $transition: box-shadow 0.2s ease-out;
   background-color: var(--danger-500);
   color: #fff;
 
-  &:hover {
-    background-color: var(--danger-700);
+  &:not([disabled]):hover {
+    background-color: var(--danger-900);
   }
   &:active {
     background-color: var(--danger-600);
-  }
-  &[disabled] {
-    background-color: var(--danger-200);
-    cursor: not-allowed;
   }
   &:not([disabled]).button--outline {
     background-color: transparent;
