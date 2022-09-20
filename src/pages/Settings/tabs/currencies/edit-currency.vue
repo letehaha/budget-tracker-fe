@@ -1,6 +1,6 @@
 <template>
   <div class="edit-currency">
-    <label>
+    <label class="edit-currency__default-currency">
       Make it your base currency
 
       <input
@@ -9,17 +9,18 @@
       >
     </label>
 
-    <template v-if="isFormDirty">
-      <ui-button>
+    <div class="edit-currency__actions">
+      <ui-button :disabled="!isFormDirty">
         Save
       </ui-button>
-    </template>
-    <ui-button
-      :theme="BUTTON_THEMES.danger"
-      @click="onDeleteHandler"
-    >
-      Delete
-    </ui-button>
+
+      <ui-button
+        :theme="BUTTON_THEMES.danger"
+        @click="onDeleteHandler"
+      >
+        Delete
+      </ui-button>
+    </div>
   </div>
 </template>
 
@@ -69,5 +70,14 @@ export default defineComponent({
 .edit-currency {
   padding: var(--settings-currency-list-item-padding);
   border-top: 1px solid #ccc;
+}
+.edit-currency__default-currency {
+  cursor: pointer;
+}
+.edit-currency__actions {
+  display: flex;
+  grid-template-columns: min-content min-content;
+  gap: 32px;
+  margin-top: 32px;
 }
 </style>
