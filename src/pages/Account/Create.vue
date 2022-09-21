@@ -4,14 +4,14 @@
       class="account-create__form"
       @submit.prevent="submit"
     >
-      <InputField
+      <input-field
         v-model="form.name"
         label="Account name"
         placeholder="Account name"
         class="account-create__form-field"
       />
 
-      <SelectField
+      <select-field
         v-model="form.currency"
         label="Currency"
         :values="formattedCurrencies"
@@ -19,7 +19,7 @@
         class="account-create__form-field"
       />
 
-      <!-- <SelectField
+      <!-- <select-field
         v-model="form.accountType"
         label="Account type"
         :values="ACCOUNT_TYPES"
@@ -28,27 +28,27 @@
         class="account-create__form-field"
       /> -->
 
-      <InputField
+      <input-field
         v-model="form.currentBalance"
         label="Initial balance"
         placeholder="Initial balance"
         class="account-create__form-field"
       />
 
-      <InputField
+      <input-field
         v-model="form.creditLimit"
         label="Credit limit"
         placeholder="Credit limit"
         class="account-create__form-field"
       />
 
-      <Button
+      <ui-button
         :type="BUTTON_TYPES.submit"
         class="account-create__form-submit"
         :disabled="isLoading"
       >
         {{ isLoading ? 'Creating...' : 'Create' }}
-      </Button>
+      </ui-button>
     </form>
   </div>
 </template>
@@ -69,14 +69,14 @@ import {
   NotificationType,
 } from '@/components/notification-center';
 
-import InputField from '@/components/fields/InputField.vue';
-import SelectField from '@/components/fields/SelectField.vue';
-import Button, { BUTTON_TYPES } from '@/components/common/Button.vue';
+import InputField from '@/components/fields/input-field.vue';
+import SelectField from '@/components/fields/select-field.vue';
+import UiButton, { BUTTON_TYPES } from '@/components/common/ui-button.vue';
 
 export default defineComponent({
-  name: 'CreateAccount',
+  name: 'create-account',
   components: {
-    Button,
+    UiButton,
     InputField,
     SelectField,
   },

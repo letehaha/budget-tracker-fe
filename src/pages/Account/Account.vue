@@ -14,8 +14,8 @@ import { ACCOUNT_TYPES } from 'shared-types';
 import { defineComponent, computed } from 'vue';
 import { useRoute } from 'vue-router';
 
-import MonobankAccount from './Types/Monobank/Monobank.vue';
-import SystemAccount from './Types/System/System.vue';
+import MonobankAccount from './types/monobank/monobank.vue';
+import SystemAccount from './types/system/system.vue';
 
 export default defineComponent({
   components: {

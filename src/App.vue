@@ -5,15 +5,17 @@
     </template>
     <template v-else-if="currentLayout === ROUTER_LAYOUTS.dashboard">
       <div class="page">
-        <Sidebar />
+        <ui-sidebar />
+
         <div class="page__wrapper">
-          <UIHeader />
+          <ui-header />
+
           <router-view />
         </div>
       </div>
     </template>
-    <Modal />
-    <NotificationsCenter />
+    <ui-modal />
+    <notifications-center />
   </main>
 </template>
 
@@ -27,17 +29,17 @@ import { storeToRefs } from 'pinia';
 import { useRouter, useRoute } from 'vue-router';
 import { useRootStore, useAuthStore, useBanksMonobankStore } from '@/stores';
 import { ROUTER_LAYOUTS } from '@/routes';
-import Modal from '@/components/modal-center/Modal.vue';
-import UIHeader from '@/components/Header.vue';
-import Sidebar from '@/components/Sidebar.vue';
+import UiModal from '@/components/modal-center/ui-modal.vue';
+import UiHeader from '@/components/ui-header.vue';
+import UiSidebar from '@/components/ui-sidebar.vue';
 
-import NotificationsCenter from '@/components/notification-center/NotificationsCenter.vue';
+import NotificationsCenter from '@/components/notification-center/notifications-center.vue';
 
 export default defineComponent({
   components: {
-    Modal,
-    UIHeader,
-    Sidebar,
+    UiModal,
+    UiHeader,
+    UiSidebar,
     NotificationsCenter,
   },
   setup() {

@@ -5,31 +5,31 @@
         Create an account
       </h1>
       <div class="register__fields">
-        <InputField
+        <input-field
           v-model="form.username"
           label="Username"
           placeholder="ie. johnsnow"
           class="register__field"
         />
-        <InputField
+        <input-field
           v-model="form.password"
           label="Password"
           class="register__field"
           type="password"
         />
-        <InputField
+        <input-field
           v-model="form.verifyPassowrd"
           label="Verify Password"
           class="register__field"
           type="password"
         />
       </div>
-      <Button
+      <ui-button
         class="register__submit"
         @click="submit"
       >
         Sign up
-      </Button>
+      </ui-button>
       <div class="register__signup">
         Already have an account?
 
@@ -48,12 +48,12 @@
 import { defineComponent, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores';
-import Button from '@/components/common/Button.vue';
-import InputField from '@/components/fields/InputField.vue';
+import UiButton from '@/components/common/ui-button.vue';
+import InputField from '@/components/fields/input-field.vue';
 
 export default defineComponent({
   components: {
-    Button,
+    UiButton,
     InputField,
   },
   setup() {
