@@ -52,10 +52,8 @@
 </template>
 
 <script lang="ts">
-import {
-  defineComponent,
-  ref,
-} from 'vue';
+import { defineComponent, ref } from 'vue';
+import { ERROR_CODES } from 'shared-types';
 import { storeToRefs } from 'pinia';
 import { useCurrenciesStore, useAccountsStore } from '@/stores';
 import { UserCurrencyRecord } from '@/js/records';
@@ -95,6 +93,10 @@ export default defineComponent({
 
         addSuccessNotification('Successfully deleted.');
       } catch (e) {
+        if (e.data.code === ERROR_CODES.validationError) {
+          addErrorNotification(e.data.message);
+          return;
+        }
         addErrorNotification('Unexpected error. Currency is not deleted.');
       }
     };
