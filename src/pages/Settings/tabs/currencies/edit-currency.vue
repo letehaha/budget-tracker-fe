@@ -10,17 +10,21 @@
     </label>
 
     <div class="edit-currency__actions">
-      <ui-button :disabled="!isFormDirty">
-        Save
-      </ui-button>
+      <ui-tooltip :content="!isFormDirty ? 'Nothing to save' : ''">
+        <ui-button :disabled="!isFormDirty">
+          Save
+        </ui-button>
+      </ui-tooltip>
 
-      <ui-button
-        :theme="BUTTON_THEMES.danger"
-        :disabled="deletionDisabled"
-        @click="onDeleteHandler"
-      >
-        Delete
-      </ui-button>
+      <ui-tooltip :content="deletionDisabled ? DISABLED_DELETE_TEXT : ''">
+        <ui-button
+          :theme="BUTTON_THEMES.danger"
+          :disabled="deletionDisabled"
+          @click="onDeleteHandler"
+        >
+          Delete
+        </ui-button>
+      </ui-tooltip>
     </div>
   </div>
 </template>
@@ -31,9 +35,12 @@ import { storeToRefs } from 'pinia';
 import { useCurrenciesStore } from '@/stores';
 import { UserCurrencyRecord } from '@/js/records';
 import UiButton, { BUTTON_THEMES } from '@/components/common/ui-button.vue';
+import UiTooltip from '@/components/common/tooltip.vue';
+
+const DISABLED_DELETE_TEXT = 'You cannot delete this currency because it is still connected to account(s).';
 
 export default defineComponent({
-  components: { UiButton },
+  components: { UiButton, UiTooltip },
   props: {
     currency: {
       type: UserCurrencyRecord,
@@ -61,6 +68,7 @@ export default defineComponent({
     };
 
     return {
+      DISABLED_DELETE_TEXT,
       BUTTON_THEMES,
       onDeleteHandler,
       form,
