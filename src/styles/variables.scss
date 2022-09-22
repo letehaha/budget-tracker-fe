@@ -1,4 +1,5 @@
 $primary-color: #2ecc71;
+$danger-color: #e1301c;
 
 body {
   --primary-text-color: #333;
@@ -6,6 +7,11 @@ body {
   @each $shade, $color in makeColorPalette($primary-color) {
     --primary-#{$shade}: #{$color};
     --primary-#{$shade}-rgb: #{hextorgb($color)};
+  }
+
+  @each $shade, $color in makeColorPalette($danger-color) {
+    --danger-#{$shade}: #{$color};
+    --danger-#{$shade}-rgb: #{hextorgb($color)};
   }
 
   // app elements color
@@ -16,12 +22,13 @@ body {
     --app-expense-color: #e74c3c,
     --app-transfer-color: #95a5a6,
 
-    --app-danger-color: #e1301c,
+    --app-danger-color: $danger-color,
     --app-warning-color: #e5971c,
     --app-success-color: #059134,
 
     --app-bg-color: #fafafa,
     --app-surface-color: #fff,
+    --app-surface-color-hover: #f5f5f5,
     --app-on-bg-color: #333,
     --app-on-surface-color: #222,
   ) {
@@ -37,6 +44,7 @@ body {
 
       --app-bg-color: #121212,
       --app-surface-color: #1E1E1E,
+      --app-surface-color-hover: #252525,
       --app-on-bg-color: #E1E1E1,
       --app-on-surface-color: #E3E3E3,
     ) {

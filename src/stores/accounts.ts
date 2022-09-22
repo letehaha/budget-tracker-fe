@@ -13,6 +13,10 @@ export const useAccountsStore = defineStore('system-accounts', () => {
     () => (id: number) => accounts.value.find(i => i.id === id),
   );
 
+  const accountsCurrencyIds = computed(
+    () => [...new Set(accounts.value.map(item => item.currencyId))],
+  );
+
   const loadAccounts = async () => {
     try {
       const result = await api.get('/accounts');
@@ -101,7 +105,7 @@ export const useAccountsStore = defineStore('system-accounts', () => {
     }
   };
 
-  const delteAccount = async ({ id }: { id: number }) => {
+  const deleteAccount = async ({ id }: { id: number }) => {
     try {
       await api.delete(`/accounts/${id}`);
 
@@ -116,12 +120,13 @@ export const useAccountsStore = defineStore('system-accounts', () => {
   return {
     accounts,
     accountsRecord,
+    accountsCurrencyIds,
 
     getAccountById,
 
     createAccount,
     loadAccounts,
     editAccount,
-    delteAccount,
+    deleteAccount,
   };
 });

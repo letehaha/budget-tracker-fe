@@ -1,4 +1,5 @@
 import { NavigationGuard } from 'vue-router';
+import { storeToRefs } from 'pinia';
 import { api } from '@/api';
 import {
   useUserStore,
@@ -19,8 +20,11 @@ export const authPageGuard: NavigationGuard = (to, from, next): void => {
 
 export const redirectRouteGuard: NavigationGuard = (to, from, next): void => {
   const token = localStorage.getItem('user-token');
+  const authStore = useAuthStore();
+  const { isLoggedIn } = storeToRefs(authStore);
 
-  if (useAuthStore().isLoggedIn || token) {
+  if (isLoggedIn || token) {
+    isLoggedIn.value = true;
     api.setToken(token);
     if (!useUserStore().user) {
       useUserStore().loadUser();

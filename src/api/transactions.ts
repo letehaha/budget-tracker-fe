@@ -68,13 +68,9 @@ export const createTransaction = async ({
   paymentType,
   accountId,
   categoryId,
-  currencyId,
-  currencyCode,
   destinationAccountId,
   destinationAmount,
   isTransfer = false,
-  destinationCurrencyId,
-  destinationCurrencyCode,
 }: {
   amount: number;
   note?: string;
@@ -83,13 +79,9 @@ export const createTransaction = async ({
   paymentType: PAYMENT_TYPES;
   accountId: number;
   categoryId?: number;
-  currencyId: number;
-  currencyCode: string;
   destinationAccountId?: number;
   destinationAmount?: number;
   isTransfer?: boolean;
-  destinationCurrencyId?: number;
-  destinationCurrencyCode?: string;
 }): Promise<void> => {
   try {
     await api.post('/transactions', {
@@ -100,12 +92,8 @@ export const createTransaction = async ({
       paymentType,
       accountId,
       categoryId,
-      currencyId,
-      currencyCode,
       destinationAccountId,
       destinationAmount,
-      destinationCurrencyId,
-      destinationCurrencyCode,
       isTransfer,
     });
   } catch (e) {
@@ -122,13 +110,9 @@ export const editTransaction = async ({
   paymentType,
   accountId,
   categoryId,
-  currencyId,
-  currencyCode,
   isTransfer,
   destinationAccountId,
   destinationAmount,
-  destinationCurrencyId,
-  destinationCurrencyCode,
 }: {
   txId: number;
   amount: number;
@@ -138,13 +122,9 @@ export const editTransaction = async ({
   paymentType: PAYMENT_TYPES;
   accountId: number;
   categoryId?: number;
-  currencyId?: number;
-  currencyCode?: string;
   isTransfer?: boolean;
   destinationAccountId?: number;
   destinationAmount?: number;
-  destinationCurrencyId?: number;
-  destinationCurrencyCode?: string;
 }): Promise<void> => {
   try {
     await api.put(`/transactions/${txId}`, {
@@ -155,13 +135,9 @@ export const editTransaction = async ({
       paymentType,
       accountId,
       categoryId,
-      currencyId,
       isTransfer,
-      currencyCode,
       destinationAccountId,
       destinationAmount,
-      destinationCurrencyId,
-      destinationCurrencyCode,
     });
   } catch (e) {
     throw new Error(e);

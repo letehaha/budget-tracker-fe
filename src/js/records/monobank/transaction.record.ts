@@ -17,6 +17,7 @@ interface Record {
   transactionType?: TRANSACTION_TYPES;
   paymentType?: PAYMENT_TYPES;
   monoAccountId?: number;
+  currencyId?: number;
   accountType?: ACCOUNT_TYPES;
   note?: string;
 }
@@ -39,6 +40,8 @@ export class MONOTransactionRecord {
   commissionRate: number;
 
   cashbackAmount: number;
+
+  currencyId: number;
 
   balance: number;
 
@@ -78,6 +81,7 @@ export class MONOTransactionRecord {
     this.monoAccountId = record.monoAccountId;
     this.accountType = record.accountType;
     this.note = record.note;
+    this.currencyId = record.currencyId;
   }
 
   get formattedAmount(): string {

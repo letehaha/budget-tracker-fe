@@ -4,7 +4,7 @@ import { clickOutside } from '@/directives';
 import { initApiCaller } from '@/api';
 import { store } from '@/stores/setup';
 import { useAuthStore } from '@/stores';
-import App from './App.vue';
+import App from './app.vue';
 import '@/styles/index.scss';
 import './registerServiceWorker';
 
@@ -19,6 +19,9 @@ app.use(router);
 app.use(store);
 
 app.mount('#app');
+
+// eslint-disable-next-line no-console
+console.log('test');
 
 initApiCaller({
   logout: useAuthStore().logout,
