@@ -4,6 +4,10 @@ describe('SignIn.cy.ts', () => {
   it('should redirect here if user is not authorized', () => {
     cy.visit('/');
 
+    // returning false here prevents Cypress from
+    // failing the test
+    cy.on('uncaught:exception', () => false)
+
     cy.location().should((location) => {
       expect(location.pathname).to.eq('/sign-in');
     });
