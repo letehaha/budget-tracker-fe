@@ -20,9 +20,6 @@ app.use(store);
 
 app.mount('#app');
 
-// eslint-disable-next-line no-console
-console.log('test');
-
 initApiCaller({
   logout: useAuthStore().logout,
   router,

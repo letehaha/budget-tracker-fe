@@ -1,3 +1,5 @@
+@use "sass:math";
+
 @function tetrad($color) {
   $hue: hue($color);
   $saturation: saturation($color);
@@ -13,9 +15,9 @@
 }
 
 @function multiply ($fore, $back) {
-  $red: red($back) * red($fore) / 255;
-  $green: green($back) * green($fore) / 255;
-  $blue: blue($back) * blue($fore) / 255;
+  $red: red($back) * math.div(red($fore), 255);
+  $green: green($back) * math.div(green($fore), 255);
+  $blue: blue($back) * math.div(blue($fore), 255);
   @return rgb($red, $green, $blue);
 }
 

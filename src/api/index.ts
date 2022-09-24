@@ -24,8 +24,8 @@ interface ApiRequestConfig {
   body?: string,
 }
 
-const API_HTTP = process.env.VUE_APP_API_HTTP;
-const API_VER = process.env.VUE_APP_API_VER;
+const API_HTTP = import.meta.env.VITE_APP_API_HTTP;
+const API_VER = import.meta.env.VITE_APP_API_VER;
 
 // eslint-disable-next-line no-console
 console.log('API_HTTP', API_HTTP);
@@ -41,7 +41,7 @@ class ApiCaller {
   _baseURL;
 
   constructor() {
-    this._baseURL = process.env.API_HTTP;
+    this._baseURL = import.meta.env.API_HTTP;
     this.authToken = null;
     this.router = null;
   }

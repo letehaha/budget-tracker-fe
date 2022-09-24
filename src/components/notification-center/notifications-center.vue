@@ -44,10 +44,11 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 
-import WarningIcon from '@/assets/icons/warning.svg?inline';
-import ErrorIcon from '@/assets/icons/error.svg?inline';
-import SuccessIcon from '@/assets/icons/success.svg?inline';
-import XmarkIcon from '@/assets/icons/xmark.svg?inline';
+/// <reference types="vite-svg-loader" />
+import WarningIcon from '@/assets/icons/warning.svg?component';
+import ErrorIcon from '@/assets/icons/error.svg?component';
+import SuccessIcon from '@/assets/icons/success.svg?component';
+import XmarkIcon from '@/assets/icons/xmark.svg?component';
 
 import { useNotificationCenter, NotificationType } from './index';
 
