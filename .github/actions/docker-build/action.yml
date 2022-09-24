@@ -27,8 +27,8 @@ runs:
     - name: Make envfile
       uses: SpicyPizza/create-envfile@v1
       with:
-        envkey_VUE_APP_API_HTTP: http://${{ inputs.vps-host }}:8081
-        envkey_VUE_APP_API_VER: ${{ inputs.vue-app-api-ver }}
+        envkey_VITE_APP_API_HTTP: http://${{ inputs.vps-host }}:8081
+        envkey_VITE_APP_API_VER: ${{ inputs.vue-app-api-ver }}
         directory: ./
         file_name: .env
 

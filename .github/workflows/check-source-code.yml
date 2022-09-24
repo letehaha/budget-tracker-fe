@@ -70,8 +70,8 @@ jobs:
           BASE_URL: http://budget-tracker.com:8100
           PORT: 8100
           HOST: budget-tracker.com
-          VUE_APP_API_HTTP: http://${{ secrets.VPS_HOST }}:8081
-          VUE_APP_API_VER: ${{ secrets.VUE_APP_API_VER }}
+          VITE_APP_API_HTTP: http://${{ secrets.VPS_HOST }}:8081
+          VITE_APP_API_VER: ${{ secrets.VUE_APP_API_VER }}
 
   docker-build:
     name: Build source code using Docker
