@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "vue-tsc && vite build",
+    "build": "vue-tsc --noEmit && vite build",
     "lint": "eslint -c ./.eslintrc.js --ignore-path ./.eslintignore",
     "dev": "vite",
     "prod": "vite --mode production",

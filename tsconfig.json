@@ -3,6 +3,7 @@
     "target": "esnext",
     "module": "esnext",
     "jsx": "preserve",
+    "isolatedModules": true,
     "importHelpers": true,
     "moduleResolution": "node",
     "skipLibCheck": true,
@@ -13,6 +14,7 @@
     "baseUrl": ".",
     "types": [
       "vite/client",
+      "vite-svg-loader",
       "node",
       "jest"
     ],

@@ -12,10 +12,10 @@
       class="radio-check-field__input"
       type="checkbox"
       :checked="value"
-      :placeholder="$attrs.placeholder || ''"
+      :placeholder="String($attrs.placeholder || '')"
       :tabindex="$attrs.readonly || $attrs.readonly === ''
         ? -1
-        : $attrs.tabindex"
+        : Number($attrs.tabindex)"
       v-bind="$attrs"
     >
     <div class="radio-check-field__custom" />
@@ -31,7 +31,7 @@ import { defineComponent } from 'vue';
 export default defineComponent({
   props: {
     label: { type: String, default: undefined },
-    value: { type: [String, Boolean], required: true },
+    value: { type: Boolean, required: true },
     readonly: { type: Boolean, default: false },
   },
   computed: {

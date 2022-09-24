@@ -43,8 +43,6 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-
-/// <reference types="vite-svg-loader" />
 import WarningIcon from '@/assets/icons/warning.svg?component';
 import ErrorIcon from '@/assets/icons/error.svg?component';
 import SuccessIcon from '@/assets/icons/success.svg?component';
