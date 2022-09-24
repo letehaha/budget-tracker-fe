@@ -84,9 +84,8 @@ import { CategoryModel } from 'shared-types';
 import {
   defineComponent, ref, Ref, computed, ComputedRef, PropType,
 } from 'vue';
-
-import ChevronRightIcon from '@/assets/icons/chevron-right.svg?inline';
-import ChevronLeftIcon from '@/assets/icons/chevron-left.svg?inline';
+import ChevronRightIcon from '@/assets/icons/chevron-right.svg?component';
+import ChevronLeftIcon from '@/assets/icons/chevron-left.svg?component';
 
 import FieldError from './components/field-error.vue';
 import FieldLabel from './components/field-label.vue';

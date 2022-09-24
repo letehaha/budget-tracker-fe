@@ -102,13 +102,13 @@ export default defineComponent({
   &::-webkit-calendar-picker-indicator {
     opacity: 1;
     display: block;
-    background: url('~@/assets/icons/colored/calendar-black.svg') no-repeat;
+    background: url('@/assets/icons/colored/calendar-black.svg') no-repeat;
     width: 18px;
     height: 18px;
     margin-top: -2px;
 
     body.dark & {
-      background: url('~@/assets/icons/colored/calendar-white.svg') no-repeat;
+      background: url('@/assets/icons/colored/calendar-white.svg') no-repeat;
     }
 }
 }
