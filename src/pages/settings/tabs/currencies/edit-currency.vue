@@ -1,20 +1,20 @@
 <template>
   <div class="edit-currency">
-    <label class="edit-currency__default-currency">
+    <!-- <label class="edit-currency__default-currency">
       Make it your base currency
 
       <input
         v-model="form.isDefault"
         type="checkbox"
       >
-    </label>
+    </label> -->
 
     <div class="edit-currency__actions">
-      <ui-tooltip :content="!isFormDirty ? 'Nothing to save' : ''">
+      <!-- <ui-tooltip :content="!isFormDirty ? 'Nothing to save' : ''">
         <ui-button :disabled="!isFormDirty">
           Save
         </ui-button>
-      </ui-tooltip>
+      </ui-tooltip> -->
 
       <ui-tooltip :content="deletionDisabled ? DISABLED_DELETE_TEXT : ''">
         <ui-button
@@ -91,6 +91,6 @@ export default defineComponent({
   display: flex;
   grid-template-columns: min-content min-content;
   gap: 32px;
-  margin-top: 32px;
+  // margin-top: 32px;
 }
 </style>
