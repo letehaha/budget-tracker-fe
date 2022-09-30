@@ -156,13 +156,16 @@ export default defineComponent({
     },
     values: {
       handler() {
-        const modelValueLabel = this.getLabelFromValue(this.modelValue);
-        if (
-          !this.values.find(
-            item => this.getLabelFromValue(item) === modelValueLabel,
-          )
-        ) {
-          this.$emit(MODEL_EVENTS.input, this.values[0]);
+        if (this.modelValue) {
+          const modelValueLabel = this.getLabelFromValue(this.modelValue);
+
+          if (
+            !this.values.find(
+              item => this.getLabelFromValue(item) === modelValueLabel,
+            )
+          ) {
+            this.$emit(MODEL_EVENTS.input, this.values[0]);
+          }
         }
       },
     },
