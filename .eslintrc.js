@@ -45,9 +45,7 @@ module.exports = {
 
   settings: {
     'import/resolver': {
-      alias: [
-        ['shared-types', './shared-types'],
-      ],
+      typescript: {},
     },
   },
 
