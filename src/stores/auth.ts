@@ -44,14 +44,8 @@ export const useAuthStore = defineStore('auth', () => {
   };
 
   const signup = async ({ password, username }) => {
-    try {
-      await api.post('/auth/register', { password, username });
-
-      await login({ password, username });
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error(e);
-    }
+    await api.post('/auth/register', { password, username });
+    await login({ password, username });
   };
 
   const logout = () => {
