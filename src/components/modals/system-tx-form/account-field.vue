@@ -9,7 +9,7 @@
           label-key="name"
           is-value-preselected
           :model-value="formAccount"
-          @update:model-value="emit('update:form-account', $event)"
+          @update:model-value="updateFormAccount"
         />
       </form-row>
 
@@ -29,11 +29,11 @@
         <select-field
           label="Account"
           placeholder="Select account"
-          :values="filteredAccounts"
+          :values="accounts"
           label-key="name"
           is-value-preselected
           :model-value="formAccount"
-          @update:model-value="emit('update:form-account', $event)"
+          @update:model-value="updateFormAccount"
         />
       </form-row>
     </template>
@@ -114,8 +114,13 @@ export default defineComponent({
       emit('close-modal');
     };
 
+    const updateFormAccount = (account: AccountRecord) => {
+      emit('update:form-account', account);
+    };
+
     return {
       emit,
+      updateFormAccount,
       redirectToCreateAccountPage,
     };
   },
