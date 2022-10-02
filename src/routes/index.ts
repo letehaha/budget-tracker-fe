@@ -92,7 +92,7 @@ const routes = [
     path: '/welcome',
     name: 'auth/welcome',
     component: () => import('@/pages/auth/welcome.vue'),
-    beforeEnter: authPageGuard,
+    beforeEnter: redirectRouteGuard,
     meta: {
       layout: ROUTER_LAYOUTS.auth,
     },
