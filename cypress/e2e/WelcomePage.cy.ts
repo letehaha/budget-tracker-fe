@@ -1,7 +1,7 @@
 import { TEST_USERS } from '@/cypress/fixtures/users';
 import { GENERIC_CURRENCY } from '@/cypress/fixtures/currencies';
 
-describe('SignIn.cy.ts', () => {
+describe('Welcome page', () => {
   // TODO:
   // it.todo('test signup');
   // it.todo('test that after setting base currency with no mock redirect works')
