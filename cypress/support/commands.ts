@@ -4,6 +4,7 @@ Cypress.Commands.add(
   'signInUser',
   ({ username, password }: { username: string; password: string }) => {
     cy.intercept(`${Cypress.env('baseApiUrl')}/**/auth/login*`).as('signIn');
+    cy.intercept(`${Cypress.env('baseApiUrl')}/**/currencies/base*`).as('loadBaseCurrency');
 
     cy.visit('/sign-in');
 
@@ -12,6 +13,10 @@ Cypress.Commands.add(
     cy.get('button[type=submit]').click();
 
     cy.wait('@signIn');
+    // User is really logged in only when we checked the base currency existing.
+    // If we will call to visit other pages before that call, they will be marked
+    // as unauthorized.
+    cy.wait('@loadBaseCurrency');
   },
 );
 
