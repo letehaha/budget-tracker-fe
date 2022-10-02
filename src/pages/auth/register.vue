@@ -45,11 +45,13 @@
 </template>
 
 <script lang="ts">
+import { ERROR_CODES } from 'shared-types';
 import { defineComponent, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores';
 import UiButton from '@/components/common/ui-button.vue';
 import InputField from '@/components/fields/input-field.vue';
+import { useNotificationCenter } from '@/components/notification-center';
 
 export default defineComponent({
   components: {
@@ -59,6 +61,7 @@ export default defineComponent({
   setup() {
     const router = useRouter();
     const autoStore = useAuthStore();
+    const { addErrorNotification } = useNotificationCenter();
     const form = reactive({
       username: '',
       password: '',
@@ -68,15 +71,24 @@ export default defineComponent({
     const isFormLoading = ref(false);
 
     const submit = async () => {
-      const { password, username } = form;
+      try {
+        const { password, username } = form;
 
-      isFormLoading.value = true;
+        isFormLoading.value = true;
 
-      await autoStore.signup({ password, username });
+        await autoStore.signup({ password, username });
 
-      router.push({ name: 'dashboard' });
+        router.push({ name: 'auth/welcome' });
+      } catch (e) {
+        if (e.data.code === ERROR_CODES.userExists) {
+          addErrorNotification('User with that username already exists!');
+          return;
+        }
 
-      isFormLoading.value = false;
+        addErrorNotification('Unexpected error');
+      } finally {
+        isFormLoading.value = false;
+      }
     };
 
     return {

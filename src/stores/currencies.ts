@@ -1,24 +1,68 @@
-import { ref, Ref } from 'vue';
+import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
 import { api } from '@/api';
-import { UserCurrencyRecord } from '@/js/records';
+import {
+  getAllCurrencies,
+  loadUserCurrencies,
+  setBaseUserCurrency,
+} from '@/api/currencies';
+import { CurrencyRecord, UserCurrencyRecord } from '@/js/records';
 
 export const useCurrenciesStore = defineStore('currencies', () => {
-  const currencies: Ref<UserCurrencyRecord[]> = ref([]);
+  const systemCurrencies = ref<CurrencyRecord[]>([]);
+  const currencies = ref<UserCurrencyRecord[]>([]);
+  const baseCurrency = ref<UserCurrencyRecord>(null);
+  const isBaseCurrencyExists = computed(() => Boolean(baseCurrency.value));
+
+  const systemCurrenciesAssociatedWithUser = computed(
+    () => systemCurrencies.value.reduce((acc, curr) => {
+      if (currencies.value.find(item => item.currencyId === curr.id)) {
+        acc.push(curr);
+      }
+      return acc;
+    }, [] as CurrencyRecord[]),
+  );
 
   const loadCurrencies = async () => {
-    const result = await api.get('/user/currencies');
+    currencies.value = await loadUserCurrencies();
 
-    currencies.value = result.map(item => new UserCurrencyRecord(item));
+    systemCurrencies.value = await getAllCurrencies();
   };
 
   const getCurrency = (currencyId: number) => (
     currencies.value.find(currency => currency.currencyId === currencyId)
   );
 
+  const loadBaseCurrency = async () => {
+    const result: UserCurrencyRecord = await api.get('/user/currencies/base');
+
+    if (result) {
+      baseCurrency.value = result;
+
+      if (!currencies.value.find(item => item.id === result.id)) {
+        currencies.value.push(result);
+      }
+    }
+  };
+
+  const setBaseCurrency = async (currencyId: number) => {
+    const result: UserCurrencyRecord = await setBaseUserCurrency(currencyId);
+
+    if (result) {
+      baseCurrency.value = result;
+      currencies.value.push(result);
+    }
+  };
+
   return {
     currencies,
+    baseCurrency,
+    systemCurrencies,
+    systemCurrenciesAssociatedWithUser,
+    isBaseCurrencyExists,
     loadCurrencies,
+    loadBaseCurrency,
+    setBaseCurrency,
     getCurrency,
   };
 });

@@ -1,18 +1,21 @@
 <template>
   <div class="header">
-    <div class="header__actions">
-      <div class="header__action header__create-transaction">
-        <ui-button @click="openFormModal">
-          New Record
-        </ui-button>
+    <template v-if="!onlySignOut">
+      <div class="header__actions">
+        <div class="header__action">
+          <ui-button @click="openFormModal">
+            New Record
+          </ui-button>
+        </div>
+        <div class="header__action">
+          <input-field
+            v-model="form.search"
+            placeholder="Search..."
+          />
+        </div>
       </div>
-      <div class="header__action header__search">
-        <input-field
-          v-model="form.search"
-          placeholder="Search..."
-        />
-      </div>
-    </div>
+    </template>
+
     <div class="header__sign-out">
       <button
         tyoe="button"
@@ -30,13 +33,16 @@ import { defineComponent, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores';
 import { MODAL_TYPES, useModalCenter } from '@/components/modal-center/index';
-import Button from '@/components/common/ui-button.vue';
+import UiButton from '@/components/common/ui-button.vue';
 import InputField from '@/components/fields/input-field.vue';
 
 export default defineComponent({
   components: {
-    'ui-button': Button,
-    'input-field': InputField,
+    UiButton,
+    InputField,
+  },
+  props: {
+    onlySignOut: Boolean,
   },
   setup() {
     const router = useRouter();
@@ -82,6 +88,9 @@ export default defineComponent({
 }
 .header__action {
   margin-right: 16px;
+}
+.header__sign-out {
+  margin-left: auto;
 }
 .header__sign-out-action {
   border: none;

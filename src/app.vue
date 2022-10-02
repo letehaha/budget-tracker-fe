@@ -5,13 +5,18 @@
     </template>
     <template v-else-if="currentLayout === ROUTER_LAYOUTS.dashboard">
       <div class="page">
-        <ui-sidebar />
+        <template v-if="isAppInitialized">
+          <ui-sidebar />
 
-        <div class="page__wrapper">
-          <ui-header />
+          <div class="page__wrapper">
+            <ui-header />
 
-          <router-view />
-        </div>
+            <router-view />
+          </div>
+        </template>
+        <template v-else>
+          Syncing
+        </template>
       </div>
     </template>
     <ui-modal />
@@ -27,7 +32,12 @@ import {
 } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useRouter, useRoute } from 'vue-router';
-import { useRootStore, useAuthStore, useBanksMonobankStore } from '@/stores';
+import {
+  useRootStore,
+  useAuthStore,
+  useBanksMonobankStore,
+  useCurrenciesStore,
+} from '@/stores';
 import { ROUTER_LAYOUTS } from '@/routes';
 import UiModal from '@/components/modal-center/ui-modal.vue';
 import UiHeader from '@/components/ui-header.vue';
@@ -48,8 +58,11 @@ export default defineComponent({
     const authStore = useAuthStore();
     const rootStore = useRootStore();
     const monobankStore = useBanksMonobankStore();
+    const userCurrenciesStore = useCurrenciesStore();
 
+    const { isAppInitialized } = storeToRefs(rootStore);
     const { isLoggedIn } = storeToRefs(authStore);
+    const { isBaseCurrencyExists } = storeToRefs(userCurrenciesStore);
 
     watch(
       isLoggedIn,
@@ -72,11 +85,21 @@ export default defineComponent({
       { immediate: true },
     );
 
+    watch(
+      isAppInitialized,
+      (value) => {
+        if (value && !isBaseCurrencyExists.value) {
+          router.push({ name: 'auth/welcome' });
+        }
+      },
+    );
+
     const currentLayout = computed(() => route.meta.layout);
 
     return {
       ROUTER_LAYOUTS,
       isLoggedIn,
+      isAppInitialized,
       currentLayout,
     };
   },

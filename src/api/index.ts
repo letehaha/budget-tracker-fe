@@ -158,10 +158,7 @@ class ApiCaller {
       }
     }
 
-    const {
-      status,
-      response,
-    }: {
+    const { status, response }: {
       status: RESPONSE_STATUS,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       response: ApiBaseError | any,

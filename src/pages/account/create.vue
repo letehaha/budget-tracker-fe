@@ -14,8 +14,9 @@
       <select-field
         v-model="form.currency"
         label="Currency"
-        :values="formattedCurrencies"
+        :values="systemCurrenciesAssociatedWithUser"
         is-value-preselected
+        :label-key="(item: CurrencyRecord) => `${item.code} - ${item.currency}`"
         class="account-create__form-field"
       />
 
@@ -55,12 +56,11 @@
 
 <script lang="ts">
 import { ACCOUNT_TYPES } from 'shared-types';
-import {
-  defineComponent, reactive, computed, ref,
-} from 'vue';
+import { defineComponent, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { useAccountsStore, useCurrenciesStore } from '@/stores';
+import { CurrencyRecord } from '@/js/records';
 
 import { toSystemAmount } from '@/js/helpers';
 
@@ -86,18 +86,17 @@ export default defineComponent({
     const currenciesStore = useCurrenciesStore();
     const { addNotification } = useNotificationCenter();
 
-    const { currencies } = storeToRefs(currenciesStore);
+    const { systemCurrenciesAssociatedWithUser } = storeToRefs(currenciesStore);
 
-    const formattedCurrencies = computed(
-      () => currencies.value.map(currency => ({
-        ...currency,
-        label: `${currency.currency} (${currency.code})`,
-      })),
-    );
-
-    const form = reactive({
+    const form = reactive<{
+      name: string;
+      currency: CurrencyRecord;
+      accountType: number;
+      currentBalance: number;
+      creditLimit: number;
+    }>({
       name: '',
-      currency: null,
+      currency: systemCurrenciesAssociatedWithUser.value[0],
       accountType: 1,
       currentBalance: 0,
       creditLimit: 0,
@@ -136,9 +135,10 @@ export default defineComponent({
     return {
       ACCOUNT_TYPES,
       BUTTON_TYPES,
+      CurrencyRecord,
       form,
       isLoading,
-      formattedCurrencies,
+      systemCurrenciesAssociatedWithUser,
       submit,
     };
   },
