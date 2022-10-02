@@ -10,7 +10,7 @@ describe('Manage Monobank API token', () => {
       },
     });
 
-    cy.signInUser(TEST_USERS.noData);
+    cy.signInUser(TEST_USERS.noDataWithBaseCurrency);
 
     cy.visit('/accounts');
 
@@ -31,7 +31,7 @@ describe('Manage Monobank API token', () => {
       generateUnexpectedResponse(),
     ).as('pairUser');
 
-    cy.signInUser(TEST_USERS.noData);
+    cy.signInUser(TEST_USERS.noDataWithBaseCurrency);
 
     cy.visit('/accounts');
 

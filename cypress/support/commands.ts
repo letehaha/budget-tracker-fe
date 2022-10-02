@@ -12,7 +12,6 @@ Cypress.Commands.add(
     cy.get('button[type=submit]').click();
 
     cy.wait('@signIn');
-    cy.url().should('eq', `${Cypress.env('baseUrl')}/`)
   },
 );
 

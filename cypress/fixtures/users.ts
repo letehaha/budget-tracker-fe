@@ -3,8 +3,12 @@ export const TEST_USERS = {
     username: 'letehaha',
     password: 'password',
   },
+  noDataWithBaseCurrency: {
+    username: 'test-no-data-base-currency',
+    password: 'test-no-data-base-currency',
+  },
   noData: {
-    username: 'test',
-    password: 'password',
+    username: 'test-no-data',
+    password: 'test-no-data',
   },
 };
