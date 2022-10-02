@@ -40,6 +40,7 @@
 <script lang="ts">
 import { defineComponent, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
+import { storeToRefs } from 'pinia';
 
 import { useCurrenciesStore } from '@/stores';
 import { getAllCurrencies } from '@/api/currencies';
@@ -60,8 +61,11 @@ export default defineComponent({
   },
   setup() {
     const router = useRouter();
-    const { setBaseCurrency } = useCurrenciesStore();
+    const currenciesStore = useCurrenciesStore();
+    const { setBaseCurrency, loadBaseCurrency } = useCurrenciesStore();
     const { addErrorNotification } = useNotificationCenter();
+
+    const { baseCurrency } = storeToRefs(currenciesStore);
 
     const currencies = ref<CurrencyRecord[]>([]);
 
@@ -69,6 +73,10 @@ export default defineComponent({
     const isCurrenciesLoading = ref(false);
     const isSubmitting = ref(false);
     const formError = ref<string>(null);
+
+    const forwardToDashboard = () => {
+      router.push({ name: 'dashboard' });
+    };
 
     watch(selectedCurrency, () => { formError.value = null; });
 
@@ -95,13 +103,27 @@ export default defineComponent({
 
         await setBaseCurrency(selectedCurrency.value.id);
 
-        router.push({ name: 'dashboard' });
+        forwardToDashboard();
       } catch {
         formError.value = 'Unexpected error. Cannot set base currency. Please try later or contact support.';
       } finally {
         isSubmitting.value = false;
       }
     };
+
+    const checkBaseCurrencyExisting = async () => {
+      await loadBaseCurrency();
+
+      if (baseCurrency.value) {
+        forwardToDashboard();
+      }
+    };
+
+    if (baseCurrency.value) {
+      forwardToDashboard();
+    } else {
+      checkBaseCurrencyExisting();
+    }
 
     loadCurrencies();
 
