@@ -3,8 +3,10 @@ import { storeToRefs } from 'pinia';
 import { api } from '@/api';
 import {
   useUserStore,
+  useCurrenciesStore,
   useCategoriesStore,
   useAuthStore,
+  useRootStore,
 } from '@/stores';
 
 export const authPageGuard: NavigationGuard = (to, from, next): void => {
@@ -13,6 +15,19 @@ export const authPageGuard: NavigationGuard = (to, from, next): void => {
   if (useAuthStore().isLoggedIn || token) {
     api.setToken(token);
     next('/');
+  } else {
+    next();
+  }
+};
+
+export const baseCurrencyExists: NavigationGuard = (to, from, next): void => {
+  const rootStore = useRootStore();
+  const userCurrenciesStore = useCurrenciesStore();
+  const { isBaseCurrencyExists } = storeToRefs(userCurrenciesStore);
+  const { isAppInitialized } = storeToRefs(rootStore);
+
+  if (isAppInitialized.value && !isBaseCurrencyExists.value) {
+    next('/welcome');
   } else {
     next();
   }

@@ -78,7 +78,7 @@ export default defineComponent({
 
         await autoStore.signup({ password, username });
 
-        router.push({ name: 'dashboard' });
+        router.push({ name: 'auth/welcome' });
       } catch (e) {
         if (e.data.code === ERROR_CODES.userExists) {
           addErrorNotification('User with that username already exists!');

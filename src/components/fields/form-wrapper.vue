@@ -43,7 +43,7 @@ export default defineComponent({
 }
 .form-wrapper__error {
   text-align: center;
-  color: var(--app-danger-color);
+  color: var(--app-danger-color-text);
   font-size: 14px;
   line-height: 1.3;
 }
