@@ -10,6 +10,8 @@ describe('Manage Monobank API token', () => {
       },
     });
 
+    cy.on('uncaught:exception', () => false)
+
     cy.signInUser(TEST_USERS.noDataWithBaseCurrency);
 
     cy.visit('/accounts');
@@ -30,6 +32,8 @@ describe('Manage Monobank API token', () => {
       `${Cypress.env('baseApiUrl')}/**/banks/monobank/pair-user*`,
       generateUnexpectedResponse(),
     ).as('pairUser');
+
+    cy.on('uncaught:exception', () => false)
 
     cy.signInUser(TEST_USERS.noDataWithBaseCurrency);
 
