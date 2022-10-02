@@ -1,10 +1,16 @@
 import { api } from '@/api';
-import { CurrencyRecord } from '@/js/records';
+import { CurrencyRecord, UserCurrencyRecord } from '@/js/records';
 
 export const getAllCurrencies = async (): Promise<CurrencyRecord[]> => {
   const currencies = await api.get('/models/currencies');
 
   return currencies.map(item => new CurrencyRecord(item));
+};
+
+export const loadUserCurrencies = async () => {
+  const result = await api.get('/user/currencies');
+
+  return result.map(item => new UserCurrencyRecord(item));
 };
 
 export const deleteUserCurrency = (currencyId: number) => (

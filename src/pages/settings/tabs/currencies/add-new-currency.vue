@@ -23,7 +23,7 @@
 import { defineComponent, ref, computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useCurrenciesStore } from '@/stores';
-import { getAllCurrencies, addUserCurrencies } from '@/api/currencies';
+import { addUserCurrencies } from '@/api/currencies';
 import { CurrencyRecord } from '@/js/records';
 import { useNotificationCenter } from '@/components/notification-center';
 import SelectField from '@/components/fields/select-field.vue';
@@ -34,32 +34,18 @@ export default defineComponent({
   setup() {
     const currenciesStore = useCurrenciesStore();
     const { addErrorNotification } = useNotificationCenter();
-    const { currencies: userCurrencies } = storeToRefs(currenciesStore);
+    const {
+      currencies: userCurrencies,
+      systemCurrencies,
+    } = storeToRefs(currenciesStore);
 
-    const currencies = ref<CurrencyRecord[]>([]);
     const isCurrenciesLoading = ref(false);
     const selectedCurrency = ref<CurrencyRecord>(null);
     const filteredCurrencies = computed(
-      () => currencies.value.filter(
+      () => systemCurrencies.value.filter(
         item => !userCurrencies.value.some(el => el.code === item.code),
       ),
     );
-
-    const loadCurrencies = async () => {
-      try {
-        isCurrenciesLoading.value = true;
-
-        currencies.value = await getAllCurrencies();
-
-        if (!selectedCurrency.value) {
-          selectedCurrency.value = currencies.value[0];
-        }
-      } catch (e) {
-        addErrorNotification('Unexpected error. Cannot load currencies.');
-      } finally {
-        isCurrenciesLoading.value = false;
-      }
-    };
 
     const addCurrency = async () => {
       try {
@@ -77,8 +63,6 @@ export default defineComponent({
         isCurrenciesLoading.value = false;
       }
     };
-
-    loadCurrencies();
 
     return {
       CurrencyRecord,

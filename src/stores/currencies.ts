@@ -1,18 +1,32 @@
 import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
 import { api } from '@/api';
-import { setBaseUserCurrency } from '@/api/currencies';
-import { UserCurrencyRecord } from '@/js/records';
+import {
+  getAllCurrencies,
+  loadUserCurrencies,
+  setBaseUserCurrency,
+} from '@/api/currencies';
+import { CurrencyRecord, UserCurrencyRecord } from '@/js/records';
 
 export const useCurrenciesStore = defineStore('currencies', () => {
+  const systemCurrencies = ref<CurrencyRecord[]>([]);
   const currencies = ref<UserCurrencyRecord[]>([]);
   const baseCurrency = ref<UserCurrencyRecord>(null);
   const isBaseCurrencyExists = computed(() => Boolean(baseCurrency.value));
 
-  const loadCurrencies = async () => {
-    const result = await api.get('/user/currencies');
+  const systemCurrenciesAssociatedWithUser = computed(
+    () => systemCurrencies.value.reduce((acc, curr) => {
+      if (currencies.value.find(item => item.currencyId === curr.id)) {
+        acc.push(curr);
+      }
+      return acc;
+    }, [] as CurrencyRecord[]),
+  );
 
-    currencies.value = result.map(item => new UserCurrencyRecord(item));
+  const loadCurrencies = async () => {
+    currencies.value = await loadUserCurrencies();
+
+    systemCurrencies.value = await getAllCurrencies();
   };
 
   const getCurrency = (currencyId: number) => (
@@ -43,6 +57,8 @@ export const useCurrenciesStore = defineStore('currencies', () => {
   return {
     currencies,
     baseCurrency,
+    systemCurrencies,
+    systemCurrenciesAssociatedWithUser,
     isBaseCurrencyExists,
     loadCurrencies,
     loadBaseCurrency,
