@@ -64,7 +64,9 @@ jobs:
           config-file: cypress.config.ts
           browser: chrome
           quiet: true
+          record: true
         env:
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           # pass GitHub token to detect new build vs re-run build
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BASE_URL: http://budget-tracker.com:8100

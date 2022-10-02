@@ -18,7 +18,7 @@
 
     <div class="header__sign-out">
       <button
-        tyoe="button"
+        type="button"
         class="header__sign-out-action"
         @click="logOutHandler"
       >
