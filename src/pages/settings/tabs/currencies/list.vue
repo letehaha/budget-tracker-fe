@@ -74,6 +74,7 @@ import { UserCurrencyRecord, ExchangeRateRecord } from '@/js/records';
 import { deleteUserCurrency, loadUserCurrenciesExchangeRates } from '@/api/currencies';
 import { useNotificationCenter } from '@/components/notification-center';
 import EditCurrency from './edit-currency.vue';
+import { CurrencyWithExchangeRate } from './types';
 
 type ActiveItemIndex = number;
 
@@ -89,16 +90,19 @@ export default defineComponent({
     const { currencies } = storeToRefs(currenciesStore);
     const { accountsCurrencyIds } = storeToRefs(accountsStore);
     const rates = ref<ExchangeRateRecord[]>([]);
-    const currenciesList = computed(() => currencies.value.map(item => {
-      const rate = rates.value.find(i => i.baseCode === item.code);
 
-      return {
-        ...item,
-        rate: rate?.rate?.toFixed(4),
-        quoteCode: rate?.quoteCode,
-        quoteRate: rate?.quoteRate?.toFixed(4),
-      };
-    }));
+    const currenciesList = computed<CurrencyWithExchangeRate[]>(
+      () => currencies.value.map(item => {
+        const rate = rates.value.find(i => i.baseCode === item.code);
+
+        return {
+          ...item,
+          rate: Number(rate?.rate?.toFixed(4)),
+          quoteCode: rate?.quoteCode,
+          quoteRate: Number(rate?.quoteRate?.toFixed(4)),
+        };
+      }),
+    );
 
     const activeItemIndex = ref<ActiveItemIndex | null>(null);
 

@@ -30,12 +30,17 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, computed } from 'vue';
+import {
+  defineComponent,
+  reactive,
+  computed,
+  PropType,
+} from 'vue';
 import { storeToRefs } from 'pinia';
 import { useCurrenciesStore } from '@/stores';
-import { UserCurrencyRecord } from '@/js/records';
 import UiButton, { BUTTON_THEMES } from '@/components/common/ui-button.vue';
 import UiTooltip from '@/components/common/tooltip.vue';
+import { CurrencyWithExchangeRate } from './types';
 
 const DISABLED_DELETE_TEXT = 'You cannot delete this currency because it is still connected to account(s).';
 
@@ -43,7 +48,7 @@ export default defineComponent({
   components: { UiButton, UiTooltip },
   props: {
     currency: {
-      type: UserCurrencyRecord,
+      type: Object as PropType<CurrencyWithExchangeRate>,
       required: true,
     },
     deletionDisabled: {
