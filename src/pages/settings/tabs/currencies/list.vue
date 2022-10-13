@@ -53,6 +53,7 @@
             :currency="currency"
             :deletion-disabled="isDeletionDisabled(currency)"
             @delete="onDeleteHandler(index)"
+            @submit="onSubmitHandler"
           />
         </template>
       </div>
@@ -138,15 +139,21 @@ export default defineComponent({
       }
     };
 
+    const onSubmitHandler = () => {
+      loadRates();
+    };
+
     const isDeletionDisabled = (currency: UserCurrencyRecord) => (
       accountsCurrencyIds.value.includes(currency.currencyId)
     );
 
     return {
       rates,
+      loadRates,
       currenciesList,
       toggleActiveItem,
       activeItemIndex,
+      onSubmitHandler,
       onDeleteHandler,
       isDeletionDisabled,
     };

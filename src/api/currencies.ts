@@ -19,6 +19,18 @@ export const loadUserCurrenciesExchangeRates = async () => {
   return result.map(item => new ExchangeRateRecord(item));
 };
 
+export const editUserCurrenciesExchangeRates = async (
+  pairs: {
+    baseCode: string;
+    quoteCode: string;
+    rate: number;
+  }[],
+) => {
+  const result = await api.put('/user/currency/rates', { pairs });
+
+  return result.map(item => new ExchangeRateRecord(item));
+};
+
 export const deleteUserCurrency = (currencyId: number) => (
   api.delete('/user/currency', { currencyId })
 );

@@ -1,20 +1,26 @@
 <template>
   <div class="edit-currency">
-    <!-- <label class="edit-currency__default-currency">
-      Make it your base currency
-
-      <input
-        v-model="form.isDefault"
-        type="checkbox"
-      >
-    </label> -->
-
+    <div class="edit-currency__row edit-currency__ratio">
+      <input-field
+        v-model="form.baseRate"
+        :label="`1 ${currency.code} =`"
+        @focus="onBaseFocus"
+      />
+      <input-field
+        v-model="form.quoteRate"
+        :label="`1 ${currency.quoteCode} =`"
+        @focus="onQuoteFocus"
+      />
+    </div>
     <div class="edit-currency__actions">
-      <!-- <ui-tooltip :content="!isFormDirty ? 'Nothing to save' : ''">
-        <ui-button :disabled="!isFormDirty">
+      <ui-tooltip :content="!isFormDirty ? 'Nothing to save' : ''">
+        <ui-button
+          :disabled="!isFormDirty"
+          @click="onSaveHandler"
+        >
           Save
         </ui-button>
-      </ui-tooltip> -->
+      </ui-tooltip>
 
       <ui-tooltip :content="deletionDisabled ? DISABLED_DELETE_TEXT : ''">
         <ui-button
@@ -34,18 +40,31 @@ import {
   defineComponent,
   reactive,
   computed,
+  ref,
+  watch,
   PropType,
 } from 'vue';
+import { ERROR_CODES } from 'shared-types';
 import { storeToRefs } from 'pinia';
 import { useCurrenciesStore } from '@/stores';
+import { editUserCurrenciesExchangeRates } from '@/api/currencies';
 import UiButton, { BUTTON_THEMES } from '@/components/common/ui-button.vue';
+import InputField from '@/components/fields/input-field.vue';
 import UiTooltip from '@/components/common/tooltip.vue';
+import { useNotificationCenter } from '@/components/notification-center';
 import { CurrencyWithExchangeRate } from './types';
 
 const DISABLED_DELETE_TEXT = 'You cannot delete this currency because it is still connected to account(s).';
+const calculateRatio = (value) => {
+  const exp = 10 ** 6;
+  const num = 1 / value;
+  const result = Math.round(num * exp) / exp;
+
+  return Number.isFinite(result) ? result : 0;
+};
 
 export default defineComponent({
-  components: { UiButton, UiTooltip },
+  components: { UiButton, UiTooltip, InputField },
   props: {
     currency: {
       type: Object as PropType<CurrencyWithExchangeRate>,
@@ -58,25 +77,98 @@ export default defineComponent({
   },
   emits: ['submit', 'delete'],
   setup(props, { emit }) {
-    const store = useCurrenciesStore();
-    const { currencies } = storeToRefs(store);
+    const currenciesStore = useCurrenciesStore();
+    const {
+      addSuccessNotification,
+      addErrorNotification,
+    } = useNotificationCenter();
+    const { currencies } = storeToRefs(currenciesStore);
     const form = reactive({
-      isDefault: props.currency.isDefaultCurrency,
+      baseRate: props.currency.rate,
+      quoteRate: props.currency.quoteRate,
     });
+    const isBaseEditing = ref(false);
+    const isQuoteEditing = ref(false);
 
-    const isFormDirty = computed(
-      () => props.currency.isDefaultCurrency !== form.isDefault,
+    const isRateChanged = computed(() => (
+      +props.currency.rate !== +form.baseRate
+      || +props.currency.quoteRate !== +form.quoteRate
+    ));
+
+    const isFormDirty = computed(() => isRateChanged.value);
+
+    const onBaseFocus = () => {
+      isBaseEditing.value = true;
+      isQuoteEditing.value = false;
+    };
+    const onQuoteFocus = () => {
+      isQuoteEditing.value = true;
+      isBaseEditing.value = false;
+    };
+
+    watch(
+      () => form.baseRate,
+      (value) => {
+        if (isBaseEditing.value) {
+          form.quoteRate = calculateRatio(value);
+        }
+      },
+    );
+    watch(
+      () => form.quoteRate,
+      (value) => {
+        if (isQuoteEditing.value) {
+          form.baseRate = calculateRatio(value);
+        }
+      },
     );
 
     const onDeleteHandler = () => {
       emit('delete');
     };
 
+    const updateExchangeRates = async () => {
+      try {
+        await editUserCurrenciesExchangeRates([
+          {
+            baseCode: props.currency.code,
+            quoteCode: props.currency.quoteCode,
+            rate: Number(form.baseRate),
+          },
+          {
+            baseCode: props.currency.quoteCode,
+            quoteCode: props.currency.code,
+            rate: Number(form.quoteRate),
+          },
+        ]);
+        await currenciesStore.loadCurrencies();
+
+        emit('submit');
+
+        addSuccessNotification('Successfully updated.');
+      } catch (e) {
+        if (e.data.code === ERROR_CODES.validationError) {
+          addErrorNotification(e.data.message);
+          return;
+        }
+        addErrorNotification('Unexpected error. Currency is not updated.');
+      }
+    };
+
+    const onSaveHandler = async () => {
+      if (isRateChanged.value) {
+        await updateExchangeRates();
+      }
+    };
+
     return {
       DISABLED_DELETE_TEXT,
       BUTTON_THEMES,
+      onSaveHandler,
       onDeleteHandler,
       form,
+      onBaseFocus,
+      onQuoteFocus,
       isFormDirty,
       currencies,
     };
@@ -96,6 +188,11 @@ export default defineComponent({
   display: flex;
   grid-template-columns: min-content min-content;
   gap: 32px;
-  // margin-top: 32px;
+  margin-top: 32px;
+}
+.edit-currency__ratio {
+  max-width: 360px;
+  display: flex;
+  gap: 16px;
 }
 </style>
