@@ -10,7 +10,7 @@
       </div>
     </div>
     <template
-      v-for="(currency, index) in currencies"
+      v-for="(currency, index) in currenciesList"
       :key="currency.id"
     >
       <div class="currencies-list__item">
@@ -34,7 +34,16 @@
               </span>
             </template>
             <template v-else>
-              1 = $0.1
+              <div class="currencies-list__ratios">
+                <span>
+                  {{ currency.quoteCode }} 1 =
+                  {{ currency.code }} {{ currency.quoteRate }}
+                </span>
+                <span>
+                  {{ currency.code }} 1 =
+                  {{ currency.quoteCode }} {{ currency.rate }}
+                </span>
+              </div>
             </template>
           </div>
         </div>
@@ -52,12 +61,17 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import {
+  defineComponent,
+  ref,
+  onMounted,
+  computed,
+} from 'vue';
 import { ERROR_CODES } from 'shared-types';
 import { storeToRefs } from 'pinia';
 import { useCurrenciesStore, useAccountsStore } from '@/stores';
-import { UserCurrencyRecord } from '@/js/records';
-import { deleteUserCurrency } from '@/api/currencies';
+import { UserCurrencyRecord, ExchangeRateRecord } from '@/js/records';
+import { deleteUserCurrency, loadUserCurrenciesExchangeRates } from '@/api/currencies';
 import { useNotificationCenter } from '@/components/notification-center';
 import EditCurrency from './edit-currency.vue';
 
@@ -74,12 +88,31 @@ export default defineComponent({
     } = useNotificationCenter();
     const { currencies } = storeToRefs(currenciesStore);
     const { accountsCurrencyIds } = storeToRefs(accountsStore);
+    const rates = ref<ExchangeRateRecord[]>([]);
+    const currenciesList = computed(() => currencies.value.map(item => {
+      const rate = rates.value.find(i => i.baseCode === item.code);
+
+      return {
+        ...item,
+        rate: rate?.rate?.toFixed(4),
+        quoteCode: rate?.quoteCode,
+        quoteRate: rate?.quoteRate?.toFixed(4),
+      };
+    }));
 
     const activeItemIndex = ref<ActiveItemIndex | null>(null);
 
     const toggleActiveItem = (index: ActiveItemIndex) => {
       activeItemIndex.value = activeItemIndex.value === index ? null : index;
     };
+
+    const loadRates = async () => {
+      rates.value = await loadUserCurrenciesExchangeRates();
+    };
+
+    onMounted(() => {
+      loadRates();
+    });
 
     const onDeleteHandler = async (index: ActiveItemIndex) => {
       try {
@@ -106,7 +139,8 @@ export default defineComponent({
     );
 
     return {
-      currencies,
+      rates,
+      currenciesList,
       toggleActiveItem,
       activeItemIndex,
       onDeleteHandler,
@@ -148,5 +182,9 @@ export default defineComponent({
 }
 .currencies-list__note {
   opacity: 0.5;
+}
+.currencies-list__ratios {
+  display: flex;
+  gap: 24px;
 }
 </style>
