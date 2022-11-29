@@ -83,8 +83,8 @@ module.exports = {
     'max-len': 'off',
     'prefer-destructuring': 'off',
     'vue/max-len': ['warn', {
-      code: 80,
-      template: 80,
+      code: 100,
+      template: 100,
       tabWidth: 2,
       comments: 100,
       ignorePattern: '',
