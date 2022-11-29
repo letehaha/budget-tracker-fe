@@ -39,6 +39,7 @@ import {
   useCurrenciesStore,
 } from '@/stores';
 import { ROUTER_LAYOUTS } from '@/routes';
+import { getHoursInMilliseconds } from '@/js/helpers';
 import UiModal from '@/components/modal-center/ui-modal.vue';
 import UiHeader from '@/components/ui-header.vue';
 import UiSidebar from '@/components/ui-sidebar.vue';
@@ -59,10 +60,31 @@ export default defineComponent({
     const rootStore = useRootStore();
     const monobankStore = useBanksMonobankStore();
     const userCurrenciesStore = useCurrenciesStore();
+    const { enabledAccounts: enabledMonoAccounts } = storeToRefs(monobankStore);
 
     const { isAppInitialized } = storeToRefs(rootStore);
     const { isLoggedIn } = storeToRefs(authStore);
     const { isBaseCurrencyExists } = storeToRefs(userCurrenciesStore);
+
+    const refreshAccountsInfoIfNeeded = async () => {
+      const latestAccountRefreshDate = new Date(
+        Number(localStorage.getItem('latest-account-refresh-date') || new Date().getTime()),
+      ).getTime();
+
+      if (new Date().getTime() - latestAccountRefreshDate > getHoursInMilliseconds(24)) {
+        // Load latest transactions for all enabled monobank accounts
+        enabledMonoAccounts.value.forEach(item => {
+          monobankStore.loadTransactionsFromLatest({
+            accountId: item.accountId,
+          });
+        });
+
+        // refresh balances of all monobank accounts
+        await monobankStore.refreshAccounts();
+
+        localStorage.setItem('latest-account-refresh-date', `${new Date().getTime()}`);
+      }
+    };
 
     watch(
       isLoggedIn,
@@ -79,6 +101,9 @@ export default defineComponent({
       async (value) => {
         if (value) {
           await rootStore.fetchInitialData();
+
+          await refreshAccountsInfoIfNeeded();
+
           monobankStore.loadAccounts();
         }
       },

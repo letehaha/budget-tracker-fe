@@ -24,6 +24,7 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
 
     return temp.sort((a, b) => (b.accountId).localeCompare(a.accountId));
   });
+  const enabledAccounts = computed(() => sortedAccounts.value.filter(item => item.isEnabled));
 
   const getAccountById: WritableComputedRef<
     (id: string) => MONOAccountRecord
@@ -262,6 +263,7 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
     sortedAccounts,
     getAccountById,
     activeAccounts,
+    enabledAccounts,
 
     loadUserData,
     loadTransactions,
