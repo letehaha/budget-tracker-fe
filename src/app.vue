@@ -67,9 +67,7 @@ export default defineComponent({
     const { isBaseCurrencyExists } = storeToRefs(userCurrenciesStore);
 
     const refreshAccountsInfoIfNeeded = async () => {
-      const latestAccountRefreshDate = new Date(
-        Number(localStorage.getItem('latest-account-refresh-date') || new Date().getTime()),
-      ).getTime();
+      const latestAccountRefreshDate = new Date(+localStorage.getItem('latest-account-refresh-date')).getTime();
 
       if (new Date().getTime() - latestAccountRefreshDate > getHoursInMilliseconds(24)) {
         // Load latest transactions for all enabled monobank accounts
