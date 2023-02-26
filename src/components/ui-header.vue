@@ -16,6 +16,22 @@
       </div>
     </template>
 
+    <div
+      class="header__sync-status"
+      :class="{
+        'header__sync-status--syncing': isSyncing,
+      }"
+    >
+      <template v-if="isSyncing">
+        <refresh-icon />
+        <span class="header__sync-status-text">Synchronizing...</span>
+      </template>
+      <template v-else>
+        <checkmark-in-circle-icon />
+        <span class="header__sync-status-text">Synchronized</span>
+      </template>
+    </div>
+
     <div class="header__sign-out">
       <button
         type="button"
@@ -29,17 +45,22 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from 'vue';
+import { defineComponent, reactive, computed } from 'vue';
+import { storeToRefs } from 'pinia';
 import { useRouter } from 'vue-router';
-import { useAuthStore } from '@/stores';
+import { useAuthStore, useRootStore } from '@/stores';
 import { MODAL_TYPES, useModalCenter } from '@/components/modal-center/index';
 import UiButton from '@/components/common/ui-button.vue';
 import InputField from '@/components/fields/input-field.vue';
+import CheckmarkInCircleIcon from '@/assets/icons/checkmark-in-circle.svg?component';
+import RefreshIcon from '@/assets/icons/refresh.svg?component';
 
 export default defineComponent({
   components: {
     UiButton,
     InputField,
+    CheckmarkInCircleIcon,
+    RefreshIcon,
   },
   props: {
     onlySignOut: Boolean,
@@ -51,6 +72,10 @@ export default defineComponent({
     });
     const { addModal } = useModalCenter();
     const { logout } = useAuthStore();
+    const rootStore = useRootStore();
+    const { isAppInitialized, isFinancialDataSyncing } = storeToRefs(rootStore);
+
+    const isSyncing = computed(() => !isAppInitialized.value || isFinancialDataSyncing.value);
 
     const openFormModal = () => {
       addModal({
@@ -65,6 +90,7 @@ export default defineComponent({
 
     return {
       form,
+      isSyncing,
 
       openFormModal,
       logOutHandler,
@@ -90,7 +116,7 @@ export default defineComponent({
   margin-right: 16px;
 }
 .header__sign-out {
-  margin-left: auto;
+  margin-left: 24px;
 }
 .header__sign-out-action {
   border: none;
@@ -100,5 +126,28 @@ export default defineComponent({
   letter-spacing: 0.5px;
   font-size: 16px;
   cursor: pointer;
+}
+.header__sync-status {
+  display: grid;
+  grid-template-columns: 14px 1fr;
+  align-items: center;
+  margin-left: auto;
+  gap: 8px;
+  font-size: 12px;
+
+  &:not(.header__sync-status--syncing) svg {
+    color: var(--primary-700);
+  }
+}
+.header__sync-status--syncing {
+  svg {
+    animation-name: keyframes-rotate;
+    animation-iteration-count: infinite;
+    animation-duration: 1s;
+    animation-timing-function: linear;
+  }
+}
+.header__sync-status-text {
+  font-weight: 500;
 }
 </style>

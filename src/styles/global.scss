@@ -26,3 +26,7 @@ a {
   width: 100%;
   margin: 0 auto;
 }
+
+.button-style-reset {
+  @include button-style-reset();
+}
