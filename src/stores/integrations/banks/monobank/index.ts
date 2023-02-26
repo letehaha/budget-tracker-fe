@@ -225,7 +225,7 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
   const loadTransactionsForAllAccounts = async () => {
     try {
       await Promise.allSettled(
-        accounts.value.map(acc => loadTransactionsFromLatest({ accountId: acc.accountId })),
+        enabledAccounts.value.map(acc => loadTransactionsFromLatest({ accountId: acc.accountId })),
       );
     } catch (e) {
       throw e;
