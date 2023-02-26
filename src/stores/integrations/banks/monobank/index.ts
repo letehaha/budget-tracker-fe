@@ -1,9 +1,8 @@
 import { ref, computed, WritableComputedRef } from 'vue';
 import { defineStore } from 'pinia';
 import { api } from '@/api';
-import { TRANSACTION_TYPES as TYPES, ERROR_CODES } from '@/js/const';
+import { ERROR_CODES } from '@/js/const';
 import {
-  TransactionModelRecord,
   MONOTransactionRecord,
   MONOUserRecord,
   MONOAccountRecord,
@@ -51,26 +50,6 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
       if (e?.data?.code === ERROR_CODES.monobankUserNotPaired) {
         isMonoAccountPaired.value = false;
       }
-    }
-  };
-
-  const loadTransactions = async () => {
-    if (!isMonoAccountPaired.value) {
-      return;
-    }
-    try {
-      const result = await api.get('/banks/monobank/transactions');
-
-      transactions.value = result.map(i => new TransactionModelRecord(
-        TYPES.monobank,
-        new MONOTransactionRecord(i),
-      ));
-    } catch (e) {
-      if (e?.data?.code === ERROR_CODES.monobankUserNotPaired) {
-        isMonoAccountPaired.value = false;
-        return;
-      }
-      throw new Error(e);
     }
   };
 
@@ -276,7 +255,6 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
     enabledAccounts,
 
     loadUserData,
-    loadTransactions,
     updateTransactionById,
     loadAccounts,
     updateAccountById,

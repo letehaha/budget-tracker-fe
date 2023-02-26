@@ -40,7 +40,7 @@ describe('Welcome page', () => {
     });
   });
 
-  it('should redirect to fashboard once base currency is set', () => {
+  it('should redirect to dashboard once base currency is set', () => {
     cy.intercept('POST', `${Cypress.env('baseApiUrl')}/**/user/currencies/base*`, {
       statusCode: 200,
       body: {

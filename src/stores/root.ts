@@ -1,6 +1,7 @@
 import { ref } from 'vue';
 import { defineStore, storeToRefs } from 'pinia';
 import { getHoursInMilliseconds } from '@/js/helpers';
+import { eventBus, BUS_EVENTS } from '@/js/utils';
 
 import { useUserStore } from '@/stores/user';
 import { useCategoriesStore } from '@/stores/categories/categories';
@@ -24,16 +25,28 @@ export const useRootStore = defineStore('root', () => {
   const { isLoggedIn } = storeToRefs(authStore);
   const { user } = storeToRefs(userStore);
 
+  const isAllowedToSyncFinancialData = ref(false);
+
+  const checkSyncFinancialDataPossibility = () => {
+    const latestAccountRefreshDate = new Date(+localStorage.getItem('latest-account-refresh-date')).getTime();
+    const diff = new Date().getTime() - latestAccountRefreshDate;
+
+    isAllowedToSyncFinancialData.value = diff > getHoursInMilliseconds(0.5);
+  };
+
+  checkSyncFinancialDataPossibility();
+  setInterval(checkSyncFinancialDataPossibility, 5000);
+
   const fetchInitialData = async () => {
     if (isLoggedIn.value) {
       isAppInitialized.value = false;
 
       if (!user) {
         await userStore.loadUser();
-        await categoriesStore.loadCategories();
       }
 
       await Promise.all([
+        categoriesStore.loadCategories(),
         currenciesStore.loadCurrencies(),
         currenciesStore.loadBaseCurrency(),
         accountsStore.loadAccounts(),
@@ -51,14 +64,14 @@ export const useRootStore = defineStore('root', () => {
       isFinancialDataSyncingError.value = null;
       isFinancialDataSyncing.value = true;
 
-      const latestAccountRefreshDate = new Date(+localStorage.getItem('latest-account-refresh-date')).getTime();
-
-      if (new Date().getTime() - latestAccountRefreshDate > getHoursInMilliseconds(24)) {
+      if (isAllowedToSyncFinancialData.value) {
         // refresh balances of all monobank accounts
         await Promise.allSettled([
           monobankStore.refreshAccounts(),
           monobankStore.loadTransactionsForEnabledAccounts(),
         ]);
+
+        eventBus.emit(BUS_EVENTS.transactionChange);
 
         localStorage.setItem('latest-account-refresh-date', `${new Date().getTime()}`);
       }
@@ -74,6 +87,7 @@ export const useRootStore = defineStore('root', () => {
     syncFinancialData,
 
     isAppInitialized,
+    isAllowedToSyncFinancialData,
     isFinancialDataSyncingError,
     isFinancialDataSyncing,
   };

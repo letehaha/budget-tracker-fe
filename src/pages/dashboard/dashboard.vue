@@ -1,12 +1,13 @@
 <template>
   <section class="dashboard">
-    <AccountsList class="dashboard__accounts" />
+    <accounts-list class="dashboard__accounts" />
+
     <div class="dashboard__info">
       <div class="dashboard__charts">
         Charts
       </div>
       <div class="dashboard__records">
-        <TransactionsList />
+        <transactions-list />
         <router-link
           class="dashboard__show-all"
           :to="{ name: 'records' }"
