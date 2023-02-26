@@ -94,4 +94,16 @@ describe('js/utils/event-bus', () => {
     expect(spy2).toHaveBeenCalledTimes(1);
     expect(spy2).toHaveBeenNthCalledWith(1, 'first');
   });
+
+  test('"error" event is fired', () => {
+    const spy = jest.fn();
+    const payload = 'error message';
+
+    eventBus.on(BUS_EVENTS.error, spy);
+
+    eventBus.error(payload);
+
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenNthCalledWith(1, payload);
+  });
 });
