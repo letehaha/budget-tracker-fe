@@ -78,7 +78,10 @@ export default defineComponent({
         });
 
         // refresh balances of all monobank accounts
-        await monobankStore.refreshAccounts();
+        await Promise.allSettled([
+          monobankStore.refreshAccounts(),
+          monobankStore.loadTransactionsForAllAccounts(),
+        ]);
 
         localStorage.setItem('latest-account-refresh-date', `${new Date().getTime()}`);
       }
