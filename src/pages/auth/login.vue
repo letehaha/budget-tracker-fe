@@ -59,7 +59,7 @@ import {
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores';
 import { useFormValidation } from '@/composable';
-import { required, minLength } from '@/js/helpers/validators.helper';
+import { required, minLength } from '@/js/helpers/validators';
 
 import FormWrapper from '@/components/fields/form-wrapper.vue';
 import UiButton, { BUTTON_TYPES } from '@/components/common/ui-button.vue';
