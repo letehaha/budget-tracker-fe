@@ -43,6 +43,8 @@ export const useAuthStore = defineStore('auth', () => {
     }
   };
 
+  const setLoggedIn = () => { isLoggedIn.value = true; };
+
   const signup = async ({ password, username }) => {
     await api.post('/auth/register', { password, username });
     await login({ password, username });
@@ -62,6 +64,7 @@ export const useAuthStore = defineStore('auth', () => {
     isLoggedIn,
     userToken,
 
+    setLoggedIn,
     login,
     signup,
     logout,

@@ -2,9 +2,7 @@ import { NavigationGuard } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { api } from '@/api';
 import {
-  useUserStore,
   useCurrenciesStore,
-  useCategoriesStore,
   useAuthStore,
   useRootStore,
 } from '@/stores';
@@ -36,15 +34,11 @@ export const baseCurrencyExists: NavigationGuard = (to, from, next): void => {
 export const redirectRouteGuard: NavigationGuard = (to, from, next): void => {
   const token = localStorage.getItem('user-token');
   const authStore = useAuthStore();
-  const { isLoggedIn } = storeToRefs(authStore);
 
-  if (isLoggedIn || token) {
-    isLoggedIn.value = true;
+  if (token) {
     api.setToken(token);
-    if (!useUserStore().user) {
-      useUserStore().loadUser();
-      useCategoriesStore().loadCategories();
-    }
+    authStore.setLoggedIn();
+
     next();
   } else {
     next('/sign-in');

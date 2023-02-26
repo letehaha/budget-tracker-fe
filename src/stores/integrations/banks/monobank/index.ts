@@ -222,7 +222,7 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
     return undefined;
   };
 
-  const loadTransactionsForAllAccounts = async () => {
+  const loadTransactionsForEnabledAccounts = async () => {
     try {
       await Promise.allSettled(
         enabledAccounts.value.map(acc => loadTransactionsFromLatest({ accountId: acc.accountId })),
@@ -282,7 +282,7 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
     updateAccountById,
     updateWebhook,
     refreshAccounts,
-    loadTransactionsForAllAccounts,
+    loadTransactionsForEnabledAccounts,
     loadTransactionsFromLatest,
     loadTransactionsForPeriod,
     pairAccount,

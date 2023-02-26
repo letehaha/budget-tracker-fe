@@ -5,18 +5,15 @@
     </template>
     <template v-else-if="currentLayout === ROUTER_LAYOUTS.dashboard">
       <div class="page">
-        <template v-if="isAppInitialized">
-          <ui-sidebar />
+        <ui-sidebar />
 
-          <div class="page__wrapper">
-            <ui-header />
+        <div class="page__wrapper">
+          <ui-header />
 
+          <template v-if="isAppInitialized">
             <router-view />
-          </div>
-        </template>
-        <template v-else>
-          Syncing
-        </template>
+          </template>
+        </div>
       </div>
     </template>
     <ui-modal />
@@ -35,11 +32,9 @@ import { useRouter, useRoute } from 'vue-router';
 import {
   useRootStore,
   useAuthStore,
-  useBanksMonobankStore,
   useCurrenciesStore,
 } from '@/stores';
 import { ROUTER_LAYOUTS } from '@/routes';
-import { getHoursInMilliseconds } from '@/js/helpers';
 import UiModal from '@/components/modal-center/ui-modal.vue';
 import UiHeader from '@/components/ui-header.vue';
 import UiSidebar from '@/components/ui-sidebar.vue';
@@ -58,34 +53,11 @@ export default defineComponent({
     const router = useRouter();
     const authStore = useAuthStore();
     const rootStore = useRootStore();
-    const monobankStore = useBanksMonobankStore();
     const userCurrenciesStore = useCurrenciesStore();
-    const { enabledAccounts: enabledMonoAccounts } = storeToRefs(monobankStore);
 
     const { isAppInitialized } = storeToRefs(rootStore);
     const { isLoggedIn } = storeToRefs(authStore);
     const { isBaseCurrencyExists } = storeToRefs(userCurrenciesStore);
-
-    const refreshAccountsInfoIfNeeded = async () => {
-      const latestAccountRefreshDate = new Date(+localStorage.getItem('latest-account-refresh-date')).getTime();
-
-      if (new Date().getTime() - latestAccountRefreshDate > getHoursInMilliseconds(24)) {
-        // Load latest transactions for all enabled monobank accounts
-        enabledMonoAccounts.value.forEach(item => {
-          monobankStore.loadTransactionsFromLatest({
-            accountId: item.accountId,
-          });
-        });
-
-        // refresh balances of all monobank accounts
-        await Promise.allSettled([
-          monobankStore.refreshAccounts(),
-          monobankStore.loadTransactionsForAllAccounts(),
-        ]);
-
-        localStorage.setItem('latest-account-refresh-date', `${new Date().getTime()}`);
-      }
-    };
 
     watch(
       isLoggedIn,
@@ -102,10 +74,7 @@ export default defineComponent({
       async (value) => {
         if (value) {
           await rootStore.fetchInitialData();
-
-          await refreshAccountsInfoIfNeeded();
-
-          monobankStore.loadAccounts();
+          await rootStore.syncFinancialData();
         }
       },
       { immediate: true },
