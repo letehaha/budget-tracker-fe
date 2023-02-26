@@ -1,5 +1,6 @@
 module.exports = {
   preset: 'ts-jest',
+  verbose: true,
   moduleFileExtensions: ['js', 'ts', 'json', 'vue'],
   transform: {
     // process *.vue files with vue-jest
