@@ -24,7 +24,7 @@
 import { defineComponent, ref } from 'vue';
 import { useCryptoBinanceStore } from '@/stores';
 import { useFormValidation } from '@/composable';
-import { required } from '@/js/helpers/validators.helper';
+import { required } from '@/js/helpers/validators';
 import InputField from '@/components/fields/input-field.vue';
 import UiButton from '@/components/common/ui-button.vue';
 

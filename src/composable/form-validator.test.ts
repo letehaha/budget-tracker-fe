@@ -1,5 +1,5 @@
 import { ref, computed } from 'vue';
-import { email } from '@/js/helpers/validators.helper';
+import { email } from '@/js/helpers/validators';
 import { useFormValidation } from './form-validator';
 
 describe('useFormValidation', () => {

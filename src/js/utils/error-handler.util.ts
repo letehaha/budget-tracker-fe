@@ -1,6 +1,6 @@
 import log from 'loglevel';
 import * as errors from '@/js/errors';
-import { eventBus } from './event-bus.util';
+import { eventBus } from './event-bus';
 
 export class ErrorHandler {
   static process(error: Error, message = ''): void {
