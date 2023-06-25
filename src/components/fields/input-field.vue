@@ -103,11 +103,11 @@ export default defineComponent({
       if (props.onlyPositive && !attrs.min) {
         return 0;
       }
-      if (attrs.min < 0) {
+      if (Number(attrs.min) < 0) {
         return 0;
       }
 
-      return attrs.min as number;
+      return Number(attrs.min);
     });
 
     const isSubLabelExist = computed(() => !!slots.subLabel);
