@@ -8,6 +8,10 @@ module.exports = {
       'jest-transform-stub',
     ),
     '^.+\\.vue?$': require.resolve('@vue/vue3-jest'),
+    '^.+\\.ts?$': ['ts-jest', {
+      tsconfig: 'tsconfig.json',
+      isolatedModules: true,
+    }],
   },
   transformIgnorePatterns: ['/node_modules/'],
   moduleNameMapper: {
@@ -28,9 +32,5 @@ module.exports = {
   testEnvironment: 'jsdom',
   globals: {
     NODE_ENV: 'test',
-    'ts-jest': {
-      tsconfig: 'tsconfig.json',
-      isolatedModules: true,
-    },
   },
 };
