@@ -53,7 +53,7 @@ export default defineComponent({
 <style lang="scss" scoped>
 .records {
   padding: 24px;
-  height: calc(100vh - 77px);
+  height: calc(100vh - var(--header-height));
 }
 .records__list {
   background-color: var(--app-surface-color);
@@ -63,8 +63,6 @@ export default defineComponent({
   max-width: 560px;
   max-height: 100%;
   margin: 0 auto;
-
-  overflow-y: hidden;
 }
 .records__scroll-top {
   border: none;
