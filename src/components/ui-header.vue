@@ -130,6 +130,7 @@ export default defineComponent({
   align-items: center;
   justify-content: space-between;
   background-color: var(--app-surface-color);
+  max-height: var(--header-height);
 }
 .header__actions {
   display: flex;

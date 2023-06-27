@@ -63,6 +63,7 @@ export default defineComponent({
   max-width: 560px;
   max-height: 100%;
   margin: 0 auto;
+  overflow-y: auto;
 }
 .records__scroll-top {
   border: none;
