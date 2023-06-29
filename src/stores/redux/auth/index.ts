@@ -1,7 +1,5 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import type { RootState } from '@/stores/redux/store'
+import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
 import { ERROR_CODES } from 'shared-types';
-import { AppDispatch } from '../store'
 import { api } from '@/api';
 
 export interface AuthState {
@@ -31,37 +29,38 @@ export const authSlice = createSlice({
 
 export const { setLoggedInStatus, setUserToken } = authSlice.actions
 
-export const login = ({ password, username }) => {
-  return async (dispatch: AppDispatch) => {
-    try {
-      const result = await api.post('/auth/login', {
-        password,
-        username,
-      });
+export const login = createAsyncThunk('auth/login', async (
+  { password, username }: { password: string, username: string },
+  { dispatch }
+) => {
+  try {
+    const result = await api.post('/auth/login', {
+      password,
+      username,
+    });
 
-      if (result.token) {
-        api.setToken(result.token);
+    if (result.token) {
+      api.setToken(result.token);
 
-        // await userStore.loadUser();
-        // await categoriesStore.loadCategories();
+      // await userStore.loadUser();
+      // await categoriesStore.loadCategories();
 
-        dispatch(setUserToken(result.token))
-        localStorage.setItem('user-token', result.token);
-        dispatch(setLoggedInStatus(true))
-      }
+      dispatch(setUserToken(result.token))
+      localStorage.setItem('user-token', result.token);
+      dispatch(setLoggedInStatus(true))
+    }
 
-      return result
-    } catch (e) {
-      const possibleErrorCodes = [
-        ERROR_CODES.notFound,
-        ERROR_CODES.invalidCredentials,
-      ];
+    return result
+  } catch (e) {
+    const possibleErrorCodes = [
+      ERROR_CODES.notFound,
+      ERROR_CODES.invalidCredentials,
+    ];
 
-      if (possibleErrorCodes.includes(e.data.code)) {
-        throw e.data;
-      }
+    if (possibleErrorCodes.includes(e.data.code)) {
+      throw e.data;
     }
   }
-}
+})
 
 export default authSlice.reducer

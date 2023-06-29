@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ERROR_CODES } from 'shared-types';
+import { useDispatch } from 'react-redux'
+import { ERROR_CODES } from 'shared-types'
 import { useAppDispatch } from '@/stores/redux/store'
 import { login } from '@/stores/redux/auth'
 import './styles.css'
 
-export default function Login() {
+export function Component() {
   const dispatchRedux = useAppDispatch()
   const routerNavigate = useNavigate()
 
@@ -74,3 +75,5 @@ export default function Login() {
     </div>
   )
 }
+
+export default Component

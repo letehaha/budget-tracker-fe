@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
-export default function Register() {
+export function Component() {
   const [formData, updateFormData] = useState({
     username: '',
     password: '',
@@ -239,3 +239,5 @@ export default defineComponent({
   }
 }
 </style> */}
+
+export default Component

@@ -1,22 +1,17 @@
-import { configureStore } from '@reduxjs/toolkit'
+import { AnyAction, configureStore, ThunkDispatch } from '@reduxjs/toolkit'
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
-import thunkMiddleware from 'redux-thunk'
 import AuthReducer from './auth'
 
 const store = configureStore({
   reducer: {
     auth: AuthReducer,
   },
-  middleware: (getDefaultMiddleware) => [...getDefaultMiddleware(), thunkMiddleware],
 })
 
-// Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = ReturnType<typeof store.getState>
-// Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
-export type AppDispatch = typeof store.dispatch
+export type AppThunkDispatch = ThunkDispatch<RootState, any, AnyAction>
 
-// Use throughout your app instead of plain `useDispatch` and `useSelector`
-export const useAppDispatch: () => AppDispatch = useDispatch
+export const useAppDispatch = () => useDispatch<AppThunkDispatch>()
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector
 
 export default store
