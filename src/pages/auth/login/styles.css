@@ -1,0 +1,40 @@
+.login {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--app-bg-color);
+}
+.login__wrapper {
+  width: 100%;
+  max-width: 450px;
+  padding: 48px 32px;
+}
+.login__title {
+  font-weight: 500;
+  font-size: 30px;
+  line-height: 1.4;
+  text-align: center;
+  margin-bottom: 40px;
+  color: var(--app-on-bg-color);
+}
+.login__field:not(:last-child) {
+  margin-bottom: 24px;
+}
+.login__submit {
+  margin: 32px auto 0;
+}
+.login__signup {
+  margin-top: 40px;
+  text-align: center;
+  font-weight: 400;
+  color: var(--app-on-bg-color);
+}
+.login__signup-link {
+  transition: .2s ease-out;
+  color: var(--primary-500);
+}
+
+.login__signup-link:hover {
+  color: var(--primary-700);
+}

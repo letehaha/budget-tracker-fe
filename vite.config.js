@@ -1,5 +1,5 @@
 import { defineConfig, loadEnv } from 'vite';
-import vue from '@vitejs/plugin-vue';
+import react from '@vitejs/plugin-react';
 import svgLoader from 'vite-svg-loader';
 import path from 'path';
 
@@ -9,7 +9,7 @@ export default ({ mode }) => {
 
   return defineConfig({
     plugins: [
-      vue(),
+      react(),
       svgLoader(),
     ],
     server: {

@@ -31,15 +31,19 @@ module.exports = {
   ignorePatterns: ['cypress/**/*', 'cypress.config.ts'],
 
   extends: [
-    'plugin:vue/vue3-essential',
-    'plugin:vue/vue3-recommended',
-    '@vue/airbnb',
-    '@vue/typescript/recommended',
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:react-hooks/recommended',
+    // 'plugin:vue/vue3-essential',
+    // 'plugin:vue/vue3-recommended',
+    // '@vue/airbnb',
+    // '@vue/typescript/recommended',
   ],
 
   plugins: [
     // required to lint *.vue files
     'vue',
+    'react-refresh',
     '@typescript-eslint',
   ],
 
@@ -63,6 +67,8 @@ module.exports = {
         'e', // for e.returnvalue
       ],
     }],
+    'no-use-before-define': 'off',
+    '@typescript-eslint/no-use-before-define': ['error'],
     'import/extensions': 'off',
     'import/no-named-as-default': 'off',
     'import/prefer-default-export': 'off',
