@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { Link, Outlet } from "react-router-dom";
+import { useState } from 'react'
+import { Link, Outlet } from 'react-router-dom'
 
-function App() {
+export default function App() {
   const [count, setCount] = useState(0);
 
   return (
@@ -25,5 +25,3 @@ function App() {
     </>
   );
 }
-
-export default App;
