@@ -112,7 +112,12 @@ export default defineComponent({
     };
 
     const loadRates = async () => {
-      rates.value = await loadUserCurrenciesExchangeRates();
+      try {
+        rates.value = await loadUserCurrenciesExchangeRates();
+      } catch (err) {
+        if (err.data.code === ERROR_CODES.unauthorized) return;
+        addErrorNotification('Unexpected error. Cannot load exchange rates.');
+      }
     };
 
     onMounted(() => {
@@ -131,6 +136,7 @@ export default defineComponent({
 
         addSuccessNotification('Successfully deleted.');
       } catch (e) {
+        if (e.data.code === ERROR_CODES.unauthorized) return;
         if (e.data.code === ERROR_CODES.validationError) {
           addErrorNotification(e.data.message);
           return;

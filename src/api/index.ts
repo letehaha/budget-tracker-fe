@@ -1,5 +1,4 @@
 import { ApiBaseError, RESPONSE_STATUS, ERROR_CODES } from 'shared-types';
-import { Router } from 'vue-router';
 import {
   useNotificationCenter,
   NotificationType,
@@ -14,6 +13,9 @@ enum methods {
   get = 'GET',
   delete = 'DELETE',
 }
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type ApiValidResponse = any
 
 interface ApiRequestConfig {
   method: methods,
@@ -34,8 +36,6 @@ console.log('API_VER', API_VER);
 class ApiCaller {
   logout: () => void;
 
-  router: Router;
-
   authToken;
 
   _baseURL;
@@ -43,7 +43,6 @@ class ApiCaller {
   constructor() {
     this._baseURL = import.meta.env.API_HTTP;
     this.authToken = null;
-    this.router = null;
   }
 
   setToken(token: string): void {
@@ -160,8 +159,7 @@ class ApiCaller {
 
     const { status, response }: {
       status: RESPONSE_STATUS,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      response: ApiBaseError | any,
+      response: ApiBaseError | ApiValidResponse,
     } = await result.json();
 
     if (status === RESPONSE_STATUS.success) {
@@ -177,8 +175,6 @@ class ApiCaller {
           text: 'Unauthorized. Please, login first.',
           type: NotificationType.error,
         });
-
-        this.router.push({ name: 'auth/sign-in' });
 
         throw new errors.AuthError(
           response.statusText,
@@ -206,17 +202,13 @@ class ApiCaller {
   setRequiredActions({ logout }) {
     this.logout = logout;
   }
-
-  setRouter({ router }: { router: Router }) {
-    this.router = router;
-  }
 }
 
 export const api = new ApiCaller();
 
 export function initApiCaller(
-  { logout, router }: { logout: () => void; router: Router },
+  { logout }:
+  { logout: () => void },
 ): void {
   api.setRequiredActions({ logout });
-  api.setRouter({ router });
 }

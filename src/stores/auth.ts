@@ -10,7 +10,6 @@ export const useAuthStore = defineStore('auth', () => {
   const userStore = useUserStore();
   const categoriesStore = useCategoriesStore();
 
-  const user = ref(null);
   const isLoggedIn = ref(false);
   const userToken: Ref<string | null> = ref(null);
 
@@ -53,14 +52,11 @@ export const useAuthStore = defineStore('auth', () => {
   const logout = () => {
     api.setToken('');
     localStorage.setItem('user-token', '');
-    userToken.value = null;
-    isLoggedIn.value = false;
 
     resetAllDefinedStores();
   };
 
   return {
-    user,
     isLoggedIn,
     userToken,
 
