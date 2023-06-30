@@ -22,5 +22,4 @@ app.mount('#app');
 
 initApiCaller({
   logout: useAuthStore().logout,
-  router,
 });

@@ -11,10 +11,7 @@ export const useUserStore = defineStore('user', () => {
       const result = await api.get('/user');
 
       user.value = new UserRecord(result);
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.log(e);
-    }
+    } catch (e) {}
   };
 
   return {

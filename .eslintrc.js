@@ -53,6 +53,9 @@ module.exports = {
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 1,
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    'no-empty': ['error', {
+      allowEmptyCatch: true,
+    }],
     'no-param-reassign': ['error', {
       props: true,
       ignorePropertyModificationsFor: [
