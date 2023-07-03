@@ -1,14 +1,7 @@
-import { useState } from 'react'
-import { Provider } from 'react-redux'
-import Router from '@/router'
-import store from '@/stores/redux/store'
+import { Outlet } from 'react-router-dom'
 
 export default function App() {
   return (
-    <>
-      <Provider store={store}>
-        <Router />
-      </Provider>
-    </>
+    <Outlet />
   );
 }

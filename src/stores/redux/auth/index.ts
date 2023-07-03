@@ -6,12 +6,14 @@ export interface AuthState {
   user: any,
   isLoggedIn: boolean,
   userToken: string | null,
+  isTokenChecked: boolean,
 }
 
 const initialState: AuthState = {
   user: null,
   isLoggedIn: false,
   userToken: null,
+  isTokenChecked: false,
 }
 
 export const authSlice = createSlice({
@@ -23,11 +25,14 @@ export const authSlice = createSlice({
     },
     setUserToken: (state, action: PayloadAction<string>) => {
       state.userToken = action.payload
+    },
+    setTokenChecked: (state, action: PayloadAction<boolean>) => {
+      state.isTokenChecked = action.payload
     }
   }
 })
 
-export const { setLoggedInStatus, setUserToken } = authSlice.actions
+export const { setLoggedInStatus, setUserToken, setTokenChecked } = authSlice.actions
 
 export const login = createAsyncThunk('auth/login', async (
   { password, username }: { password: string, username: string },
@@ -61,6 +66,27 @@ export const login = createAsyncThunk('auth/login', async (
       throw e.data;
     }
   }
+})
+
+export const validateToken = createAsyncThunk('auth/validateToken', async (_, { dispatch }) => {
+  const token = localStorage.getItem('user-token')
+
+  if (!token) return dispatch(setTokenChecked(true))
+
+  try {
+    api.setToken(token)
+    await api.get('/auth/validate-token')
+    setLoggedInStatus(true)
+  } catch (err) {
+    setLoggedInStatus(false)
+  } finally {
+    dispatch(setTokenChecked(true))
+  }
+})
+
+export const logout = createAsyncThunk('auth/logout', async(_, { dispatch }) => {
+  api.setToken('');
+  localStorage.setItem('user-token', '');
 })
 
 export default authSlice.reducer

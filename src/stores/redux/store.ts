@@ -1,9 +1,11 @@
 import { AnyAction, configureStore, ThunkDispatch } from '@reduxjs/toolkit'
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
 import AuthReducer from './auth'
+import RootReducer from './root'
 
 const store = configureStore({
   reducer: {
+    root: RootReducer,
     auth: AuthReducer,
   },
 })
