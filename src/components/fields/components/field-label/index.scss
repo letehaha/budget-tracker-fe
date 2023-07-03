@@ -1,0 +1,14 @@
+.field-label__label {
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  line-height: 1;
+  color: var(--app-on-surface-color);
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.field-label__field-wrapper {
+  position: relative;
+}
