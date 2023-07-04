@@ -15,17 +15,13 @@ interface Props extends React.ComponentPropsWithoutRef<'input'> {
 export function Component({ errorMessage, label, subLabel, labelRight, disabled, onlyPositive, className, ...props }: Props) {
   const inputProps = {
     ...props,
-    onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
-      if (!props.onChange) return
-
-      props.onChange(event)
-    },
     onKeyUp: (event: React.KeyboardEvent<HTMLInputElement>) => {
       if (!props.onKeyUp) return
 
       if (props.type === 'number') {
         if (event.keyCode === KEYBOARD_CODES.keyE) {
           event.preventDefault()
+          return
         }
       }
       if (onlyPositive) {
@@ -37,6 +33,7 @@ export function Component({ errorMessage, label, subLabel, labelRight, disabled,
           ].includes(event.keyCode)
         ) {
           event.preventDefault()
+          return
         }
       }
 
