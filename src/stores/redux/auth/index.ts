@@ -1,16 +1,15 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
 import { ERROR_CODES } from 'shared-types';
 import { api } from '@/api';
+import { loadUserData } from '@/stores/redux/user'
 
 export interface AuthState {
-  user: any,
   isLoggedIn: boolean,
   userToken: string | null,
   isTokenChecked: boolean,
 }
 
 const initialState: AuthState = {
-  user: null,
   isLoggedIn: false,
   userToken: null,
   isTokenChecked: false,
@@ -42,12 +41,12 @@ export const login = createAsyncThunk('auth/login', async (
     const result = await api.post('/auth/login', {
       password,
       username,
-    });
+    })
 
     if (result.token) {
-      api.setToken(result.token);
+      api.setToken(result.token)
+      await dispatch(loadUserData())
 
-      // await userStore.loadUser();
       // await categoriesStore.loadCategories();
 
       dispatch(setUserToken(result.token))
