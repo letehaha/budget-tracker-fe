@@ -6,6 +6,8 @@ import {
 
 import * as errors from '@/js/errors';
 
+export * as userApi from './user'
+
 enum methods {
   patch = 'PATCH',
   post = 'POST',
