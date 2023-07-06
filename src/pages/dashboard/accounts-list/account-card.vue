@@ -5,7 +5,7 @@
     </div>
     <div class="account__balance-info">
       <div class="account__balance">
-        {{ formatAmount(account.balance - account.creditLimit) }}
+        {{ formatAmount(getBalanceFromAccount(account) - account.creditLimit) }}
       </div>
       <template v-if="account.creditLimit">
         <div class="account__credit-limit">
@@ -24,7 +24,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
 import * as types from '@/common/types';
-import { formatAmount } from '@/js/helpers';
+import { formatAmount, getBalanceFromAccount } from '@/js/helpers';
 
 export default defineComponent({
   props: {
@@ -35,6 +35,7 @@ export default defineComponent({
   },
   methods: {
     formatAmount,
+    getBalanceFromAccount,
   },
 });
 </script>

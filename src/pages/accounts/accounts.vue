@@ -110,7 +110,7 @@ import { defineComponent } from 'vue';
 import { storeToRefs } from 'pinia';
 import * as types from '@/common/types';
 import { useBanksMonobankStore, useAccountsStore } from '@/stores';
-import { formatAmount } from '@/js/helpers';
+import { formatAmount, getBalanceFromAccount } from '@/js/helpers';
 import { MODAL_TYPES, useModalCenter } from '@/components/modal-center/index';
 
 export default defineComponent({
@@ -141,7 +141,7 @@ export default defineComponent({
     };
 
     const formatBalance = (account: types.MonobankAccountRecord | types.AccountRecord) => (
-      formatAmount(account.balance- account.creditLimit)
+      formatAmount(getBalanceFromAccount(account) - account.creditLimit)
     );
 
     return {

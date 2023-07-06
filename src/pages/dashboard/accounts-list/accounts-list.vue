@@ -22,6 +22,7 @@ import {
   useAccountsStore,
   useBanksMonobankStore,
 } from '@/stores';
+import { getBalanceFromAccount } from '@/js/helpers';
 import { eventBus, BUS_EVENTS } from '@/js/utils';
 import AccountCard from './account-card.vue';
 
@@ -44,7 +45,7 @@ export default defineComponent({
 
     const allAccounts = computed(
       () => [...monoAccounts.value, ...accounts.value]
-        .sort((a, b) => b.currentBalance - a.currentBalance),
+        .sort((a, b) => getBalanceFromAccount(b) - getBalanceFromAccount(a)),
     );
 
     const redirectToAccount = (account: types.AccountRecord | types.MonobankAccountRecord) => {

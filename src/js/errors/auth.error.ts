@@ -1,4 +1,4 @@
-import { ApiBaseError } from 'shared-types';
+import { ApiBaseError } from '@/common/types';
 
 /**
  * Authorization error.

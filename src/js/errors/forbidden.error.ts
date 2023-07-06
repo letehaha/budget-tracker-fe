@@ -1,4 +1,4 @@
-import { ApiForbiddenError, ApiBaseError } from 'shared-types';
+import { ApiForbiddenError, ApiBaseError } from '@/common/types';
 
 /**
  * Forbidden error.
