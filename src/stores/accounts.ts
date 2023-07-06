@@ -1,15 +1,21 @@
 import { ref, WritableComputedRef, computed } from 'vue';
 import { defineStore } from 'pinia';
-import { api } from '@/api/_api';
-import * as types from '@/common/types';
+import { AccountModel } from 'shared-types';
+import {
+  loadAccounts as apiLoadAccounts,
+  createAccount as apiCreateAccount,
+  CreateAccountPayload,
+  editAccount as apiEditAccount,
+  EditAccountPayload,
+  deleteAccount as apiDeleteAccount,
+  DeleteAccountPayload,
+} from '@/api';
 
 export const useAccountsStore = defineStore('system-accounts', () => {
-  const accounts = ref<types.AccountRecord[]>([]);
-  const accountsRecord = ref<Record<number, types.AccountRecord>>({});
+  const accounts = ref<AccountModel[]>([]);
+  const accountsRecord = ref<Record<number, AccountModel>>({});
 
-  const getAccountById: WritableComputedRef<
-    (id: number) => types.AccountRecord
-  > = computed(
+  const getAccountById: WritableComputedRef<(id: number) => AccountModel> = computed(
     () => (id: number) => accounts.value.find(i => i.id === id),
   );
 
@@ -19,7 +25,7 @@ export const useAccountsStore = defineStore('system-accounts', () => {
 
   const loadAccounts = async () => {
     try {
-      const result = await api.get('/accounts');
+      const result = await apiLoadAccounts();
 
       accounts.value = [];
 
@@ -35,79 +41,38 @@ export const useAccountsStore = defineStore('system-accounts', () => {
     }
   };
 
-  const createAccount = async ({
-    name,
-    currencyId,
-    accountTypeId,
-    currentBalance,
-    creditLimit,
-  }: {
-    name: string;
-    currencyId: number;
-    accountTypeId: number;
-    currentBalance?: number;
-    creditLimit?: number;
-  }) => {
+  const createAccount = async (payload: CreateAccountPayload) => {
     try {
-      const result = await api.post('/accounts', {
-        accountTypeId,
-        currencyId,
-        name,
-        currentBalance,
-        creditLimit,
-      });
+      const result = await apiCreateAccount(payload);
 
-      const formatted = result;
-      accounts.value.push(formatted);
-      accountsRecord.value[formatted.id] = formatted;
+      accounts.value.push(result);
+      accountsRecord.value[result.id] = result;
     } catch (e) {
       // eslint-disable-next-line no-console
       console.log(e);
     }
   };
 
-  const editAccount = async ({
-    id,
-    accountTypeId,
-    currencyId,
-    name,
-    currentBalance,
-    creditLimit,
-  }: {
-    id: number;
-    accountTypeId?: number;
-    currencyId?: number;
-    name?: string;
-    currentBalance?: number;
-    creditLimit?: number;
-  }) => {
+  const editAccount = async ({ id, ...data }: EditAccountPayload) => {
     try {
-      const result = await api.put(`/accounts/${id}`, {
-        accountTypeId,
-        currencyId,
-        name,
-        currentBalance,
-        creditLimit,
-      });
-
-      const temp = result;
+      const result = await apiEditAccount({ id, ...data });
 
       accounts.value = accounts.value.map(item => {
         if (item.id === id) {
-          return temp;
+          return result;
         }
         return item;
       });
-      accounts.value[id] = temp;
+      accounts.value[id] = result;
     } catch (e) {
       // eslint-disable-next-line no-console
       console.log(e);
     }
   };
 
-  const deleteAccount = async ({ id }: { id: number }) => {
+  const deleteAccount = async ({ id }: DeleteAccountPayload) => {
     try {
-      await api.delete(`/accounts/${id}`);
+      await apiDeleteAccount({ id });
 
       accounts.value = accounts.value.filter(item => item.id !== id);
       delete accountsRecord.value[id];

@@ -47,7 +47,7 @@ export type UserRecord = {
   defaultCategoryId?: number;
 }
 
-export type AccountRecord = {
+export interface AccountRecord {
   systemType: ACCOUNT_TYPES.system,
   id?: number;
   name?: string;
