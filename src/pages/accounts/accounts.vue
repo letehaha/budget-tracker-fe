@@ -105,10 +105,9 @@
 </template>
 
 <script lang="ts">
-import { ACCOUNT_TYPES } from 'shared-types';
+import { ACCOUNT_TYPES, AccountModel, MonobankAccountModel } from 'shared-types';
 import { defineComponent } from 'vue';
 import { storeToRefs } from 'pinia';
-import * as types from '@/common/types';
 import { useBanksMonobankStore, useAccountsStore } from '@/stores';
 import { formatAmount, getBalanceFromAccount } from '@/js/helpers';
 import { MODAL_TYPES, useModalCenter } from '@/components/modal-center/index';
@@ -140,7 +139,7 @@ export default defineComponent({
       });
     };
 
-    const formatBalance = (account: types.MonobankAccountRecord | types.AccountRecord) => (
+    const formatBalance = (account: MonobankAccountModel | AccountModel) => (
       formatAmount(getBalanceFromAccount(account) - account.creditLimit)
     );
 

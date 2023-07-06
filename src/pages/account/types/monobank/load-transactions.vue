@@ -28,7 +28,7 @@ import {
 } from 'vue';
 import { useRoute } from 'vue-router';
 import { storeToRefs } from 'pinia';
-import * as types from '@/common/types';
+import { MonobankAccountModel } from 'shared-types';
 import { useBanksMonobankStore } from '@/stores';
 
 import {
@@ -45,7 +45,7 @@ export default defineComponent({
   },
   props: {
     account: {
-      type: Object as PropType<types.MonobankAccountRecord>,
+      type: Object as PropType<MonobankAccountModel>,
       required: true,
     },
   },

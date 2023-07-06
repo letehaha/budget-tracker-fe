@@ -15,12 +15,11 @@
 
 <script lang="ts">
 import { debounce } from 'lodash-es';
-import { ACCOUNT_TYPES } from 'shared-types';
+import { ACCOUNT_TYPES, AccountModel, MonobankAccountModel } from 'shared-types';
 import {
   defineComponent, reactive, watchEffect, watch, PropType,
 } from 'vue';
 
-import * as types from '@/common/types';
 import { useBanksMonobankStore, useAccountsStore } from '@/stores';
 
 import {
@@ -33,7 +32,7 @@ export default defineComponent({
   components: { InputField },
   props: {
     account: {
-      type: Object as PropType<types.AccountRecord | types.MonobankAccountRecord>,
+      type: Object as PropType<AccountModel | MonobankAccountModel>,
       required: true,
     },
   },

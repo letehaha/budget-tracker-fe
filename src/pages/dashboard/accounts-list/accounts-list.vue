@@ -13,8 +13,7 @@
 </template>
 
 <script lang="ts">
-import { ACCOUNT_TYPES } from 'shared-types';
-import * as types from '@/common/types';
+import { ACCOUNT_TYPES, AccountModel, MonobankAccountModel } from 'shared-types';
 import { defineComponent, computed, onBeforeUnmount } from 'vue';
 import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
@@ -48,7 +47,7 @@ export default defineComponent({
         .sort((a, b) => getBalanceFromAccount(b) - getBalanceFromAccount(a)),
     );
 
-    const redirectToAccount = (account: types.AccountRecord | types.MonobankAccountRecord) => {
+    const redirectToAccount = (account: AccountModel | MonobankAccountModel) => {
       let query = {};
 
       if (account.systemType === ACCOUNT_TYPES.system) {

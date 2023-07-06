@@ -23,13 +23,13 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
-import * as types from '@/common/types';
+import { AccountModel, MonobankAccountModel } from 'shared-types';
 import { formatAmount, getBalanceFromAccount } from '@/js/helpers';
 
 export default defineComponent({
   props: {
     account: {
-      type: Object as PropType<types.MonobankAccountRecord | types.AccountRecord>,
+      type: Object as PropType<AccountModel | MonobankAccountModel>,
       required: true,
     },
   },

@@ -1,7 +1,7 @@
 import { api } from '@/api/_api';
-import * as types from '@/common/types';
+import { UserModel } from 'shared-types';
 
-export const loadUserData = async (): Promise<types.UserRecord> => {
+export const loadUserData = async (): Promise<UserModel> => {
   const result = await api.get('/user');
 
   return result;

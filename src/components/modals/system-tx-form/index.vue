@@ -112,7 +112,12 @@
 </template>
 
 <script lang="ts">
-import { CategoryModel, TRANSACTION_TYPES, PAYMENT_TYPES } from 'shared-types';
+import {
+  CategoryModel,
+  AccountModel,
+  TRANSACTION_TYPES,
+  PAYMENT_TYPES,
+} from 'shared-types';
 import {
   defineComponent,
   ref,
@@ -132,7 +137,6 @@ import {
   deleteTransaction,
 } from '@/api/transactions';
 
-import * as types from '@/common/types';
 import {
   TransactionRecord,
   // UserCurrencyRecord,
@@ -210,8 +214,8 @@ export default defineComponent({
 
     const form = ref<{
       amount: number;
-      account: types.AccountRecord;
-      toAccount?: types.AccountRecord;
+      account: AccountModel;
+      toAccount?: AccountModel;
       category: CategoryModel;
       time: string;
       paymentType: PAYMENT_TYPES;

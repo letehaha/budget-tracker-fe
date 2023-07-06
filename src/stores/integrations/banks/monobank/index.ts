@@ -1,6 +1,6 @@
 import { ref, computed, WritableComputedRef } from 'vue';
 import { defineStore } from 'pinia';
-import * as types from '@/common/types';
+import { MonobankAccountModel } from 'shared-types';
 import { api } from '@/api/_api';
 import { API_ERROR_CODES } from '@/js/const';
 import {
@@ -11,7 +11,7 @@ import { TooManyRequestsError } from '@/js/errors';
 
 export const useBanksMonobankStore = defineStore('banks-monobank', () => {
   const transactions = ref<MONOTransactionRecord[]>([]);
-  const accounts = ref<types.MonobankAccountRecord[]>([]);
+  const accounts = ref<MonobankAccountModel[]>([]);
   const user = ref<MONOUserRecord>();
   const isUserExist = ref(false);
   const isMonoAccountPaired = ref(false);
@@ -25,9 +25,7 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
   });
   const enabledAccounts = computed(() => sortedAccounts.value.filter(item => item.isEnabled));
 
-  const getAccountById: WritableComputedRef<
-    (id: string) => types.MonobankAccountRecord
-  > = computed(
+  const getAccountById: WritableComputedRef<(id: string) => MonobankAccountModel> = computed(
     () => (id: string) => accounts.value.find(i => i.accountId === id),
   );
 

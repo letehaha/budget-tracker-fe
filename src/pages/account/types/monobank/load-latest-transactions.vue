@@ -8,11 +8,10 @@
 </template>
 
 <script lang="ts">
-import { API_ERROR_CODES } from 'shared-types';
+import { API_ERROR_CODES, MonobankAccountModel } from 'shared-types';
 import {
   defineComponent, computed, ref, watchEffect, PropType,
 } from 'vue';
-import * as types from '@/common/types';
 import { useBanksMonobankStore } from '@/stores';
 import { useLocalStorage } from '@/composable';
 
@@ -28,7 +27,7 @@ export default defineComponent({
   },
   props: {
     account: {
-      type: Object as PropType<types.MonobankAccountRecord>,
+      type: Object as PropType<MonobankAccountModel>,
       required: true,
     },
   },
