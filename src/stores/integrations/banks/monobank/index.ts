@@ -1,17 +1,17 @@
 import { ref, computed, WritableComputedRef } from 'vue';
 import { defineStore } from 'pinia';
+import * as types from '@/common/types';
 import { api } from '@/api';
 import { ERROR_CODES } from '@/js/const';
 import {
   MONOTransactionRecord,
   MONOUserRecord,
-  MONOAccountRecord,
 } from '@/js/records';
 import { TooManyRequestsError } from '@/js/errors';
 
 export const useBanksMonobankStore = defineStore('banks-monobank', () => {
   const transactions = ref<MONOTransactionRecord[]>([]);
-  const accounts = ref<MONOAccountRecord[]>([]);
+  const accounts = ref<types.MonobankAccountRecord[]>([]);
   const user = ref<MONOUserRecord>();
   const isUserExist = ref(false);
   const isMonoAccountPaired = ref(false);
@@ -26,7 +26,7 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
   const enabledAccounts = computed(() => sortedAccounts.value.filter(item => item.isEnabled));
 
   const getAccountById: WritableComputedRef<
-    (id: string) => MONOAccountRecord
+    (id: string) => types.MonobankAccountRecord
   > = computed(
     () => (id: string) => accounts.value.find(i => i.accountId === id),
   );
@@ -94,7 +94,7 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
     try {
       const result = await api.get('/banks/monobank/accounts');
 
-      accounts.value = result.map(i => new MONOAccountRecord(i));
+      accounts.value = result;
       isMonoAccountPaired.value = true;
     } catch (e) {
       if (e?.data?.code === ERROR_CODES.monobankUserNotPaired) {
@@ -116,7 +116,7 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
         isEnabled,
       });
 
-      replaceAccount(new MONOAccountRecord(result));
+      replaceAccount(result);
     } catch (e) {
       if (e?.data?.code === ERROR_CODES.monobankUserNotPaired) {
         isMonoAccountPaired.value = false;
@@ -147,7 +147,7 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
     try {
       const result = await api.get('/banks/monobank/refresh-accounts');
 
-      accounts.value = result.map(i => new MONOAccountRecord(i));
+      accounts.value = result;
     } catch (e) {
       if (e instanceof TooManyRequestsError) {
         throw e;

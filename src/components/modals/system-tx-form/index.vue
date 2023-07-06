@@ -132,8 +132,8 @@ import {
   deleteTransaction,
 } from '@/api/transactions';
 
+import * as types from '@/common/types';
 import {
-  AccountRecord,
   TransactionRecord,
   CategoryRecord,
   // UserCurrencyRecord,
@@ -211,8 +211,8 @@ export default defineComponent({
 
     const form = ref<{
       amount: number;
-      account: AccountRecord;
-      toAccount?: AccountRecord;
+      account: types.AccountRecord;
+      toAccount?: types.AccountRecord;
       category: CategoryRecord;
       time: string;
       paymentType: PAYMENT_TYPES;

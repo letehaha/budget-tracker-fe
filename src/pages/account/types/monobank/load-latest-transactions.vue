@@ -10,12 +10,11 @@
 <script lang="ts">
 import { ERROR_CODES } from 'shared-types';
 import {
-  defineComponent, computed, ref, watchEffect,
+  defineComponent, computed, ref, watchEffect, PropType,
 } from 'vue';
+import * as types from '@/common/types';
 import { useBanksMonobankStore } from '@/stores';
 import { useLocalStorage } from '@/composable';
-
-import { MONOAccountRecord } from '@/js/records';
 
 import {
   useNotificationCenter,
@@ -29,7 +28,7 @@ export default defineComponent({
   },
   props: {
     account: {
-      type: MONOAccountRecord,
+      type: Object as PropType<types.MonobankAccountRecord>,
       required: true,
     },
   },

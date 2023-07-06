@@ -22,13 +22,16 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { AccountRecord, MONOAccountRecord } from '@/js/records';
+import { defineComponent, PropType } from 'vue';
+import * as types from '@/common/types';
 import { formatAmount } from '@/js/helpers';
 
 export default defineComponent({
   props: {
-    account: { type: [AccountRecord, MONOAccountRecord], required: true },
+    account: {
+      type: Object as PropType<types.MonobankAccountRecord | types.AccountRecord>,
+      required: true,
+    },
   },
   methods: {
     formatAmount,

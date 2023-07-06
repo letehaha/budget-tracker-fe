@@ -62,7 +62,7 @@
 import { defineComponent, PropType } from 'vue';
 import { useRouter } from 'vue-router';
 
-import { AccountRecord } from '@/js/records';
+import * as types from '@/common/types';
 import SelectField from '@/components/fields/select-field.vue';
 import InputField from '@/components/fields/input-field.vue';
 
@@ -76,11 +76,11 @@ export default defineComponent({
   },
   props: {
     formAccount: {
-      type: Object as PropType<AccountRecord>,
+      type: Object as PropType<types.AccountRecord>,
       default: null,
     },
     formToAccount: {
-      type: Object as PropType<AccountRecord>,
+      type: Object as PropType<types.AccountRecord>,
       default: null,
     },
     isTransferTransaction: {
@@ -88,23 +88,15 @@ export default defineComponent({
       required: true,
     },
     accounts: {
-      type: Array as PropType<AccountRecord[]>,
+      type: Array as PropType<types.AccountRecord[]>,
       required: true,
     },
     filteredAccounts: {
-      type: Array as PropType<AccountRecord[]>,
+      type: Array as PropType<types.AccountRecord[]>,
       required: true,
     },
   },
-  emits: {
-    'close-modal': null,
-    'update:form-account': function (account: AccountRecord) {
-      return account instanceof AccountRecord;
-    },
-    'update:form-to-account': function (account: AccountRecord) {
-      return account instanceof AccountRecord;
-    },
-  },
+  emits: ['close-modal', 'update:form-account', 'update:form-to-account'],
   setup(props, { emit }) {
     const router = useRouter();
 
@@ -114,7 +106,7 @@ export default defineComponent({
       emit('close-modal');
     };
 
-    const updateFormAccount = (account: AccountRecord) => {
+    const updateFormAccount = (account: types.AccountRecord) => {
       emit('update:form-account', account);
     };
 

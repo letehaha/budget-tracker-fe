@@ -1,14 +1,14 @@
 import { ref, WritableComputedRef, computed } from 'vue';
 import { defineStore } from 'pinia';
 import { api } from '@/api';
-import { AccountRecord } from '@/js/records';
+import * as types from '@/common/types';
 
 export const useAccountsStore = defineStore('system-accounts', () => {
-  const accounts = ref<AccountRecord[]>([]);
-  const accountsRecord = ref<Record<number, AccountRecord>>({});
+  const accounts = ref<types.AccountRecord[]>([]);
+  const accountsRecord = ref<Record<number, types.AccountRecord>>({});
 
   const getAccountById: WritableComputedRef<
-    (id: number) => AccountRecord
+    (id: number) => types.AccountRecord
   > = computed(
     () => (id: number) => accounts.value.find(i => i.id === id),
   );
@@ -24,7 +24,7 @@ export const useAccountsStore = defineStore('system-accounts', () => {
       accounts.value = [];
 
       for (const acc of result) {
-        const formatted = new AccountRecord(acc);
+        const formatted = acc;
 
         accounts.value.push(formatted);
         accountsRecord.value[formatted.id] = formatted;
@@ -57,7 +57,7 @@ export const useAccountsStore = defineStore('system-accounts', () => {
         creditLimit,
       });
 
-      const formatted = new AccountRecord(result);
+      const formatted = result;
       accounts.value.push(formatted);
       accountsRecord.value[formatted.id] = formatted;
     } catch (e) {
@@ -90,7 +90,7 @@ export const useAccountsStore = defineStore('system-accounts', () => {
         creditLimit,
       });
 
-      const temp = new AccountRecord(result);
+      const temp = result;
 
       accounts.value = accounts.value.map(item => {
         if (item.id === id) {
