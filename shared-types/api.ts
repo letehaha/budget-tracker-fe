@@ -33,7 +33,7 @@ export type APIRequestError =
   | ApiNotFoundError
   | ApiTooManyRequestsError;
 
-export enum ERROR_CODES {
+export enum API_ERROR_CODES {
   // general
   tooManyRequests = 'TOO_MANY_REQUESTS',
   notFound = 'NOT_FOUND',

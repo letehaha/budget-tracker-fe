@@ -1,6 +1,6 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
-import { userApi } from '@/api';
+import { loadUserData } from '@/api';
 import * as types from '@/common/types';
 
 export const useUserStore = defineStore('user', () => {
@@ -8,7 +8,7 @@ export const useUserStore = defineStore('user', () => {
 
   const loadUser = async () => {
     try {
-      const result = await userApi.loadUserData();
+      const result = await loadUserData();
 
       user.value = result;
     } catch (e) {}

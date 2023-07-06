@@ -1,7 +1,7 @@
 import { ref, Ref } from 'vue';
 import { defineStore } from 'pinia';
-import { ERROR_CODES } from 'shared-types';
-import { api } from '@/api';
+import { API_ERROR_CODES } from 'shared-types';
+import { api } from '@/api/_api';
 import { useUserStore } from './user';
 import { useCategoriesStore } from './categories/categories';
 import { resetAllDefinedStores } from './setup';
@@ -32,8 +32,8 @@ export const useAuthStore = defineStore('auth', () => {
       }
     } catch (e) {
       const possibleErrorCodes = [
-        ERROR_CODES.notFound,
-        ERROR_CODES.invalidCredentials,
+        API_ERROR_CODES.notFound,
+        API_ERROR_CODES.invalidCredentials,
       ];
 
       if (possibleErrorCodes.includes(e.data.code)) {

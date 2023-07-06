@@ -43,7 +43,7 @@
 </template>
 
 <script lang="ts">
-import { ERROR_CODES } from 'shared-types';
+import { API_ERROR_CODES } from 'shared-types';
 import { defineComponent, reactive, ref } from 'vue';
 import { useBanksMonobankStore } from '@/stores';
 import { ApiErrorResponseError } from '@/js/errors';
@@ -92,7 +92,7 @@ export default defineComponent({
         });
       } catch (e) {
         if (e instanceof ApiErrorResponseError) {
-          if (e.data.code === ERROR_CODES.monobankUserAlreadyConnected) {
+          if (e.data.code === API_ERROR_CODES.monobankUserAlreadyConnected) {
             addNotification({
               text: 'Account already connected',
               type: NotificationType.error,

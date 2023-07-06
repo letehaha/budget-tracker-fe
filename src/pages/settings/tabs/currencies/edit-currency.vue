@@ -44,7 +44,7 @@ import {
   watch,
   PropType,
 } from 'vue';
-import { ERROR_CODES } from 'shared-types';
+import { API_ERROR_CODES } from 'shared-types';
 import { storeToRefs } from 'pinia';
 import { useCurrenciesStore } from '@/stores';
 import { editUserCurrenciesExchangeRates } from '@/api/currencies';
@@ -147,7 +147,7 @@ export default defineComponent({
 
         addSuccessNotification('Successfully updated.');
       } catch (e) {
-        if (e.data.code === ERROR_CODES.validationError) {
+        if (e.data.code === API_ERROR_CODES.validationError) {
           addErrorNotification(e.data.message);
           return;
         }

@@ -1,6 +1,6 @@
 import { NavigationGuard } from 'vue-router';
 import { storeToRefs } from 'pinia';
-import { api } from '@/api';
+import { api } from '@/api/_api';
 import {
   useCurrenciesStore,
   useAuthStore,

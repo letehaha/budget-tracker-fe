@@ -21,7 +21,7 @@
 </template>
 
 <script lang="ts">
-import { ERROR_CODES } from 'shared-types';
+import { API_ERROR_CODES } from 'shared-types';
 import {
   defineComponent,
   ref,
@@ -55,9 +55,9 @@ export default defineComponent({
         if (e instanceof ApiErrorResponseError) {
           if (
             [
-              ERROR_CODES.cryptoBinanceBothAPIKeysDoesNotexist,
-              ERROR_CODES.cryptoBinancePublicAPIKeyNotDefined,
-              ERROR_CODES.cryptoBinanceSecretAPIKeyNotDefined,
+              API_ERROR_CODES.cryptoBinanceBothAPIKeysDoesNotexist,
+              API_ERROR_CODES.cryptoBinancePublicAPIKeyNotDefined,
+              API_ERROR_CODES.cryptoBinanceSecretAPIKeyNotDefined,
             ].includes(e.data.code as number)
           ) {
             isAPIKeysDefined.value = false;

@@ -39,7 +39,7 @@
 </template>
 
 <script lang="ts">
-import { KEYBOARD_CODES } from 'shared-types';
+import { KEYBOARD_CODES } from '@/common/types';
 import { defineComponent, computed } from 'vue';
 
 import FieldLabel from './components/field-label.vue';

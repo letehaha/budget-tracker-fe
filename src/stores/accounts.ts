@@ -1,6 +1,6 @@
 import { ref, WritableComputedRef, computed } from 'vue';
 import { defineStore } from 'pinia';
-import { api } from '@/api';
+import { api } from '@/api/_api';
 import * as types from '@/common/types';
 
 export const useAccountsStore = defineStore('system-accounts', () => {

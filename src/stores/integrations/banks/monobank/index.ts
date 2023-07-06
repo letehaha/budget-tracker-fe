@@ -1,8 +1,8 @@
 import { ref, computed, WritableComputedRef } from 'vue';
 import { defineStore } from 'pinia';
 import * as types from '@/common/types';
-import { api } from '@/api';
-import { ERROR_CODES } from '@/js/const';
+import { api } from '@/api/_api';
+import { API_ERROR_CODES } from '@/js/const';
 import {
   MONOTransactionRecord,
   MONOUserRecord,
@@ -47,7 +47,7 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
         isMonoAccountPaired.value = true;
       }
     } catch (e) {
-      if (e?.data?.code === ERROR_CODES.monobankUserNotPaired) {
+      if (e?.data?.code === API_ERROR_CODES.monobankUserNotPaired) {
         isMonoAccountPaired.value = false;
       }
     }
@@ -79,7 +79,7 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
 
       replaceTransaction(new MONOTransactionRecord(result));
     } catch (e) {
-      if (e?.data?.code === ERROR_CODES.monobankUserNotPaired) {
+      if (e?.data?.code === API_ERROR_CODES.monobankUserNotPaired) {
         isMonoAccountPaired.value = false;
         return;
       }
@@ -97,7 +97,7 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
       accounts.value = result;
       isMonoAccountPaired.value = true;
     } catch (e) {
-      if (e?.data?.code === ERROR_CODES.monobankUserNotPaired) {
+      if (e?.data?.code === API_ERROR_CODES.monobankUserNotPaired) {
         isMonoAccountPaired.value = false;
       }
     }
@@ -118,7 +118,7 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
 
       replaceAccount(result);
     } catch (e) {
-      if (e?.data?.code === ERROR_CODES.monobankUserNotPaired) {
+      if (e?.data?.code === API_ERROR_CODES.monobankUserNotPaired) {
         isMonoAccountPaired.value = false;
         return;
       }

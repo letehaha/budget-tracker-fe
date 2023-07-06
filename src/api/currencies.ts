@@ -1,4 +1,4 @@
-import { api } from '@/api';
+import { api } from '@/api/_api';
 import { CurrencyRecord, UserCurrencyRecord, ExchangeRateRecord } from '@/js/records';
 
 export const getAllCurrencies = async (): Promise<CurrencyRecord[]> => {

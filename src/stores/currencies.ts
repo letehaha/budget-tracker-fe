@@ -1,6 +1,6 @@
 import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
-import { api } from '@/api';
+import { api } from '@/api/_api';
 import {
   getAllCurrencies,
   loadUserCurrencies,

@@ -68,7 +68,7 @@ import {
   onMounted,
   computed,
 } from 'vue';
-import { ERROR_CODES } from 'shared-types';
+import { API_ERROR_CODES } from 'shared-types';
 import { storeToRefs } from 'pinia';
 import { useCurrenciesStore, useAccountsStore } from '@/stores';
 import { UserCurrencyRecord, ExchangeRateRecord } from '@/js/records';
@@ -115,7 +115,7 @@ export default defineComponent({
       try {
         rates.value = await loadUserCurrenciesExchangeRates();
       } catch (err) {
-        if (err.data.code === ERROR_CODES.unauthorized) return;
+        if (err.data.code === API_ERROR_CODES.unauthorized) return;
         addErrorNotification('Unexpected error. Cannot load exchange rates.');
       }
     };
@@ -136,8 +136,8 @@ export default defineComponent({
 
         addSuccessNotification('Successfully deleted.');
       } catch (e) {
-        if (e.data.code === ERROR_CODES.unauthorized) return;
-        if (e.data.code === ERROR_CODES.validationError) {
+        if (e.data.code === API_ERROR_CODES.unauthorized) return;
+        if (e.data.code === API_ERROR_CODES.validationError) {
           addErrorNotification(e.data.message);
           return;
         }

@@ -112,7 +112,7 @@
 </template>
 
 <script lang="ts">
-import { TRANSACTION_TYPES, PAYMENT_TYPES } from 'shared-types';
+import { CategoryModel, TRANSACTION_TYPES, PAYMENT_TYPES } from 'shared-types';
 import {
   defineComponent,
   ref,
@@ -135,7 +135,6 @@ import {
 import * as types from '@/common/types';
 import {
   TransactionRecord,
-  CategoryRecord,
   // UserCurrencyRecord,
 } from '@/js/records';
 import { eventBus, BUS_EVENTS } from '@/js/utils';
@@ -213,7 +212,7 @@ export default defineComponent({
       amount: number;
       account: types.AccountRecord;
       toAccount?: types.AccountRecord;
-      category: CategoryRecord;
+      category: CategoryModel;
       time: string;
       paymentType: PAYMENT_TYPES;
       note?: string;
