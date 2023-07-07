@@ -49,6 +49,10 @@ export const MODEL_EVENTS = {
   input: 'update:modelValue',
 };
 
+interface InputChangeEvent extends Event {
+  target: HTMLInputElement;
+}
+
 export default defineComponent({
   components: {
     FieldLabel,
@@ -71,7 +75,7 @@ export default defineComponent({
   setup(props, { attrs, emit, slots }) {
     const computedAttrs = {
       ...attrs,
-      onInput: event => {
+      onInput: (event: InputChangeEvent) => {
         let value: string | number = event.target.value;
 
         if (props.modelValue === value) return;
