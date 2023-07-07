@@ -174,8 +174,8 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
     }
     try {
       let latestTx = await api.get('/banks/monobank/transactions', {
-        from: '1',
-        limit: '1',
+        from: 1,
+        limit: 1,
       });
       if (latestTx ?? latestTx.length) {
         latestTx = latestTx[0];

@@ -57,14 +57,21 @@ class ApiCaller {
 
   get(
     endpoint: ApiCall['endpoint'],
-    query: ApiCall['query'] = {},
+    query: Record<string, unknown> = {},
     options: ApiCall['options'] = {},
   ) {
+    const validQuery: ApiCall['query'] = {};
+
+    for (const key in query) {
+      // Additional check to avoid unwanted prototype's properties
+      if (validQuery[key]) validQuery[key] = query[key].toString();
+    }
+
     return this._call({
       method: 'GET',
       endpoint,
       options,
-      query,
+      query: validQuery,
     });
   }
 
@@ -135,7 +142,10 @@ class ApiCaller {
    * @private
    */
   async _call(opts: ApiCall) {
-    let additionalParams = new URLSearchParams(opts.query).toString();
+    // TypeScript is dump and things that URLSearchParams only records with string-only
+    // values, but it's not
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let additionalParams = new URLSearchParams(opts.query as any).toString();
 
     if (additionalParams) {
       additionalParams = `?${additionalParams}`;
