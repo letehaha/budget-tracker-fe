@@ -2,12 +2,12 @@ import { AccountModel } from 'shared-types';
 import { api } from '@/api/_api';
 
 export const loadAccounts = async (): Promise<AccountModel[]> => {
-  const result = await api.get('/accounts');
+  const result = await api.get('/accounts', { test: 'test' });
 
   return result;
 };
 
-export interface CreateAccountPayload {
+export type CreateAccountPayload = {
   name: string;
   currencyId: number;
   accountTypeId: number;

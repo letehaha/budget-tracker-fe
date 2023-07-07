@@ -6,11 +6,11 @@
       </button>
     </div>
     <div class="monobank-tx-form__row">
-      <p>Amount: {{ transaction.formattedAmount }}</p>
+      <p>Amount: {{ formatAmount(transaction.amount) }}</p>
       <p>Type: {{ transaction.transactionType }}</p>
       <p>Time: {{ transaction.time }}</p>
       <p>Payment Type: {{ transaction.paymentType }}</p>
-      <p>Cashback: {{ +transaction.formattedCashback ? transaction.formattedCashback : '-' }}</p>
+      <p>Cashback: {{ +formatAmount(transaction.cashbackAmount) ? formatAmount(transaction.cashbackAmount) : '-' }}</p>
       <p>Description: {{ transaction.description }}</p>
       <p>
         Currency: {{ currentCurrency.currency }} ({{ currentCurrency.code }})
@@ -47,7 +47,7 @@
 
 <script lang="ts">
 import {
-  defineComponent, ref, reactive, computed,
+  defineComponent, ref, reactive, computed, PropType,
 } from 'vue';
 import { storeToRefs } from 'pinia';
 
@@ -57,12 +57,13 @@ import {
   useCategoriesStore,
   useBanksMonobankStore,
 } from '@/stores';
+import { MonobankTrasnactionModel } from 'shared-types';
 
-import { MONOTransactionRecord } from '@/js/records';
 import {
   useNotificationCenter,
   NotificationType,
 } from '@/components/notification-center';
+import { formatAmount } from '@/js/helpers';
 
 import CategorySelectField from '@/components/fields/category-select-field.vue';
 import TextareaField from '@/components/fields/textarea-field.vue';
@@ -78,7 +79,7 @@ export default defineComponent({
   },
   props: {
     transaction: {
-      type: MONOTransactionRecord,
+      type: Object as PropType<MonobankTrasnactionModel>,
       default: undefined,
     },
   },
@@ -135,6 +136,7 @@ export default defineComponent({
 
     return {
       MODAL_EVENTS,
+      formatAmount,
       form,
       isLoading,
       categories,

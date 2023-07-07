@@ -7,24 +7,29 @@ import {
 
 import * as errors from '@/js/errors';
 
-enum methods {
-  patch = 'PATCH',
-  post = 'POST',
-  put = 'PUT',
-  get = 'GET',
-  delete = 'DELETE',
-}
+type HTTP_METHOD = 'PATCH' | 'POST' | 'PUT' | 'GET' | 'DELETE'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type ApiValidResponse = any
 
 interface ApiRequestConfig {
-  method: methods,
+  method: HTTP_METHOD,
   headers: {
     'Content-Type': string;
     Authorization: string;
   },
   body?: string,
+}
+
+interface ApiCall {
+  endpoint: string;
+  method: HTTP_METHOD;
+  query?: Record<string, string>;
+  data?: Record<string | number, unknown>;
+  options?: {
+    needRaw?: boolean;
+    withoutSignature?: boolean;
+  };
 }
 
 const API_HTTP = import.meta.env.VITE_APP_API_HTTP;
@@ -50,45 +55,65 @@ class ApiCaller {
     this.authToken = token;
   }
 
-  get(endpoint: string, query?: Record<string, unknown>, options = {}) {
+  get(
+    endpoint: ApiCall['endpoint'],
+    query: ApiCall['query'] = {},
+    options: ApiCall['options'] = {},
+  ) {
     return this._call({
-      method: methods.get,
+      method: 'GET',
       endpoint,
       options,
       query,
     });
   }
 
-  post(endpoint: string, data, options = {}) {
+  post(
+    endpoint: ApiCall['endpoint'],
+    data: ApiCall['data'] = undefined,
+    options: ApiCall['options'] = {},
+  ) {
     return this._call({
-      method: methods.post,
+      method: 'POST',
       endpoint,
       options,
       data,
     });
   }
 
-  patch(endpoint: string, data, options = {}) {
+  patch(
+    endpoint: ApiCall['endpoint'],
+    data: ApiCall['data'] = undefined,
+    options: ApiCall['options'] = {},
+  ) {
     return this._call({
-      method: methods.patch,
+      method: 'PATCH',
       endpoint,
       options,
       data,
     });
   }
 
-  put(endpoint: string, data, options = {}) {
+  put(
+    endpoint: ApiCall['endpoint'],
+    data: ApiCall['data'] = undefined,
+    options: ApiCall['options'] = {},
+  ) {
     return this._call({
-      method: methods.put,
+      method: 'PUT',
       endpoint,
       options,
       data,
     });
   }
 
-  delete(endpoint: string, data = undefined, options = {}) {
+  delete(
+    endpoint: ApiCall['endpoint'],
+    data: ApiCall['data'] = undefined,
+    options: ApiCall['options'] = {},
+  ) {
     return this._call({
-      method: methods.delete,
+      method: 'DELETE',
       endpoint,
       options,
       data,
@@ -109,7 +134,7 @@ class ApiCaller {
    *
    * @private
    */
-  async _call(opts) {
+  async _call(opts: ApiCall) {
     let additionalParams = new URLSearchParams(opts.query).toString();
 
     if (additionalParams) {
