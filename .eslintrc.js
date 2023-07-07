@@ -63,6 +63,13 @@ module.exports = {
         'e', // for e.returnvalue
       ],
     }],
+    'no-unused-vars': 'off',
+    'no-useless-catch': 'off',
+    'no-underscore-dangle': 'off',
+    'no-restricted-syntax': 'off',
+    'no-plusplus': 'off',
+    'no-shadow': 'off',
+
     'import/extensions': 'off',
     'import/no-named-as-default': 'off',
     'import/prefer-default-export': 'off',
@@ -71,20 +78,21 @@ module.exports = {
       ignore: ['.svg'],
     }],
     'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
-    'no-unused-vars': 'off',
-    'no-useless-catch': 'off',
+
     '@typescript-eslint/no-unused-vars': 'warn',
+    '@typescript-eslint/no-shadow': ['error', {
+      allow: ['state', 'getters'],
+    }],
+
     'arrow-body-style': 'warn',
     'func-names': [1, 'as-needed'],
-    'no-underscore-dangle': 'off',
     'class-methods-use-this': 'off',
     'arrow-parens': 'off',
-    'vue/no-v-for-template-key': 'off',
-    'no-restricted-syntax': 'off',
     'global-require': 'off',
-    'no-plusplus': 'off',
     'max-len': 'off',
     'prefer-destructuring': 'off',
+
+    'vue/no-v-for-template-key': 'off',
     'vue/max-len': ['warn', {
       code: 100,
       template: 100,
@@ -101,10 +109,6 @@ module.exports = {
       ignoreHTMLTextContents: false,
     }],
     'vue/no-unused-components': 'warn',
-    'no-shadow': 'off',
-    '@typescript-eslint/no-shadow': ['error', {
-      allow: ['state', 'getters'],
-    }],
     'vue/multi-word-component-names': 'off',
     'vue/no-reserved-component-names': 'off',
     'vuejs-accessibility/click-events-have-key-events': 'off',
