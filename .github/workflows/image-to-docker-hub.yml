@@ -13,6 +13,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           submodules: recursive
+          token: ${{ secrets.REPOSITORIES_ACCESS_TOKEN }}
 
       - id: docker-build
         uses: ./.github/actions/docker-build
