@@ -1,7 +1,4 @@
-import {
-  RawAccountDataResponse,
-  NormalizedAccountData,
-} from 'shared-types/responses/crypto/binance';
+import { RawAccountDataResponse, NormalizedAccountData } from '@/common/types';
 
 export const normalizeAccountData = (
   response: RawAccountDataResponse,

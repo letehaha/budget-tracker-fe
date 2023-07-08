@@ -4,7 +4,7 @@ import {
   RawAccountDataResponse,
   NormalizedAccountData,
   AccountSettings,
-} from 'shared-types/responses/crypto/binance';
+} from '@/common/types';
 import { api } from '@/api/_api';
 import { normalizeAccountData } from './response-normalizer';
 
