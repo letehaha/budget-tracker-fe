@@ -24,9 +24,10 @@
 
 <script lang="ts">
 import { defineComponent, PropType, computed } from 'vue';
+import { AccountModel } from 'shared-types';
 
 import { useCurrenciesStore } from '@/stores';
-import { UserCurrencyRecord, AccountRecord } from '@/js/records';
+import { UserCurrencyRecord } from '@/js/records';
 import SelectField from '@/components/fields/select-field.vue';
 import InputField from '@/components/fields/input-field.vue';
 
@@ -60,11 +61,11 @@ export default defineComponent({
       required: true,
     },
     formAccount: {
-      type: Object as PropType<AccountRecord>,
+      type: Object as PropType<AccountModel>,
       default: null,
     },
     formToAccount: {
-      type: Object as PropType<AccountRecord>,
+      type: Object as PropType<AccountModel>,
       default: null,
     },
   },

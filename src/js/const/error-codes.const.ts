@@ -1,4 +1,4 @@
-export const ERROR_CODES = Object.freeze({
+export const API_ERROR_CODES = Object.freeze({
   // generic
   tooManyRequests: 'TOO_MANY_REQUESTS',
 

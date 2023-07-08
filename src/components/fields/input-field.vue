@@ -39,7 +39,7 @@
 </template>
 
 <script lang="ts">
-import { KEYBOARD_CODES } from 'shared-types';
+import { KEYBOARD_CODES } from '@/common/types';
 import { defineComponent, computed } from 'vue';
 
 import FieldLabel from './components/field-label.vue';
@@ -48,6 +48,10 @@ import FieldError from './components/field-error.vue';
 export const MODEL_EVENTS = {
   input: 'update:modelValue',
 };
+
+interface InputChangeEvent extends Event {
+  target: HTMLInputElement;
+}
 
 export default defineComponent({
   components: {
@@ -71,7 +75,7 @@ export default defineComponent({
   setup(props, { attrs, emit, slots }) {
     const computedAttrs = {
       ...attrs,
-      onInput: event => {
+      onInput: (event: InputChangeEvent) => {
         let value: string | number = event.target.value;
 
         if (props.modelValue === value) return;

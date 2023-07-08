@@ -1,16 +1,16 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
-import { api } from '@/api';
-import { UserRecord } from '@/js/records';
+import { UserModel } from 'shared-types';
+import { loadUserData } from '@/api';
 
 export const useUserStore = defineStore('user', () => {
-  const user = ref(null);
+  const user = ref<UserModel>(null);
 
   const loadUser = async () => {
     try {
-      const result = await api.get('/user');
+      const result = await loadUserData();
 
-      user.value = new UserRecord(result);
+      user.value = result;
     } catch (e) {}
   };
 

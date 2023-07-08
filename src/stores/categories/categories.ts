@@ -5,21 +5,20 @@ import {
   WritableComputedRef,
 } from 'vue';
 import { defineStore } from 'pinia';
-import { api } from '@/api';
-import { CategoryRecord } from '@/js/records';
+import { CategoryModel } from 'shared-types';
+import { loadSystemCategories } from '@/api';
 import { getRawCategories } from './helpers';
 
 export const useCategoriesStore = defineStore('categories', () => {
-  const categories: Ref<CategoryRecord[]> = ref([]);
-  const rawCategories: Ref<CategoryRecord[]> = ref([]);
+  const categories: Ref<CategoryModel[]> = ref([]);
+  const rawCategories: Ref<CategoryModel[]> = ref([]);
 
   const loadCategories = async () => {
     try {
-      const result = await api.get('/categories');
+      const result = await loadSystemCategories();
 
-      categories.value = result.map(i => new CategoryRecord(i));
-      rawCategories.value = getRawCategories(result)
-        .map(i => new CategoryRecord(i));
+      categories.value = result;
+      rawCategories.value = getRawCategories(result);
     } catch (e) {
       // eslint-disable-next-line no-console
       console.log(e);
@@ -27,7 +26,7 @@ export const useCategoriesStore = defineStore('categories', () => {
   };
 
   const getCategoryTypeById: WritableComputedRef<
-    (id: number) => CategoryRecord
+    (id: number) => CategoryModel
   > = computed(
     () => (id: number) => rawCategories.value.find(item => item.id === id),
   );

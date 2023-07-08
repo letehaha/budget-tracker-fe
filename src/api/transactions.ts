@@ -1,5 +1,5 @@
 import { TRANSACTION_TYPES, PAYMENT_TYPES, ACCOUNT_TYPES } from 'shared-types';
-import { api } from '@/api';
+import { api } from '@/api/_api';
 import { TRANSACTION_TYPES as TYPES } from '@/js/const';
 import {
   TransactionRecord,

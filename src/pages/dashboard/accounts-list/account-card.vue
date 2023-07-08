@@ -5,7 +5,7 @@
     </div>
     <div class="account__balance-info">
       <div class="account__balance">
-        {{ formatAmount(account.balance - account.creditLimit) }}
+        {{ formatAmount(getBalanceFromAccount(account) - account.creditLimit) }}
       </div>
       <template v-if="account.creditLimit">
         <div class="account__credit-limit">
@@ -22,16 +22,20 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { AccountRecord, MONOAccountRecord } from '@/js/records';
-import { formatAmount } from '@/js/helpers';
+import { defineComponent, PropType } from 'vue';
+import { AccountModel, MonobankAccountModel } from 'shared-types';
+import { formatAmount, getBalanceFromAccount } from '@/js/helpers';
 
 export default defineComponent({
   props: {
-    account: { type: [AccountRecord, MONOAccountRecord], required: true },
+    account: {
+      type: Object as PropType<AccountModel | MonobankAccountModel>,
+      required: true,
+    },
   },
   methods: {
     formatAmount,
+    getBalanceFromAccount,
   },
 });
 </script>

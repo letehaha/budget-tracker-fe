@@ -20,7 +20,7 @@
     ],
     "paths": {
       "@/*": ["src/*"],
-      "shared-types": ["shared-types"],
+      "shared-types": ["backend/shared-types"],
     },
     "lib": [
       "esnext",

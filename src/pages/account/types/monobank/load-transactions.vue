@@ -28,8 +28,8 @@ import {
 } from 'vue';
 import { useRoute } from 'vue-router';
 import { storeToRefs } from 'pinia';
+import { MonobankAccountModel } from 'shared-types';
 import { useBanksMonobankStore } from '@/stores';
-import { MONOAccountRecord } from '@/js/records';
 
 import {
   useNotificationCenter,
@@ -45,7 +45,7 @@ export default defineComponent({
   },
   props: {
     account: {
-      type: Object as PropType<MONOAccountRecord>,
+      type: Object as PropType<MonobankAccountModel>,
       required: true,
     },
   },

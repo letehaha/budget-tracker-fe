@@ -52,7 +52,7 @@
 </template>
 
 <script lang="ts">
-import { ERROR_CODES } from 'shared-types';
+import { API_ERROR_CODES } from 'shared-types';
 import {
   defineComponent, ref, Ref, watch,
 } from 'vue';
@@ -119,8 +119,8 @@ export default defineComponent({
         router.push({ name: 'dashboard' });
       } catch (e) {
         const errorCodes = {
-          [ERROR_CODES.notFound]: 'Incorrect email or password.',
-          [ERROR_CODES.invalidCredentials]: 'Password is invalid.',
+          [API_ERROR_CODES.notFound]: 'Incorrect email or password.',
+          [API_ERROR_CODES.invalidCredentials]: 'Password is invalid.',
         };
 
         formError.value = errorCodes[e.code] || 'Unexpected error.';

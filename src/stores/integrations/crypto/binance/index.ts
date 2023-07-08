@@ -4,8 +4,8 @@ import {
   RawAccountDataResponse,
   NormalizedAccountData,
   AccountSettings,
-} from 'shared-types/responses/crypto/binance';
-import { api } from '@/api';
+} from '@/common/types';
+import { api } from '@/api/_api';
 import { normalizeAccountData } from './response-normalizer';
 
 export const useCryptoBinanceStore = defineStore('crypto-binance', () => {

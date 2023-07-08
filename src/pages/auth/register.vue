@@ -45,7 +45,7 @@
 </template>
 
 <script lang="ts">
-import { ERROR_CODES } from 'shared-types';
+import { API_ERROR_CODES } from 'shared-types';
 import { defineComponent, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores';
@@ -80,7 +80,7 @@ export default defineComponent({
 
         router.push({ name: 'auth/welcome' });
       } catch (e) {
-        if (e.data.code === ERROR_CODES.userExists) {
+        if (e.data.code === API_ERROR_CODES.userExists) {
           addErrorNotification('User with that username already exists!');
           return;
         }

@@ -15,11 +15,12 @@
 
 <script lang="ts">
 import { debounce } from 'lodash-es';
+import { ACCOUNT_TYPES, AccountModel, MonobankAccountModel } from 'shared-types';
 import {
-  defineComponent, reactive, watchEffect, watch,
+  defineComponent, reactive, watchEffect, watch, PropType,
 } from 'vue';
+
 import { useBanksMonobankStore, useAccountsStore } from '@/stores';
-import { AccountRecord, MONOAccountRecord } from '@/js/records';
 
 import {
   useNotificationCenter,
@@ -31,7 +32,7 @@ export default defineComponent({
   components: { InputField },
   props: {
     account: {
-      type: [MONOAccountRecord, AccountRecord],
+      type: Object as PropType<AccountModel | MonobankAccountModel>,
       required: true,
     },
   },
@@ -46,9 +47,9 @@ export default defineComponent({
 
     const updateName = debounce(
       async ({ id, name }) => {
-        if (props.account instanceof MONOAccountRecord) {
+        if (props.account.systemType === ACCOUNT_TYPES.monobank) {
           await monobankStore.updateAccountById({ id, name });
-        } else if (props.account instanceof AccountRecord) {
+        } else if (props.account.systemType === ACCOUNT_TYPES.system) {
           await accountsStore.editAccount({ id, name });
         }
 
@@ -70,9 +71,9 @@ export default defineComponent({
       () => form.name,
       (value) => {
         if (value !== props.account.name) {
-          if (props.account instanceof MONOAccountRecord) {
+          if (props.account.systemType === ACCOUNT_TYPES.monobank) {
             updateName({ id: props.account.accountId, name: value });
-          } else if (props.account instanceof AccountRecord) {
+          } else if (props.account.systemType === ACCOUNT_TYPES.system) {
             updateName({ id: props.account.id, name: value });
           }
         }

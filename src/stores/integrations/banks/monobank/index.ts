@@ -1,18 +1,14 @@
 import { ref, computed, WritableComputedRef } from 'vue';
 import { defineStore } from 'pinia';
-import { api } from '@/api';
-import { ERROR_CODES } from '@/js/const';
-import {
-  MONOTransactionRecord,
-  MONOUserRecord,
-  MONOAccountRecord,
-} from '@/js/records';
+import { MonobankAccountModel, MonobankTrasnactionModel, MonobankUserModel } from 'shared-types';
+import { loadMonoUser, updateMonoTransactionById, api } from '@/api';
+import { API_ERROR_CODES } from '@/js/const';
 import { TooManyRequestsError } from '@/js/errors';
 
 export const useBanksMonobankStore = defineStore('banks-monobank', () => {
-  const transactions = ref<MONOTransactionRecord[]>([]);
-  const accounts = ref<MONOAccountRecord[]>([]);
-  const user = ref<MONOUserRecord>();
+  const transactions = ref<MonobankTrasnactionModel[]>([]);
+  const accounts = ref<MonobankAccountModel[]>([]);
+  const user = ref<MonobankUserModel>();
   const isUserExist = ref(false);
   const isMonoAccountPaired = ref(false);
 
@@ -25,9 +21,7 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
   });
   const enabledAccounts = computed(() => sortedAccounts.value.filter(item => item.isEnabled));
 
-  const getAccountById: WritableComputedRef<
-    (id: string) => MONOAccountRecord
-  > = computed(
+  const getAccountById: WritableComputedRef<(id: string) => MonobankAccountModel> = computed(
     () => (id: string) => accounts.value.find(i => i.accountId === id),
   );
 
@@ -39,21 +33,21 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
     try {
       isUserExist.value = false;
 
-      const result = await api.get('/banks/monobank/user');
+      const result = await loadMonoUser();
 
       if (result) {
         isUserExist.value = true;
-        user.value = new MONOUserRecord(result);
+        user.value = result;
         isMonoAccountPaired.value = true;
       }
     } catch (e) {
-      if (e?.data?.code === ERROR_CODES.monobankUserNotPaired) {
+      if (e?.data?.code === API_ERROR_CODES.monobankUserNotPaired) {
         isMonoAccountPaired.value = false;
       }
     }
   };
 
-  const replaceTransaction = (tx) => {
+  const replaceTransaction = (tx: MonobankTrasnactionModel) => {
     const oldTx = transactions.value.findIndex(item => tx.id === item.id);
 
     transactions.value[oldTx] = tx;
@@ -71,15 +65,15 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
       return;
     }
     try {
-      const result = await api.post('/banks/monobank/transaction', {
+      const result: MonobankTrasnactionModel = await updateMonoTransactionById({
         id,
         note,
         categoryId,
       });
 
-      replaceTransaction(new MONOTransactionRecord(result));
+      replaceTransaction(result);
     } catch (e) {
-      if (e?.data?.code === ERROR_CODES.monobankUserNotPaired) {
+      if (e?.data?.code === API_ERROR_CODES.monobankUserNotPaired) {
         isMonoAccountPaired.value = false;
         return;
       }
@@ -94,10 +88,10 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
     try {
       const result = await api.get('/banks/monobank/accounts');
 
-      accounts.value = result.map(i => new MONOAccountRecord(i));
+      accounts.value = result;
       isMonoAccountPaired.value = true;
     } catch (e) {
-      if (e?.data?.code === ERROR_CODES.monobankUserNotPaired) {
+      if (e?.data?.code === API_ERROR_CODES.monobankUserNotPaired) {
         isMonoAccountPaired.value = false;
       }
     }
@@ -116,9 +110,9 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
         isEnabled,
       });
 
-      replaceAccount(new MONOAccountRecord(result));
+      replaceAccount(result);
     } catch (e) {
-      if (e?.data?.code === ERROR_CODES.monobankUserNotPaired) {
+      if (e?.data?.code === API_ERROR_CODES.monobankUserNotPaired) {
         isMonoAccountPaired.value = false;
         return;
       }
@@ -147,7 +141,7 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
     try {
       const result = await api.get('/banks/monobank/refresh-accounts');
 
-      accounts.value = result.map(i => new MONOAccountRecord(i));
+      accounts.value = result;
     } catch (e) {
       if (e instanceof TooManyRequestsError) {
         throw e;
@@ -184,7 +178,7 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
         limit: 1,
       });
       if (latestTx ?? latestTx.length) {
-        latestTx = new MONOTransactionRecord(latestTx[0]);
+        latestTx = latestTx[0];
 
         return loadTransactionsForPeriod({
           accountId,
@@ -227,13 +221,13 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
     try {
       const response = await api.post('/banks/monobank/user', { apiToken: token, name });
 
-      user.value = new MONOUserRecord(response);
+      user.value = response;
     } catch (e) {
       throw new Error(e);
     }
   };
 
-  const setTransactions = (txs) => {
+  const setTransactions = (txs: MonobankTrasnactionModel[]) => {
     const txsIds = txs.map(item => item.id);
     transactions.value = [
       ...txs,

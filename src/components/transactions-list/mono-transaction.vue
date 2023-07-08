@@ -14,7 +14,7 @@
     </div>
     <div class="transaction__right">
       <div class="transaction__amount">
-        {{ tx.formattedAmount }}
+        {{ formatAmount(tx.amount) }}
         <!-- {{ tx.account.currency.asset }} -->
       </div>
       <div class="transaction__time">
@@ -27,14 +27,15 @@
 <script lang="ts">
 import { format } from 'date-fns';
 import { defineComponent, PropType, computed } from 'vue';
+import { MonobankTrasnactionModel } from 'shared-types';
 import { useCategoriesStore } from '@/stores';
 import { MODAL_TYPES, useModalCenter } from '@/components/modal-center/index';
-import { MONOTransactionRecord } from '@/js/records';
+import { formatAmount } from '@/js/helpers';
 
 export default defineComponent({
   props: {
     tx: {
-      type: Object as PropType<MONOTransactionRecord>,
+      type: Object as PropType<MonobankTrasnactionModel>,
       required: true,
     },
   },
@@ -55,6 +56,8 @@ export default defineComponent({
     };
 
     return {
+      formatAmount,
+
       category,
       formateDate,
       editTransaction,

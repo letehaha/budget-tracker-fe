@@ -8,7 +8,7 @@
         />
 
         <input-field
-          :model-value="account.balance / 100"
+          :model-value="account.currentBalance / 100"
           class="account__field"
           label="Balance"
           type="number"

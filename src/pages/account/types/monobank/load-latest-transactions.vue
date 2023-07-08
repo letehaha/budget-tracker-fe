@@ -8,14 +8,12 @@
 </template>
 
 <script lang="ts">
-import { ERROR_CODES } from 'shared-types';
+import { API_ERROR_CODES, MonobankAccountModel } from 'shared-types';
 import {
-  defineComponent, computed, ref, watchEffect,
+  defineComponent, computed, ref, watchEffect, PropType,
 } from 'vue';
 import { useBanksMonobankStore } from '@/stores';
 import { useLocalStorage } from '@/composable';
-
-import { MONOAccountRecord } from '@/js/records';
 
 import {
   useNotificationCenter,
@@ -29,7 +27,7 @@ export default defineComponent({
   },
   props: {
     account: {
-      type: MONOAccountRecord,
+      type: Object as PropType<MonobankAccountModel>,
       required: true,
     },
   },
@@ -73,7 +71,7 @@ export default defineComponent({
           type: NotificationType.success,
         });
       } catch (e) {
-        if (e.data.code === ERROR_CODES.forbidden) {
+        if (e.data.code === API_ERROR_CODES.forbidden) {
           addNotification({
             text: e.data.message,
             type: NotificationType.error,
