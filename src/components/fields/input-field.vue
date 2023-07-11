@@ -2,7 +2,7 @@
   <div
     :class="{
       'input-field--error': errorMessage,
-      'input-field--disabled': $attrs.disabled
+      'input-field--disabled': $attrs.disabled,
     }"
     class="input-field"
   >
@@ -18,6 +18,7 @@
         :type="type"
         :value="modelValue"
         :style="inputFieldStyles"
+        :disabled="customDisabled"
         :tabindex="tabindex"
         :min="minValue"
         class="input-field__input"
@@ -40,7 +41,7 @@
 
 <script lang="ts">
 import { KEYBOARD_CODES } from 'shared-types';
-import { defineComponent, computed } from 'vue';
+import { defineComponent, computed, watchEffect } from 'vue';
 
 import FieldLabel from './components/field-label.vue';
 import FieldError from './components/field-error.vue';
@@ -58,6 +59,7 @@ export default defineComponent({
     label: { type: String, default: undefined },
     modelValue: { type: [String, Number], default: undefined },
     type: { type: String, default: undefined },
+    customDisabled: { type: Boolean, default: false },
     tabindex: { type: String, default: undefined },
     errorMessage: { type: String, default: undefined },
     inputFieldStyles: { type: Object, default: undefined },

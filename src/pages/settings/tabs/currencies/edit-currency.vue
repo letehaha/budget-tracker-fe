@@ -4,11 +4,13 @@
       <input-field
         v-model="form.baseRate"
         :label="`1 ${currency.code} =`"
+        :custom-disabled="!isChecked"
         @focus="onBaseFocus"
       />
       <input-field
         v-model="form.quoteRate"
         :label="`1 ${currency.quoteCode} =`"
+        :custom-disabled="!isChecked"
         @focus="onQuoteFocus"
       />
     </div>
@@ -28,9 +30,21 @@
           :disabled="deletionDisabled"
           @click="onDeleteHandler"
         >
-          Delete
+          Delete currency
         </ui-button>
       </ui-tooltip>
+      <div class="edit-currency__checkbox">
+            <label :for="'checkbox-' + currency.id.toString()" class="edit-currency__label">
+              <span class="live-span">Live update</span>
+              <input
+                :id="'checkbox-' + currency.id.toString()"
+                :checked="!currency.custom"
+                class="tick-field__input"
+                type="checkbox"
+                @change="toggleChange($event)"
+              >
+            </label>
+          </div>
     </div>
   </div>
 </template>
@@ -40,6 +54,7 @@ import {
   defineComponent,
   reactive,
   computed,
+  onMounted,
   ref,
   watch,
   PropType,
@@ -47,7 +62,7 @@ import {
 import { ERROR_CODES } from 'shared-types';
 import { storeToRefs } from 'pinia';
 import { useCurrenciesStore } from '@/stores';
-import { editUserCurrenciesExchangeRates } from '@/api/currencies';
+import { editUserCurrenciesExchangeRates, deleteCustomRate } from '@/api/currencies';
 import UiButton, { BUTTON_THEMES } from '@/components/common/ui-button.vue';
 import InputField from '@/components/fields/input-field.vue';
 import UiTooltip from '@/components/common/tooltip.vue';
@@ -89,13 +104,14 @@ export default defineComponent({
     });
     const isBaseEditing = ref(false);
     const isQuoteEditing = ref(false);
+    const isChecked = ref<boolean>()
 
     const isRateChanged = computed(() => (
       +props.currency.rate !== +form.baseRate
       || +props.currency.quoteRate !== +form.quoteRate
     ));
 
-    const isFormDirty = computed(() => isRateChanged.value);
+    const isFormDirty = computed(() => isRateChanged.value || (props.currency.custom && !isChecked.value));
 
     const onBaseFocus = () => {
       isBaseEditing.value = true;
@@ -105,6 +121,9 @@ export default defineComponent({
       isQuoteEditing.value = true;
       isBaseEditing.value = false;
     };
+    const toggleChange = (event) => {
+      isChecked.value = !event.target.checked
+    }
 
     watch(
       () => form.baseRate,
@@ -123,8 +142,38 @@ export default defineComponent({
       },
     );
 
+    onMounted(() => {
+      isChecked.value = props.currency.custom
+    })
+
     const onDeleteHandler = () => {
       emit('delete');
+    };
+
+    const deleteExchangeRates = async () => {
+      try {
+        await Promise.all([
+          deleteCustomRate([
+            {
+              baseCode: props.currency.code,
+              quoteCode: props.currency.quoteCode,
+            },
+            {
+              baseCode: props.currency.quoteCode,
+              quoteCode: props.currency.code,
+            },
+          ]),
+            currenciesStore.loadCurrencies(),
+        ]);
+        emit('submit');
+
+        addSuccessNotification('Successfully updated.');
+      } catch (e) {
+        if (e.data.code === ERROR_CODES.validationError) {
+          addErrorNotification(e.data.message);
+          return;
+        }
+      }
     };
 
     const updateExchangeRates = async () => {
@@ -156,14 +205,18 @@ export default defineComponent({
     };
 
     const onSaveHandler = async () => {
-      if (isRateChanged.value) {
+      if (isRateChanged.value && !props.currency.custom) {
         await updateExchangeRates();
+      } else if (props.currency.custom) {
+        await deleteExchangeRates();
       }
     };
 
     return {
       DISABLED_DELETE_TEXT,
       BUTTON_THEMES,
+      isChecked,
+      toggleChange,
       onSaveHandler,
       onDeleteHandler,
       form,
@@ -189,6 +242,19 @@ export default defineComponent({
   grid-template-columns: min-content min-content;
   gap: 32px;
   margin-top: 32px;
+}
+.edit-currency__checkbox {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .edit-currency__label {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .live-span {
+      margin-right: 10px;
+    }
+  }
 }
 .edit-currency__ratio {
   max-width: 360px;
