@@ -34,17 +34,17 @@
         </ui-button>
       </ui-tooltip>
       <div class="edit-currency__checkbox">
-            <label :for="'checkbox-' + currency.id.toString()" class="edit-currency__label">
-              <span class="live-span">Live update</span>
-              <input
-                :id="'checkbox-' + currency.id.toString()"
-                :checked="!currency.custom"
-                class="tick-field__input"
-                type="checkbox"
-                @change="toggleChange($event)"
-              >
-            </label>
-          </div>
+        <label class="edit-currency__label">
+          <span class="edit-currency__live-span">Live update</span>
+          <input
+            :id="`checkbox-${currency.id}`"
+            :checked="!currency.custom"
+            class="tick-field__input"
+            type="checkbox"
+            @change="toggleChange"
+          >
+        </label>
+      </div>
     </div>
   </div>
 </template>
@@ -104,7 +104,7 @@ export default defineComponent({
     });
     const isBaseEditing = ref(false);
     const isQuoteEditing = ref(false);
-    const isChecked = ref<boolean>()
+    const isChecked = ref<boolean>(false);
 
     const isRateChanged = computed(() => (
       +props.currency.rate !== +form.baseRate
@@ -152,7 +152,6 @@ export default defineComponent({
 
     const deleteExchangeRates = async () => {
       try {
-        await Promise.all([
           deleteCustomRate([
             {
               baseCode: props.currency.code,
@@ -163,16 +162,15 @@ export default defineComponent({
               quoteCode: props.currency.code,
             },
           ]),
-            currenciesStore.loadCurrencies(),
-        ]);
         emit('submit');
 
         addSuccessNotification('Successfully updated.');
       } catch (e) {
-        if (e.data.code === ERROR_CODES.validationError) {
+        if (e.data.code === API_ERROR_CODES.validationError) {
           addErrorNotification(e.data.message);
           return;
         }
+        addErrorNotification('Unexpected error')
       }
     };
 
@@ -247,14 +245,14 @@ export default defineComponent({
   display: flex;
   justify-content: center;
   align-items: center;
-  .edit-currency__label {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    .live-span {
-      margin-right: 10px;
-    }
-  }
+}
+.edit-currency__label {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.edit-currency__live-span {
+  margin-right: 10px;
 }
 .edit-currency__ratio {
   max-width: 360px;

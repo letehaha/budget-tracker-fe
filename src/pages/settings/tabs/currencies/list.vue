@@ -99,7 +99,7 @@ export default defineComponent({
         return {
           ...item,
           rate: Number(rate?.rate?.toFixed(4)),
-          custom: rate?.custom ? rate?.custom : false,
+          custom: rate?.custom ?? false,
           quoteCode: rate?.quoteCode,
           quoteRate: Number(rate?.quoteRate?.toFixed(4)),
         };
