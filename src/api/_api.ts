@@ -64,7 +64,7 @@ class ApiCaller {
 
     for (const key in query) {
       // Additional check to avoid unwanted prototype's properties
-      if (validQuery[key]) validQuery[key] = query[key].toString();
+      if (query[key]) validQuery[key] = query[key].toString();
     }
 
     return this._call({
