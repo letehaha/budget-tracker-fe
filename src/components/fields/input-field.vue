@@ -41,7 +41,7 @@
 
 <script lang="ts">
 import { KEYBOARD_CODES } from 'shared-types';
-import { defineComponent, computed, watchEffect } from 'vue';
+import { defineComponent, computed } from 'vue';
 
 import FieldLabel from './components/field-label.vue';
 import FieldError from './components/field-error.vue';
