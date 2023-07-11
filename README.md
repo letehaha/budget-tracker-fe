@@ -13,4 +13,4 @@ There is also a backend that provides all information and API, but currently, it
 4. Build it with `npm run build`
 
 ## Additional information
-1. Backend repository shares some TypeScript types using **git submodules** functionality, that can be accessible by importing them from `shared-types`. Since the backend application is private, these types are available only to contributors. For convenience, there's a `git-pull` npm script that pulls all the submodules.
+1. Backend repository shares some TypeScript types using **git submodules** functionality, that can be accessible by importing them from `shared-types`. Since the backend application is private, these types are available only to contributors. For convenience, there's a `git-pull` npm script that pulls all the submodules. To init git submodules run `git submodule update --init --recursive` command.
