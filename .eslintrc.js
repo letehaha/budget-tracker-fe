@@ -28,7 +28,7 @@ module.exports = {
     },
   ],
 
-  ignorePatterns: ['cypress/**/*', 'cypress.config.ts'],
+  ignorePatterns: ['cypress/**/*', 'cypress.config.ts', 'backend'],
 
   extends: [
     'plugin:vue/vue3-essential',

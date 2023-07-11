@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "vue-tsc --noEmit && vite build",
-    "lint": "eslint -c ./.eslintrc.js --ignore-path ./.eslintignore",
+    "lint": "eslint -c ./.eslintrc.js --ignore-path ./.eslintignore .",
     "dev": "vite",
     "prod": "vite --mode production",
     "docker-build": "docker build . -t letehaha/budget-tracker-fe",
