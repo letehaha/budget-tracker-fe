@@ -69,8 +69,9 @@ export default defineComponent({
 
     const loadTransactionsForPeriod = async () => {
       if (isPeriodSelected.value) {
-        const from = new Date(form.from).getTime();
-        const to = new Date(form.to).getTime();
+        const from = String(new Date(form.from).getTime());
+        const to = String(new Date(form.to).getTime());
+
         await monobankStore.loadTransactionsForPeriod({
           accountId: account.value.accountId,
           from,
