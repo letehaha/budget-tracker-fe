@@ -1,7 +1,7 @@
 import { ref, Ref } from 'vue';
 import { defineStore } from 'pinia';
 import { API_ERROR_CODES } from 'shared-types';
-import { api } from '@/api/_api';
+import { authLogin, authRegister, api } from '@/api';
 import { useUserStore } from './user';
 import { useCategoriesStore } from './categories/categories';
 import { resetAllDefinedStores } from './setup';
@@ -13,9 +13,12 @@ export const useAuthStore = defineStore('auth', () => {
   const isLoggedIn = ref(false);
   const userToken: Ref<string | null> = ref(null);
 
-  const login = async ({ password, username }) => {
+  const login = async (
+    { password, username }:
+    { password: string; username: string },
+  ) => {
     try {
-      const result = await api.post('/auth/login', {
+      const result = await authLogin({
         password,
         username,
       });
@@ -44,8 +47,11 @@ export const useAuthStore = defineStore('auth', () => {
 
   const setLoggedIn = () => { isLoggedIn.value = true; };
 
-  const signup = async ({ password, username }) => {
-    await api.post('/auth/register', { password, username });
+  const signup = async (
+    { password, username }:
+    { password: string; username: string },
+  ) => {
+    await authRegister({ password, username });
     await login({ password, username });
   };
 

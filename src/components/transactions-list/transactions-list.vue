@@ -37,7 +37,7 @@ export default defineComponent({
   },
   setup(props) {
     // Since transactions list might change inside but txId will remain the same
-    // there is no way expect this to rerender list elements
+    // there is no way except this one to rerender list elements
     const renderId = ref(1);
 
     watch(
