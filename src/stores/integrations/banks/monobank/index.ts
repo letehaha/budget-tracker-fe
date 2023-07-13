@@ -1,7 +1,18 @@
 import { ref, computed, WritableComputedRef } from 'vue';
 import { defineStore } from 'pinia';
 import { MonobankAccountModel, MonobankTrasnactionModel, MonobankUserModel } from 'shared-types';
-import { loadMonoUser, updateMonoTransactionById, api } from '@/api';
+import {
+  loadMonoUser,
+  updateMonoTransactionById,
+  getMonoAccounts,
+  updateMonoAccountById,
+  refreshMonoAccounts,
+  loadMonoTransactions,
+  getMonoTransactions,
+  updateMonoWebhook,
+  pairMonoAccount,
+  updateMonoUser,
+} from '@/api';
 import { API_ERROR_CODES } from '@/js/const';
 import { TooManyRequestsError } from '@/js/errors';
 
@@ -53,7 +64,7 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
     transactions.value[oldTx] = tx;
   };
 
-  const replaceAccount = (account) => {
+  const replaceAccount = (account: MonobankAccountModel) => {
     const oldAccount = accounts.value
       .findIndex(item => account.accountId === item.accountId);
 
@@ -65,7 +76,7 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
       return;
     }
     try {
-      const result: MonobankTrasnactionModel = await updateMonoTransactionById({
+      const result = await updateMonoTransactionById({
         id,
         note,
         categoryId,
@@ -86,7 +97,7 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
       return;
     }
     try {
-      const result = await api.get('/banks/monobank/accounts');
+      const result = await getMonoAccounts();
 
       accounts.value = result;
       isMonoAccountPaired.value = true;
@@ -98,13 +109,14 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
   };
 
   const updateAccountById = async (
-    { id, name, isEnabled }: { id: string, name?: string, isEnabled?: boolean },
+    { id, name, isEnabled }:
+    { id: string, name?: string, isEnabled?: boolean },
   ) => {
     if (!isMonoAccountPaired.value) {
       return;
     }
     try {
-      const result = await api.post('/banks/monobank/account', {
+      const result = await updateMonoAccountById({
         accountId: id,
         name,
         isEnabled,
@@ -120,12 +132,12 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
     }
   };
 
-  const updateWebhook = async ({ clientId }) => {
+  const updateWebhook = async ({ clientId }: { clientId: string }) => {
     if (!isMonoAccountPaired.value) {
       return;
     }
     try {
-      await api.post('/banks/monobank/update-webhook', { clientId });
+      await updateMonoWebhook({ clientId });
     } catch (e) {
       if (e instanceof TooManyRequestsError) {
         throw e;
@@ -139,7 +151,7 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
       return;
     }
     try {
-      const result = await api.get('/banks/monobank/refresh-accounts');
+      const result = await refreshMonoAccounts();
 
       accounts.value = result;
     } catch (e) {
@@ -150,16 +162,15 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
     }
   };
 
-  const loadTransactionsForPeriod = async ({ accountId, from, to }) => {
+  const loadTransactionsForPeriod = async (
+    { accountId, from, to }:
+    { accountId: string; from: string; to: string; },
+  ) => {
     if (!isMonoAccountPaired.value) {
       return undefined;
     }
     try {
-      return api.get('/banks/monobank/load-transactions', {
-        from,
-        to,
-        accountId,
-      });
+      return loadMonoTransactions({ accountId, from, to });
     } catch (e) {
       if (e instanceof TooManyRequestsError) {
         throw e;
@@ -168,22 +179,21 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
     }
   };
 
-  const loadTransactionsFromLatest = async ({ accountId }) => {
+  const loadTransactionsFromLatest = async ({ accountId }: { accountId: string }) => {
     if (!isMonoAccountPaired.value) {
       return undefined;
     }
     try {
-      let latestTx = await api.get('/banks/monobank/transactions', {
-        from: 1,
-        limit: 1,
+      const txs = await getMonoTransactions({
+        from: String(1),
+        limit: String(1),
       });
-      if (latestTx ?? latestTx.length) {
-        latestTx = latestTx[0];
 
+      if (txs ?? txs.length) {
         return loadTransactionsForPeriod({
           accountId,
-          from: new Date(latestTx.time).getTime(),
-          to: new Date().getTime(),
+          from: String(new Date(txs[0].time).getTime()),
+          to: String(new Date().getTime()),
         });
       }
     } catch (e) {
@@ -205,11 +215,11 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
     }
   };
 
-  const pairAccount = async ({ token }) => {
+  const pairAccount = async ({ token }: { token: string; }) => {
     if (isMonoAccountPaired.value) return;
 
     try {
-      await api.post('/banks/monobank/pair-user', { token });
+      await pairMonoAccount({ token });
     } catch (e) {
       throw new Error(e);
     }
@@ -219,7 +229,7 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
     { token, name }: { token: string, name?: string },
   ) => {
     try {
-      const response = await api.post('/banks/monobank/user', { apiToken: token, name });
+      const response = await updateMonoUser({ apiToken: token, name });
 
       user.value = response;
     } catch (e) {
