@@ -148,7 +148,7 @@ export default defineComponent({
 
     const onSubmitHandler = () => {
       loadRates();
-      toggleActiveItem(null)
+      toggleActiveItem(null);
     };
 
     const isDeletionDisabled = (currency: UserCurrencyRecord) => (

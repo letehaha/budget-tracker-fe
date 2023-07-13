@@ -19,9 +19,7 @@ export const deleteCustomRate = (
     quoteCode: string;
   }[],
 ) => {
-  const result = api.delete('/user/currency/rates', { pairs });
-
-  return result;
+  return api.delete('/user/currency/rates', { pairs });
 };
 
 export const loadUserCurrenciesExchangeRates = async () => {

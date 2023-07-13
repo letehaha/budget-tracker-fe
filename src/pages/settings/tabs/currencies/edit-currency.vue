@@ -37,7 +37,6 @@
         <label class="edit-currency__label">
           <span class="edit-currency__live-span">Live update</span>
           <input
-            :id="`checkbox-${currency.id}`"
             :checked="!currency.custom"
             class="tick-field__input"
             type="checkbox"
@@ -111,7 +110,10 @@ export default defineComponent({
       || +props.currency.quoteRate !== +form.quoteRate
     ));
 
-    const isFormDirty = computed(() => isRateChanged.value || (props.currency.custom && !isChecked.value));
+    const isFormDirty = computed(() => (
+      isRateChanged.value
+      || (props.currency.custom && !isChecked.value)
+    ));
 
     const onBaseFocus = () => {
       isBaseEditing.value = true;
@@ -122,8 +124,8 @@ export default defineComponent({
       isBaseEditing.value = false;
     };
     const toggleChange = (event) => {
-      isChecked.value = !event.target.checked
-    }
+      isChecked.value = !event.target.checked;
+    };
 
     watch(
       () => form.baseRate,
@@ -143,8 +145,8 @@ export default defineComponent({
     );
 
     onMounted(() => {
-      isChecked.value = props.currency.custom
-    })
+      isChecked.value = props.currency.custom;
+    });
 
     const onDeleteHandler = () => {
       emit('delete');
@@ -152,16 +154,17 @@ export default defineComponent({
 
     const deleteExchangeRates = async () => {
       try {
-          deleteCustomRate([
-            {
-              baseCode: props.currency.code,
-              quoteCode: props.currency.quoteCode,
-            },
-            {
-              baseCode: props.currency.quoteCode,
-              quoteCode: props.currency.code,
-            },
-          ]),
+        await deleteCustomRate([
+          {
+            baseCode: props.currency.code,
+            quoteCode: props.currency.quoteCode,
+          },
+          {
+            baseCode: props.currency.quoteCode,
+            quoteCode: props.currency.code,
+          },
+        ]);
+
         emit('submit');
 
         addSuccessNotification('Successfully updated.');
@@ -170,7 +173,7 @@ export default defineComponent({
           addErrorNotification(e.data.message);
           return;
         }
-        addErrorNotification('Unexpected error')
+        addErrorNotification('Unexpected error');
       }
     };
 
