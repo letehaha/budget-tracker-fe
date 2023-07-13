@@ -13,6 +13,17 @@
         :custom-disabled="!isChecked"
         @focus="onQuoteFocus"
       />
+      <div class="edit-currency__checkbox">
+        <label class="edit-currency__label">
+          <span class="edit-currency__live-span">Live update</span>
+          <input
+            :checked="!currency.custom"
+            class="tick-field__input"
+            type="checkbox"
+            @change="toggleChange"
+          >
+        </label>
+      </div>
     </div>
     <div class="edit-currency__actions">
       <ui-tooltip :content="!isFormDirty ? 'Nothing to save' : ''">
@@ -33,17 +44,6 @@
           Delete currency
         </ui-button>
       </ui-tooltip>
-      <div class="edit-currency__checkbox">
-        <label class="edit-currency__label">
-          <span class="edit-currency__live-span">Live update</span>
-          <input
-            :checked="!currency.custom"
-            class="tick-field__input"
-            type="checkbox"
-            @change="toggleChange"
-          >
-        </label>
-      </div>
     </div>
   </div>
 </template>
@@ -258,7 +258,7 @@ export default defineComponent({
   margin-right: 10px;
 }
 .edit-currency__ratio {
-  max-width: 360px;
+  max-width: 485px;
   display: flex;
   gap: 16px;
 }

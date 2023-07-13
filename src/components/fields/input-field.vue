@@ -21,6 +21,7 @@
         :disabled="customDisabled"
         :tabindex="tabindex"
         :min="minValue"
+        :class="{'input-disabled': customDisabled}"
         class="input-field__input"
         autocomplete="off"
         autocorrect="off"
@@ -132,6 +133,9 @@ export default defineComponent({
   position: relative;
   width: 100%;
   flex: 1;
+}
+.input-disabled {
+  opacity: 0.6;
 }
 .input-field__input {
   font-size: 16px;
