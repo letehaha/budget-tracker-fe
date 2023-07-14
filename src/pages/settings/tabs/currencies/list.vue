@@ -99,6 +99,7 @@ export default defineComponent({
         return {
           ...item,
           rate: Number(rate?.rate?.toFixed(4)),
+          custom: rate?.custom ?? false,
           quoteCode: rate?.quoteCode,
           quoteRate: Number(rate?.quoteRate?.toFixed(4)),
         };
@@ -147,6 +148,7 @@ export default defineComponent({
 
     const onSubmitHandler = () => {
       loadRates();
+      toggleActiveItem(null);
     };
 
     const isDeletionDisabled = (currency: UserCurrencyRecord) => (
@@ -184,7 +186,7 @@ export default defineComponent({
   padding: var(--settings-currency-list-item-padding);
 
   display: grid;
-  grid-template-columns: 50px 300px 1fr;
+  grid-template-columns: 50px 300px 1fr 50px;
   grid-gap: 16px;
 
   transition: background-color .2s ease-out;

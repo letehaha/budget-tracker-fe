@@ -13,6 +13,13 @@ export const loadUserCurrencies = async () => {
   return result.map(item => new UserCurrencyRecord(item));
 };
 
+export const deleteCustomRate = (
+  pairs: {
+    baseCode: string;
+    quoteCode: string;
+  }[],
+) => api.delete('/user/currency/rates', { pairs });
+
 export const loadUserCurrenciesExchangeRates = async () => {
   const result = await api.get('/user/currencies/rates');
 

@@ -2,7 +2,7 @@
   <div
     :class="{
       'input-field--error': errorMessage,
-      'input-field--disabled': $attrs.disabled
+      'input-field--disabled': disabled,
     }"
     class="input-field"
   >
@@ -18,6 +18,7 @@
         :type="type"
         :value="modelValue"
         :style="inputFieldStyles"
+        :disabled="disabled"
         :tabindex="tabindex"
         :min="minValue"
         class="input-field__input"
@@ -62,6 +63,7 @@ export default defineComponent({
     label: { type: String, default: undefined },
     modelValue: { type: [String, Number], default: undefined },
     type: { type: String, default: undefined },
+    disabled: { type: Boolean, default: false },
     tabindex: { type: String, default: undefined },
     errorMessage: { type: String, default: undefined },
     inputFieldStyles: { type: Object, default: undefined },
@@ -78,12 +80,15 @@ export default defineComponent({
       onInput: (event: InputChangeEvent) => {
         let value: string | number = event.target.value;
 
+        if (props.disabled) return;
         if (props.modelValue === value) return;
         if (props.type === 'number') value = Number(value);
 
         emit(MODEL_EVENTS.input, value);
       },
       onkeypress: (event: KeyboardEvent) => {
+        if (props.disabled) return;
+
         if (props.type === 'number') {
           if (event.keyCode === KEYBOARD_CODES.keyE) {
             event.preventDefault();
@@ -130,6 +135,9 @@ export default defineComponent({
   position: relative;
   width: 100%;
   flex: 1;
+}
+.input-field--disabled {
+  opacity: 0.6;
 }
 .input-field__input {
   font-size: 16px;
