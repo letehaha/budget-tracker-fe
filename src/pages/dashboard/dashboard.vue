@@ -4,7 +4,7 @@
 
     <div class="dashboard__info">
       <div class="dashboard__charts">
-        Charts
+        <CurrentBalanceWidget />
       </div>
       <div class="dashboard__records">
         <transactions-list />
@@ -22,6 +22,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 
+import CurrentBalanceWidget from '@/components/widgets/current-balance.vue';
 import TransactionsList from './transactions-list.vue';
 import AccountsList from './accounts-list/accounts-list.vue';
 
@@ -30,6 +31,7 @@ export default defineComponent({
   components: {
     TransactionsList,
     AccountsList,
+    CurrentBalanceWidget,
   },
 });
 </script>
