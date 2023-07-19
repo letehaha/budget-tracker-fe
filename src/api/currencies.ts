@@ -20,7 +20,7 @@ export const deleteCustomRate = (
   }[],
 ) => {
   api.delete('/user/currency/rates', { pairs });
-}
+};
 
 export const loadUserCurrenciesExchangeRates = async () => {
   const result = await api.get('/user/currencies/rates');

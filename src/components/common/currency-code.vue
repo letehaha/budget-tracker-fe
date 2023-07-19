@@ -3,7 +3,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from 'vue';
+import { computed, defineComponent } from 'vue';
 import { useCurrenciesStore } from '@/stores';
 import { storeToRefs } from 'pinia';
 
@@ -16,12 +16,12 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const currenciesStore = useCurrenciesStore()
+    const currenciesStore = useCurrenciesStore();
     const { currencies } = storeToRefs(currenciesStore);
 
     const currencyCode = computed(() => {
       const currency = currencies.value.find(item => item.currencyId === props.currencyId);
-      return currency.code
+      return currency.code;
     });
 
     return {
