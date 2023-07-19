@@ -15,6 +15,7 @@
     <div class="transaction__right">
       <div class="transaction__amount">
         {{ formatAmount(tx.amount) }}
+        <currency-code :currencyId="tx.currencyId"/>
         <!-- {{ tx.account.currency.asset }} -->
       </div>
       <div class="transaction__time">
@@ -31,6 +32,7 @@ import { MonobankTrasnactionModel } from 'shared-types';
 import { useCategoriesStore } from '@/stores';
 import { MODAL_TYPES, useModalCenter } from '@/components/modal-center/index';
 import { formatAmount } from '@/js/helpers';
+import currencyCode from '@/components/common/currency-code.vue'
 
 export default defineComponent({
   props: {
@@ -38,6 +40,9 @@ export default defineComponent({
       type: Object as PropType<MonobankTrasnactionModel>,
       required: true,
     },
+  },
+  components: {
+    currencyCode
   },
   setup(props) {
     const { getCategoryTypeById } = useCategoriesStore();
