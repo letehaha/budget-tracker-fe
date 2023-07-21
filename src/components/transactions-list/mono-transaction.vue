@@ -15,7 +15,7 @@
     <div class="transaction__right">
       <div class="transaction__amount">
         {{ formatAmount(tx.amount) }}
-        <currency-code :currency-id="tx.currencyId" />
+        {{ currenciesMap[tx.currencyId].code }}
         <!-- {{ tx.account.currency.asset }} -->
       </div>
       <div class="transaction__time">
@@ -27,17 +27,14 @@
 
 <script lang="ts">
 import { format } from 'date-fns';
+import { storeToRefs } from 'pinia';
 import { defineComponent, PropType, computed } from 'vue';
 import { MonobankTrasnactionModel } from 'shared-types';
-import { useCategoriesStore } from '@/stores';
+import { useCategoriesStore, useCurrenciesStore } from '@/stores';
 import { MODAL_TYPES, useModalCenter } from '@/components/modal-center/index';
 import { formatAmount } from '@/js/helpers';
-import currencyCode from '@/components/common/currency-code.vue';
 
 export default defineComponent({
-  components: {
-    currencyCode,
-  },
   props: {
     tx: {
       type: Object as PropType<MonobankTrasnactionModel>,
@@ -46,7 +43,11 @@ export default defineComponent({
   },
   setup(props) {
     const { getCategoryTypeById } = useCategoriesStore();
+    const currenciesStore = useCurrenciesStore();
     const { addModal } = useModalCenter();
+
+    const { currenciesMap } = storeToRefs(currenciesStore);
+
     const category = computed(
       () => getCategoryTypeById(props.tx.categoryId),
     );
@@ -62,7 +63,7 @@ export default defineComponent({
 
     return {
       formatAmount,
-
+      currenciesMap,
       category,
       formateDate,
       editTransaction,

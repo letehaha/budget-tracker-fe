@@ -13,20 +13,30 @@
         </template>
       </template>
 
-      <input
-        v-bind="computedAttrs"
-        :type="type"
-        :value="modelValue"
-        :style="inputFieldStyles"
-        :disabled="disabled"
-        :tabindex="tabindex"
-        :min="minValue"
-        class="input-field__input"
-        autocomplete="off"
-        autocorrect="off"
-        autocapitalize="off"
-        spellcheck="false"
-      >
+      <div class="input-field__wrapper">
+        <div class="leading-icon">
+          <span class="iconLeading"></span>
+        </div>
+
+        <input
+          v-bind="computedAttrs"
+          :type="type"
+          :value="modelValue"
+          :style="inputFieldStyles"
+          :disabled="disabled"
+          :tabindex="tabindex"
+          :min="minValue"
+          class="input-field__input"
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+          spellcheck="false"
+        >
+
+        <div v-if="currencyCode" class="trailing-icon">
+          <span class="iconTrailing">{{ currencyCode }}</span>
+        </div>
+      </div>
     </FieldLabel>
 
     <template v-if="isSubLabelExist">
@@ -63,6 +73,7 @@ export default defineComponent({
     label: { type: String, default: undefined },
     modelValue: { type: [String, Number], default: undefined },
     type: { type: String, default: undefined },
+    currencyCode: { type: String, default: undefined },
     disabled: { type: Boolean, default: false },
     tabindex: { type: String, default: undefined },
     errorMessage: { type: String, default: undefined },
@@ -155,6 +166,9 @@ export default defineComponent({
 
   @include placeholder-custom(rgba(var(--app-on-surface-color-rgb), 0.6));
 }
+.input-field__wrapper {
+  position: relative;
+}
 .input-fields__sublabel {
   position: absolute;
   right: 0;
@@ -167,5 +181,21 @@ export default defineComponent({
     color: #ffffff;
     text-decoration: none;
   }
+}
+.leading-icon,
+.trailing-icon {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 12px 24px;
+}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
 }
 </style>

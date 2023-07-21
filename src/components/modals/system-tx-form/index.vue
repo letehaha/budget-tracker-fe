@@ -18,6 +18,7 @@
     <div class="system-tx-form__form">
       <form-row>
         <input-field
+          :currency-code="currencyCodeString"
           v-model="form.amount"
           label="Amount"
           type="number"
@@ -123,6 +124,7 @@ import {
   ref,
   watch,
   computed,
+  onMounted,
 } from 'vue';
 import { storeToRefs } from 'pinia';
 import {
@@ -204,9 +206,9 @@ export default defineComponent({
     const accountsStore = useAccountsStore();
     const categoriesStore = useCategoriesStore();
     const currenciesStore = useCurrenciesStore();
-    const { getCurrency } = useCurrenciesStore();
+    const { getCurrency, currenciesMap } = useCurrenciesStore();
 
-    const { accountsRecord } = storeToRefs(accountsStore);
+    const { accountsRecord, accounts } = storeToRefs(accountsStore);
     const { currencies } = storeToRefs(currenciesStore);
     const { categories, rawCategories } = storeToRefs(categoriesStore);
 
@@ -246,6 +248,13 @@ export default defineComponent({
 
       return form.value.account.currencyId !== form.value.toAccount.currencyId;
     });
+
+    const currencyCodeString = computed(() => {
+      if (form.value.account?.currencyId) {
+        return currenciesMap[form.value.account.currencyId].code
+      }
+    })
+
     const targetCurrency = computed(() => {
       if (form.value.toAccount?.currencyId) {
         return getCurrency(form.value.toAccount.currencyId);
@@ -400,11 +409,18 @@ export default defineComponent({
       if (!disabled) form.value.type = type;
     };
 
+    onMounted(() => {
+      form.value.account = accounts.value[0]
+      console.log(form.value.account.currencyId)
+    })
+
     return {
       FORM_TYPES,
       TRANSACTION_TYPES,
       PAYMENT_TYPES,
       form,
+      currencyCodeString,
+      currenciesMap,
       currencies,
       isCurrenciesDifferent,
       targetCurrency,
