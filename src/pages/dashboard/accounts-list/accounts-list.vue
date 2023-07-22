@@ -13,15 +13,11 @@
 </template>
 
 <script lang="ts">
-import { ACCOUNT_TYPES, AccountModel, MonobankAccountModel } from 'shared-types';
+import { AccountModel } from 'shared-types';
 import { defineComponent, computed, onBeforeUnmount } from 'vue';
 import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
-import {
-  useAccountsStore,
-  useBanksMonobankStore,
-} from '@/stores';
-import { getBalanceFromAccount } from '@/js/helpers';
+import { useAccountsStore } from '@/stores';
 import { eventBus, BUS_EVENTS } from '@/js/utils';
 import AccountCard from './account-card.vue';
 
@@ -32,9 +28,7 @@ export default defineComponent({
   setup() {
     const router = useRouter();
     const accountsStore = useAccountsStore();
-    const monobankStore = useBanksMonobankStore();
-    const { activeAccounts: monoAccounts } = storeToRefs(monobankStore);
-    const { accounts } = storeToRefs(accountsStore);
+    const { enabledAccounts } = storeToRefs(accountsStore);
 
     eventBus.on(BUS_EVENTS.transactionChange, accountsStore.loadAccounts);
 
@@ -43,24 +37,14 @@ export default defineComponent({
     });
 
     const allAccounts = computed(
-      () => [...monoAccounts.value, ...accounts.value]
-        .sort((a, b) => getBalanceFromAccount(b) - getBalanceFromAccount(a)),
+      () => [...enabledAccounts.value].sort((a, b) => b.currentBalance - a.currentBalance),
     );
 
-    const redirectToAccount = (account: AccountModel | MonobankAccountModel) => {
-      let query = {};
-
-      if (account.systemType === ACCOUNT_TYPES.system) {
-        query = { id: account.id, type: ACCOUNT_TYPES.system };
-      } else if (account.systemType === ACCOUNT_TYPES.monobank) {
-        query = { id: account.accountId, type: ACCOUNT_TYPES.monobank };
-      }
-
-      router.push({ name: 'account', query });
+    const redirectToAccount = (account: AccountModel) => {
+      router.push({ name: 'account', params: { id: account.id } });
     };
 
     return {
-      accounts,
       allAccounts,
       redirectToAccount,
     };

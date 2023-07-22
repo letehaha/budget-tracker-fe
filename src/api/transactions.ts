@@ -4,36 +4,28 @@ import { TRANSACTION_TYPES as TYPES } from '@/js/const';
 import {
   TransactionRecord,
   TransactionModelRecord,
-  MONOTransactionRecord,
 } from '@/js/records';
 
 export const loadTransactions = async (
   {
     limit = 8,
     from = 0,
+    accountType,
   }: {
     limit?: number;
     from?: number;
+    accountType?: ACCOUNT_TYPES;
   } = {},
 ): Promise<TransactionModelRecord[]> => {
   try {
-    const result = await api.get('/transactions', { limit, from });
-
+    const result = await api.get('/transactions', { limit, from, accountType });
     const resultTxs: TransactionModelRecord[] = [];
 
     result.forEach(item => {
-      if (item.accountType === ACCOUNT_TYPES.system) {
-        resultTxs.push(new TransactionModelRecord(
-          TYPES.system,
-          new TransactionRecord(item),
-        ));
-      }
-      if (item.accountType === ACCOUNT_TYPES.monobank) {
-        resultTxs.push(new TransactionModelRecord(
-          TYPES.monobank,
-          new MONOTransactionRecord(item),
-        ));
-      }
+      resultTxs.push(new TransactionModelRecord(
+        TYPES.system,
+        new TransactionRecord(item),
+      ));
     });
 
     return resultTxs;

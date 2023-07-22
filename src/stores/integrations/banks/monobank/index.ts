@@ -1,44 +1,28 @@
-import { ref, computed, WritableComputedRef } from 'vue';
-import { defineStore } from 'pinia';
-import { MonobankAccountModel, MonobankTrasnactionModel, MonobankUserModel } from 'shared-types';
+import { ref, computed } from 'vue';
+import { defineStore, storeToRefs } from 'pinia';
+import { ACCOUNT_TYPES, MonobankUserModel, endpointsTypes } from 'shared-types';
 import {
   loadMonoUser,
-  updateMonoTransactionById,
-  getMonoAccounts,
-  updateMonoAccountById,
   refreshMonoAccounts,
   loadMonoTransactions,
-  getMonoTransactions,
   updateMonoWebhook,
   pairMonoAccount,
   updateMonoUser,
+  loadTransactions,
 } from '@/api';
 import { API_ERROR_CODES } from '@/js/const';
+import { getHoursInMilliseconds } from '@/js/helpers';
 import { TooManyRequestsError } from '@/js/errors';
+import { useAccountsStore } from '@/stores/accounts';
 
 export const useBanksMonobankStore = defineStore('banks-monobank', () => {
-  const transactions = ref<MonobankTrasnactionModel[]>([]);
-  const accounts = ref<MonobankAccountModel[]>([]);
+  const accountsStore = useAccountsStore();
   const user = ref<MonobankUserModel>();
   const isUserExist = ref(false);
   const isMonoAccountPaired = ref(false);
+  const { enabledAccounts } = storeToRefs(accountsStore);
 
   const isTokenPresent = computed(() => !!user.value?.apiToken);
-
-  const sortedAccounts = computed(() => {
-    const temp = [...accounts.value];
-
-    return temp.sort((a, b) => (b.accountId).localeCompare(a.accountId));
-  });
-  const enabledAccounts = computed(() => sortedAccounts.value.filter(item => item.isEnabled));
-
-  const getAccountById: WritableComputedRef<(id: string) => MonobankAccountModel> = computed(
-    () => (id: string) => accounts.value.find(i => i.accountId === id),
-  );
-
-  const activeAccounts = computed(
-    () => accounts.value.filter(item => item.isEnabled),
-  );
 
   const loadUserData = async () => {
     try {
@@ -55,80 +39,6 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
       if (e?.data?.code === API_ERROR_CODES.monobankUserNotPaired) {
         isMonoAccountPaired.value = false;
       }
-    }
-  };
-
-  const replaceTransaction = (tx: MonobankTrasnactionModel) => {
-    const oldTx = transactions.value.findIndex(item => tx.id === item.id);
-
-    transactions.value[oldTx] = tx;
-  };
-
-  const replaceAccount = (account: MonobankAccountModel) => {
-    const oldAccount = accounts.value
-      .findIndex(item => account.accountId === item.accountId);
-
-    accounts.value[oldAccount] = account;
-  };
-
-  const updateTransactionById = async ({ id, note, categoryId }) => {
-    if (!isMonoAccountPaired.value) {
-      return;
-    }
-    try {
-      const result = await updateMonoTransactionById({
-        id,
-        note,
-        categoryId,
-      });
-
-      replaceTransaction(result);
-    } catch (e) {
-      if (e?.data?.code === API_ERROR_CODES.monobankUserNotPaired) {
-        isMonoAccountPaired.value = false;
-        return;
-      }
-      throw new Error(e);
-    }
-  };
-
-  const loadAccounts = async () => {
-    if (!isMonoAccountPaired.value) {
-      return;
-    }
-    try {
-      const result = await getMonoAccounts();
-
-      accounts.value = result;
-      isMonoAccountPaired.value = true;
-    } catch (e) {
-      if (e?.data?.code === API_ERROR_CODES.monobankUserNotPaired) {
-        isMonoAccountPaired.value = false;
-      }
-    }
-  };
-
-  const updateAccountById = async (
-    { id, name, isEnabled }:
-    { id: string, name?: string, isEnabled?: boolean },
-  ) => {
-    if (!isMonoAccountPaired.value) {
-      return;
-    }
-    try {
-      const result = await updateMonoAccountById({
-        accountId: id,
-        name,
-        isEnabled,
-      });
-
-      replaceAccount(result);
-    } catch (e) {
-      if (e?.data?.code === API_ERROR_CODES.monobankUserNotPaired) {
-        isMonoAccountPaired.value = false;
-        return;
-      }
-      throw new Error(e);
     }
   };
 
@@ -150,10 +60,16 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
     if (!isMonoAccountPaired.value) {
       return;
     }
-    try {
-      const result = await refreshMonoAccounts();
 
-      accounts.value = result;
+    const latestAccountRefreshDate = new Date(+localStorage.getItem('latest-account-refresh-date')).getTime();
+    const diff = new Date().getTime() - latestAccountRefreshDate;
+
+    if (diff <= getHoursInMilliseconds(1)) return;
+
+    try {
+      await refreshMonoAccounts();
+
+      localStorage.setItem('latest-account-refresh-date', `${new Date().getTime()}`);
     } catch (e) {
       if (e instanceof TooManyRequestsError) {
         throw e;
@@ -163,8 +79,7 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
   };
 
   const loadTransactionsForPeriod = async (
-    { accountId, from, to }:
-    { accountId: string; from: string; to: string; },
+    { accountId, from, to }: endpointsTypes.LoadMonoTransactionsQuery,
   ) => {
     if (!isMonoAccountPaired.value) {
       return undefined;
@@ -179,28 +94,30 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
     }
   };
 
-  const loadTransactionsFromLatest = async ({ accountId }: { accountId: string }) => {
+  const loadTransactionsFromLatest = async ({ accountId }: { accountId: number }) => {
     if (!isMonoAccountPaired.value) {
       return undefined;
     }
+
     try {
-      const txs = await getMonoTransactions({
-        from: String(1),
-        limit: String(1),
+      const txs = await loadTransactions({
+        from: 1,
+        limit: 1,
+        accountType: ACCOUNT_TYPES.monobank,
       });
 
       if (txs ?? txs.length) {
         return loadTransactionsForPeriod({
           accountId,
-          from: String(new Date(txs[0].time).getTime()),
-          to: String(new Date().getTime()),
+          from: new Date(txs[0].tx.time).getTime(),
+          to: new Date().getTime(),
         });
       }
     } catch (e) {
       if (e instanceof TooManyRequestsError) {
         throw e;
       }
-      throw new Error(e);
+      throw e;
     }
     return undefined;
   };
@@ -208,7 +125,9 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
   const loadTransactionsForEnabledAccounts = async () => {
     try {
       await Promise.allSettled(
-        enabledAccounts.value.map(acc => loadTransactionsFromLatest({ accountId: acc.accountId })),
+        enabledAccounts.value
+          .filter(acc => acc.type === ACCOUNT_TYPES.monobank)
+          .map(acc => loadTransactionsFromLatest({ accountId: acc.id })),
       );
     } catch (e) {
       throw e;
@@ -220,6 +139,7 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
 
     try {
       await pairMonoAccount({ token });
+      await accountsStore.loadAccounts();
     } catch (e) {
       throw new Error(e);
     }
@@ -237,31 +157,14 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
     }
   };
 
-  const setTransactions = (txs: MonobankTrasnactionModel[]) => {
-    const txsIds = txs.map(item => item.id);
-    transactions.value = [
-      ...txs,
-      ...transactions.value.filter(tx => !txsIds.includes(tx.id)),
-    ];
-  };
-
   return {
-    transactions,
-    accounts,
     user,
     isUserExist,
     isMonoAccountPaired,
 
     isTokenPresent,
-    sortedAccounts,
-    getAccountById,
-    activeAccounts,
-    enabledAccounts,
 
     loadUserData,
-    updateTransactionById,
-    loadAccounts,
-    updateAccountById,
     updateWebhook,
     refreshAccounts,
     loadTransactionsForEnabledAccounts,
@@ -269,6 +172,5 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
     loadTransactionsForPeriod,
     pairAccount,
     updateUser,
-    setTransactions,
   };
 });

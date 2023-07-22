@@ -40,9 +40,9 @@
 
 <script lang="ts">
 import { debounce } from 'lodash-es';
-import { defineComponent, computed } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import { storeToRefs } from 'pinia';
+import { AccountModel } from 'shared-types';
+import { defineComponent, PropType } from 'vue';
+import { useRouter } from 'vue-router';
 
 import { useAccountsStore } from '@/stores';
 import { toSystemAmount } from '@/js/helpers';
@@ -59,8 +59,13 @@ export default defineComponent({
     InputField,
     AccountName,
   },
-  setup() {
-    const route = useRoute();
+  props: {
+    account: {
+      type: Object as PropType<AccountModel>,
+      required: true,
+    },
+  },
+  setup(props) {
     const router = useRouter();
     const {
       addSuccessNotification,
@@ -68,16 +73,10 @@ export default defineComponent({
     } = useNotificationCenter();
     const accountsStore = useAccountsStore();
 
-    const { getAccountById } = storeToRefs(accountsStore);
-
-    const account = computed(
-      () => getAccountById.value(Number(route.query.id)),
-    );
-
     const updateBalance = debounce(
       async (value: string) => {
         await accountsStore.editAccount({
-          id: account.value.id,
+          id: props.account.id,
           currentBalance: toSystemAmount(Number(value)),
         });
 
@@ -89,7 +88,7 @@ export default defineComponent({
     const updateCreditLimit = debounce(
       async (value: string) => {
         await accountsStore.editAccount({
-          id: account.value.id,
+          id: props.account.id,
           creditLimit: toSystemAmount(Number(value)),
         });
 
@@ -99,11 +98,11 @@ export default defineComponent({
     );
 
     const deleteAccount = async () => {
-      const accountName = account.value.name;
+      const accountName = props.account.name;
 
       try {
         await accountsStore.deleteAccount({
-          id: account.value.id,
+          id: props.account.id,
         });
 
         addSuccessNotification(`Account ${accountName} removed successfully`);
@@ -116,7 +115,6 @@ export default defineComponent({
 
     return {
       MODEL_EVENTS,
-      account,
       updateBalance,
       updateCreditLimit,
       deleteAccount,

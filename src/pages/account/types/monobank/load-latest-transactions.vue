@@ -8,7 +8,7 @@
 </template>
 
 <script lang="ts">
-import { API_ERROR_CODES, MonobankAccountModel } from 'shared-types';
+import { API_ERROR_CODES, AccountModel } from 'shared-types';
 import {
   defineComponent, computed, ref, watchEffect, PropType,
 } from 'vue';
@@ -27,7 +27,7 @@ export default defineComponent({
   },
   props: {
     account: {
-      type: Object as PropType<MonobankAccountModel>,
+      type: Object as PropType<AccountModel>,
       required: true,
     },
   },
@@ -38,7 +38,7 @@ export default defineComponent({
 
     const isRefreshDisabled = ref(false);
 
-    const accountLSKey = computed(() => `monobank-${props.account.accountId}-txs-loading-end`);
+    const accountLSKey = computed(() => `monobank-${props.account.externalId}-txs-loading-end`);
 
     const setLoadingTimer = (wait: number) => {
       isRefreshDisabled.value = true;
@@ -55,7 +55,7 @@ export default defineComponent({
     const loadLatestTransactionsHandler = async () => {
       try {
         const response = await monobankStore.loadTransactionsFromLatest({
-          accountId: props.account.accountId,
+          accountId: props.account.id,
         });
 
         const isUserNeedToWait = response.minutesToFinish >= 1;

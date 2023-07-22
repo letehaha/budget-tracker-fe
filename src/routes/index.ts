@@ -26,7 +26,7 @@ const routes = [
     },
   },
   {
-    path: '/account',
+    path: '/account/:id',
     name: 'account',
     component: () => import('@/pages/account/account.vue'),
     beforeEnter: [redirectRouteGuard, baseCurrencyExists],
