@@ -23,7 +23,11 @@
           type="number"
           only-positive
           placeholder="Amount"
-        />
+        >
+          <template #iconTrailing>
+            <span>{{ currencyCode }}</span>
+          </template>
+        </input-field>
       </form-row>
 
       <account-field
@@ -123,6 +127,7 @@ import {
   ref,
   watch,
   computed,
+  onMounted,
 } from 'vue';
 import { storeToRefs } from 'pinia';
 import {
@@ -204,9 +209,9 @@ export default defineComponent({
     const accountsStore = useAccountsStore();
     const categoriesStore = useCategoriesStore();
     const currenciesStore = useCurrenciesStore();
-    const { getCurrency } = useCurrenciesStore();
+    const { getCurrency, currenciesMap } = useCurrenciesStore();
 
-    const { accountsRecord } = storeToRefs(accountsStore);
+    const { accountsRecord, accounts } = storeToRefs(accountsStore);
     const { currencies } = storeToRefs(currenciesStore);
     const { categories, rawCategories } = storeToRefs(categoriesStore);
 
@@ -246,6 +251,14 @@ export default defineComponent({
 
       return form.value.account.currencyId !== form.value.toAccount.currencyId;
     });
+
+    const currencyCode = computed(() => {
+      if (form.value.account?.currencyId) {
+        return currenciesMap[form.value.account.currencyId].code;
+      }
+      return undefined;
+    });
+
     const targetCurrency = computed(() => {
       if (form.value.toAccount?.currencyId) {
         return getCurrency(form.value.toAccount.currencyId);
@@ -400,11 +413,17 @@ export default defineComponent({
       if (!disabled) form.value.type = type;
     };
 
+    onMounted(() => {
+      form.value.account = accounts.value[0];
+    });
+
     return {
       FORM_TYPES,
       TRANSACTION_TYPES,
       PAYMENT_TYPES,
       form,
+      currencyCode,
+      currenciesMap,
       currencies,
       isCurrenciesDifferent,
       targetCurrency,

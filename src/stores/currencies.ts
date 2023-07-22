@@ -23,6 +23,13 @@ export const useCurrenciesStore = defineStore('currencies', () => {
     }, [] as CurrencyRecord[]),
   );
 
+  const currenciesMap = computed(
+    () => currencies.value.reduce((acc, curr) => {
+      acc[curr.currencyId] = curr;
+      return acc;
+    }, {}),
+  );
+
   const loadCurrencies = async () => {
     currencies.value = await loadUserCurrencies();
 
@@ -58,6 +65,7 @@ export const useCurrenciesStore = defineStore('currencies', () => {
     currencies,
     baseCurrency,
     systemCurrencies,
+    currenciesMap,
     systemCurrenciesAssociatedWithUser,
     isBaseCurrencyExists,
     loadCurrencies,

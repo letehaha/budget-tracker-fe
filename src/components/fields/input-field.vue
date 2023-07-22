@@ -13,20 +13,34 @@
         </template>
       </template>
 
-      <input
-        v-bind="computedAttrs"
-        :type="type"
-        :value="modelValue"
-        :style="inputFieldStyles"
-        :disabled="disabled"
-        :tabindex="tabindex"
-        :min="minValue"
-        class="input-field__input"
-        autocomplete="off"
-        autocorrect="off"
-        autocapitalize="off"
-        spellcheck="false"
-      >
+      <div class="input-field__wrapper">
+        <template v-if="isLeadingIconExist">
+          <div class="input-field__leading-icon">
+            <slot name="iconLeading" />
+          </div>
+        </template>
+
+        <input
+          v-bind="computedAttrs"
+          :type="type"
+          :value="modelValue"
+          :style="inputFieldStyles"
+          :disabled="disabled"
+          :tabindex="tabindex"
+          :min="minValue"
+          class="input-field__input"
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+          spellcheck="false"
+        >
+
+        <template v-if="isTrailIconExist">
+          <div class="input-field__trailing-icon">
+            <slot name="iconTrailing" />
+          </div>
+        </template>
+      </div>
     </FieldLabel>
 
     <template v-if="isSubLabelExist">
@@ -121,10 +135,16 @@ export default defineComponent({
 
     const isSubLabelExist = computed(() => !!slots.subLabel);
 
+    const isTrailIconExist = computed(() => !!slots.iconTrailing);
+
+    const isLeadingIconExist = computed(() => !!slots.iconLeading);
+
     return {
       minValue,
       computedAttrs,
       isSubLabelExist,
+      isTrailIconExist,
+      isLeadingIconExist,
     };
   },
 });
@@ -135,6 +155,14 @@ export default defineComponent({
   position: relative;
   width: 100%;
   flex: 1;
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
 }
 .input-field--disabled {
   opacity: 0.6;
@@ -155,6 +183,9 @@ export default defineComponent({
 
   @include placeholder-custom(rgba(var(--app-on-surface-color-rgb), 0.6));
 }
+.input-field__wrapper {
+  position: relative;
+}
 .input-fields__sublabel {
   position: absolute;
   right: 0;
@@ -167,5 +198,12 @@ export default defineComponent({
     color: #ffffff;
     text-decoration: none;
   }
+}
+.input-field__leading-icon,
+.input-field__trailing-icon {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 12px 24px;
 }
 </style>
