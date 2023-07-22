@@ -14,9 +14,11 @@
       </template>
 
       <div class="input-field__wrapper">
-        <div class="leading-icon">
-          <span class="iconLeading"></span>
-        </div>
+        <template v-if="isLeadingIconExist">
+          <div class="input-field__leading-icon">
+            <slot name="iconLeading" />
+          </div>
+        </template>
 
         <input
           v-bind="computedAttrs"
@@ -33,9 +35,11 @@
           spellcheck="false"
         >
 
-        <div v-if="currencyCode" class="trailing-icon">
-          <span class="iconTrailing">{{ currencyCode }}</span>
-        </div>
+        <template v-if="isTrailIconExist">
+          <div class="input-field__trailing-icon">
+            <slot name="iconTrailing" />
+          </div>
+        </template>
       </div>
     </FieldLabel>
 
@@ -73,7 +77,6 @@ export default defineComponent({
     label: { type: String, default: undefined },
     modelValue: { type: [String, Number], default: undefined },
     type: { type: String, default: undefined },
-    currencyCode: { type: String, default: undefined },
     disabled: { type: Boolean, default: false },
     tabindex: { type: String, default: undefined },
     errorMessage: { type: String, default: undefined },
@@ -132,10 +135,16 @@ export default defineComponent({
 
     const isSubLabelExist = computed(() => !!slots.subLabel);
 
+    const isTrailIconExist = computed(() => !!slots.iconTrailing);
+
+    const isLeadingIconExist = computed(() => !!slots.iconLeading);
+
     return {
       minValue,
       computedAttrs,
       isSubLabelExist,
+      isTrailIconExist,
+      isLeadingIconExist,
     };
   },
 });
@@ -146,6 +155,14 @@ export default defineComponent({
   position: relative;
   width: 100%;
   flex: 1;
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
 }
 .input-field--disabled {
   opacity: 0.6;
@@ -182,20 +199,11 @@ export default defineComponent({
     text-decoration: none;
   }
 }
-.leading-icon,
-.trailing-icon {
+.input-field__leading-icon,
+.input-field__trailing-icon {
   position: absolute;
   top: 0;
   right: 0;
   padding: 12px 24px;
-}
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-input[type="number"] {
-  -moz-appearance: textfield;
 }
 </style>

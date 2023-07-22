@@ -16,7 +16,6 @@
       <div class="transaction__amount">
         {{ formatAmount(tx.amount) }}
         {{ currenciesMap[tx.currencyId].code }}
-        <!-- {{ tx.account.currency.asset }} -->
       </div>
       <div class="transaction__time">
         {{ formateDate(tx.time) }}

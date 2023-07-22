@@ -23,12 +23,12 @@ export const useCurrenciesStore = defineStore('currencies', () => {
     }, [] as CurrencyRecord[]),
   );
 
-  const currenciesMap = computed(() => {
-    return currencies.value.reduce((acc, curr) => {
+  const currenciesMap = computed(
+    () => currencies.value.reduce((acc, curr) => {
       acc[curr.currencyId] = curr;
       return acc;
-    }, {});
-  });
+    }, {}),
+  );
 
   const loadCurrencies = async () => {
     currencies.value = await loadUserCurrencies();

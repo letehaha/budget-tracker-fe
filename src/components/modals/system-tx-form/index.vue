@@ -18,13 +18,16 @@
     <div class="system-tx-form__form">
       <form-row>
         <input-field
-          :currency-code="currencyCodeString"
           v-model="form.amount"
           label="Amount"
           type="number"
           only-positive
           placeholder="Amount"
-        />
+        >
+          <template #iconTrailing>
+            <span>{{ currencyCode }}</span>
+          </template>
+        </input-field>
       </form-row>
 
       <account-field
@@ -249,11 +252,12 @@ export default defineComponent({
       return form.value.account.currencyId !== form.value.toAccount.currencyId;
     });
 
-    const currencyCodeString = computed(() => {
+    const currencyCode = computed(() => {
       if (form.value.account?.currencyId) {
-        return currenciesMap[form.value.account.currencyId].code
+        return currenciesMap[form.value.account.currencyId].code;
       }
-    })
+      return undefined;
+    });
 
     const targetCurrency = computed(() => {
       if (form.value.toAccount?.currencyId) {
@@ -410,16 +414,15 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      form.value.account = accounts.value[0]
-      console.log(form.value.account.currencyId)
-    })
+      form.value.account = accounts.value[0];
+    });
 
     return {
       FORM_TYPES,
       TRANSACTION_TYPES,
       PAYMENT_TYPES,
       form,
-      currencyCodeString,
+      currencyCode,
       currenciesMap,
       currencies,
       isCurrenciesDifferent,
