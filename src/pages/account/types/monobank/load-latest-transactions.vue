@@ -58,6 +58,15 @@ export default defineComponent({
           accountId: props.account.id,
         });
 
+        if (!response) {
+          addNotification({
+            text: "You don't have any transactions loaded yet, so we cannot load latest.",
+            type: NotificationType.warning,
+          });
+
+          return;
+        }
+
         const isUserNeedToWait = response.minutesToFinish >= 1;
 
         if (isUserNeedToWait) {
@@ -71,11 +80,14 @@ export default defineComponent({
           type: NotificationType.success,
         });
       } catch (e) {
-        if (e.data.code === API_ERROR_CODES.forbidden) {
+        if (e?.data?.code === API_ERROR_CODES.forbidden) {
           addNotification({
             text: e.data.message,
             type: NotificationType.error,
           });
+        } else {
+          // eslint-disable-next-line no-console
+          console.error(e);
         }
       }
     };
