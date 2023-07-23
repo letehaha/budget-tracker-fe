@@ -109,7 +109,7 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
       if (txs?.length) {
         return loadTransactionsForPeriod({
           accountId,
-          from: new Date(txs[0].tx.time).getTime(),
+          from: new Date(txs[0].time).getTime(),
           to: new Date().getTime(),
         });
       }

@@ -121,6 +121,7 @@ import {
   AccountModel,
   TRANSACTION_TYPES,
   PAYMENT_TYPES,
+  TransactionModel,
 } from 'shared-types';
 import {
   defineComponent,
@@ -128,6 +129,7 @@ import {
   watch,
   computed,
   onMounted,
+  PropType,
 } from 'vue';
 import { storeToRefs } from 'pinia';
 import {
@@ -142,10 +144,6 @@ import {
   deleteTransaction,
 } from '@/api/transactions';
 
-import {
-  TransactionRecord,
-  // UserCurrencyRecord,
-} from '@/js/records';
 import { eventBus, BUS_EVENTS } from '@/js/utils';
 import { toSystemAmount, fromSystemAmount } from '@/js/helpers';
 import InputField from '@/components/fields/input-field.vue';
@@ -164,7 +162,7 @@ import AccountField from './account-field.vue';
 
 import { FORM_TYPES } from './types';
 
-const getFormTypeFromTransaction = (tx: TransactionRecord): FORM_TYPES => {
+const getFormTypeFromTransaction = (tx: TransactionModel): FORM_TYPES => {
   if (tx.isTransfer) return FORM_TYPES.transfer;
 
   return tx.transactionType === TRANSACTION_TYPES.expense
@@ -197,11 +195,11 @@ export default defineComponent({
   },
   props: {
     transaction: {
-      type: TransactionRecord,
+      type: Object as PropType<TransactionModel>,
       default: undefined,
     },
     oppositeTransaction: {
-      type: TransactionRecord,
+      type: Object as PropType<TransactionModel>,
       default: undefined,
     },
   },

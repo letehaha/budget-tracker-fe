@@ -1,12 +1,9 @@
 <template>
   <template
     v-for="item in transactions"
-    :key="item.tx.id + `render-id-${renderId}`"
+    :key="item.id + `render-id-${renderId}`"
   >
-    <component
-      :is="components[item.type]"
-      :tx="item.tx"
-    />
+    <TransactionRecrod :tx="item" />
   </template>
 </template>
 
@@ -14,24 +11,20 @@
 import {
   ref,
   watch,
-  markRaw,
   PropType,
   defineComponent,
-  defineAsyncComponent,
 } from 'vue';
-
+import { TransactionModel } from 'shared-types';
 import { TRANSACTION_TYPES } from '@/js/const';
-import { TransactionModelRecord } from '@/js/records';
-
-const components = {
-  [TRANSACTION_TYPES.system]: markRaw(defineAsyncComponent(() => import('./system-transaction.vue'))),
-  [TRANSACTION_TYPES.monobank]: markRaw(defineAsyncComponent(() => import('./mono-transaction.vue'))),
-};
+import TransactionRecrod from './transaction-record.vue';
 
 export default defineComponent({
+  components: {
+    TransactionRecrod,
+  },
   props: {
     transactions: {
-      type: Array as PropType<TransactionModelRecord[]>,
+      type: Array as PropType<TransactionModel[]>,
       required: true,
     },
   },
@@ -46,7 +39,6 @@ export default defineComponent({
     );
     return {
       renderId,
-      components,
       TRANSACTION_TYPES,
     };
   },

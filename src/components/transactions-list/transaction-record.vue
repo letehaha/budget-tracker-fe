@@ -27,7 +27,7 @@
     <div class="transaction__right">
       <div class="transaction__amount">
         {{ formattedAmount }}
-        <!-- {{ tx.account.currency.asset }} -->
+        {{ currenciesMap[tx.currencyId].code }}
       </div>
       <div class="transaction__time">
         {{ formateDate(transaction.time) }}
@@ -42,17 +42,16 @@ import {
   defineComponent, computed, reactive, PropType, ref,
 } from 'vue';
 import { storeToRefs } from 'pinia';
-import { TRANSACTION_TYPES } from 'shared-types';
+import { TRANSACTION_TYPES, TransactionModel } from 'shared-types';
 
-import { useCategoriesStore, useAccountsStore } from '@/stores';
+import { useCategoriesStore, useAccountsStore, useCurrenciesStore } from '@/stores';
 import { loadTransactionsByTransferId } from '@/api/transactions';
 
 import { formatAmount } from '@/js/helpers';
-import { TransactionRecord } from '@/js/records';
 
 import { MODAL_TYPES, useModalCenter } from '@/components/modal-center/index';
 
-const setOppositeTransaction = async (transaction: TransactionRecord) => {
+const setOppositeTransaction = async (transaction: TransactionModel) => {
   const transactions = await loadTransactionsByTransferId(
     transaction.transferId,
   );
@@ -62,16 +61,18 @@ const setOppositeTransaction = async (transaction: TransactionRecord) => {
 
 export default defineComponent({
   props: {
-    tx: { type: Object as PropType<TransactionRecord>, required: true },
+    tx: { type: Object as PropType<TransactionModel>, required: true },
   },
   setup(props) {
     const { getCategoryTypeById } = useCategoriesStore();
     const accountsStore = useAccountsStore();
+    const currenciesStore = useCurrenciesStore();
     const { addModal } = useModalCenter();
     const { accountsRecord } = storeToRefs(accountsStore);
+    const { currenciesMap } = storeToRefs(currenciesStore);
 
     const transaction = reactive(props.tx);
-    const oppositeTransferTransaction = ref<TransactionRecord | null>(null);
+    const oppositeTransferTransaction = ref<TransactionModel | null>(null);
 
     if (transaction.isTransfer) {
       (async () => {
@@ -132,6 +133,7 @@ export default defineComponent({
     return {
       TRANSACTION_TYPES,
       category,
+      currenciesMap,
       formatAmount,
       formateDate,
       formattedAmount,

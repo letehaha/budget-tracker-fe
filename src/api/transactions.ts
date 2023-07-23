@@ -1,10 +1,7 @@
-import { TRANSACTION_TYPES, PAYMENT_TYPES, ACCOUNT_TYPES } from 'shared-types';
-import { api } from '@/api/_api';
-import { TRANSACTION_TYPES as TYPES } from '@/js/const';
 import {
-  TransactionRecord,
-  TransactionModelRecord,
-} from '@/js/records';
+  TRANSACTION_TYPES, PAYMENT_TYPES, ACCOUNT_TYPES, TransactionModel,
+} from 'shared-types';
+import { api } from '@/api/_api';
 
 export const loadTransactions = async (
   {
@@ -16,19 +13,11 @@ export const loadTransactions = async (
     from?: number;
     accountType?: ACCOUNT_TYPES;
   } = {},
-): Promise<TransactionModelRecord[]> => {
+): Promise<TransactionModel[]> => {
   try {
     const result = await api.get('/transactions', { limit, from, accountType });
-    const resultTxs: TransactionModelRecord[] = [];
 
-    result.forEach(item => {
-      resultTxs.push(new TransactionModelRecord(
-        TYPES.system,
-        new TransactionRecord(item),
-      ));
-    });
-
-    return resultTxs;
+    return result;
   } catch (e) {
     throw new Error(e);
   }
@@ -36,21 +25,12 @@ export const loadTransactions = async (
 
 export const loadTransactionById = async (
   { id }: { id: number },
-): Promise<TransactionRecord> => {
-  let result = await api.get(`/transactions/${id}`);
-  result = new TransactionRecord(result);
-
-  return result;
-};
+): Promise<TransactionModel> => api.get(`/transactions/${id}`);
 
 // Add cache
 export const loadTransactionsByTransferId = async (
   transferId: string,
-): Promise<TransactionRecord[]> => {
-  const result = await api.get(`/transactions/transfer/${transferId}`);
-
-  return result.map(item => new TransactionRecord(item));
-};
+): Promise<TransactionModel[]> => api.get(`/transactions/transfer/${transferId}`);
 
 export const createTransaction = async ({
   amount,
