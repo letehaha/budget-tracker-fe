@@ -53,8 +53,6 @@ export const useRootStore = defineStore('root', () => {
         monobankStore.loadUserData(),
       ]);
 
-      await monobankStore.loadAccounts();
-
       isAppInitialized.value = true;
     }
   };
@@ -72,8 +70,6 @@ export const useRootStore = defineStore('root', () => {
         ]);
 
         eventBus.emit(BUS_EVENTS.transactionChange);
-
-        localStorage.setItem('latest-account-refresh-date', `${new Date().getTime()}`);
       }
     } catch (e) {
       isFinancialDataSyncingError.value = e;

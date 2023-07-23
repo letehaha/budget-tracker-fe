@@ -15,12 +15,12 @@
 
 <script lang="ts">
 import { debounce } from 'lodash-es';
-import { ACCOUNT_TYPES, AccountModel, MonobankAccountModel } from 'shared-types';
+import { AccountModel } from 'shared-types';
 import {
   defineComponent, reactive, watchEffect, watch, PropType,
 } from 'vue';
 
-import { useBanksMonobankStore, useAccountsStore } from '@/stores';
+import { useAccountsStore } from '@/stores';
 
 import {
   useNotificationCenter,
@@ -32,34 +32,28 @@ export default defineComponent({
   components: { InputField },
   props: {
     account: {
-      type: Object as PropType<AccountModel | MonobankAccountModel>,
+      type: Object as PropType<AccountModel>,
       required: true,
     },
   },
   setup(props) {
     const { addNotification } = useNotificationCenter();
-    const monobankStore = useBanksMonobankStore();
     const accountsStore = useAccountsStore();
 
     const form = reactive({
       name: '',
     });
 
-    const updateName = debounce(
-      async ({ id, name }) => {
-        if (props.account.systemType === ACCOUNT_TYPES.monobank) {
-          await monobankStore.updateAccountById({ id, name });
-        } else if (props.account.systemType === ACCOUNT_TYPES.system) {
-          await accountsStore.editAccount({ id, name });
-        }
+    const updateName = debounce(async ({ id, name }) => {
+      if (name) {
+        await accountsStore.editAccount({ id, name });
 
         addNotification({
           text: 'Account name changed successfully',
           type: NotificationType.success,
         });
-      },
-      2000,
-    );
+      }
+    }, 2000);
 
     watchEffect(() => {
       if (props.account) {
@@ -71,11 +65,7 @@ export default defineComponent({
       () => form.name,
       (value) => {
         if (value !== props.account.name) {
-          if (props.account.systemType === ACCOUNT_TYPES.monobank) {
-            updateName({ id: props.account.accountId, name: value });
-          } else if (props.account.systemType === ACCOUNT_TYPES.system) {
-            updateName({ id: props.account.id, name: value });
-          }
+          updateName({ id: props.account.id, name: value });
         }
       },
       { immediate: true },

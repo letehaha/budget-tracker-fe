@@ -37,7 +37,6 @@ import { MODAL_TYPES, useModalCenter } from './index';
 
 const MODAL_COMPONENTS = Object.freeze({
   [MODAL_TYPES.systemTxForm]: defineAsyncComponent(() => import('@/components/modals/system-tx-form/index.vue')),
-  [MODAL_TYPES.monobankTxForm]: defineAsyncComponent(() => import('@/components/modals/monobank-tx-form.vue')),
   [MODAL_TYPES.monobankSetToken]: defineAsyncComponent(() => import('@/components/modals/monobank-set-token.vue')),
 });
 

@@ -6,7 +6,6 @@ import {
   createAccount as apiCreateAccount,
   CreateAccountPayload,
   editAccount as apiEditAccount,
-  EditAccountPayload,
   deleteAccount as apiDeleteAccount,
   DeleteAccountPayload,
 } from '@/api';
@@ -23,6 +22,8 @@ export const useAccountsStore = defineStore('system-accounts', () => {
     () => [...new Set(accounts.value.map(item => item.currencyId))],
   );
 
+  const enabledAccounts = computed(() => accounts.value.filter(item => item.isEnabled));
+
   const loadAccounts = async () => {
     try {
       const result = await apiLoadAccounts();
@@ -30,10 +31,8 @@ export const useAccountsStore = defineStore('system-accounts', () => {
       accounts.value = [];
 
       for (const acc of result) {
-        const formatted = acc;
-
-        accounts.value.push(formatted);
-        accountsRecord.value[formatted.id] = formatted;
+        accounts.value.push(acc);
+        accountsRecord.value[acc.id] = acc;
       }
     } catch (e) {
       // eslint-disable-next-line no-console
@@ -53,7 +52,7 @@ export const useAccountsStore = defineStore('system-accounts', () => {
     }
   };
 
-  const editAccount = async ({ id, ...data }: EditAccountPayload) => {
+  const editAccount = async ({ id, ...data }) => {
     try {
       const result = await apiEditAccount({ id, ...data });
 
@@ -63,10 +62,11 @@ export const useAccountsStore = defineStore('system-accounts', () => {
         }
         return item;
       });
-      accounts.value[id] = result;
+      accountsRecord.value[id] = result;
     } catch (e) {
       // eslint-disable-next-line no-console
       console.log(e);
+      throw e;
     }
   };
 
@@ -85,6 +85,7 @@ export const useAccountsStore = defineStore('system-accounts', () => {
   return {
     accounts,
     accountsRecord,
+    enabledAccounts,
     accountsCurrencyIds,
 
     getAccountById,

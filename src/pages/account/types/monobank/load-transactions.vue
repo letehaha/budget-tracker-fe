@@ -26,9 +26,7 @@
 import {
   defineComponent, reactive, computed, PropType,
 } from 'vue';
-import { useRoute } from 'vue-router';
-import { storeToRefs } from 'pinia';
-import { MonobankAccountModel } from 'shared-types';
+import { AccountModel } from 'shared-types';
 import { useBanksMonobankStore } from '@/stores';
 
 import {
@@ -45,16 +43,13 @@ export default defineComponent({
   },
   props: {
     account: {
-      type: Object as PropType<MonobankAccountModel>,
+      type: Object as PropType<AccountModel>,
       required: true,
     },
   },
-  setup() {
-    const route = useRoute();
+  setup(props) {
     const { addNotification } = useNotificationCenter();
     const monobankStore = useBanksMonobankStore();
-
-    const { getAccountById } = storeToRefs(monobankStore);
 
     const form = reactive({
       from: null,
@@ -63,28 +58,31 @@ export default defineComponent({
 
     const isPeriodSelected = computed(() => form.from && form.to);
 
-    const account = computed(
-      () => getAccountById.value(route.query.id as string),
-    );
-
     const loadTransactionsForPeriod = async () => {
-      if (isPeriodSelected.value) {
-        const from = String(new Date(form.from).getTime());
-        const to = String(new Date(form.to).getTime());
+      try {
+        if (isPeriodSelected.value) {
+          const from = new Date(form.from).getTime();
+          const to = new Date(form.to).getTime();
 
-        await monobankStore.loadTransactionsForPeriod({
-          accountId: account.value.accountId,
-          from,
-          to,
-        });
+          await monobankStore.loadTransactionsForPeriod({
+            accountId: props.account.id,
+            from,
+            to,
+          });
 
+          addNotification({
+            text: 'Loaded successfully',
+            type: NotificationType.success,
+          });
+
+          form.from = null;
+          form.to = null;
+        }
+      } catch (err) {
         addNotification({
-          text: 'Loaded successfully',
-          type: NotificationType.success,
+          text: 'Unexpected error',
+          type: NotificationType.error,
         });
-
-        form.from = null;
-        form.to = null;
       }
     };
 

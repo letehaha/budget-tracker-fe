@@ -2,9 +2,6 @@
   <div class="accounts">
     <h1 class="accounts__title">
       Accounts
-    </h1>
-    <h2 class="accounts__subtitle">
-      System
 
       <router-link
         :to="{ name: 'create-account' }"
@@ -12,7 +9,27 @@
       >
         Create account
       </router-link>
-    </h2>
+
+      <template v-if="!isPaired">
+        <button
+          data-cy="pair-monobank-account"
+          @click="() => setMonobankToken()"
+        >
+          Pair Monobank account
+        </button>
+      </template>
+      <template v-else-if="isPaired && isTokenPresent">
+        <button @click="refreshMonoAccounts">
+          Refresh Monobank balances
+        </button>
+      </template>
+      <template v-else-if="isPaired && !isTokenPresent">
+        <button @click="setMonobankToken({ isUpdate: true })">
+          Update Monobank token
+        </button>
+      </template>
+    </h1>
+
     <template v-if="accounts.length">
       <div class="accounts__list">
         <template
@@ -22,57 +39,7 @@
           <router-link
             :to="{
               name: 'account',
-              query: { id: account.id, type: ACCOUNT_TYPES.system },
-            }"
-            class="accounts__item"
-          >
-            <div class="accounts__item-name">
-              {{ account.name }}
-            </div>
-            <div class="accounts__item-balance">
-              {{ formatBalance(account) }}
-            </div>
-          </router-link>
-        </template>
-      </div>
-    </template>
-    <template v-else>
-      <p class="accounts__no-data">
-        System accounts do not exist.
-      </p>
-    </template>
-    <h2 class="accounts__subtitle">
-      Monobank
-
-      <template v-if="!isPaired">
-        <button
-          data-cy="pair-monobank-account"
-          @click="() => setMonobankToken()"
-        >
-          Pair account
-        </button>
-      </template>
-      <template v-else-if="isPaired && isTokenPresent">
-        <button @click="refreshMonoAccounts">
-          Refresh balances
-        </button>
-      </template>
-      <template v-else-if="isPaired && !isTokenPresent">
-        <button @click="setMonobankToken({ isUpdate: true })">
-          Update token
-        </button>
-      </template>
-    </h2>
-    <template v-if="monoAccounts.length">
-      <div class="accounts__list">
-        <template
-          v-for="account in monoAccounts"
-          :key="account.id"
-        >
-          <router-link
-            :to="{
-              name: 'account',
-              query: { id: account.accountId, type: ACCOUNT_TYPES.monobank },
+              params: { id: account.id },
             }"
             class="accounts__item"
             :class="{ 'accounts__item--disabled': !account.isEnabled }"
@@ -86,9 +53,6 @@
             <div class="accounts__item-name">
               {{ account.name || 'No name set...' }}
             </div>
-            <div class="accounts__item-code">
-              {{ account.maskedPan[0] || account.iban }}
-            </div>
             <div class="accounts__item-balance">
               {{ formatBalance(account) }}
             </div>
@@ -96,20 +60,21 @@
         </template>
       </div>
     </template>
+
     <template v-else>
       <p class="accounts__no-data">
-        Monobank accounts do not exist.
+        System accounts do not exist.
       </p>
     </template>
   </div>
 </template>
 
 <script lang="ts">
-import { ACCOUNT_TYPES, AccountModel, MonobankAccountModel } from 'shared-types';
+import { ACCOUNT_TYPES, AccountModel } from 'shared-types';
 import { defineComponent } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useBanksMonobankStore, useAccountsStore } from '@/stores';
-import { formatAmount, getBalanceFromAccount } from '@/js/helpers';
+import { formatAmount } from '@/js/helpers';
 import { MODAL_TYPES, useModalCenter } from '@/components/modal-center/index';
 
 export default defineComponent({
@@ -121,7 +86,6 @@ export default defineComponent({
     const {
       isMonoAccountPaired: isPaired,
       isTokenPresent,
-      sortedAccounts: monoAccounts,
     } = storeToRefs(monobankStore);
 
     const { addModal } = useModalCenter();
@@ -139,14 +103,13 @@ export default defineComponent({
       });
     };
 
-    const formatBalance = (account: MonobankAccountModel | AccountModel) => (
-      formatAmount(getBalanceFromAccount(account) - account.creditLimit)
+    const formatBalance = (account: AccountModel) => (
+      formatAmount(account.currentBalance - account.creditLimit)
     );
 
     return {
       ACCOUNT_TYPES,
       setMonobankToken,
-      monoAccounts,
       accounts,
       isPaired,
       isTokenPresent,
@@ -164,10 +127,10 @@ export default defineComponent({
 .accounts__title {
   margin-bottom: 16px;
   color: var(--app-on-bg-color);
-}
-.accounts__subtitle {
-  margin-bottom: 16px;
-  color: var(--app-on-bg-color);
+
+  display: flex;
+  align-items: center;
+  gap: 24px;
 }
 .accounts__list {
   display: grid;
@@ -219,7 +182,6 @@ export default defineComponent({
 
   color: var(--primary-500);
   text-decoration: underline;
-  margin-left: 16px;
 }
 .accounts__no-data {
   color: var(--app-on-surface-color);

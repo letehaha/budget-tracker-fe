@@ -2,7 +2,7 @@ import { AccountModel } from 'shared-types';
 import { api } from '@/api/_api';
 
 export const loadAccounts = async (): Promise<AccountModel[]> => {
-  const result = await api.get('/accounts', { test: 'test' });
+  const result = await api.get('/accounts');
 
   return result;
 };
@@ -20,15 +20,7 @@ export const createAccount = async (payload: CreateAccountPayload): Promise<Acco
   return result;
 };
 
-export interface EditAccountPayload {
-  id: number;
-  accountTypeId?: number;
-  currencyId?: number;
-  name?: string;
-  currentBalance?: number;
-  creditLimit?: number;
-}
-export const editAccount = async ({ id, ...data }: EditAccountPayload): Promise<AccountModel> => {
+export const editAccount = async ({ id, ...data }): Promise<AccountModel> => {
   const result = await api.put(`/accounts/${id}`, data);
 
   return result;

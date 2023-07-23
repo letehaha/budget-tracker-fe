@@ -16,20 +16,11 @@
         </router-link>
       </div>
     </div>
-    <!-- <div class="dashboard__header">
-      <ui-button @click="updateWebhookHandler">
-        Update monobank webhook
-      </ui-button>
-    </div> -->
   </section>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { storeToRefs } from 'pinia';
-import { useBanksMonobankStore } from '@/stores';
-import { TooManyRequestsError } from '@/js/errors';
-import { ErrorHandler } from '@/js/utils';
 
 import TransactionsList from './transactions-list.vue';
 import AccountsList from './accounts-list/accounts-list.vue';
@@ -39,34 +30,6 @@ export default defineComponent({
   components: {
     TransactionsList,
     AccountsList,
-  },
-  setup() {
-    const monobankStore = useBanksMonobankStore();
-
-    const {
-      sortedAccounts: accounts,
-      user: monoUser,
-    } = storeToRefs(monobankStore);
-
-    const updateWebhookHandler = async () => {
-      try {
-        await monobankStore.updateWebhook({
-          clientId: monoUser.value.clientId,
-        });
-      } catch (e) {
-        if (e instanceof TooManyRequestsError) {
-          ErrorHandler.process(e, e.data.message);
-          return;
-        }
-        ErrorHandler.processWithoutFeedback(e);
-      }
-    };
-
-    return {
-      accounts,
-      monoUser,
-      updateWebhookHandler,
-    };
   },
 });
 </script>

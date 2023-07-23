@@ -3,11 +3,14 @@
     <div class="mono-account__container">
       <AccountName :account="account" />
 
-      <LoadLatestTransactions :account="account" />
+      <template v-if="account.type === ACCOUNT_TYPES.monobank">
+        <LoadLatestTransactions :account="account" />
+      </template>
     </div>
 
     <label class="mono-account__visibility">
       Make this account visible on the Dashboard:
+
       <input
         v-model="form.isEnabled"
         type="checkbox"
@@ -22,13 +25,12 @@
 </template>
 
 <script lang="ts">
+import { ACCOUNT_TYPES, AccountModel } from 'shared-types';
 import { debounce } from 'lodash-es';
 import {
-  defineComponent, reactive, computed, watchEffect, watch,
+  defineComponent, reactive, watchEffect, watch, PropType,
 } from 'vue';
-import { useRoute } from 'vue-router';
-import { storeToRefs } from 'pinia';
-import { useBanksMonobankStore } from '@/stores';
+import { useAccountsStore } from '@/stores';
 
 import {
   useNotificationCenter,
@@ -45,32 +47,39 @@ export default defineComponent({
     LoadTransactions,
     LoadLatestTransactions,
   },
-  setup() {
-    const route = useRoute();
+  props: {
+    account: {
+      type: Object as PropType<AccountModel>,
+      required: true,
+    },
+  },
+  setup(props) {
     const { addNotification } = useNotificationCenter();
-    const monobankStore = useBanksMonobankStore();
-
-    const { getAccountById } = storeToRefs(monobankStore);
+    const accountsStore = useAccountsStore();
 
     const form = reactive({
       isEnabled: false,
       period: null,
     });
 
-    const account = computed(
-      () => getAccountById.value(route.query.id as string),
-    );
-
     const updateVisibility = async (
       { id, isEnabled }:
-      { id: string; isEnabled: boolean },
+      { id: number; isEnabled: boolean },
     ) => {
-      await monobankStore.updateAccountById({ id, isEnabled });
+      try {
+        await accountsStore.editAccount({ id, isEnabled });
 
-      addNotification({
-        text: 'Updated successfully',
-        type: NotificationType.success,
-      });
+        addNotification({
+          text: 'Updated successfully',
+          type: NotificationType.success,
+        });
+      } catch (err) {
+        addNotification({
+          text: 'Unexpected error',
+          type: NotificationType.error,
+        });
+        form.isEnabled = !form.isEnabled;
+      }
     };
 
     const debouncedUpdateMonoAccHandler = debounce(
@@ -79,17 +88,17 @@ export default defineComponent({
     );
 
     watchEffect(() => {
-      if (account.value) {
-        form.isEnabled = account.value.isEnabled;
+      if (props.account) {
+        form.isEnabled = props.account.isEnabled;
       }
     });
 
     watch(
       () => form.isEnabled,
       (value) => {
-        if (value !== account.value.isEnabled) {
+        if (value !== props.account.isEnabled) {
           debouncedUpdateMonoAccHandler({
-            id: account.value.accountId,
+            id: props.account.id,
             isEnabled: value,
           });
         }
@@ -98,8 +107,8 @@ export default defineComponent({
     );
 
     return {
+      ACCOUNT_TYPES,
       form,
-      account,
     };
   },
 });
