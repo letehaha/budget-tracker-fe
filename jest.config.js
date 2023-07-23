@@ -24,7 +24,7 @@ module.exports = {
   },
   moduleDirectories: ['node_modules', 'src'],
   testMatch: ['**/?(*.)+(spec|test).[jt]s?(x)'],
-  modulePathIgnorePatterns: ['<rootDir>/cypress/'],
+  modulePathIgnorePatterns: ['<rootDir>/cypress/', '<rootDir>/backend/'],
   // https://github.com/facebook/jest/issues/6766
   testEnvironmentOptions: {
     url: 'http://localhost/',
