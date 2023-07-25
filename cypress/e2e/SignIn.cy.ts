@@ -18,7 +18,7 @@ describe('SignIn.cy.ts', () => {
     cy.get('button[type="submit"]').click();
 
     cy.location().should((location) => {
-      expect(location.pathname).to.eq('/');
+      expect(location.pathname).to.eq('/welcome');
     });
   });
 
@@ -46,11 +46,12 @@ describe('SignIn.cy.ts', () => {
     cy.get('.form-wrapper__error').should('be.visible');
   });
 
-  // TODO: Improve implementation. Currently NetworkError looks like works differ from Cypress v10
-  it.skip('should handle Network error', () => {
+  it('should handle Network error', () => {
     cy.intercept(`${Cypress.env('baseApiUrl')}/**/login`, {
       forceNetworkError: true,
     }).as('signIn');
+
+    cy.visit('/sign-in');
 
     cy.get('input[name="username"]').type(TEST_USERS.noData.username);
     cy.get('input[type="password"]').type(TEST_USERS.noData.password);
