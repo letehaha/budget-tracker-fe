@@ -23,6 +23,8 @@ const loadBalanceData = async () => {
     from: subDays(new Date(), loadDataForDays),
   });
 
+  if (!result?.length) return [];
+
   const interpolatedData: { date: string; amount: number }[] = [];
 
   let lastValue: number | null = null;
