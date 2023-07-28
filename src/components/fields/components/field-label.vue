@@ -24,6 +24,8 @@ import { defineComponent } from 'vue';
 export default defineComponent({
   props: {
     label: { type: String, default: undefined },
+    // Used in case you want omit using `label` but still need to use styles and
+    // template. For example when `label` triggers unnecessary cliks of buttons inside
     onlyTemplate: { type: Boolean, default: false },
   },
 });
