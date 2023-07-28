@@ -6,7 +6,10 @@
     }"
     class="category-select-field"
   >
-    <FieldLabel :label="label">
+    <FieldLabel
+      :label="label"
+      only-template
+    >
       <div
         class="category-select-field__wrapper"
       >
@@ -27,6 +30,7 @@
             <!-- Show top parent category at the top of list of child categories -->
             <template v-if="previousLevelsIndices.length">
               <button
+                type="button"
                 class="category-select-field__dropdown-back-level"
                 @click="backLevelUp"
               >
@@ -34,6 +38,7 @@
                 Previous level
               </button>
               <button
+                type="button"
                 class="category-select-field__dropdown-item"
                 :class="{
                   'category-select-field__dropdown-item--highlighed': selectedValue.id === topLevelCategory.id
@@ -55,6 +60,7 @@
             >
               <button
                 class="category-select-field__dropdown-item"
+                type="button"
                 :class="{
                   'category-select-field__dropdown-item--highlighed': selectedValue.id === item.id,
                 }"
@@ -124,7 +130,7 @@ export default defineComponent({
   setup(props, { emit }) {
     const selectedValue = ref(props.modelValue || props.values[0]);
     // not sure why it works only using `as`
-    const levelValues = ref(props.values) as Ref<CategoryModel[]>;
+    const levelValues = ref<CategoryModel[]>(props.values);
 
     const isDropdownOpened = ref(false);
     const previousLevelsIndices: Ref<number[]> = ref([]);

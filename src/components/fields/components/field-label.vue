@@ -1,5 +1,8 @@
 <template>
-  <label class="field-label">
+  <component
+    :is="onlyTemplate ? 'div' : 'label'"
+    class="field-label"
+  >
     <template v-if="label">
       <div class="field-label__label">
         <span>{{ label }}</span>
@@ -12,7 +15,7 @@
     <div class="field-label__field-wrapper">
       <slot />
     </div>
-  </label>
+  </component>
 </template>
 
 <script lang="ts">
@@ -21,6 +24,7 @@ import { defineComponent } from 'vue';
 export default defineComponent({
   props: {
     label: { type: String, default: undefined },
+    onlyTemplate: { type: Boolean, default: false },
   },
 });
 </script>
