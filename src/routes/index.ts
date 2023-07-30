@@ -1,103 +1,81 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { redirectRouteGuard, authPageGuard, baseCurrencyExists } from './guards';
+import { ROUTES_NAMES } from './constants';
 
-export const ROUTER_LAYOUTS = Object.freeze({
-  auth: 'auth',
-  dashboard: 'dashboard',
-});
+export { ROUTES_NAMES, ROUTER_LAYOUTS } from './constants';
 
 const routes = [
   {
     path: '/',
-    name: 'dashboard',
-    component: () => import('@/pages/dashboard/dashboard.vue'),
+    name: ROUTES_NAMES.dashboard,
+    component: () => import('@/layouts/dashboard.vue'),
     beforeEnter: [redirectRouteGuard, baseCurrencyExists],
-    meta: {
-      layout: ROUTER_LAYOUTS.dashboard,
-    },
+    redirect: () => ({ name: ROUTES_NAMES.home }),
+    children: [
+      {
+        path: '/',
+        name: ROUTES_NAMES.home,
+        component: () => import('@/pages/dashboard/dashboard.vue'),
+      },
+      {
+        path: '/accounts',
+        name: ROUTES_NAMES.accounts,
+        component: () => import('@/pages/accounts/accounts.vue'),
+      },
+      {
+        path: '/account/:id',
+        name: ROUTES_NAMES.account,
+        component: () => import('@/pages/account/account.vue'),
+      },
+      {
+        path: '/create-account',
+        name: ROUTES_NAMES.createAccount,
+        component: () => import('@/pages/account/create.vue'),
+      },
+      {
+        path: '/crypto',
+        name: ROUTES_NAMES.crypto,
+        component: () => import('@/pages/crypto/crypto.vue'),
+      },
+      {
+        path: '/records',
+        name: ROUTES_NAMES.records,
+        component: () => import('@/pages/records/records.vue'),
+      },
+      {
+        path: '/settings',
+        name: ROUTES_NAMES.settings,
+        component: () => import('@/pages/settings/settings.vue'),
+      },
+    ],
   },
   {
-    path: '/accounts',
-    name: 'accounts',
-    component: () => import('@/pages/accounts/accounts.vue'),
-    beforeEnter: [redirectRouteGuard, baseCurrencyExists],
-    meta: {
-      layout: ROUTER_LAYOUTS.dashboard,
-    },
+    path: '/auth',
+    name: ROUTES_NAMES.auth,
+    component: () => import('@/layouts/auth.vue'),
+    redirect: () => ({ name: ROUTES_NAMES.signIn }),
+    children: [
+      {
+        path: '/sign-in',
+        name: ROUTES_NAMES.signIn,
+        beforeEnter: authPageGuard,
+        component: () => import('@/pages/auth/login.vue'),
+      },
+      {
+        path: '/sign-up',
+        name: ROUTES_NAMES.signUp,
+        beforeEnter: authPageGuard,
+        component: () => import('@/pages/auth/register.vue'),
+      },
+      {
+        path: '/welcome',
+        name: ROUTES_NAMES.welcome,
+        beforeEnter: redirectRouteGuard,
+        component: () => import('@/pages/auth/welcome.vue'),
+      },
+    ],
   },
-  {
-    path: '/account/:id',
-    name: 'account',
-    component: () => import('@/pages/account/account.vue'),
-    beforeEnter: [redirectRouteGuard, baseCurrencyExists],
-    meta: {
-      layout: ROUTER_LAYOUTS.dashboard,
-    },
-  },
-  {
-    path: '/create-account',
-    name: 'create-account',
-    component: () => import('@/pages/account/create.vue'),
-    beforeEnter: redirectRouteGuard,
-    meta: {
-      layout: ROUTER_LAYOUTS.dashboard,
-    },
-  },
-  {
-    path: '/crypto',
-    name: 'crypto',
-    component: () => import('@/pages/crypto/crypto.vue'),
-    beforeEnter: [redirectRouteGuard, baseCurrencyExists],
-    meta: {
-      layout: ROUTER_LAYOUTS.dashboard,
-    },
-  },
-  {
-    path: '/records',
-    name: 'records',
-    component: () => import('@/pages/records/records.vue'),
-    beforeEnter: [redirectRouteGuard, baseCurrencyExists],
-    meta: {
-      layout: ROUTER_LAYOUTS.dashboard,
-    },
-  },
-  {
-    path: '/settings',
-    name: 'settings',
-    component: () => import('@/pages/settings/settings.vue'),
-    beforeEnter: [redirectRouteGuard, baseCurrencyExists],
-    meta: {
-      layout: ROUTER_LAYOUTS.dashboard,
-    },
-  },
-  {
-    path: '/sign-up',
-    name: 'auth/sign-up',
-    component: () => import('@/pages/auth/register.vue'),
-    beforeEnter: authPageGuard,
-    meta: {
-      layout: ROUTER_LAYOUTS.auth,
-    },
-  },
-  {
-    path: '/sign-in',
-    name: 'auth/sign-in',
-    component: () => import('@/pages/auth/login.vue'),
-    beforeEnter: authPageGuard,
-    meta: {
-      layout: ROUTER_LAYOUTS.auth,
-    },
-  },
-  {
-    path: '/welcome',
-    name: 'auth/welcome',
-    component: () => import('@/pages/auth/welcome.vue'),
-    beforeEnter: redirectRouteGuard,
-    meta: {
-      layout: ROUTER_LAYOUTS.auth,
-    },
-  },
-  // TODO: investigate how to deal with it
+  // TODO: how to deal better
   // {
   //   path: '/:pathMatch(.*)',
   //   redirect: '/',

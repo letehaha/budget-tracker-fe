@@ -58,6 +58,7 @@ import { defineComponent, reactive, computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useRouter } from 'vue-router';
 import { useAuthStore, useRootStore } from '@/stores';
+import { ROUTES_NAMES } from '@/routes';
 import { MODAL_TYPES, useModalCenter } from '@/components/modal-center/index';
 import UiButton from '@/components/common/ui-button.vue';
 import InputField from '@/components/fields/input-field.vue';
@@ -98,7 +99,7 @@ export default defineComponent({
 
     const logOutHandler = () => {
       logout();
-      router.push({ name: 'auth/sign-in' });
+      router.push({ name: ROUTES_NAMES.signIn });
     };
 
     const syncFinancialDataHandler = () => {

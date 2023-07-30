@@ -59,9 +59,11 @@ import { ACCOUNT_TYPES } from 'shared-types';
 import { defineComponent, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
-import { useAccountsStore, useCurrenciesStore } from '@/stores';
-import { CurrencyRecord } from '@/js/records';
 
+import { ROUTES_NAMES } from '@/routes/constants';
+import { useAccountsStore, useCurrenciesStore } from '@/stores';
+
+import { CurrencyRecord } from '@/js/records';
 import { toSystemAmount } from '@/js/helpers';
 
 import {
@@ -121,7 +123,7 @@ export default defineComponent({
           type: NotificationType.success,
         });
 
-        router.push({ name: 'accounts' });
+        router.push({ name: ROUTES_NAMES.accounts });
       } catch (e) {
         addNotification({
           text: 'Unexpected error.',

@@ -10,7 +10,7 @@
         <transactions-list />
         <router-link
           class="dashboard__show-all"
-          :to="{ name: 'records' }"
+          :to="{ name: ROUTES_NAMES.records }"
         >
           Show all records
         </router-link>
@@ -23,6 +23,7 @@
 import { defineComponent } from 'vue';
 
 import CurrentBalanceWidget from '@/components/widgets/current-balance.vue';
+import { ROUTES_NAMES } from '@/routes/constants';
 import TransactionsList from './transactions-list.vue';
 import AccountsList from './accounts-list/accounts-list.vue';
 
@@ -32,6 +33,9 @@ export default defineComponent({
     TransactionsList,
     AccountsList,
     CurrentBalanceWidget,
+  },
+  setup() {
+    return { ROUTES_NAMES };
   },
 });
 </script>

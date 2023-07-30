@@ -42,6 +42,7 @@ import { defineComponent, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
 
+import { ROUTES_NAMES } from '@/routes/constants';
 import { useCurrenciesStore } from '@/stores';
 import { getAllCurrencies } from '@/api/currencies';
 import { CurrencyRecord } from '@/js/records';
@@ -75,7 +76,7 @@ export default defineComponent({
     const formError = ref<string>(null);
 
     const forwardToDashboard = () => {
-      router.push({ name: 'dashboard' });
+      router.push({ name: ROUTES_NAMES.home });
     };
 
     watch(selectedCurrency, () => { formError.value = null; });
