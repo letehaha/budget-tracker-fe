@@ -4,7 +4,7 @@
       Accounts
 
       <router-link
-        :to="{ name: 'create-account' }"
+        :to="{ name: ROUTES_NAMES.createAccount }"
         class="accounts__action-link"
       >
         Create account
@@ -38,7 +38,7 @@
         >
           <router-link
             :to="{
-              name: 'account',
+              name: ROUTES_NAMES.account,
               params: { id: account.id },
             }"
             class="accounts__item"
@@ -73,6 +73,8 @@
 import { ACCOUNT_TYPES, AccountModel } from 'shared-types';
 import { defineComponent } from 'vue';
 import { storeToRefs } from 'pinia';
+
+import { ROUTES_NAMES } from '@/routes/constants';
 import { useBanksMonobankStore, useAccountsStore } from '@/stores';
 import { formatAmount } from '@/js/helpers';
 import { MODAL_TYPES, useModalCenter } from '@/components/modal-center/index';
@@ -108,6 +110,7 @@ export default defineComponent({
     );
 
     return {
+      ROUTES_NAMES,
       ACCOUNT_TYPES,
       setMonobankToken,
       accounts,

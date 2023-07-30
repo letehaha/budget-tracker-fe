@@ -41,7 +41,7 @@
         Don’t have an account?
 
         <router-link
-          to="sign-up"
+          :to="{ name: ROUTES_NAMES.signUp }"
           class="login__signup-link"
         >
           Sign up
@@ -57,6 +57,8 @@ import {
   defineComponent, ref, Ref, watch,
 } from 'vue';
 import { useRouter } from 'vue-router';
+
+import { ROUTES_NAMES } from '@/routes/constants';
 import { useAuthStore } from '@/stores';
 import { useFormValidation } from '@/composable';
 import { required, minLength } from '@/js/helpers/validators';
@@ -116,7 +118,7 @@ export default defineComponent({
 
         await login({ password, username });
 
-        router.push({ name: 'dashboard' });
+        router.push({ name: ROUTES_NAMES.home });
       } catch (e) {
         const errorCodes = {
           [API_ERROR_CODES.notFound]: 'Incorrect email or password.',
@@ -130,6 +132,7 @@ export default defineComponent({
     };
 
     return {
+      ROUTES_NAMES,
       BUTTON_TYPES,
       form,
       formError,

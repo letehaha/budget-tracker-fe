@@ -34,7 +34,7 @@
         Already have an account?
 
         <router-link
-          to="sign-in"
+          :to="{ name: ROUTES_NAMES.signIn }"
           class="register__signup-link"
         >
           Sign in
@@ -48,6 +48,8 @@
 import { API_ERROR_CODES } from 'shared-types';
 import { defineComponent, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
+
+import { ROUTES_NAMES } from '@/routes/constants';
 import { useAuthStore } from '@/stores';
 import UiButton from '@/components/common/ui-button.vue';
 import InputField from '@/components/fields/input-field.vue';
@@ -78,7 +80,7 @@ export default defineComponent({
 
         await autoStore.signup({ password, username });
 
-        router.push({ name: 'auth/welcome' });
+        router.push({ name: ROUTES_NAMES.welcome });
       } catch (e) {
         if (e.data.code === API_ERROR_CODES.userExists) {
           addErrorNotification('User with that username already exists!');
@@ -92,6 +94,7 @@ export default defineComponent({
     };
 
     return {
+      ROUTES_NAMES,
       form,
 
       submit,

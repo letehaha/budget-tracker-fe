@@ -5,31 +5,31 @@
     </div>
     <nav class="sidebar__navigation">
       <router-link
-        :to="{ name: 'dashboard' }"
+        :to="{ name: ROUTES_NAMES.home }"
         class="sidebar__navigation-link"
       >
         Dashboard
       </router-link>
       <router-link
-        :to="{ name: 'accounts' }"
+        :to="{ name: ROUTES_NAMES.accounts }"
         class="sidebar__navigation-link"
       >
         Accounts
       </router-link>
       <router-link
-        :to="{ name: 'records' }"
+        :to="{ name: ROUTES_NAMES.records }"
         class="sidebar__navigation-link"
       >
         Records
       </router-link>
       <router-link
-        :to="{ name: 'crypto' }"
+        :to="{ name: ROUTES_NAMES.crypto }"
         class="sidebar__navigation-link"
       >
         Crypto
       </router-link>
       <router-link
-        :to="{ name: 'settings' }"
+        :to="{ name: ROUTES_NAMES.settings }"
         class="sidebar__navigation-link"
       >
         Settings
@@ -37,6 +37,20 @@
     </nav>
   </div>
 </template>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
+
+import { ROUTES_NAMES } from '@/routes';
+
+export default defineComponent({
+  setup() {
+    return {
+      ROUTES_NAMES,
+    };
+  },
+});
+</script>
 
 <style lang="scss" scoped>
 .sidebar {

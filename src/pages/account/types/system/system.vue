@@ -44,6 +44,7 @@ import { AccountModel } from 'shared-types';
 import { defineComponent, PropType } from 'vue';
 import { useRouter } from 'vue-router';
 
+import { ROUTES_NAMES } from '@/routes';
 import { useAccountsStore } from '@/stores';
 import { toSystemAmount } from '@/js/helpers';
 
@@ -107,7 +108,7 @@ export default defineComponent({
 
         addSuccessNotification(`Account ${accountName} removed successfully`);
 
-        router.push({ name: 'accounts' });
+        router.push({ name: ROUTES_NAMES.accounts });
       } catch (e) {
         addErrorNotification('An error occured while trying to delete account');
       }

@@ -17,6 +17,8 @@ import { AccountModel } from 'shared-types';
 import { defineComponent, computed, onBeforeUnmount } from 'vue';
 import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
+
+import { ROUTES_NAMES } from '@/routes/constants';
 import { useAccountsStore } from '@/stores';
 import { eventBus, BUS_EVENTS } from '@/js/utils';
 import AccountCard from './account-card.vue';
@@ -41,7 +43,7 @@ export default defineComponent({
     );
 
     const redirectToAccount = (account: AccountModel) => {
-      router.push({ name: 'account', params: { id: account.id } });
+      router.push({ name: ROUTES_NAMES.account, params: { id: account.id } });
     };
 
     return {
