@@ -115,7 +115,7 @@ export default defineComponent({
       }
 
       addModal({
-        type: MODAL_TYPES.systemTxForm,
+        type: MODAL_TYPES.createRecord,
         data: modalOptions,
       });
     };

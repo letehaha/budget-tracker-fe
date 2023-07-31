@@ -34,8 +34,9 @@
         v-model:form-account="form.account"
         v-model:form-to-account="form.toAccount"
         :is-transfer-transaction="isTransferTx"
-        :accounts="accountsArray"
+        :accounts="systemAccounts"
         :filtered-accounts="filteredAccounts"
+        @close-modal="$emit('close')"
       />
 
       <template v-if="currentTxType !== FORM_TYPES.transfer">
@@ -203,13 +204,14 @@ export default defineComponent({
       default: undefined,
     },
   },
+  emits: ['close'],
   setup(props, { emit }) {
     const accountsStore = useAccountsStore();
     const categoriesStore = useCategoriesStore();
     const currenciesStore = useCurrenciesStore();
     const { getCurrency, currenciesMap } = useCurrenciesStore();
 
-    const { accountsRecord, accounts } = storeToRefs(accountsStore);
+    const { accountsRecord, systemAccounts } = storeToRefs(accountsStore);
     const { currencies } = storeToRefs(currenciesStore);
     const { categories, rawCategories } = storeToRefs(categoriesStore);
 
@@ -226,14 +228,14 @@ export default defineComponent({
       type: FORM_TYPES;
       targetAmount?: number;
     }>({
-      amount: 0,
+      amount: null,
       account: null,
       toAccount: null,
       targetAmount: null,
       category: categories.value[0],
       time: new Date().toISOString().substring(0, 19),
       paymentType: PAYMENT_TYPES.creditCard,
-      note: '',
+      note: null,
       type: FORM_TYPES.expense,
     });
     const isLoading = ref(false);
@@ -264,10 +266,8 @@ export default defineComponent({
       return undefined;
     });
 
-    const accountsArray = computed(() => Object.values(accountsRecord.value));
-
     const filteredAccounts = computed(
-      () => accountsArray.value.filter(
+      () => systemAccounts.value.filter(
         (item) => item.id !== form.value.account?.id,
       ),
     );
@@ -412,7 +412,7 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      form.value.account = accounts.value[0];
+      form.value.account = systemAccounts.value[0];
     });
 
     return {
@@ -420,6 +420,7 @@ export default defineComponent({
       TRANSACTION_TYPES,
       PAYMENT_TYPES,
       form,
+      systemAccounts,
       currencyCode,
       currenciesMap,
       currencies,
@@ -429,7 +430,6 @@ export default defineComponent({
       filteredAccounts,
       isTransferTx,
       isLoading,
-      accountsArray,
       closeModal,
       categories,
       currentTxType,

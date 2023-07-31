@@ -93,9 +93,7 @@ export default defineComponent({
     const isSyncing = computed(() => !isAppInitialized.value || isFinancialDataSyncing.value);
 
     const openFormModal = () => {
-      addModal({
-        type: MODAL_TYPES.systemTxForm,
-      });
+      addModal({ type: MODAL_TYPES.createRecord });
     };
 
     const logOutHandler = () => {
