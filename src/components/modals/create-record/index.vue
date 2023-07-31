@@ -1,13 +1,13 @@
 <template>
   <div
-    class="system-tx-form"
+    class="create-record"
     :class="{
-      'system-tx-form--income': currentTxType === FORM_TYPES.income,
-      'system-tx-form--expense': currentTxType === FORM_TYPES.expense,
-      'system-tx-form--transfer': currentTxType === FORM_TYPES.transfer,
+      'create-record--income': currentTxType === FORM_TYPES.income,
+      'create-record--expense': currentTxType === FORM_TYPES.expense,
+      'create-record--transfer': currentTxType === FORM_TYPES.transfer,
     }"
   >
-    <div class="system-tx-form__header">
+    <div class="create-record__header">
       <form-header @close="closeModal" />
 
       <type-selector
@@ -15,7 +15,7 @@
         @change-tx-type="selectTransactionType"
       />
     </div>
-    <div class="system-tx-form__form">
+    <div class="create-record__form">
       <form-row>
         <input-field
           v-model="form.amount"
@@ -92,10 +92,10 @@
         />
       </form-row>
     </div>
-    <div class="system-tx-form__actions">
+    <div class="create-record__actions">
       <ui-button
         v-if="transaction"
-        class="system-tx-form__action"
+        class="create-record__action"
         :disabled="isLoading"
         @click="deleteTransactionHandler"
       >
@@ -103,8 +103,8 @@
       </ui-button>
       <ui-button
         class="
-          system-tx-form__action
-          system-tx-form__action--submit
+          create-record__action
+          create-record__action--submit
         "
         :disabled="isLoading"
         @click="submit"
@@ -179,7 +179,7 @@ const getTxTypeFromFormType = (formType: FORM_TYPES): TRANSACTION_TYPES => {
 };
 
 export default defineComponent({
-  name: 'system-tx-form',
+  name: 'create-record',
   components: {
     FormHeader,
     FormRow,
@@ -226,14 +226,14 @@ export default defineComponent({
       type: FORM_TYPES;
       targetAmount?: number;
     }>({
-      amount: null,
+      amount: 0,
       account: null,
       toAccount: null,
       targetAmount: null,
       category: categories.value[0],
       time: new Date().toISOString().substring(0, 19),
       paymentType: PAYMENT_TYPES.creditCard,
-      note: null,
+      note: '',
       type: FORM_TYPES.expense,
     });
     const isLoading = ref(false);
@@ -443,14 +443,14 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 $border-top-radius: 10px;
-.system-tx-form {
+.create-record {
   background-color: var(--app-bg-color);
   width: 100%;
   max-width: 600px;
   border-top-right-radius: $border-top-radius;
   border-top-left-radius: $border-top-radius;
 }
-.system-tx-form__header {
+.create-record__header {
   padding: 24px;
   margin-bottom: 24px;
 
@@ -459,27 +459,27 @@ $border-top-radius: 10px;
 
   transition: .2s ease-out;
 
-  .system-tx-form--income & {
+  .create-record--income & {
     background-color: var(--app-income-color);
   }
-  .system-tx-form--expense & {
+  .create-record--expense & {
     background-color: var(--app-expense-color);
   }
-  .system-tx-form--transfer & {
+  .create-record--transfer & {
     background-color: var(--app-transfer-color);
   }
 }
-.system-tx-form__form {
+.create-record__form {
   padding: 0 24px;
 }
-.system-tx-form__actions {
+.create-record__actions {
   display: flex;
   align-items: center;
   justify-content: space-between;
 
   padding: 24px;
 }
-.system-tx-form__action--submit {
+.create-record__action--submit {
   margin-left: auto;
 }
 </style>
