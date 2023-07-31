@@ -1,6 +1,6 @@
 import { ref, WritableComputedRef, computed } from 'vue';
 import { defineStore } from 'pinia';
-import { AccountModel } from 'shared-types';
+import { ACCOUNT_TYPES, AccountModel } from 'shared-types';
 import {
   loadAccounts as apiLoadAccounts,
   createAccount as apiCreateAccount,
@@ -22,6 +22,9 @@ export const useAccountsStore = defineStore('system-accounts', () => {
     () => [...new Set(accounts.value.map(item => item.currencyId))],
   );
 
+  const systemAccounts = computed(
+    () => accounts.value.filter(item => item.type === ACCOUNT_TYPES.system),
+  );
   const enabledAccounts = computed(() => accounts.value.filter(item => item.isEnabled));
 
   const loadAccounts = async () => {
@@ -86,6 +89,7 @@ export const useAccountsStore = defineStore('system-accounts', () => {
     accounts,
     accountsRecord,
     enabledAccounts,
+    systemAccounts,
     accountsCurrencyIds,
 
     getAccountById,
