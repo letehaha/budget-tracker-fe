@@ -16,6 +16,8 @@ import {
 import { Chart } from 'highcharts-vue';
 import { subDays } from 'date-fns';
 import { getBalanceHistory } from '@/api';
+import { fromSystemAmount } from '@/js/helpers';
+import { aggregateData } from './helpers';
 
 const loadBalanceData = async () => {
   const loadDataForDays = 30;
@@ -25,30 +27,7 @@ const loadBalanceData = async () => {
 
   if (!result?.length) return [];
 
-  const interpolatedData: { date: string; amount: number }[] = [];
-
-  let lastValue: number | null = null;
-  const mostLatestValue = result.at(-1).amount;
-
-  for (let i = 0; i < loadDataForDays; i++) {
-    const currentDateObj = new Date();
-    currentDateObj.setDate(currentDateObj.getDate() - i);
-
-    const dateString = currentDateObj.toISOString().split('T')[0];
-    const existingDataPoint = result.find(({ date }) => date === dateString);
-
-    if (existingDataPoint) {
-      interpolatedData.unshift(existingDataPoint);
-      lastValue = existingDataPoint.amount;
-    } else {
-      interpolatedData.unshift({
-        date: dateString,
-        amount: lastValue ?? mostLatestValue,
-      });
-    }
-  }
-
-  return interpolatedData;
+  return aggregateData(result);
 };
 
 export default defineComponent({
@@ -76,7 +55,7 @@ export default defineComponent({
       series: [{
         showInLegend: false,
         data: balanceHistory.value.map(
-          (point) => [new Date(point.date).getTime(), point.amount],
+          (point) => [new Date(point.date).getTime(), fromSystemAmount(point.amount)],
         ),
       }],
       credits: false,
