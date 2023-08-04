@@ -5,3 +5,4 @@ export * from './accounts';
 export * from './monobank';
 export * from './auth';
 export * from './transactions';
+export * from './stats';
