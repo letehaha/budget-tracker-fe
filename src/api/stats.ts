@@ -8,9 +8,15 @@ interface Params {
   to?: Date;
 }
 
+export interface BalanceHistoryEntity {
+  date: string;
+  amount: number;
+  accountId: number;
+}
+
 export const getBalanceHistory = async (
   { from, to, ...rest }: Params = {},
-) => {
+): Promise<BalanceHistoryEntity[]> => {
   const params: endpointsTypes.GetBalanceHistoryPayload = {
     ...rest,
   };
