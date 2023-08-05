@@ -54,9 +54,11 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .page {
-  display: grid;
-  grid-template-columns: 240px 1fr;
+  display: flex;
   background-color: var(--app-bg-color);
   min-height: 100vh;
+}
+.page__wrapper {
+  flex: 1;
 }
 </style>

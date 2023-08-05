@@ -1,20 +1,12 @@
 <template>
   <div class="header">
-    <template v-if="!onlySignOut">
-      <div class="header__actions">
-        <div class="header__action">
-          <ui-button @click="openFormModal">
-            New Record
-          </ui-button>
-        </div>
-        <div class="header__action">
-          <input-field
-            v-model="form.search"
-            placeholder="Search..."
-          />
-        </div>
+    <div class="header__actions">
+      <div class="header__action">
+        <ui-button @click="openFormModal">
+          New Record
+        </ui-button>
       </div>
-    </template>
+    </div>
 
     <ui-tooltip
       :content="!isAllowedToSyncFinancialData ? 'You can sync data only once in 30 mins' : ''"
@@ -40,28 +32,15 @@
         </template>
       </button>
     </ui-tooltip>
-
-    <div class="header__sign-out">
-      <button
-        type="button"
-        class="header__sign-out-action"
-        @click="logOutHandler"
-      >
-        Sign Out
-      </button>
-    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, computed } from 'vue';
+import { defineComponent, computed } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useRouter } from 'vue-router';
-import { useAuthStore, useRootStore } from '@/stores';
-import { ROUTES_NAMES } from '@/routes';
+import { useRootStore } from '@/stores';
 import { MODAL_TYPES, useModalCenter } from '@/components/modal-center/index';
 import UiButton from '@/components/common/ui-button.vue';
-import InputField from '@/components/fields/input-field.vue';
 import CheckmarkInCircleIcon from '@/assets/icons/checkmark-in-circle.svg?component';
 import RefreshIcon from '@/assets/icons/refresh.svg?component';
 import UiTooltip from '@/components/common/tooltip.vue';
@@ -70,20 +49,11 @@ export default defineComponent({
   components: {
     UiButton,
     UiTooltip,
-    InputField,
     CheckmarkInCircleIcon,
     RefreshIcon,
   },
-  props: {
-    onlySignOut: Boolean,
-  },
   setup() {
-    const router = useRouter();
-    const form = reactive({
-      search: '',
-    });
     const { addModal } = useModalCenter();
-    const { logout } = useAuthStore();
     const rootStore = useRootStore();
     const {
       isAppInitialized,
@@ -96,12 +66,6 @@ export default defineComponent({
     const openFormModal = () => {
       addModal({ type: MODAL_TYPES.createRecord });
     };
-
-    const logOutHandler = () => {
-      logout();
-      router.push({ name: ROUTES_NAMES.signIn });
-    };
-
     const syncFinancialDataHandler = () => {
       if (isAllowedToSyncFinancialData.value) {
         rootStore.syncFinancialData();
@@ -109,11 +73,9 @@ export default defineComponent({
     };
 
     return {
-      form,
       isSyncing,
 
       openFormModal,
-      logOutHandler,
       isAllowedToSyncFinancialData,
       syncFinancialDataHandler,
     };
@@ -123,12 +85,12 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .header {
-  padding: 16px 32px;
+  padding: 12px 24px;
   box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.1);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: var(--app-surface-color);
+  border-bottom: 1px solid var(--app-border-default);
   max-height: var(--header-height);
 }
 .header__actions {
@@ -137,18 +99,6 @@ export default defineComponent({
 }
 .header__action {
   margin-right: 16px;
-}
-.header__sign-out {
-  margin-left: 24px;
-}
-.header__sign-out-action {
-  border: none;
-  background-color: transparent;
-  outline: none;
-  color: var(--app-on-surface-color);
-  letter-spacing: 0.5px;
-  font-size: 16px;
-  cursor: pointer;
 }
 .header__sync-status-wrapper {
   margin-left: auto;

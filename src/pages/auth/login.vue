@@ -1,12 +1,12 @@
 <template>
   <div class="login">
-    <div
+    <ui-box
       class="login__wrapper"
       @keypress.enter="submit"
     >
-      <h1 class="login__title">
+      <h2 class="login__title">
         Log in to account
-      </h1>
+      </h2>
       <form-wrapper
         :error="formError"
         class="login__fields"
@@ -30,7 +30,7 @@
         />
       </form-wrapper>
       <ui-button
-        :type="BUTTON_TYPES.submit"
+        type="submit"
         class="login__submit"
         :disabled="isFormLoading"
         @click="submit"
@@ -47,7 +47,7 @@
           Sign up
         </router-link>
       </div>
-    </div>
+    </ui-box>
   </div>
 </template>
 
@@ -64,7 +64,8 @@ import { useFormValidation } from '@/composable';
 import { required, minLength } from '@/js/helpers/validators';
 
 import FormWrapper from '@/components/fields/form-wrapper.vue';
-import UiButton, { BUTTON_TYPES } from '@/components/common/ui-button.vue';
+import UiButton from '@/components/common/ui-button.vue';
+import UiBox from '@/components/box.vue';
 import InputField from '@/components/fields/input-field.vue';
 
 export default defineComponent({
@@ -72,6 +73,7 @@ export default defineComponent({
     UiButton,
     InputField,
     FormWrapper,
+    UiBox,
   },
   setup() {
     const router = useRouter();
@@ -133,7 +135,6 @@ export default defineComponent({
 
     return {
       ROUTES_NAMES,
-      BUTTON_TYPES,
       form,
       formError,
       isFormLoading,
@@ -150,20 +151,17 @@ export default defineComponent({
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--app-bg-color);
 }
 .login__wrapper {
   width: 100%;
   max-width: 450px;
-  padding: 48px 32px;
+  padding: 32px;
 }
 .login__title {
-  font-weight: 500;
-  font-size: 30px;
-  line-height: 1.4;
+  @extend %heading-2;
+
   text-align: center;
-  margin-bottom: 40px;
-  color: var(--app-on-bg-color);
+  margin-bottom: 48px;
 }
 .login__field {
   &:not(:last-child) {
@@ -174,17 +172,15 @@ export default defineComponent({
   margin: 32px auto 0;
 }
 .login__signup {
-  margin-top: 40px;
+  margin-top: 48px;
   text-align: center;
-  font-weight: 400;
-  color: var(--app-on-bg-color);
 }
 .login__signup-link {
   transition: .2s ease-out;
-  color: var(--primary-500);
+  color: var(--app-buttons-default);
 
   &:hover {
-    color: var(--primary-700);
+    color: var(--app-buttons-hover);
   }
 }
 </style>
