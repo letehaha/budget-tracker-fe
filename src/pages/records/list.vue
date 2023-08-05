@@ -50,7 +50,6 @@ export default defineComponent({
   background-color: transparent;
   border: none;
   cursor: pointer;
-  outline: none;
 
   color: var(--primary-500);
 

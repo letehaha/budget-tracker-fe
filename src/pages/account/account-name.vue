@@ -90,7 +90,6 @@ export default defineComponent({
 .account-name__field {
   background-color: transparent;
   font-size: 18px;
-  outline: none;
   color: var(--app-on-bg-color);
 }
 </style>

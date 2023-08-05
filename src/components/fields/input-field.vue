@@ -178,7 +178,6 @@ export default defineComponent({
   border: 1px solid #acafb3;
   box-sizing: border-box;
   border-radius: var(--system-border-radius);
-  outline: none;
   width: 100%;
 
   @include placeholder-custom(rgba(var(--app-on-surface-color-rgb), 0.6));

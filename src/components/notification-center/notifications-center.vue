@@ -111,7 +111,6 @@ export default defineComponent({
 .notifications-center__item-xmark {
   border: none;
   background-color: transparent;
-  outline: none;
   cursor: pointer;
 
   margin-left: auto;
