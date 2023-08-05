@@ -1,6 +1,14 @@
 <template>
   <div class="welcome">
-    <ui-header only-sign-out />
+    <div class="welcome__header">
+      <ui-button
+        theme="primary"
+        class="sidebar__logout"
+        @click="logOutHandler"
+      >
+        Logout
+      </ui-button>
+    </div>
 
     <div class="welcome__content">
       <div class="welcome__form">
@@ -43,19 +51,17 @@ import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
 
 import { ROUTES_NAMES } from '@/routes/constants';
-import { useCurrenciesStore } from '@/stores';
+import { useCurrenciesStore, useAuthStore } from '@/stores';
 import { getAllCurrencies } from '@/api/currencies';
 import { CurrencyRecord } from '@/js/records';
 import { useNotificationCenter } from '@/components/notification-center';
 
 import FormWrapper from '@/components/fields/form-wrapper.vue';
-import UiHeader from '@/components/ui-header.vue';
 import SelectField from '@/components/fields/select-field.vue';
 import UiButton from '@/components/common/ui-button.vue';
 
 export default defineComponent({
   components: {
-    UiHeader,
     FormWrapper,
     SelectField,
     UiButton,
@@ -63,6 +69,7 @@ export default defineComponent({
   setup() {
     const router = useRouter();
     const currenciesStore = useCurrenciesStore();
+    const { logout } = useAuthStore();
     const { setBaseCurrency, loadBaseCurrency } = useCurrenciesStore();
     const { addErrorNotification } = useNotificationCenter();
 
@@ -112,6 +119,11 @@ export default defineComponent({
       }
     };
 
+    const logOutHandler = () => {
+      logout();
+      router.push({ name: ROUTES_NAMES.signIn });
+    };
+
     const checkBaseCurrencyExisting = async () => {
       await loadBaseCurrency();
 
@@ -134,6 +146,7 @@ export default defineComponent({
       isCurrenciesLoading,
       currencies,
       formError,
+      logOutHandler,
       submitBaseCurrency,
     };
   },
@@ -167,5 +180,10 @@ export default defineComponent({
 }
 .welcome__submit {
   width: 100%;
+}
+.welcome__header {
+  padding: 12px 24px;
+  display: flex;
+  justify-content: flex-end;
 }
 </style>
