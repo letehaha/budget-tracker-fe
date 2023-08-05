@@ -12,7 +12,7 @@
         </template>
       </div>
     </template>
-    <template v-else>
+    <template v-else-if="error">
       <div class="form-wrapper__error-list">
         <p class="form-wrapper__error">
           {{ error }}
@@ -39,7 +39,9 @@ export default defineComponent({
   display: grid;
   grid-gap: 8px;
 
-  margin-bottom: 16px;
+  &:not(:empty) {
+    margin-bottom: 16px;
+  }
 }
 .form-wrapper__error {
   text-align: center;

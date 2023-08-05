@@ -1,5 +1,5 @@
 <template>
-  <main>
+  <main class="page">
     <router-view />
 
     <ui-modal />
@@ -75,9 +75,6 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .page {
-  display: grid;
-  grid-template-columns: 240px 1fr;
-  background-color: var(--app-bg-color);
   min-height: 100vh;
 }
 </style>

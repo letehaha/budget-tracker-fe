@@ -5,7 +5,6 @@
       `button button--${size} button--${theme}`,
       {
         'button--disabled': disabled,
-        'button--outline': outline,
       }
     ]"
     :disabled="disabled"
@@ -22,38 +21,26 @@ enum EVENTS {
   click = 'click',
 }
 
-export enum BUTTON_THEMES {
-  primary = 'primary',
-  danger = 'danger',
-}
-
-export enum SIZES {
-  large = 'large',
-  default = 'default',
-}
-
-export enum BUTTON_TYPES {
-  button = 'button',
-  submit = 'submit',
-  reset = 'reset',
-}
+export type SIZES = 'default' | 'small';
+export type BUTTON_THEMES = 'primary' | 'danger' | 'outline' | 'text' | 'light-dark';
+export type BUTTON_TYPES = 'button' | 'submit' | 'reset';
 
 export default defineComponent({
   name: 'ui-button',
   props: {
-    type: { type: String as PropType<BUTTON_TYPES>, default: 'button' },
-    disabled: { type: Boolean, default: false },
+    type: {
+      type: String as PropType<BUTTON_TYPES>,
+      default: (): BUTTON_TYPES => 'button',
+    },
     size: {
-      type: String,
-      default: SIZES.default,
-      validator: (size: SIZES) => Object.values(SIZES).includes(size),
+      type: String as PropType<SIZES>,
+      default: (): SIZES => 'default',
     },
     theme: {
-      type: String,
-      default: BUTTON_THEMES.primary,
-      validator: (t: BUTTON_THEMES) => Object.values(BUTTON_THEMES).includes(t),
+      type: String as PropType<BUTTON_THEMES>,
+      default: (): BUTTON_THEMES => 'primary',
     },
-    outline: { type: Boolean, default: false },
+    disabled: { type: Boolean, default: false },
   },
   emits: Object.values(EVENTS),
   data: () => ({
@@ -73,7 +60,6 @@ $transition: box-shadow 0.2s ease-out;
   border: 1px solid transparent;
   border-radius: var(--system-border-radius);
   cursor: pointer;
-  outline: none;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -81,41 +67,94 @@ $transition: box-shadow 0.2s ease-out;
   transition: .2s ease-out;
 
   &[disabled] {
-    opacity: 0.6;
     cursor: not-allowed;
   }
 }
 
 .button--primary {
-  background-color: var(--primary-500);
-  color: #fff;
+  background-color: var(--app-buttons-default);
+  border-color: var(--app-buttons-default);
+  color: var(--app-text-on-primary);
 
   &:not([disabled]):hover {
-    background-color: var(--primary-800);
+    background-color: var(--app-buttons-hover);
+    border-color: var(--app-buttons-hover);
   }
   &:active {
-    background-color: var(--primary-600);
+    background-color: var(--app-buttons-active);
+    border-color: var(--app-buttons-active);
   }
-  &:not([disabled]).button--outline {
-    background-color: transparent;
-    border-color: var(--primary-500);
-    color: var(--primary-500);
+  &[disabled] {
+    background-color: var(--app-buttons-disabled);
+    border-color: var(--app-buttons-disabled);
   }
 }
 .button--danger {
-  background-color: var(--danger-500);
-  color: #fff;
+  background-color: var(--app-error);
+  border-color: var(--app-error);
+  color: var(--app-text-on-primary);
 
   &:not([disabled]):hover {
-    background-color: var(--danger-900);
+    background-color: var(--app-error);
+    border-color: var(--app-error);
   }
   &:active {
-    background-color: var(--danger-600);
+    background-color: var(--app-error);
+    border-color: var(--app-error);
   }
-  &:not([disabled]).button--outline {
-    background-color: transparent;
-    border-color: var(--danger-500);
-    color: var(--danger-500);
+  &[disabled] {
+    background-color: var(--app-error);
+    border-color: var(--app-error);
+  }
+}
+.button--light-dark {
+  background-color: #444;
+  border-color: #444;
+  color: var(--app-text-on-primary);
+
+  &:not([disabled]):hover {
+    background-color: lighten(#444, 5);
+    border-color: lighten(#444, 5);
+  }
+  &:active {
+    background-color: darken(#444, 5);
+    border-color: darken(#444, 5);
+  }
+  &[disabled] {
+    opacity: .5;
+  }
+}
+.button--outline {
+  background-color: transparent;
+  border-color: var(--app-buttons-default);
+  color: var(--app-buttons-default);
+
+  &:not([disabled]):hover {
+    border-color: var(--app-buttons-hover);
+    color: var(--app-buttons-hover);
+  }
+  &:active {
+    border-color: var(--app-buttons-active);
+    color: var(--app-buttons-active);
+  }
+  &[disabled] {
+    border-color: var(--app-buttons-disabled);
+    color: var(--app-buttons-disabled);
+  }
+}
+.button--outline {
+  background-color: transparent;
+  border-color: transparent;
+  color: var(--app-buttons-default);
+
+  &:not([disabled]):hover {
+    color: var(--app-buttons-hover);
+  }
+  &:active {
+    color: var(--app-buttons-active);
+  }
+  &[disabled] {
+    color: var(--app-buttons-disabled);
   }
 }
 </style>

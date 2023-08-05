@@ -142,7 +142,6 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .welcome {
-  background-color: var(--app-bg-color);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
