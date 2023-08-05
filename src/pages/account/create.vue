@@ -44,7 +44,7 @@
       />
 
       <ui-button
-        :type="BUTTON_TYPES.submit"
+        type="submit"
         class="account-create__form-submit"
         :disabled="isLoading"
       >
@@ -73,7 +73,7 @@ import {
 
 import InputField from '@/components/fields/input-field.vue';
 import SelectField from '@/components/fields/select-field.vue';
-import UiButton, { BUTTON_TYPES } from '@/components/common/ui-button.vue';
+import UiButton from '@/components/common/ui-button.vue';
 
 export default defineComponent({
   name: 'create-account',
@@ -136,7 +136,6 @@ export default defineComponent({
 
     return {
       ACCOUNT_TYPES,
-      BUTTON_TYPES,
       CurrencyRecord,
       form,
       isLoading,
