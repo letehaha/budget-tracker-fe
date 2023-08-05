@@ -1,3 +1,39 @@
+%heading-1 {
+  font-size: 32px;
+  line-height: 1.1;
+  font-weight: 600;
+}
+%heading-2 {
+  font-size: 24px;
+  line-height: 1.1;
+  font-weight: 600;
+}
+%heading-3 {
+  font-size: 18px;
+  line-height: 1.2;
+  font-weight: 600;
+}
+%base-text {
+  font-size: 16px;
+  line-height: 1.5;
+  font-weight: 400;
+}
+%base-text-semibold {
+  @extend %base-text;
+  font-weight: 600;
+}
+%base-text-smaller {
+  font-size: 14px;
+  line-height: 1.4;
+  font-weight: 400;
+}
+%base-text-xsmall {
+  font-size: 12px;
+  line-height: 1.2;
+  font-weight: 400;
+}
+
+// TODO: old
 %heading-h4 {
   font-size: 16px;
   font-weight: 400;
