@@ -120,7 +120,6 @@ export default defineComponent({
   border-radius: 4px;
   transition: all 0s, border-color 0.2s ease-out;
   resize: none;
-  outline: none;
   color: var(--app-on-surface-color);
 
   @include placeholder-custom(rgba(var(--app-on-surface-color-rgb), 0.4));

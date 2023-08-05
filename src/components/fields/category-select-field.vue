@@ -261,7 +261,6 @@ export default defineComponent({
   border: 1px solid var(--app-on-surface-color);
   box-sizing: border-box;
   border-radius: 4px;
-  outline: none;
   width: 100%;
   cursor: pointer;
 }

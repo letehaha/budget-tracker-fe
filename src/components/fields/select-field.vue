@@ -221,7 +221,6 @@ export default defineComponent({
   border: 1px solid #bdc3c7;
   box-sizing: border-box;
   border-radius: 4px;
-  outline: none;
   width: 100%;
   cursor: pointer;
 
