@@ -77,7 +77,7 @@ describe('Welcome page', () => {
       expect(location.pathname).to.eq('/welcome');
     });
 
-    cy.get('button[type="button"]').contains('Sign Out').click();
+    cy.get('button[type="button"]').contains('Logout').click();
 
     cy.location().should((location) => {
       expect(location.pathname).to.eq('/sign-in');

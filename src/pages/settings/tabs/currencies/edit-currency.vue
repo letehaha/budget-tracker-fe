@@ -37,7 +37,7 @@
 
       <ui-tooltip :content="deletionDisabled ? DISABLED_DELETE_TEXT : ''">
         <ui-button
-          :theme="BUTTON_THEMES.danger"
+          theme="danger"
           :disabled="deletionDisabled"
           @click="onDeleteHandler"
         >
@@ -62,7 +62,7 @@ import { API_ERROR_CODES } from 'shared-types';
 import { storeToRefs } from 'pinia';
 import { useCurrenciesStore } from '@/stores';
 import { editUserCurrenciesExchangeRates, deleteCustomRate } from '@/api/currencies';
-import UiButton, { BUTTON_THEMES } from '@/components/common/ui-button.vue';
+import UiButton from '@/components/common/ui-button.vue';
 import InputField from '@/components/fields/input-field.vue';
 import UiTooltip from '@/components/common/tooltip.vue';
 import { useNotificationCenter } from '@/components/notification-center';
@@ -215,7 +215,6 @@ export default defineComponent({
 
     return {
       DISABLED_DELETE_TEXT,
-      BUTTON_THEMES,
       isChecked,
       toggleChange,
       onSaveHandler,

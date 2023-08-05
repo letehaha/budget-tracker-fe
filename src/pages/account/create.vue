@@ -44,7 +44,7 @@
       />
 
       <ui-button
-        :type="BUTTON_TYPES.submit"
+        type="submit"
         class="account-create__form-submit"
         :disabled="isLoading"
       >
@@ -59,9 +59,11 @@ import { ACCOUNT_TYPES } from 'shared-types';
 import { defineComponent, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
-import { useAccountsStore, useCurrenciesStore } from '@/stores';
-import { CurrencyRecord } from '@/js/records';
 
+import { ROUTES_NAMES } from '@/routes/constants';
+import { useAccountsStore, useCurrenciesStore } from '@/stores';
+
+import { CurrencyRecord } from '@/js/records';
 import { toSystemAmount } from '@/js/helpers';
 
 import {
@@ -71,7 +73,7 @@ import {
 
 import InputField from '@/components/fields/input-field.vue';
 import SelectField from '@/components/fields/select-field.vue';
-import UiButton, { BUTTON_TYPES } from '@/components/common/ui-button.vue';
+import UiButton from '@/components/common/ui-button.vue';
 
 export default defineComponent({
   name: 'create-account',
@@ -121,7 +123,7 @@ export default defineComponent({
           type: NotificationType.success,
         });
 
-        router.push({ name: 'accounts' });
+        router.push({ name: ROUTES_NAMES.accounts });
       } catch (e) {
         addNotification({
           text: 'Unexpected error.',
@@ -134,7 +136,6 @@ export default defineComponent({
 
     return {
       ACCOUNT_TYPES,
-      BUTTON_TYPES,
       CurrencyRecord,
       form,
       isLoading,

@@ -1,55 +1,32 @@
 <template>
-  <main>
-    <template v-if="currentLayout === ROUTER_LAYOUTS.auth">
-      <router-view />
-    </template>
-    <template v-else-if="currentLayout === ROUTER_LAYOUTS.dashboard">
-      <div class="page">
-        <ui-sidebar />
+  <main class="page">
+    <router-view />
 
-        <div class="page__wrapper">
-          <ui-header />
-
-          <template v-if="isAppInitialized">
-            <router-view />
-          </template>
-        </div>
-      </div>
-    </template>
     <ui-modal />
     <notifications-center />
   </main>
 </template>
 
 <script lang="ts">
-import {
-  defineComponent,
-  watch,
-  computed,
-} from 'vue';
+import { defineComponent, watch } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useRouter, useRoute } from 'vue-router';
+import { useRouter } from 'vue-router';
 import {
   useRootStore,
   useAuthStore,
   useCurrenciesStore,
 } from '@/stores';
-import { ROUTER_LAYOUTS } from '@/routes';
+import { ROUTES_NAMES } from '@/routes';
 import UiModal from '@/components/modal-center/ui-modal.vue';
-import UiHeader from '@/components/ui-header.vue';
-import UiSidebar from '@/components/ui-sidebar.vue';
 
 import NotificationsCenter from '@/components/notification-center/notifications-center.vue';
 
 export default defineComponent({
   components: {
     UiModal,
-    UiHeader,
-    UiSidebar,
     NotificationsCenter,
   },
   setup() {
-    const route = useRoute();
     const router = useRouter();
     const authStore = useAuthStore();
     const rootStore = useRootStore();
@@ -63,7 +40,7 @@ export default defineComponent({
       isLoggedIn,
       (value, prevValue) => {
         if (prevValue && !value) {
-          router.push({ name: 'auth/sign-in' });
+          router.push({ name: ROUTES_NAMES.signIn });
         }
       },
       { immediate: true },
@@ -84,18 +61,13 @@ export default defineComponent({
       isAppInitialized,
       (value) => {
         if (value && !isBaseCurrencyExists.value) {
-          router.push({ name: 'auth/welcome' });
+          router.push({ name: ROUTES_NAMES.welcome });
         }
       },
     );
 
-    const currentLayout = computed(() => route.meta.layout);
-
     return {
-      ROUTER_LAYOUTS,
       isLoggedIn,
-      isAppInitialized,
-      currentLayout,
     };
   },
 });
@@ -103,9 +75,6 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .page {
-  display: grid;
-  grid-template-columns: 240px 1fr;
-  background-color: var(--app-bg-color);
   min-height: 100vh;
 }
 </style>

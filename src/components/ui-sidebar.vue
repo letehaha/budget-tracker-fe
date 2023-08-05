@@ -5,59 +5,134 @@
     </div>
     <nav class="sidebar__navigation">
       <router-link
-        :to="{ name: 'dashboard' }"
+        :to="{ name: ROUTES_NAMES.home }"
         class="sidebar__navigation-link"
       >
-        Dashboard
+        <span>
+          Dashboard
+        </span>
       </router-link>
       <router-link
-        :to="{ name: 'accounts' }"
+        :to="{ name: ROUTES_NAMES.accounts }"
         class="sidebar__navigation-link"
       >
-        Accounts
+        <span>
+          Accounts
+        </span>
       </router-link>
       <router-link
-        :to="{ name: 'records' }"
+        :to="{ name: ROUTES_NAMES.records }"
         class="sidebar__navigation-link"
       >
-        Records
+        <span>
+          Records
+        </span>
       </router-link>
       <router-link
-        :to="{ name: 'crypto' }"
+        :to="{ name: ROUTES_NAMES.crypto }"
         class="sidebar__navigation-link"
       >
-        Crypto
+        <span>
+          Crypto
+        </span>
       </router-link>
       <router-link
-        :to="{ name: 'settings' }"
+        :to="{ name: ROUTES_NAMES.settings }"
         class="sidebar__navigation-link"
       >
-        Settings
+        <span>
+          Settings
+        </span>
       </router-link>
     </nav>
+
+    <ui-button
+      theme="light-dark"
+      class="sidebar__logout"
+      @click="logOutHandler"
+    >
+      Logout
+    </ui-button>
   </div>
 </template>
 
+<script lang="ts">
+import { defineComponent } from 'vue';
+import { useRouter } from 'vue-router';
+
+import { useAuthStore } from '@/stores';
+import { ROUTES_NAMES } from '@/routes';
+import Button from '@/components/common/ui-button.vue';
+
+export default defineComponent({
+  components: {
+    'ui-button': Button,
+  },
+  setup() {
+    const router = useRouter();
+    const { logout } = useAuthStore();
+
+    const logOutHandler = () => {
+      logout();
+      router.push({ name: ROUTES_NAMES.signIn });
+    };
+
+    return {
+      logOutHandler,
+      ROUTES_NAMES,
+    };
+  },
+});
+</script>
+
 <style lang="scss" scoped>
 .sidebar {
-  padding: 24px 24px;
-  background-color: var(--app-surface-color);
-  z-index: 1;
+  width: 240px;
+  flex-grow: 0;
+  padding: 48px 24px;
+  background-color: var(--app-bg-navbar);
+  display: flex;
+  flex-direction: column;
 }
+
 .sidebar__logo {
   font-size: 24px;
   font-weight: 500;
   letter-spacing: 0.5px;
   text-align: center;
-  margin-bottom: 80px;
+  margin-bottom: 40px;
   color: var(--app-on-surface-color);
 }
+.sidebar__navigation {
+  display: grid;
+  gap: 16px;
+}
 .sidebar__navigation-link {
-  font-size: 16px;
-  letter-spacing: 0.5px;
-  font-weight: 400;
-  display: block;
-  margin-bottom: 32px;
-  color: var(--app-on-surface-color);
+  color: var(---app-text-on-primary);
+  border-radius: 4px;
+  padding: 12px 16px;
+  transition: .15s ease-out;
+
+  span {
+    opacity: .7;
+  }
+
+  &:hover {
+    background-color: #444;
+  }
+
+  &.router-link-exact-active {
+    font-weight: 500;
+    background-color: var(--app-primary);
+
+    span {
+      opacity: 1;
+    }
+  }
+}
+.sidebar__logout {
+  margin-top: auto;
+  width: 100%;
+  justify-content: flex-start;
 }
 </style>

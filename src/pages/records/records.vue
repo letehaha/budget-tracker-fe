@@ -67,7 +67,6 @@ export default defineComponent({
 }
 .records__scroll-top {
   border: none;
-  outline: none;
   cursor: pointer;
 
   opacity: 0;

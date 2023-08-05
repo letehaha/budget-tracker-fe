@@ -27,7 +27,7 @@
           monobank-set-token__action
           monobank-set-token__action--submit
         "
-        :type="BUTTON_TYPES.submit"
+        type="submit"
         :disabled="isLoading"
         @click="submit"
       >
@@ -48,7 +48,7 @@ import { defineComponent, reactive, ref } from 'vue';
 import { useBanksMonobankStore } from '@/stores';
 import { ApiErrorResponseError } from '@/js/errors';
 import InputField from '@/components/fields/input-field.vue';
-import Button, { BUTTON_TYPES } from '@/components/common/ui-button.vue';
+import Button from '@/components/common/ui-button.vue';
 import { EVENTS as MODAL_EVENTS } from '@/components/modal-center/ui-modal.vue';
 
 import {
@@ -112,7 +112,6 @@ export default defineComponent({
     };
 
     return {
-      BUTTON_TYPES,
       MODAL_EVENTS,
       form,
       isLoading,

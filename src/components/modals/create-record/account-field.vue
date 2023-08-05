@@ -63,6 +63,8 @@ import { defineComponent, PropType } from 'vue';
 import { useRouter } from 'vue-router';
 import { AccountModel } from 'shared-types';
 
+import { ROUTES_NAMES } from '@/routes';
+
 import SelectField from '@/components/fields/select-field.vue';
 import InputField from '@/components/fields/input-field.vue';
 
@@ -101,7 +103,7 @@ export default defineComponent({
     const router = useRouter();
 
     const redirectToCreateAccountPage = async () => {
-      await router.push({ name: 'create-account' });
+      await router.push({ name: ROUTES_NAMES.createAccount });
 
       emit('close-modal');
     };
