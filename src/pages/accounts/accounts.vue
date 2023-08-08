@@ -113,7 +113,7 @@ export default defineComponent({
       ROUTES_NAMES,
       ACCOUNT_TYPES,
       setMonobankToken,
-      accounts,
+      accounts: [...accounts.value].sort((a, b) => +b.isEnabled - +a.isEnabled),
       isPaired,
       isTokenPresent,
       refreshMonoAccounts,
