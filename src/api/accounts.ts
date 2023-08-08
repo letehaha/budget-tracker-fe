@@ -10,12 +10,16 @@ export const loadAccounts = async (): Promise<AccountModel[]> => {
 export type CreateAccountPayload = {
   name: string;
   currencyId: number;
-  accountTypeId: number;
   currentBalance?: number;
   creditLimit?: number;
 }
 export const createAccount = async (payload: CreateAccountPayload): Promise<AccountModel> => {
-  const result = await api.post('/accounts', payload);
+  const result = await api.post('/accounts', {
+    ...payload,
+    // For now we just doesn't allow users to select account type
+    // (credit card, debit card, etc) on UI
+    accountType: 1,
+  });
 
   return result;
 };
