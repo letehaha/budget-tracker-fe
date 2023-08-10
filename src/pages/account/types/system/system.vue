@@ -4,7 +4,6 @@
       <div class="account__form">
         <input-field
           v-model="form.name"
-          class="account__field"
           label="Account name"
           placeholder="Account name"
           :error-message="getFieldErrorMessage('form.name')"
@@ -12,7 +11,6 @@
 
         <input-field
           v-model="form.currentBalance"
-          class="account__field"
           label="Balance"
           type="number"
           placeholder="Balance"
@@ -21,7 +19,6 @@
 
         <input-field
           v-model="form.creditLimit"
-          class="account__field"
           label="Credit limit"
           type="number"
           placeholder="Credit limit"
@@ -63,7 +60,7 @@ import {
 import { useNotificationCenter } from '@/components/notification-center';
 
 import UiButton from '@/components/common/ui-button.vue';
-import InputField, { MODEL_EVENTS } from '@/components/fields/input-field.vue';
+import InputField from '@/components/fields/input-field.vue';
 
 export default defineComponent({
   components: {
@@ -152,7 +149,6 @@ export default defineComponent({
     };
 
     return {
-      MODEL_EVENTS,
       deleteAccount,
       updateAccount,
       getFieldErrorMessage,
@@ -166,13 +162,12 @@ export default defineComponent({
 .account {
   padding: 24px;
 }
-.account__field {
-  &:not(:last-child) {
-    margin-bottom: 24px;
-  }
+.account__form {
+  display: grid;
+  gap: 24px;
 }
 .account__actions {
-  margin-top: 64px;
+  margin-top: 32px;
   display: flex;
   justify-content: space-between;
 }

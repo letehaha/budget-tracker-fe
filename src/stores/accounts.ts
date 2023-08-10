@@ -60,6 +60,7 @@ export const useAccountsStore = defineStore('system-accounts', () => {
     name?: string;
     currentBalance?: number;
     creditLimit?: number;
+    isEnabled?: boolean;
   }) => {
     try {
       const result = await apiEditAccount({ id, ...data });
