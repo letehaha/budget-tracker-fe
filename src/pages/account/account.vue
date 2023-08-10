@@ -41,5 +41,6 @@ export default defineComponent({
 <style lang="scss" scoped>
 .account {
   padding: 24px;
+  max-width: 600px;
 }
 </style>
