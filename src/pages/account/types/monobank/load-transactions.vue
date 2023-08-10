@@ -4,14 +4,16 @@
       Load transactions for selected period
     </div>
     <div class="load-transactions__wrapper">
-      <date-field
-        v-model="form.from"
-        label="From"
-      />
-      <date-field
-        v-model="form.to"
-        label="To"
-      />
+      <div class="load-transactions__fields">
+        <date-field
+          v-model="form.from"
+          label="From"
+        />
+        <date-field
+          v-model="form.to"
+          label="To"
+        />
+      </div>
       <ui-button
         :disabled="!isPeriodSelected"
         @click="loadTransactionsForPeriod"
@@ -103,7 +105,12 @@ export default defineComponent({
 }
 .load-transactions__wrapper {
   display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.load-transactions__fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
-  align-items: flex-end;
 }
 </style>
