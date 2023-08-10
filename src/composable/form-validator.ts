@@ -169,7 +169,7 @@ export const useFormValidation = <
           ? customMessage.value
           : customMessage;
 
-        return customErrorMessage || GENERIC_VALIDATION_MESSAGES[rule] || '';
+        return customErrorMessage || GENERIC_VALIDATION_MESSAGES[rule] || field[rule].$message || '';
       }
     }
     return '';

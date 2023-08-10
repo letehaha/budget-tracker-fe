@@ -2,27 +2,27 @@
   <div class="account">
     <template v-if="account">
       <div class="account__form">
-        <account-name
-          :account="account"
-          class="account__field"
+        <input-field
+          v-model="form.name"
+          label="Account name"
+          placeholder="Account name"
+          :error-message="getFieldErrorMessage('form.name')"
         />
 
         <input-field
-          :model-value="account.currentBalance / 100"
-          class="account__field"
+          v-model="form.currentBalance"
           label="Balance"
           type="number"
           placeholder="Balance"
-          @[MODEL_EVENTS.input]="updateBalance"
+          :error-message="getFieldErrorMessage('form.currentBalance')"
         />
 
         <input-field
-          :model-value="account.creditLimit / 100"
-          class="account__field"
+          v-model="form.creditLimit"
           label="Credit limit"
           type="number"
           placeholder="Credit limit"
-          @[MODEL_EVENTS.input]="updateCreditLimit"
+          :error-message="getFieldErrorMessage('form.creditLimit')"
         />
       </div>
     </template>
@@ -34,31 +34,38 @@
       >
         Delete
       </ui-button>
+      <ui-button
+        class="account__delete-action"
+        @click="updateAccount"
+      >
+        Save
+      </ui-button>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { debounce } from 'lodash-es';
 import { AccountModel } from 'shared-types';
-import { defineComponent, PropType } from 'vue';
+import { defineComponent, PropType, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { ROUTES_NAMES } from '@/routes';
 import { useAccountsStore } from '@/stores';
-import { toSystemAmount } from '@/js/helpers';
+import { useFormValidation } from '@/composable';
+import { toSystemAmount, fromSystemAmount } from '@/js/helpers';
+import {
+  required, minLength, integer, minValue,
+} from '@/js/helpers/validators';
 
 import { useNotificationCenter } from '@/components/notification-center';
 
 import UiButton from '@/components/common/ui-button.vue';
-import InputField, { MODEL_EVENTS } from '@/components/fields/input-field.vue';
-import AccountName from '@/pages/account/account-name.vue';
+import InputField from '@/components/fields/input-field.vue';
 
 export default defineComponent({
   components: {
     UiButton,
     InputField,
-    AccountName,
   },
   props: {
     account: {
@@ -74,28 +81,38 @@ export default defineComponent({
     } = useNotificationCenter();
     const accountsStore = useAccountsStore();
 
-    const updateBalance = debounce(
-      async (value: string) => {
-        await accountsStore.editAccount({
-          id: props.account.id,
-          currentBalance: toSystemAmount(Number(value)),
-        });
+    const form = reactive<{
+      name: string;
+      currentBalance: number;
+      creditLimit: number;
+    }>({
+      name: props.account.name,
+      currentBalance: fromSystemAmount(props.account.currentBalance),
+      creditLimit: fromSystemAmount(props.account.creditLimit),
+    });
 
-        addSuccessNotification('Account balance changed successfully');
+    const {
+      isFormValid,
+      getFieldErrorMessage,
+    } = useFormValidation(
+      { form },
+      {
+        form: {
+          name: {
+            required,
+            minLength: minLength(2),
+          },
+          currentBalance: {
+            required,
+            integer,
+          },
+          creditLimit: {
+            required,
+            integer,
+            minValue: minValue(0),
+          },
+        },
       },
-      2000,
-    );
-
-    const updateCreditLimit = debounce(
-      async (value: string) => {
-        await accountsStore.editAccount({
-          id: props.account.id,
-          creditLimit: toSystemAmount(Number(value)),
-        });
-
-        addSuccessNotification('Account credit limit changed successfully');
-      },
-      2000,
     );
 
     const deleteAccount = async () => {
@@ -114,11 +131,28 @@ export default defineComponent({
       }
     };
 
+    const updateAccount = async () => {
+      if (!isFormValid()) return;
+
+      try {
+        await accountsStore.editAccount({
+          id: props.account.id,
+          name: form.name,
+          creditLimit: toSystemAmount(Number(form.creditLimit)),
+          currentBalance: toSystemAmount(Number(form.currentBalance)),
+        });
+
+        addSuccessNotification('Account data changed successfully');
+      } catch (e) {
+        addErrorNotification('An error occured while trying to update account');
+      }
+    };
+
     return {
-      MODEL_EVENTS,
-      updateBalance,
-      updateCreditLimit,
       deleteAccount,
+      updateAccount,
+      getFieldErrorMessage,
+      form,
     };
   },
 });
@@ -128,12 +162,13 @@ export default defineComponent({
 .account {
   padding: 24px;
 }
-.account__field {
-  &:not(:last-child) {
-    margin-bottom: 24px;
-  }
+.account__form {
+  display: grid;
+  gap: 24px;
 }
 .account__actions {
-  margin-top: 64px;
+  margin-top: 32px;
+  display: flex;
+  justify-content: space-between;
 }
 </style>

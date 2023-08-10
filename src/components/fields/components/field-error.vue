@@ -19,7 +19,7 @@ export default defineComponent({
 
 <style lang="scss">
 .field-error {
-  color: var(--app-danger-color);
+  color: var(--app-error);
   font-size: 14px;
   margin-top: 4px;
   margin-left: 8px;

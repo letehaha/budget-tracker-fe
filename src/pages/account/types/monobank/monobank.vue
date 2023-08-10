@@ -1,12 +1,24 @@
 <template>
-  <div class="account">
-    <div class="mono-account__container">
-      <AccountName :account="account" />
+  <div class="mono-account">
+    <div class="mono-account__form">
+      <input-field
+        v-model="editingForm.name"
+        label="Account name"
+        placeholder="Account name"
+        :error-message="getFieldErrorMessage('form.name')"
+      />
 
-      <template v-if="account.type === ACCOUNT_TYPES.monobank">
-        <LoadLatestTransactions :account="account" />
-      </template>
+      <ui-button @click="updateAccount">
+        Save
+      </ui-button>
     </div>
+
+    <template v-if="account.type === ACCOUNT_TYPES.monobank">
+      <LoadLatestTransactions
+        class="mono-account__load-latest-tx"
+        :account="account"
+      />
+    </template>
 
     <label class="mono-account__visibility">
       Make this account visible on the Dashboard:
@@ -31,19 +43,23 @@ import {
   defineComponent, reactive, watchEffect, watch, PropType,
 } from 'vue';
 import { useAccountsStore } from '@/stores';
+import { useFormValidation } from '@/composable';
+import { required, minLength } from '@/js/helpers/validators';
 
 import {
   useNotificationCenter,
   NotificationType,
 } from '@/components/notification-center';
+import UiButton from '@/components/common/ui-button.vue';
+import InputField from '@/components/fields/input-field.vue';
 
-import AccountName from '@/pages/account/account-name.vue';
 import LoadLatestTransactions from './load-latest-transactions.vue';
 import LoadTransactions from './load-transactions.vue';
 
 export default defineComponent({
   components: {
-    AccountName,
+    UiButton,
+    InputField,
     LoadTransactions,
     LoadLatestTransactions,
   },
@@ -54,8 +70,46 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const { addNotification } = useNotificationCenter();
+    const {
+      addNotification,
+      addSuccessNotification,
+      addErrorNotification,
+    } = useNotificationCenter();
     const accountsStore = useAccountsStore();
+
+    const editingForm = reactive<{ name: string }>({
+      name: props.account.name,
+    });
+
+    const {
+      isFormValid,
+      getFieldErrorMessage,
+    } = useFormValidation(
+      { form: editingForm },
+      {
+        form: {
+          name: {
+            required,
+            minLength: minLength(2),
+          },
+        },
+      },
+    );
+
+    const updateAccount = async () => {
+      if (!isFormValid()) return;
+
+      try {
+        await accountsStore.editAccount({
+          id: props.account.id,
+          name: editingForm.name,
+        });
+
+        addSuccessNotification('Account data changed successfully');
+      } catch (e) {
+        addErrorNotification('An error occured while trying to update account');
+      }
+    };
 
     const form = reactive({
       isEnabled: false,
@@ -108,25 +162,32 @@ export default defineComponent({
 
     return {
       ACCOUNT_TYPES,
+      getFieldErrorMessage,
+      updateAccount,
       form,
+      editingForm,
     };
   },
 });
 </script>
 
 <style lang="scss" scoped>
-.account {
+.mono-account {
   padding: 24px;
 }
-.mono-account__container {
-  display: flex;
+.mono-account__form {
+  display: grid;
+  grid-template-columns: 1fr max-content;
   align-items: flex-end;
-  justify-content: space-between;
+  gap: 16px;
 }
 .mono-account__visibility {
   color: var(--app-on-surface-color);
   margin: 24px 0;
   display: block;
+}
+.mono-account__load-latest-tx {
+  margin-top: 32px;
 }
 .mono-account__load-tx {
   margin-top: 48px;

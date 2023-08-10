@@ -20,15 +20,6 @@
         class="account-create__form-field"
       />
 
-      <!-- <select-field
-        v-model="form.accountType"
-        label="Account type"
-        :values="ACCOUNT_TYPES"
-        label-key="name"
-        is-value-preselected
-        class="account-create__form-field"
-      /> -->
-
       <input-field
         v-model="form.currentBalance"
         label="Initial balance"
@@ -93,13 +84,11 @@ export default defineComponent({
     const form = reactive<{
       name: string;
       currency: CurrencyRecord;
-      accountType: number;
       currentBalance: number;
       creditLimit: number;
     }>({
       name: '',
       currency: systemCurrenciesAssociatedWithUser.value[0],
-      accountType: 1,
       currentBalance: 0,
       creditLimit: 0,
     });
@@ -112,7 +101,6 @@ export default defineComponent({
 
         await accountsStore.createAccount({
           currencyId: form.currency.id,
-          accountTypeId: form.accountType,
           name: form.name,
           creditLimit: toSystemAmount(Number(form.creditLimit)),
           currentBalance: toSystemAmount(Number(form.currentBalance)),
@@ -149,6 +137,9 @@ export default defineComponent({
 <style lang="scss" scoped>
 .account-create {
   padding: 24px;
+}
+.account-create__form {
+  max-width: 440px;
 }
 .account-create__form-field {
   &:not(:last-child) {

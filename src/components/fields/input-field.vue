@@ -92,11 +92,10 @@ export default defineComponent({
     const computedAttrs = {
       ...attrs,
       onInput: (event: InputChangeEvent) => {
-        let value: string | number = event.target.value;
+        const value: string = event.target.value;
 
         if (props.disabled) return;
         if (props.modelValue === value) return;
-        if (props.type === 'number') value = Number(value);
 
         emit(MODEL_EVENTS.input, value);
       },
@@ -161,7 +160,7 @@ export default defineComponent({
     margin: 0;
   }
   input[type="number"] {
-    -moz-appearance: textfield;
+    appearance: textfield;
   }
 }
 .input-field--disabled {

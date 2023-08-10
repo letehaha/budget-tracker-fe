@@ -125,7 +125,7 @@ describe('useFormValidation', () => {
 
       expect(getFieldErrorMessage('form.email')).not.toBe('');
     });
-    it('returns nothing in case error message is not specified', () => {
+    it('uses default `email` error message if message for custom rule doesn\'t exist', () => {
       const form = ref({
         email: invalidEmail,
       });
@@ -137,7 +137,7 @@ describe('useFormValidation', () => {
 
       touchField('form.email');
 
-      expect(getFieldErrorMessage('form.email')).toBe('');
+      expect(getFieldErrorMessage('form.email')).toBe('Value is not a valid email address');
     });
     it('returns custom error message if it is passed and form is invalid', () => {
       const form = ref({
@@ -158,26 +158,6 @@ describe('useFormValidation', () => {
       touchField('form.email');
 
       expect(getFieldErrorMessage('form.email')).toBe(randomRuleMessage);
-    });
-    it('returns nothing when form is invalid and if custom error messages is passed but with wrong rule', () => {
-      const form = ref({
-        email: invalidEmail,
-      });
-      const randomRule = 'randomRule';
-      const randomRuleMessage = 'This random field is invalid';
-      const customValidationMessages = {
-        wrongRandomRule: randomRuleMessage,
-      };
-      const { getFieldErrorMessage, touchField } = useFormValidation(
-        { form },
-        { form: { email: { [randomRule]: email } } },
-        undefined,
-        { customValidationMessages },
-      );
-
-      touchField('form.email');
-
-      expect(getFieldErrorMessage('form.email')).toBe('');
     });
     it('returns custom error message which has Ref format', () => {
       const form = ref({
