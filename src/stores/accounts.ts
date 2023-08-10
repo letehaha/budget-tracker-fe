@@ -55,7 +55,12 @@ export const useAccountsStore = defineStore('system-accounts', () => {
     }
   };
 
-  const editAccount = async ({ id, ...data }) => {
+  const editAccount = async ({ id, ...data }: {
+    id: number;
+    name?: string;
+    currentBalance?: number;
+    creditLimit?: number;
+  }) => {
     try {
       const result = await apiEditAccount({ id, ...data });
 
