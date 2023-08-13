@@ -13,18 +13,19 @@
       <template v-if="!isPaired">
         <button
           data-cy="pair-monobank-account"
+          type="button"
           @click="() => setMonobankToken()"
         >
           Pair Monobank account
         </button>
       </template>
       <template v-else-if="isPaired && isTokenPresent">
-        <button @click="refreshMonoAccounts">
+        <button type="button" @click="refreshMonoAccounts">
           Refresh Monobank balances
         </button>
       </template>
       <template v-else-if="isPaired && !isTokenPresent">
-        <button @click="setMonobankToken({ isUpdate: true })">
+        <button type="button" @click="setMonobankToken({ isUpdate: true })">
           Update Monobank token
         </button>
       </template>

@@ -2,7 +2,7 @@
   <div
     :class="{
       'select-field--disabled': disabled,
-      'select-field--active': isDropdownOpened
+      'select-field--active': isDropdownOpened,
     }"
     class="select-field"
   >
@@ -42,9 +42,10 @@
             :key="item"
           >
             <button
+              type="button"
               :class="{
                 'select-field__dropdown-item--highlighed':
-                  selectedValue === item
+                  selectedValue === item,
               }"
               class="select-field__dropdown-item"
               @click="selectItem(i)"
