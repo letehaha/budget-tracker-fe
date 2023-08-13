@@ -27,8 +27,8 @@
 
 <script lang="ts">
 import { defineComponent, computed } from 'vue';
-import { formatFiat } from '@/js/helpers';
 import { storeToRefs } from 'pinia';
+import { formatFiat } from '@/js/helpers';
 import { useCryptoBinanceStore } from '@/stores';
 
 export default defineComponent({

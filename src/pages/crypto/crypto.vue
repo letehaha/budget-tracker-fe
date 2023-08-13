@@ -21,12 +21,12 @@
 </template>
 
 <script lang="ts">
-import { API_ERROR_CODES } from 'shared-types';
 import {
   defineComponent,
   ref,
   onBeforeMount,
 } from 'vue';
+import { API_ERROR_CODES } from 'shared-types';
 import { formatFiat } from '@/js/helpers';
 import { ApiErrorResponseError } from '@/js/errors';
 import { useCryptoBinanceStore } from '@/stores';

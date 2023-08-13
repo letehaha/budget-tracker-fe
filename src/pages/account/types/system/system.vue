@@ -45,9 +45,9 @@
 </template>
 
 <script lang="ts">
-import { AccountModel } from 'shared-types';
 import { defineComponent, PropType, reactive } from 'vue';
 import { useRouter } from 'vue-router';
+import { AccountModel } from 'shared-types';
 
 import { ROUTES_NAMES } from '@/routes';
 import { useAccountsStore } from '@/stores';

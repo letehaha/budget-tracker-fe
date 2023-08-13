@@ -13,10 +13,10 @@
 </template>
 
 <script lang="ts">
-import { AccountModel } from 'shared-types';
 import { defineComponent, computed, onBeforeUnmount } from 'vue';
 import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
+import { AccountModel } from 'shared-types';
 
 import { ROUTES_NAMES } from '@/routes/constants';
 import { useAccountsStore } from '@/stores';

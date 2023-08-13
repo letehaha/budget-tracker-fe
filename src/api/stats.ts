@@ -1,6 +1,6 @@
+import { format } from 'date-fns';
 import { endpointsTypes } from 'shared-types';
 import { api } from '@/api/_api';
-import { format } from 'date-fns';
 
 interface Params {
   accountId?: endpointsTypes.GetBalanceHistoryPayload['accountId'];

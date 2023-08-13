@@ -8,10 +8,10 @@
 </template>
 
 <script lang="ts">
-import { API_ERROR_CODES, AccountModel } from 'shared-types';
 import {
   defineComponent, computed, ref, watchEffect, PropType,
 } from 'vue';
+import { API_ERROR_CODES, AccountModel } from 'shared-types';
 import { useBanksMonobankStore } from '@/stores';
 import { useLocalStorage } from '@/composable';
 
