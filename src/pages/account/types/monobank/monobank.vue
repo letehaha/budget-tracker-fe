@@ -37,11 +37,11 @@
 </template>
 
 <script lang="ts">
-import { ACCOUNT_TYPES, AccountModel } from 'shared-types';
 import { debounce } from 'lodash-es';
 import {
   defineComponent, reactive, watchEffect, watch, PropType,
 } from 'vue';
+import { ACCOUNT_TYPES, AccountModel } from 'shared-types';
 import { useAccountsStore } from '@/stores';
 import { useFormValidation } from '@/composable';
 import { required, minLength } from '@/js/helpers/validators';

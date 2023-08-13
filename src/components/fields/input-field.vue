@@ -54,8 +54,8 @@
 </template>
 
 <script lang="ts">
-import { KEYBOARD_CODES } from '@/common/types';
 import { defineComponent, computed } from 'vue';
+import { KEYBOARD_CODES } from '@/common/types';
 
 import FieldLabel from './components/field-label.vue';
 import FieldError from './components/field-error.vue';

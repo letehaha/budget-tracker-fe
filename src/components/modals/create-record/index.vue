@@ -118,13 +118,6 @@
 
 <script lang="ts">
 import {
-  CategoryModel,
-  AccountModel,
-  TRANSACTION_TYPES,
-  PAYMENT_TYPES,
-  TransactionModel,
-} from 'shared-types';
-import {
   defineComponent,
   ref,
   watch,
@@ -133,6 +126,13 @@ import {
   PropType,
 } from 'vue';
 import { storeToRefs } from 'pinia';
+import {
+  CategoryModel,
+  AccountModel,
+  TRANSACTION_TYPES,
+  PAYMENT_TYPES,
+  TransactionModel,
+} from 'shared-types';
 import {
   useAccountsStore,
   useCategoriesStore,

@@ -70,9 +70,9 @@
 </template>
 
 <script lang="ts">
-import { ACCOUNT_TYPES, AccountModel } from 'shared-types';
 import { defineComponent } from 'vue';
 import { storeToRefs } from 'pinia';
+import { ACCOUNT_TYPES, AccountModel } from 'shared-types';
 
 import { ROUTES_NAMES } from '@/routes/constants';
 import { useBanksMonobankStore, useAccountsStore } from '@/stores';

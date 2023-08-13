@@ -86,10 +86,10 @@
 </template>
 
 <script lang="ts">
-import { CategoryModel } from 'shared-types';
 import {
   defineComponent, ref, Ref, computed, ComputedRef, PropType,
 } from 'vue';
+import { CategoryModel } from 'shared-types';
 import ChevronRightIcon from '@/assets/icons/chevron-right.svg?component';
 import ChevronLeftIcon from '@/assets/icons/chevron-left.svg?component';
 

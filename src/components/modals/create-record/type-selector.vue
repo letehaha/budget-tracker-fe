@@ -31,8 +31,8 @@
 </template>
 
 <script lang="ts">
-import { PAYMENT_TYPES } from 'shared-types';
 import { defineComponent, PropType } from 'vue';
+import { PAYMENT_TYPES } from 'shared-types';
 
 import {
   createTransaction,

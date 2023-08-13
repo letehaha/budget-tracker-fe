@@ -45,9 +45,9 @@
 </template>
 
 <script lang="ts">
-import { API_ERROR_CODES } from 'shared-types';
 import { defineComponent, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { API_ERROR_CODES } from 'shared-types';
 
 import { ROUTES_NAMES } from '@/routes/constants';
 import { useAuthStore } from '@/stores';

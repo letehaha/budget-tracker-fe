@@ -43,8 +43,8 @@
 </template>
 
 <script lang="ts">
-import { API_ERROR_CODES } from 'shared-types';
 import { defineComponent, reactive, ref } from 'vue';
+import { API_ERROR_CODES } from 'shared-types';
 import { useBanksMonobankStore } from '@/stores';
 import { ApiErrorResponseError } from '@/js/errors';
 import InputField from '@/components/fields/input-field.vue';

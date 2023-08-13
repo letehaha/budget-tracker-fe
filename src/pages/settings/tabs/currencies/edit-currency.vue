@@ -58,8 +58,8 @@ import {
   watch,
   PropType,
 } from 'vue';
-import { API_ERROR_CODES } from 'shared-types';
 import { storeToRefs } from 'pinia';
+import { API_ERROR_CODES } from 'shared-types';
 import { useCurrenciesStore } from '@/stores';
 import { editUserCurrenciesExchangeRates, deleteCustomRate } from '@/api/currencies';
 import UiButton from '@/components/common/ui-button.vue';

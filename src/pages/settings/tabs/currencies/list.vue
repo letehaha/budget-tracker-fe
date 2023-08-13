@@ -68,8 +68,8 @@ import {
   onMounted,
   computed,
 } from 'vue';
-import { API_ERROR_CODES } from 'shared-types';
 import { storeToRefs } from 'pinia';
+import { API_ERROR_CODES } from 'shared-types';
 import { useCurrenciesStore, useAccountsStore } from '@/stores';
 import { UserCurrencyRecord, ExchangeRateRecord } from '@/js/records';
 import { deleteUserCurrency, loadUserCurrenciesExchangeRates } from '@/api/currencies';
