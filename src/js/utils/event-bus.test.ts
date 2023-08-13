@@ -6,8 +6,8 @@ describe('js/utils/event-bus', () => {
   });
 
   test('listens for emitted events with no passed args', () => {
-    const spy = jest.fn();
-    const spy2 = jest.fn();
+    const spy = vi.fn();
+    const spy2 = vi.fn();
 
     eventBus.on(BUS_EVENTS.error, spy);
     eventBus.on(BUS_EVENTS.error, spy2);
@@ -21,8 +21,8 @@ describe('js/utils/event-bus', () => {
   });
 
   test('listens for emitted events with passed args', () => {
-    const spy = jest.fn();
-    const spy2 = jest.fn();
+    const spy = vi.fn();
+    const spy2 = vi.fn();
     const payload = 'test string';
 
     eventBus.on(BUS_EVENTS.error, spy);
@@ -37,7 +37,7 @@ describe('js/utils/event-bus', () => {
   });
 
   test('multiple calls work fine', () => {
-    const spy = jest.fn();
+    const spy = vi.fn();
     const payload1 = 'test string';
     const payload2 = 'test string 2';
 
@@ -54,8 +54,8 @@ describe('js/utils/event-bus', () => {
   });
 
   test('unsubscribe works fine', () => {
-    const spy1 = jest.fn();
-    const spy2 = jest.fn();
+    const spy1 = vi.fn();
+    const spy2 = vi.fn();
 
     eventBus.on(BUS_EVENTS.error, spy1);
     eventBus.on(BUS_EVENTS.error, spy2);
@@ -75,8 +75,8 @@ describe('js/utils/event-bus', () => {
   });
 
   test('reset works correctly', () => {
-    const spy1 = jest.fn();
-    const spy2 = jest.fn();
+    const spy1 = vi.fn();
+    const spy2 = vi.fn();
 
     eventBus.on(BUS_EVENTS.error, spy1);
     eventBus.on(BUS_EVENTS.error, spy2);
@@ -96,7 +96,7 @@ describe('js/utils/event-bus', () => {
   });
 
   test('"error" event is fired', () => {
-    const spy = jest.fn();
+    const spy = vi.fn();
     const payload = 'error message';
 
     eventBus.on(BUS_EVENTS.error, spy);

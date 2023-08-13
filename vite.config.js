@@ -28,6 +28,12 @@ export default ({ mode }) => {
         },
       ],
     },
+    test: {
+      globals: true,
+      include: ['src/**/?(*.)+(spec|test).[jt]s?(x)'],
+      environment: 'jsdom',
+      watch: false,
+    },
     css: {
       preprocessorOptions: {
         scss: {
