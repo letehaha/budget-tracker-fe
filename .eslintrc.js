@@ -31,13 +31,12 @@ module.exports = {
     'plugin:vue/vue3-essential',
     'plugin:vue/vue3-recommended',
     '@vue/airbnb',
-    '@vue/typescript/recommended',
+    '@vue/eslint-config-typescript/recommended',
   ],
 
   plugins: [
     // required to lint *.vue files
     'vue',
-    '@typescript-eslint',
   ],
 
   settings: {
@@ -60,6 +59,8 @@ module.exports = {
         'e', // for e.returnvalue
       ],
     }],
+    // false-positive errors, so offed for now
+    'vue/no-setup-props-destructure': 'off',
     'no-unused-vars': 'off',
     'no-useless-catch': 'off',
     'no-underscore-dangle': 'off',
@@ -75,11 +76,6 @@ module.exports = {
       ignore: ['.svg'],
     }],
     'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
-
-    '@typescript-eslint/no-unused-vars': 'warn',
-    '@typescript-eslint/no-shadow': ['error', {
-      allow: ['state', 'getters'],
-    }],
 
     'arrow-body-style': 'warn',
     'func-names': [1, 'as-needed'],
