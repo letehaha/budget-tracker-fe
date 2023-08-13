@@ -21,7 +21,7 @@
       />
 
       <input-field
-        v-model="form.currentBalance"
+        v-model="form.initialBalance"
         label="Initial balance"
         placeholder="Initial balance"
         class="account-create__form-field"
@@ -84,12 +84,12 @@ export default defineComponent({
     const form = reactive<{
       name: string;
       currency: CurrencyRecord;
-      currentBalance: number;
+      initialBalance: number;
       creditLimit: number;
     }>({
       name: '',
       currency: systemCurrenciesAssociatedWithUser.value[0],
-      currentBalance: 0,
+      initialBalance: 0,
       creditLimit: 0,
     });
 
@@ -103,7 +103,7 @@ export default defineComponent({
           currencyId: form.currency.id,
           name: form.name,
           creditLimit: toSystemAmount(Number(form.creditLimit)),
-          currentBalance: toSystemAmount(Number(form.currentBalance)),
+          initialBalance: toSystemAmount(Number(form.initialBalance)),
         });
 
         addNotification({

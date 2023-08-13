@@ -4,7 +4,6 @@ import { ACCOUNT_TYPES, AccountModel } from 'shared-types';
 import {
   loadAccounts as apiLoadAccounts,
   createAccount as apiCreateAccount,
-  CreateAccountPayload,
   editAccount as apiEditAccount,
   deleteAccount as apiDeleteAccount,
   DeleteAccountPayload,
@@ -43,7 +42,7 @@ export const useAccountsStore = defineStore('system-accounts', () => {
     }
   };
 
-  const createAccount = async (payload: CreateAccountPayload) => {
+  const createAccount = async (payload: Parameters<typeof apiCreateAccount>[0]) => {
     try {
       const result = await apiCreateAccount(payload);
 
