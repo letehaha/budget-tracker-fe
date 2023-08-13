@@ -2,3 +2,6 @@
 # ... This file ignores commits that are just cleaning up the code, fixing prettier
 # ... or code-style-related eslint warnings
 # ...
+
+# eslint warnings cleanup
+597ed124c0170a2deb9c840a0fe884f74199aba2
