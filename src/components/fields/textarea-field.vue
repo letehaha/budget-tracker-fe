@@ -5,7 +5,7 @@
       'text-field--error': errorMessage,
       'text-field--disabled': disabled,
       'text-field--readonly': readonly,
-      'text-field--dirty': hasValue
+      'text-field--dirty': hasValue,
     }
     "
   >

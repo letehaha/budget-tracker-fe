@@ -5,7 +5,7 @@
       `button button--${size} button--${theme}`,
       {
         'button--disabled': disabled,
-      }
+      },
     ]"
     :disabled="disabled"
     @click="$emit(EVENTS.click)"

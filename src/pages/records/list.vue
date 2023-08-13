@@ -5,6 +5,7 @@
     </div>
     <button
       class="transactions-list__load-more"
+      type="button"
       @click="loadNext"
     >
       Load more

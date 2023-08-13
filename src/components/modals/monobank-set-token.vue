@@ -4,7 +4,7 @@
     data-cy="monobank-set-token-modal"
   >
     <div>
-      <button @click="$emit(MODAL_EVENTS.closeModal)">
+      <button type="button" @click="$emit(MODAL_EVENTS.closeModal)">
         Close
       </button>
     </div>

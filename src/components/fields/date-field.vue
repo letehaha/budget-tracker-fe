@@ -2,7 +2,7 @@
   <div
     :class="{
       'date-field--error': errorMessage,
-      'date-field--disabled': $attrs.disabled
+      'date-field--disabled': $attrs.disabled,
     }"
     class="date-field"
   >

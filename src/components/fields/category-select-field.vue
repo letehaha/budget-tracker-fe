@@ -2,7 +2,7 @@
   <div
     :class="{
       'category-select-field--disabled': $attrs.disabled,
-      'category-select-field--active': isDropdownOpened
+      'category-select-field--active': isDropdownOpened,
     }"
     class="category-select-field"
   >
@@ -48,7 +48,7 @@
                 type="button"
                 class="category-select-field__dropdown-item"
                 :class="{
-                  'category-select-field__dropdown-item--highlighed': selectedValue.id === topLevelCategory.id
+                  'category-select-field__dropdown-item--highlighed': selectedValue.id === topLevelCategory.id,
                 }"
                 @click="selectItem(topLevelCategory, true)"
               >
