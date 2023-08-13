@@ -10,10 +10,10 @@
 </template>
 
 <script lang="ts">
-import { ACCOUNT_TYPES } from 'shared-types';
 import { defineComponent, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { storeToRefs } from 'pinia';
+import { ACCOUNT_TYPES } from 'shared-types';
 import { useAccountsStore } from '@/stores';
 
 import MonobankAccount from './types/monobank/monobank.vue';

@@ -15,10 +15,10 @@
 
 <script lang="ts">
 import { debounce } from 'lodash-es';
-import { AccountModel } from 'shared-types';
 import {
   defineComponent, reactive, watchEffect, watch, PropType,
 } from 'vue';
+import { AccountModel } from 'shared-types';
 
 import { useAccountsStore } from '@/stores';
 

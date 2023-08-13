@@ -46,10 +46,10 @@
 </template>
 
 <script lang="ts">
-import { ACCOUNT_TYPES } from 'shared-types';
 import { defineComponent, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
+import { ACCOUNT_TYPES } from 'shared-types';
 
 import { ROUTES_NAMES } from '@/routes/constants';
 import { useAccountsStore, useCurrenciesStore } from '@/stores';
