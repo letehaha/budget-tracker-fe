@@ -14,9 +14,9 @@
     "baseUrl": ".",
     "types": [
       "vite/client",
+      "vitest/globals",
       "vite-svg-loader",
-      "node",
-      "jest"
+      "node"
     ],
     "paths": {
       "@/*": ["src/*"],
