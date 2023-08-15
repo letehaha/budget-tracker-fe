@@ -20,7 +20,9 @@ export const createAccount = async (
   return result;
 };
 
-export const editAccount = async ({ id, ...data }): Promise<AccountModel> => {
+export const editAccount = async (
+  { id, ...data }: endpointsTypes.UpdateAccountBody & { id: number },
+): Promise<AccountModel> => {
   const result = await api.put(`/accounts/${id}`, data);
 
   return result;

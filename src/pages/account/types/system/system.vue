@@ -54,7 +54,7 @@ import { useAccountsStore } from '@/stores';
 import { useFormValidation } from '@/composable';
 import { toSystemAmount, fromSystemAmount } from '@/js/helpers';
 import {
-  required, minLength, integer, minValue,
+  required, minLength, decimal, minValue,
 } from '@/js/helpers/validators';
 
 import { useNotificationCenter } from '@/components/notification-center';
@@ -104,11 +104,11 @@ export default defineComponent({
           },
           currentBalance: {
             required,
-            integer,
+            decimal,
           },
           creditLimit: {
             required,
-            integer,
+            decimal,
             minValue: minValue(0),
           },
         },
