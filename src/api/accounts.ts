@@ -1,4 +1,4 @@
-import { AccountModel } from 'shared-types';
+import { AccountModel, endpointsTypes } from 'shared-types';
 import { api } from '@/api/_api';
 
 export const loadAccounts = async (): Promise<AccountModel[]> => {
@@ -7,24 +7,22 @@ export const loadAccounts = async (): Promise<AccountModel[]> => {
   return result;
 };
 
-export type CreateAccountPayload = {
-  name: string;
-  currencyId: number;
-  currentBalance?: number;
-  creditLimit?: number;
-}
-export const createAccount = async (payload: CreateAccountPayload): Promise<AccountModel> => {
+export const createAccount = async (
+  payload: Omit<endpointsTypes.CreateAccountBody, 'accountTypeId'>,
+): Promise<AccountModel> => {
   const result = await api.post('/accounts', {
     ...payload,
     // For now we just doesn't allow users to select account type
     // (credit card, debit card, etc) on UI
-    accountType: 1,
+    accountTypeId: 1,
   });
 
   return result;
 };
 
-export const editAccount = async ({ id, ...data }): Promise<AccountModel> => {
+export const editAccount = async (
+  { id, ...data }: endpointsTypes.UpdateAccountBody & { id: number },
+): Promise<AccountModel> => {
   const result = await api.put(`/accounts/${id}`, data);
 
   return result;
