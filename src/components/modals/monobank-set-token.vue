@@ -3,22 +3,28 @@
     class="monobank-set-token"
     data-cy="monobank-set-token-modal"
   >
-    <div>
-      <button type="button" @click="$emit(MODAL_EVENTS.closeModal)">
-        Close
-      </button>
-    </div>
+    <ui-button
+      type="button"
+      class="button-style-reset monobank-set-token__close"
+      theme="light-dark"
+      is-icon
+      @click="$emit(MODAL_EVENTS.closeModal)"
+    >
+      X
+    </ui-button>
+
     <p class="monobank-set-token__descr">
       Please visit
       <a href="https://api.monobank.ua/">https://api.monobank.ua/</a>
-      and follow all instructions. At the end you will see token that should be
-      copied and pasted to the field below.
+      and follow all the instructions. Paste the API token from Monobank in the
+      field below
     </p>
     <div class="monobank-set-token__row">
       <input-field
         v-model="form.token"
         name="token"
-        label="Token"
+        label="API Token"
+        :error-message="getFieldErrorMessage('form.token')"
       />
     </div>
     <div class="monobank-set-token__actions">
@@ -46,7 +52,10 @@
 import { defineComponent, reactive, ref } from 'vue';
 import { API_ERROR_CODES } from 'shared-types';
 import { useBanksMonobankStore } from '@/stores';
+import { MONOBANK_API_TOKEN_LENGTH } from '@/js/const';
 import { ApiErrorResponseError } from '@/js/errors';
+import { useFormValidation } from '@/composable';
+import { required, minLength } from '@/js/helpers/validators';
 import InputField from '@/components/fields/input-field.vue';
 import Button from '@/components/common/ui-button.vue';
 import { EVENTS as MODAL_EVENTS } from '@/components/modal-center/ui-modal.vue';
@@ -65,17 +74,37 @@ export default defineComponent({
   props: {
     isUpdate: { type: Boolean, default: false },
   },
+  emits: [MODAL_EVENTS.closeModal],
   setup(props, { emit }) {
     const monobankStore = useBanksMonobankStore();
     const { addNotification } = useNotificationCenter();
 
     const isLoading = ref(false);
-    const form = reactive({
+    const form = reactive<{ token: string }>({
       token: null,
     });
+    const { isFormValid, getFieldErrorMessage } = useFormValidation(
+      { form },
+      {
+        form: {
+          token: {
+            required,
+            apiToken: minLength(MONOBANK_API_TOKEN_LENGTH),
+          },
+        },
+      },
+      undefined,
+      {
+        customValidationMessages: {
+          apiToken: `Monobank API token should be ${MONOBANK_API_TOKEN_LENGTH} characters length`,
+        },
+      },
+    );
 
     const submit = async () => {
       try {
+        if (!isFormValid()) return;
+
         isLoading.value = true;
 
         if (props.isUpdate) {
@@ -116,6 +145,7 @@ export default defineComponent({
       form,
       isLoading,
       submit,
+      getFieldErrorMessage,
     };
   },
 });
@@ -123,10 +153,17 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .monobank-set-token {
-  background-color: var(--app-bg-color);
-  padding: 60px;
+  background-color: var(--app-bg-box);
+  padding: 48px 32px;
   width: 100%;
   max-width: 600px;
+  position: relative;
+  border-radius: 12px;
+}
+.monobank-set-token__close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
 }
 .monobank-set-token__row {
   margin-bottom: 20px;
@@ -137,5 +174,9 @@ export default defineComponent({
 }
 .monobank-set-token__descr {
   margin: 20px 0;
+
+  a {
+    color: var(--app-primary);
+  }
 }
 </style>

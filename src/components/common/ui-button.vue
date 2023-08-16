@@ -5,6 +5,7 @@
       `button button--${size} button--${theme}`,
       {
         'button--disabled': disabled,
+        'button--is-icon': isIcon,
       },
     ]"
     :disabled="disabled"
@@ -41,6 +42,7 @@ export default defineComponent({
       default: (): BUTTON_THEMES => 'primary',
     },
     disabled: { type: Boolean, default: false },
+    isIcon: { type: Boolean, default: false },
   },
   emits: Object.values(EVENTS),
   data: () => ({
@@ -69,6 +71,12 @@ $transition: box-shadow 0.2s ease-out;
   &[disabled] {
     cursor: not-allowed;
   }
+}
+
+.button--is-icon {
+  padding: 0;
+  width: 40px;
+  height: 40px;
 }
 
 .button--primary {
