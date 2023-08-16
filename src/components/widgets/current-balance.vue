@@ -1,5 +1,8 @@
 <template>
   <div class="current-balance-widget">
+    <h3 class="current-balance-widget__title">
+      Total balance (last month)
+    </h3>
     <highcharts
       :options="chartOptions"
     />
@@ -40,32 +43,86 @@ export default defineComponent({
     const chartOptions = computed(() => ({
       chart: {
         type: 'area',
+        backgroundColor: 'transparent',
       },
-      title: {
-        text: null,
-      },
+      title: null,
       xAxis: {
         type: 'datetime',
+        dateTimeLabelFormats: {
+          day: '%d %b',
+        },
+        // Show fullheight crosshair for the selected point
+        // crosshair: true,
+        gridLineWidth: 0,
+        labels: {
+          style: {
+            color: 'var(--app-text-base)', // Light gray color for the xAxis labels
+          },
+        },
       },
       yAxis: {
-        title: {
-          text: 'Amount',
+        title: null,
+        labels: {
+          style: {
+            color: 'var(--app-text-base)', // Light gray color for the yAxis labels
+          },
+        },
+        gridLineColor: 'rgba(var(--app-primary-rgb), 0.1)',
+      },
+      plotOptions: {
+        area: {
+          fillOpacity: 0.5,
+          lineColor: 'var(--app-primary)',
+          lineWidth: 2,
+          states: {
+            hover: {
+              lineWidth: 3,
+            },
+          },
+          threshold: null,
+          fillColor: {
+            linearGradient: {
+              x1: 0, x2: 0, y1: 0, y2: 1,
+            },
+            stops: [
+              [0, 'rgba(var(--app-primary-rgb), 0.3)'],
+              [1, 'rgba(var(--app-primary-rgb), 0)'],
+            ],
+          },
+          marker: {
+            // This will make the line smoother without showing the data points
+            enabled: false,
+            states: {
+              hover: {
+                enabled: true,
+                fillColor: 'var(--app-primary)',
+                lineColor: 'var(--app-primary)',
+                lineWidth: 0,
+              },
+            },
+          },
+        },
+      },
+      tooltip: {
+        useHTML: true, // Use HTML in the tooltip
+        headerFormat: '<span style="font-size: 14px">{point.key}</span><br>', // Set the date's size to 14px
+        pointFormat: '<span> <span>Total balance:</span> <b>{point.y}</b><br/>', // Custom point format
+        backgroundColor: 'var(--app-bg-box)',
+        borderColor: 'transparent',
+        shadow: false,
+        borderRadius: 8,
+        style: {
+          color: 'var(--app-text-base)',
         },
       },
       series: [{
+        name: 'Total balance',
         showInLegend: false,
         data: balanceHistory.value.map(
           (point) => [new Date(point.date).getTime(), fromSystemAmount(point.amount)],
         ),
       }],
       credits: false,
-      plotOptions: {
-        area: {
-          dataLabels: {
-            enabled: false, // Disable data labels
-          },
-        },
-      },
     }));
 
     onMounted(async () => {
@@ -81,5 +138,12 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-
+.current-balance-widget {
+  background-color: var(--app-surface-color);
+  padding: 24px;
+  border-radius: 12px;
+}
+.current-balance-widget__title {
+  margin-bottom: 24px;
+}
 </style>
