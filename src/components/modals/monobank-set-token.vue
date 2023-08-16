@@ -52,6 +52,7 @@
 import { defineComponent, reactive, ref } from 'vue';
 import { API_ERROR_CODES } from 'shared-types';
 import { useBanksMonobankStore } from '@/stores';
+import { MONOBANK_API_TOKEN_LENGTH } from '@/js/const';
 import { ApiErrorResponseError } from '@/js/errors';
 import { useFormValidation } from '@/composable';
 import { required, minLength } from '@/js/helpers/validators';
@@ -63,8 +64,6 @@ import {
   useNotificationCenter,
   NotificationType,
 } from '@/components/notification-center';
-
-const MONOBANK_API_TOKEN_LENGTH = 44;
 
 export default defineComponent({
   name: 'monobank-set-token',
