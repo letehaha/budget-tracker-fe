@@ -56,7 +56,7 @@ export default defineComponent({
         gridLineWidth: 0,
         labels: {
           style: {
-            color: 'var(--app-text-base)', // Light gray color for the xAxis labels
+            color: 'var(--app-text-base)',
           },
         },
       },
@@ -64,7 +64,7 @@ export default defineComponent({
         title: null,
         labels: {
           style: {
-            color: 'var(--app-text-base)', // Light gray color for the yAxis labels
+            color: 'var(--app-text-base)',
           },
         },
         gridLineColor: 'rgba(var(--app-primary-rgb), 0.1)',
@@ -90,7 +90,7 @@ export default defineComponent({
             ],
           },
           marker: {
-            // This will make the line smoother without showing the data points
+            // Disable markers so the line will be smoother
             enabled: false,
             states: {
               hover: {
@@ -104,9 +104,9 @@ export default defineComponent({
         },
       },
       tooltip: {
-        useHTML: true, // Use HTML in the tooltip
-        headerFormat: '<span style="font-size: 14px">{point.key}</span><br>', // Set the date's size to 14px
-        pointFormat: '<span> <span>Total balance:</span> <b>{point.y}</b><br/>', // Custom point format
+        useHTML: true,
+        headerFormat: '<span style="font-size: 14px">{point.key}</span><br>',
+        pointFormat: '<span> <span>Total balance:</span> <b>{point.y}</b><br/>',
         backgroundColor: 'var(--app-bg-box)',
         borderColor: 'transparent',
         shadow: false,
