@@ -3,23 +3,18 @@
     <h3 class="current-balance-widget__title">
       Total balance (last month)
     </h3>
-    <highcharts
-      :options="chartOptions"
-    />
+    <highcharts class="current-balance-widget__chart" :options="chartOptions" />
   </div>
 </template>
 
 <script lang="ts">
 import {
-  defineComponent,
-  onMounted,
-  ref,
-  computed,
+  defineComponent, onMounted, ref, computed,
 } from 'vue';
 import { Chart } from 'highcharts-vue';
-import { subDays } from 'date-fns';
+import { format, subDays } from 'date-fns';
 import { getBalanceHistory } from '@/api';
-import { fromSystemAmount } from '@/js/helpers';
+import { fromSystemAmount, toLocalFiatCurrency } from '@/js/helpers';
 import { aggregateData } from './helpers';
 
 const loadBalanceData = async () => {
@@ -44,6 +39,7 @@ export default defineComponent({
       chart: {
         type: 'area',
         backgroundColor: 'transparent',
+        height: 270,
       },
       title: null,
       xAxis: {
@@ -105,23 +101,36 @@ export default defineComponent({
       },
       tooltip: {
         useHTML: true,
-        headerFormat: '<span style="font-size: 14px">{point.key}</span><br>',
-        pointFormat: '<span> <span>Total balance:</span> <b>{point.y}</b><br/>',
         backgroundColor: 'var(--app-bg-box)',
         borderColor: 'transparent',
+        formatter() {
+          return `
+            <div class="current-balance-widget__tooltip">
+              <div class="current-balance-widget__tooltip-date">
+                ${format(this.x, 'MMMM d, yyyy')}
+              </div>
+              <div class="current-balance-widget__tooltip-value">
+                Balance: <span>${toLocalFiatCurrency(this.y)}</span>
+              </div>
+            </div>
+          `;
+        },
         shadow: false,
         borderRadius: 8,
         style: {
           color: 'var(--app-text-base)',
         },
       },
-      series: [{
-        name: 'Total balance',
-        showInLegend: false,
-        data: balanceHistory.value.map(
-          (point) => [new Date(point.date).getTime(), fromSystemAmount(point.amount)],
-        ),
-      }],
+      series: [
+        {
+          name: 'Total balance',
+          showInLegend: false,
+          data: balanceHistory.value.map((point) => [
+            new Date(point.date).getTime(),
+            fromSystemAmount(point.amount),
+          ]),
+        },
+      ],
       credits: false,
     }));
 
@@ -142,8 +151,25 @@ export default defineComponent({
   background-color: var(--app-surface-color);
   padding: 24px;
   border-radius: 12px;
+  max-height: 350px;
 }
 .current-balance-widget__title {
   margin-bottom: 24px;
+}
+.current-balance-widget__tooltip {
+  padding: 4px;
+}
+.current-balance-widget__tooltip-date {
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+.current-balance-widget__tooltip-value {
+  font-size: 18px;
+
+  span {
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 1px;
+  }
 }
 </style>
