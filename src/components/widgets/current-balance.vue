@@ -1,22 +1,20 @@
 <template>
   <div class="current-balance-widget">
-    <highcharts
-      :options="chartOptions"
-    />
+    <h3 class="current-balance-widget__title">
+      Total balance (last month)
+    </h3>
+    <highcharts class="current-balance-widget__chart" :options="chartOptions" />
   </div>
 </template>
 
 <script lang="ts">
 import {
-  defineComponent,
-  onMounted,
-  ref,
-  computed,
+  defineComponent, onMounted, ref, computed,
 } from 'vue';
 import { Chart } from 'highcharts-vue';
-import { subDays } from 'date-fns';
+import { format, subDays } from 'date-fns';
 import { getBalanceHistory } from '@/api';
-import { fromSystemAmount } from '@/js/helpers';
+import { fromSystemAmount, toLocalFiatCurrency } from '@/js/helpers';
 import { aggregateData } from './helpers';
 
 const loadBalanceData = async () => {
@@ -40,32 +38,100 @@ export default defineComponent({
     const chartOptions = computed(() => ({
       chart: {
         type: 'area',
+        backgroundColor: 'transparent',
+        height: 270,
       },
-      title: {
-        text: null,
-      },
+      title: null,
       xAxis: {
         type: 'datetime',
-      },
-      yAxis: {
-        title: {
-          text: 'Amount',
+        dateTimeLabelFormats: {
+          day: '%d %b',
         },
-      },
-      series: [{
-        showInLegend: false,
-        data: balanceHistory.value.map(
-          (point) => [new Date(point.date).getTime(), fromSystemAmount(point.amount)],
-        ),
-      }],
-      credits: false,
-      plotOptions: {
-        area: {
-          dataLabels: {
-            enabled: false, // Disable data labels
+        // Show fullheight crosshair for the selected point
+        // crosshair: true,
+        gridLineWidth: 0,
+        labels: {
+          style: {
+            color: 'var(--app-text-base)',
           },
         },
       },
+      yAxis: {
+        title: null,
+        labels: {
+          style: {
+            color: 'var(--app-text-base)',
+          },
+        },
+        gridLineColor: 'rgba(var(--app-primary-rgb), 0.1)',
+      },
+      plotOptions: {
+        area: {
+          fillOpacity: 0.5,
+          lineColor: 'var(--app-primary)',
+          lineWidth: 2,
+          states: {
+            hover: {
+              lineWidth: 3,
+            },
+          },
+          threshold: null,
+          fillColor: {
+            linearGradient: {
+              x1: 0, x2: 0, y1: 0, y2: 1,
+            },
+            stops: [
+              [0, 'rgba(var(--app-primary-rgb), 0.3)'],
+              [1, 'rgba(var(--app-primary-rgb), 0)'],
+            ],
+          },
+          marker: {
+            // Disable markers so the line will be smoother
+            enabled: false,
+            states: {
+              hover: {
+                enabled: true,
+                fillColor: 'var(--app-primary)',
+                lineColor: 'var(--app-primary)',
+                lineWidth: 0,
+              },
+            },
+          },
+        },
+      },
+      tooltip: {
+        useHTML: true,
+        backgroundColor: 'var(--app-bg-box)',
+        borderColor: 'transparent',
+        formatter() {
+          return `
+            <div class="current-balance-widget__tooltip">
+              <div class="current-balance-widget__tooltip-date">
+                ${format(this.x, 'MMMM d, yyyy')}
+              </div>
+              <div class="current-balance-widget__tooltip-value">
+                Balance: <span>${toLocalFiatCurrency(this.y)}</span>
+              </div>
+            </div>
+          `;
+        },
+        shadow: false,
+        borderRadius: 8,
+        style: {
+          color: 'var(--app-text-base)',
+        },
+      },
+      series: [
+        {
+          name: 'Total balance',
+          showInLegend: false,
+          data: balanceHistory.value.map((point) => [
+            new Date(point.date).getTime(),
+            fromSystemAmount(point.amount),
+          ]),
+        },
+      ],
+      credits: false,
     }));
 
     onMounted(async () => {
@@ -81,5 +147,29 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
+.current-balance-widget {
+  background-color: var(--app-surface-color);
+  padding: 24px;
+  border-radius: 12px;
+  max-height: 350px;
+}
+.current-balance-widget__title {
+  margin-bottom: 24px;
+}
+.current-balance-widget__tooltip {
+  padding: 4px;
+}
+.current-balance-widget__tooltip-date {
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+.current-balance-widget__tooltip-value {
+  font-size: 18px;
 
+  span {
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 1px;
+  }
+}
 </style>

@@ -2,10 +2,6 @@ $primary-color: #2ecc71;
 $danger-color: #e1301c;
 
 body {
-  --app-primary: #7E56DA;
-  --app-error: #E05744;
-  --app-success: #27AE60;
-
   --app-border-default: #DFDFE3;
   --app-border-disabled: #D0D1DA;
 
@@ -45,6 +41,9 @@ body {
   --app-income-color-rgb: var(--primary-500-rgb);
 
   @each $cssVar, $value in (
+    --app-primary: #7E56DA,
+    --app-error: #E05744,
+    --app-success: #27AE60,
     --app-expense-color: #e74c3c,
     --app-transfer-color: #95a5a6,
 
@@ -64,10 +63,6 @@ body {
   }
 
   &.dark {
-    --app-primary: #8E6BDF;
-    --app-error: #E46A5A;
-    --app-success: #2CC36B;
-
     --app-border-default: #616161;
     --app-border-disabled: #383838;
 
@@ -93,6 +88,10 @@ body {
     --app-text-on-primary: #FFFFFF;
 
     @each $cssVar, $value in (
+      --app-primary: #8E6BDF,
+      --app-error: #E46A5A,
+      --app-success: #2CC36B,
+
       --app-danger-color: #532219,
       --app-warning-color: #5d4d16,
       --app-success-color: #103b31,
