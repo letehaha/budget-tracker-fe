@@ -47,6 +47,7 @@
     "@storybook/cli": "^7.2.3",
     "@storybook/vue3": "^7.2.3",
     "@storybook/vue3-vite": "^7.2.3",
+    "@types/lodash-es": "^4.17.8",
     "@vitejs/plugin-vue": "^4.2.3",
     "@vue/compiler-sfc": "^3.3.4",
     "@vue/eslint-config-airbnb": "^7.0.0",
