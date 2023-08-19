@@ -16,7 +16,7 @@
         label="Currency"
         :values="systemCurrenciesAssociatedWithUser"
         is-value-preselected
-        :label-key="(item: CurrencyRecord) => `${item.code} - ${item.currency}`"
+        :label-key="(item: CurrencyModel) => `${item.code} - ${item.currency}`"
         class="account-create__form-field"
       />
 
@@ -49,12 +49,11 @@
 import { defineComponent, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
-import { ACCOUNT_TYPES } from 'shared-types';
+import { ACCOUNT_TYPES, CurrencyModel } from 'shared-types';
 
 import { ROUTES_NAMES } from '@/routes/constants';
 import { useAccountsStore, useCurrenciesStore } from '@/stores';
 
-import { CurrencyRecord } from '@/js/records';
 import { toSystemAmount } from '@/js/helpers';
 
 import {
@@ -83,7 +82,7 @@ export default defineComponent({
 
     const form = reactive<{
       name: string;
-      currency: CurrencyRecord;
+      currency: CurrencyModel;
       initialBalance: number;
       creditLimit: number;
     }>({
@@ -124,7 +123,6 @@ export default defineComponent({
 
     return {
       ACCOUNT_TYPES,
-      CurrencyRecord,
       form,
       isLoading,
       systemCurrenciesAssociatedWithUser,

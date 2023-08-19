@@ -13,7 +13,7 @@
   <template v-if="showTargetAmountField">
     <form-row>
       <input-field
-        :label="`Target amount (${targetCurrency.code})`"
+        :label="`Target amount (${targetCurrency.currency.code})`"
         type="number"
         :model-value="formTargetAmount"
         @update:model-value="emit('update:form-target-amount', Number($event))"
@@ -24,10 +24,9 @@
 
 <script lang="ts">
 import { defineComponent, PropType, computed } from 'vue';
-import { AccountModel } from 'shared-types';
+import { AccountModel, UserCurrencyModel } from 'shared-types';
 
 import { useCurrenciesStore } from '@/stores';
-import { UserCurrencyRecord } from '@/js/records';
 import SelectField from '@/components/fields/select-field.vue';
 import InputField from '@/components/fields/input-field.vue';
 
@@ -41,7 +40,7 @@ export default defineComponent({
   },
   props: {
     formCurrency: {
-      type: Object as PropType<UserCurrencyRecord>,
+      type: Object as PropType<UserCurrencyModel>,
       default: null,
     },
     formTargetAmount: {
@@ -57,7 +56,7 @@ export default defineComponent({
       required: true,
     },
     currencies: {
-      type: Array as PropType<UserCurrencyRecord[]>,
+      type: Array as PropType<UserCurrencyModel[]>,
       required: true,
     },
     formAccount: {
@@ -69,14 +68,7 @@ export default defineComponent({
       default: null,
     },
   },
-  emits: {
-    'update:form-currency': function (account: UserCurrencyRecord) {
-      return account instanceof UserCurrencyRecord;
-    },
-    'update:form-target-amount': function (value: number) {
-      return typeof value === 'number';
-    },
-  },
+  emits: ['update:form-currency', 'update:form-target-amount'],
   setup(props, { emit }) {
     const { getCurrency } = useCurrenciesStore();
 

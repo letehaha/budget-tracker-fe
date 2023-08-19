@@ -6,12 +6,12 @@ import {
   loadUserCurrencies,
   setBaseUserCurrency,
 } from '@/api/currencies';
-import { CurrencyRecord, UserCurrencyRecord } from '@/js/records';
+import { CurrencyModel, UserCurrencyModel } from 'shared-types';
 
 export const useCurrenciesStore = defineStore('currencies', () => {
-  const systemCurrencies = ref<CurrencyRecord[]>([]);
-  const currencies = ref<UserCurrencyRecord[]>([]);
-  const baseCurrency = ref<UserCurrencyRecord>(null);
+  const systemCurrencies = ref<CurrencyModel[]>([]);
+  const currencies = ref<UserCurrencyModel[]>([]);
+  const baseCurrency = ref<UserCurrencyModel>(null);
   const isBaseCurrencyExists = computed(() => Boolean(baseCurrency.value));
 
   const systemCurrenciesAssociatedWithUser = computed(
@@ -20,10 +20,10 @@ export const useCurrenciesStore = defineStore('currencies', () => {
         acc.push(curr);
       }
       return acc;
-    }, [] as CurrencyRecord[]),
+    }, [] as CurrencyModel[]),
   );
 
-  const currenciesMap = computed(
+  const currenciesMap = computed<Record<number, UserCurrencyModel>>(
     () => currencies.value.reduce((acc, curr) => {
       acc[curr.currencyId] = curr;
       return acc;
@@ -41,7 +41,7 @@ export const useCurrenciesStore = defineStore('currencies', () => {
   );
 
   const loadBaseCurrency = async () => {
-    const result: UserCurrencyRecord = await api.get('/user/currencies/base');
+    const result: UserCurrencyModel = await api.get('/user/currencies/base');
 
     if (result) {
       baseCurrency.value = result;
@@ -53,7 +53,7 @@ export const useCurrenciesStore = defineStore('currencies', () => {
   };
 
   const setBaseCurrency = async (currencyId: number) => {
-    const result: UserCurrencyRecord = await setBaseUserCurrency(currencyId);
+    const result: UserCurrencyModel = await setBaseUserCurrency(currencyId);
 
     if (result) {
       baseCurrency.value = result;

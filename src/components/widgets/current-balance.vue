@@ -1,7 +1,7 @@
 <template>
   <div class="current-balance-widget">
     <h3 class="current-balance-widget__title">
-      Total balance (last month)
+      Balance trend
     </h3>
     <highcharts class="current-balance-widget__chart" :options="chartOptions" />
   </div>
@@ -13,8 +13,10 @@ import {
 } from 'vue';
 import { Chart } from 'highcharts-vue';
 import { format, subDays } from 'date-fns';
+import { storeToRefs } from 'pinia';
 import { getBalanceHistory } from '@/api';
 import { fromSystemAmount, toLocalFiatCurrency } from '@/js/helpers';
+import { useCurrenciesStore } from '@/stores';
 import { aggregateData } from './helpers';
 
 const loadBalanceData = async () => {
@@ -34,6 +36,8 @@ export default defineComponent({
     Highcharts: Chart,
   },
   setup() {
+    const currenciesStore = useCurrenciesStore();
+    const { baseCurrency } = storeToRefs(currenciesStore);
     const balanceHistory = ref([]);
     const chartOptions = computed(() => ({
       chart: {
@@ -110,7 +114,7 @@ export default defineComponent({
                 ${format(this.x, 'MMMM d, yyyy')}
               </div>
               <div class="current-balance-widget__tooltip-value">
-                Balance: <span>${toLocalFiatCurrency(this.y)}</span>
+                Balance: <span>${toLocalFiatCurrency(this.y, { currency: baseCurrency.value.currency.code })}</span>
               </div>
             </div>
           `;
@@ -123,7 +127,6 @@ export default defineComponent({
       },
       series: [
         {
-          name: 'Total balance',
           showInLegend: false,
           data: balanceHistory.value.map((point) => [
             new Date(point.date).getTime(),
@@ -141,6 +144,7 @@ export default defineComponent({
     return {
       balanceHistory,
       chartOptions,
+      baseCurrency,
     };
   },
 });

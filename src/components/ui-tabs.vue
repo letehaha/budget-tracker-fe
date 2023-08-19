@@ -21,7 +21,7 @@
 
 <script lang="ts">
 import {
-  defineComponent, PropType, ref, Ref, computed, watch,
+  defineComponent, PropType, ref, Ref, computed, watch, CSSProperties,
 } from 'vue';
 
 export interface Tab {
@@ -31,13 +31,6 @@ export interface Tab {
 
 export enum Events {
   change = 'change',
-}
-
-export enum CSSJustifyContentValues {
-  spaceBetween = 'space-between',
-  spaceAround = 'space-around',
-  center = 'center',
-  flexStart = 'flex-start',
 }
 
 export default defineComponent({
@@ -51,8 +44,8 @@ export default defineComponent({
       }],
     },
     tabsAlignment: {
-      type: String as PropType<CSSJustifyContentValues>,
-      default: CSSJustifyContentValues.spaceBetween,
+      type: String as PropType<CSSProperties['justifyContent']>,
+      default: 'space-between' as CSSProperties['justifyContent'],
     },
     initialTab: {
       type: Object as PropType<Tab>,

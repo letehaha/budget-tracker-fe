@@ -1,17 +1,13 @@
 import { api } from '@/api/_api';
-import { CurrencyRecord, UserCurrencyRecord, ExchangeRateRecord } from '@/js/records';
+import { CurrencyModel, UserExchangeRatesModel, UserCurrencyModel } from 'shared-types';
 
-export const getAllCurrencies = async (): Promise<CurrencyRecord[]> => {
-  const currencies = await api.get('/models/currencies');
+export const getAllCurrencies = async (): Promise<CurrencyModel[]> => (
+  api.get('/models/currencies')
+);
 
-  return currencies.map(item => new CurrencyRecord(item));
-};
-
-export const loadUserCurrencies = async () => {
-  const result = await api.get('/user/currencies');
-
-  return result.map(item => new UserCurrencyRecord(item));
-};
+export const loadUserCurrencies = async (): Promise<UserCurrencyModel[]> => (
+  api.get('/user/currencies')
+);
 
 export const deleteCustomRate = (
   pairs: {
@@ -20,11 +16,9 @@ export const deleteCustomRate = (
   }[],
 ) => api.delete('/user/currency/rates', { pairs });
 
-export const loadUserCurrenciesExchangeRates = async () => {
-  const result = await api.get('/user/currencies/rates');
-
-  return result.map(item => new ExchangeRateRecord(item));
-};
+export const loadUserCurrenciesExchangeRates = async (): Promise<UserExchangeRatesModel[]> => (
+  api.get('/user/currencies/rates')
+);
 
 export const editUserCurrenciesExchangeRates = async (
   pairs: {
@@ -32,11 +26,7 @@ export const editUserCurrenciesExchangeRates = async (
     quoteCode: string;
     rate: number;
   }[],
-) => {
-  const result = await api.put('/user/currency/rates', { pairs });
-
-  return result.map(item => new ExchangeRateRecord(item));
-};
+): Promise<UserExchangeRatesModel[]> => api.put('/user/currency/rates', { pairs });
 
 export const deleteUserCurrency = (currencyId: number) => (
   api.delete('/user/currency', { currencyId })
