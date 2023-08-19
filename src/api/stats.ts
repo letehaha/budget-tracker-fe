@@ -2,6 +2,8 @@ import { format } from 'date-fns';
 import { endpointsTypes } from 'shared-types';
 import { api } from '@/api/_api';
 
+const formatDate = (date: Date) => format(date, 'yyyy-MM-dd');
+
 interface Params {
   accountId?: endpointsTypes.GetBalanceHistoryPayload['accountId'];
   from?: Date;
@@ -21,10 +23,20 @@ export const getBalanceHistory = async (
     ...rest,
   };
 
-  if (from) params.from = format(from, 'yyyy-MM-dd');
-  if (to) params.to = format(to, 'yyyy-MM-dd');
+  if (from) params.from = formatDate(from);
+  if (to) params.to = formatDate(to);
 
   const history = await api.get('/stats/balance-history', params);
 
   return history;
+};
+
+export const getTotalBalance = async ({ date }: { date: Date }) => {
+  const params = {
+    date: formatDate(date),
+  };
+
+  const balance: number = await api.get('/stats/total-balance', params);
+
+  return balance;
 };
