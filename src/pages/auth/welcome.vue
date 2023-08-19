@@ -24,7 +24,7 @@
               placeholder="Loading..."
               label="Base Currency"
               with-search-field
-              :label-key="(item: CurrencyRecord) => `${item.code} - ${item.currency}`"
+              :label-key="(item: CurrencyModel) => `${item.code} - ${item.currency}`"
             />
           </div>
           <p class="welcome__disclaimer">
@@ -53,12 +53,12 @@ import { storeToRefs } from 'pinia';
 import { ROUTES_NAMES } from '@/routes/constants';
 import { useCurrenciesStore, useAuthStore } from '@/stores';
 import { getAllCurrencies } from '@/api/currencies';
-import { CurrencyRecord } from '@/js/records';
 import { useNotificationCenter } from '@/components/notification-center';
 
 import FormWrapper from '@/components/fields/form-wrapper.vue';
 import SelectField from '@/components/fields/select-field.vue';
 import UiButton from '@/components/common/ui-button.vue';
+import { CurrencyModel } from 'shared-types';
 
 export default defineComponent({
   components: {
@@ -75,9 +75,9 @@ export default defineComponent({
 
     const { baseCurrency } = storeToRefs(currenciesStore);
 
-    const currencies = ref<CurrencyRecord[]>([]);
+    const currencies = ref<CurrencyModel[]>([]);
 
-    const selectedCurrency = ref<CurrencyRecord>(null);
+    const selectedCurrency = ref<CurrencyModel>(null);
     const isCurrenciesLoading = ref(false);
     const isSubmitting = ref(false);
     const formError = ref<string>(null);
@@ -141,7 +141,6 @@ export default defineComponent({
     loadCurrencies();
 
     return {
-      CurrencyRecord,
       selectedCurrency,
       isCurrenciesLoading,
       currencies,

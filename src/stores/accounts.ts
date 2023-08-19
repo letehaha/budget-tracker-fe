@@ -9,7 +9,7 @@ import {
   DeleteAccountPayload,
 } from '@/api';
 
-export const useAccountsStore = defineStore('system-accounts', () => {
+export const useAccountsStore = defineStore('accounts', () => {
   const accounts = ref<AccountModel[]>([]);
   const accountsRecord = ref<Record<number, AccountModel>>({});
 

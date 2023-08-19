@@ -77,7 +77,7 @@ import { ACCOUNT_TYPES, AccountModel } from 'shared-types';
 
 import { ROUTES_NAMES } from '@/routes/constants';
 import { useBanksMonobankStore, useAccountsStore } from '@/stores';
-import { formatAmount } from '@/js/helpers';
+import { formatUIAmount } from '@/js/helpers';
 import { MODAL_TYPES, useModalCenter } from '@/components/modal-center/index';
 
 export default defineComponent({
@@ -107,7 +107,7 @@ export default defineComponent({
     };
 
     const formatBalance = (account: AccountModel) => (
-      formatAmount(account.currentBalance - account.creditLimit)
+      formatUIAmount(account.currentBalance - account.creditLimit)
     );
 
     return {

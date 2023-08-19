@@ -5,26 +5,22 @@
     </div>
     <div class="account__balance-info">
       <div class="account__balance">
-        {{ formatAmount(account.currentBalance - account.creditLimit) }}
+        {{
+          formatUIAmount(account.currentBalance - account.creditLimit, {
+            currency: currenciesMap[account.currencyId].currency.code,
+          })
+        }}
       </div>
-      <template v-if="account.creditLimit">
-        <div class="account__credit-limit">
-          <span class="account__credit-limit-label">
-            Credit limit:
-          </span>
-          <span class="account__credit-limit-value">
-            {{ formatAmount(account.creditLimit) }}
-          </span>
-        </div>
-      </template>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
+import { storeToRefs } from 'pinia';
 import { AccountModel } from 'shared-types';
-import { formatAmount } from '@/js/helpers';
+import { useCurrenciesStore } from '@/stores';
+import { formatUIAmount, toLocalFiatCurrency } from '@/js/helpers';
 
 export default defineComponent({
   props: {
@@ -33,8 +29,17 @@ export default defineComponent({
       required: true,
     },
   },
+  setup() {
+    const currenciesStore = useCurrenciesStore();
+    const { currenciesMap } = storeToRefs(currenciesStore);
+
+    return {
+      currenciesMap,
+    };
+  },
   methods: {
-    formatAmount,
+    formatUIAmount,
+    toLocalFiatCurrency,
   },
 });
 </script>
@@ -60,19 +65,7 @@ export default defineComponent({
   margin-top: 8px;
 }
 .account__balance {
-  font-size: 18px;
-}
-.account__credit-limit {
-  font-size: 12px;
-  opacity: 0.8;
-
-  display: flex;
-  flex-direction: column;
-}
-.account__credit-limit-label,
-.account__credit-limit-value {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font-size: 16px;
+  font-weight: 500;
 }
 </style>

@@ -54,7 +54,7 @@
         <form-row>
           <input-field
             v-model="form.targetAmount"
-            :label="`Target amount (${targetCurrency.code})`"
+            :label="`Target amount (${targetCurrency.currency.code})`"
             type="number"
           />
         </form-row>
@@ -254,7 +254,7 @@ export default defineComponent({
 
     const currencyCode = computed(() => {
       if (form.value.account?.currencyId) {
-        return currenciesMap[form.value.account.currencyId].code;
+        return currenciesMap[form.value.account.currencyId].currency.code;
       }
       return undefined;
     });

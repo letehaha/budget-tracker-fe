@@ -22,10 +22,10 @@
           @click="!currency.isDefaultCurrency && toggleActiveItem(index)"
         >
           <div class="currencies-list__column">
-            {{ currency.code }}
+            {{ currency.currency.code }}
           </div>
           <div class="currencies-list__column">
-            {{ currency.currency }}
+            {{ currency.currency.currency }}
           </div>
           <div class="currencies-list__column">
             <template v-if="currency.isDefaultCurrency">
@@ -37,10 +37,10 @@
               <div class="currencies-list__ratios">
                 <span>
                   {{ currency.quoteCode }} 1 =
-                  {{ currency.code }} {{ currency.quoteRate }}
+                  {{ currency.currency.code }} {{ currency.quoteRate }}
                 </span>
                 <span>
-                  {{ currency.code }} 1 =
+                  {{ currency.currency.code }} 1 =
                   {{ currency.quoteCode }} {{ currency.rate }}
                 </span>
               </div>
@@ -69,9 +69,8 @@ import {
   computed,
 } from 'vue';
 import { storeToRefs } from 'pinia';
-import { API_ERROR_CODES } from 'shared-types';
+import { API_ERROR_CODES, UserCurrencyModel, UserExchangeRatesModel } from 'shared-types';
 import { useCurrenciesStore, useAccountsStore } from '@/stores';
-import { UserCurrencyRecord, ExchangeRateRecord } from '@/js/records';
 import { deleteUserCurrency, loadUserCurrenciesExchangeRates } from '@/api/currencies';
 import { useNotificationCenter } from '@/components/notification-center';
 import EditCurrency from './edit-currency.vue';
@@ -90,18 +89,19 @@ export default defineComponent({
     } = useNotificationCenter();
     const { currencies } = storeToRefs(currenciesStore);
     const { accountsCurrencyIds } = storeToRefs(accountsStore);
-    const rates = ref<ExchangeRateRecord[]>([]);
+    const rates = ref<UserExchangeRatesModel[]>([]);
 
     const currenciesList = computed<CurrencyWithExchangeRate[]>(
       () => currencies.value.map(item => {
-        const rate = rates.value.find(i => i.baseCode === item.code);
+        const rate = rates.value.find(i => i.baseCode === item.currency.code);
+        const quoteRate = Number(Number(1 / Number(rate?.rate)).toFixed(4));
 
         return {
           ...item,
           rate: Number(rate?.rate?.toFixed(4)),
           custom: rate?.custom ?? false,
           quoteCode: rate?.quoteCode,
-          quoteRate: Number(rate?.quoteRate?.toFixed(4)),
+          quoteRate,
         };
       }),
     );
@@ -151,7 +151,7 @@ export default defineComponent({
       toggleActiveItem(null);
     };
 
-    const isDeletionDisabled = (currency: UserCurrencyRecord) => (
+    const isDeletionDisabled = (currency: UserCurrencyModel) => (
       accountsCurrencyIds.value.includes(currency.currencyId)
     );
 
