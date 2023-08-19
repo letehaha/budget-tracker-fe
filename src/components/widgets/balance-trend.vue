@@ -3,6 +3,30 @@
     <h3 class="balance-trend-widget__title">
       Balance trend
     </h3>
+    <div class="balance-trend-widget__details">
+      <div class="balance-trend-widget__details-titles">
+        <div class="balance-trend-widget__details-title balance-trend-widget__details-title--today">
+          Today
+        </div>
+        <div class="balance-trend-widget__details-title">
+          vs previous period
+        </div>
+      </div>
+      <div class="balance-trend-widget__details-values">
+        <div class="balance-trend-widget__today-balance">
+          {{ formatBaseCurrency(todayBalance) }}
+        </div>
+        <div
+          class="balance-trend-widget__diff"
+          :class="{
+            'balance-trend-widget__diff--positive': balancesDiff > 0,
+            'balance-trend-widget__diff--negative': balancesDiff < 0,
+          }"
+        >
+          {{ `${balancesDiff}%` }}
+        </div>
+      </div>
+    </div>
     <highcharts
       v-node-resize-observer="{ callback: onChartResize }"
       class="balance-trend-widget__chart"
@@ -17,20 +41,21 @@ import {
 } from 'vue';
 import { Chart } from 'highcharts-vue';
 import {
-  format, subDays, getDaysInMonth, addDays, startOfMonth, endOfMonth, startOfDay,
+  format, subDays, getDaysInMonth, addDays,
+  startOfMonth, endOfMonth, startOfDay, subMonths,
 } from 'date-fns';
 import { storeToRefs } from 'pinia';
-import { getBalanceHistory } from '@/api';
-import { fromSystemAmount, toLocalFiatCurrency } from '@/js/helpers';
+import { getBalanceHistory, getTotalBalance } from '@/api';
+import { fromSystemAmount, toLocalFiatCurrency, calculatePercentageDifference } from '@/js/helpers';
 import { useCurrenciesStore } from '@/stores';
+import { useFormatCurrency } from '@/composable';
+
 import { aggregateData } from './helpers';
 
 const currentDayInMonth = new Date().getDate();
 
-const loadBalanceData = async () => {
-  const result = await getBalanceHistory({
-    from: subDays(new Date(), currentDayInMonth - 1),
-  });
+const loadBalanceData = async ({ from }: { from: Date }) => {
+  const result = await getBalanceHistory({ from });
 
   if (!result?.length) return [];
 
@@ -62,6 +87,7 @@ export default defineComponent({
     const { baseCurrency } = storeToRefs(currenciesStore);
     const balanceHistory = ref<{ amount: number; date: string }[]>([]);
     const currentChartWidth = ref(null);
+    const { formatBaseCurrency } = useFormatCurrency();
     const chartOptions = computed(() => {
       const pixelsPerTick = 120;
       const ticksAmount = currentChartWidth.value
@@ -72,7 +98,7 @@ export default defineComponent({
         chart: {
           type: 'area',
           backgroundColor: 'transparent',
-          height: 270,
+          height: 220,
         },
         // So xAxis will be rendered correctly but not as hours
         time: {
@@ -181,6 +207,17 @@ export default defineComponent({
         credits: false,
       };
     });
+    const todayBalance = ref(null);
+    const previousBalance = ref(null);
+    const balancesDiff = computed<number>(() => {
+      if (!todayBalance.value || !previousBalance.value) return 0;
+
+      const percentage = Number(calculatePercentageDifference(
+        todayBalance.value,
+        previousBalance.value,
+      )).toFixed(2);
+      return Number(percentage);
+    });
 
     const onChartResize = (entries: ResizeObserverEntry[]) => {
       const entry = entries[0];
@@ -188,13 +225,23 @@ export default defineComponent({
     };
 
     onMounted(async () => {
-      balanceHistory.value = await loadBalanceData();
+      balanceHistory.value = await loadBalanceData({
+        from: subDays(new Date(), currentDayInMonth - 1),
+      });
+      todayBalance.value = await getTotalBalance({ date: new Date() });
+      previousBalance.value = await getTotalBalance({
+        date: subMonths(new Date(), 1),
+      });
     });
 
     return {
       balanceHistory,
+      formatBaseCurrency,
       chartOptions,
       baseCurrency,
+      todayBalance,
+      previousBalance,
+      balancesDiff,
       onChartResize,
     };
   },
@@ -209,7 +256,7 @@ export default defineComponent({
   max-height: 350px;
 }
 .balance-trend-widget__title {
-  margin-bottom: 24px;
+  margin-bottom: 12px;
 }
 .balance-trend-widget__tooltip {
   padding: 4px;
@@ -226,5 +273,36 @@ export default defineComponent({
     font-weight: 500;
     letter-spacing: 1px;
   }
+}
+.balance-trend-widget__details {
+  margin-bottom: 12px;
+}
+.balance-trend-widget__details-titles,
+.balance-trend-widget__details-values {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.balance-trend-widget__details-titles {
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+.balance-trend-widget__details-title {
+  letter-spacing: -0.3px;
+}
+.balance-trend-widget__details-title--today {
+  text-transform: uppercase;
+  font-weight: 500;
+}
+.balance-trend-widget__today-balance {
+  font-size: 18px;
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+.balance-trend-widget__diff--positive {
+  color: var(--app-success)
+}
+.balance-trend-widget__diff--negative {
+  color: var(--app-error)
 }
 </style>
