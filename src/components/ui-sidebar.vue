@@ -87,16 +87,16 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .sidebar {
-  width: 240px;
+  width: 180px;
   flex-grow: 0;
-  padding: 48px 24px;
+  padding: 48px 16px;
   background-color: var(--app-bg-navbar);
   display: flex;
   flex-direction: column;
 }
 
 .sidebar__logo {
-  font-size: 24px;
+  font-size: 18px;
   font-weight: 500;
   letter-spacing: 0.5px;
   text-align: center;
