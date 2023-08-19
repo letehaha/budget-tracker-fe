@@ -1,11 +1,11 @@
 <template>
-  <div class="current-balance-widget">
-    <h3 class="current-balance-widget__title">
+  <div class="balance-trend-widget">
+    <h3 class="balance-trend-widget__title">
       Balance trend
     </h3>
     <highcharts
       v-node-resize-observer="{ callback: onChartResize }"
-      class="current-balance-widget__chart"
+      class="balance-trend-widget__chart"
       :options="chartOptions"
     />
   </div>
@@ -53,7 +53,7 @@ function generateDateSteps(datesToShow = 5) {
 }
 
 export default defineComponent({
-  name: 'current-balance-widget',
+  name: 'balance-trend-widget',
   components: {
     Highcharts: Chart,
   },
@@ -143,11 +143,11 @@ export default defineComponent({
           borderColor: 'transparent',
           formatter() {
             return `
-              <div class="current-balance-widget__tooltip">
-                <div class="current-balance-widget__tooltip-date">
+              <div class="balance-trend-widget__tooltip">
+                <div class="balance-trend-widget__tooltip-date">
                   ${format(this.x, 'MMMM d, yyyy')}
                 </div>
-                <div class="current-balance-widget__tooltip-value">
+                <div class="balance-trend-widget__tooltip-value">
                   Balance: <span>${toLocalFiatCurrency(this.y, { currency: baseCurrency.value.currency.code })}</span>
                 </div>
               </div>
@@ -202,23 +202,23 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-.current-balance-widget {
+.balance-trend-widget {
   background-color: var(--app-surface-color);
   padding: 24px;
   border-radius: 12px;
   max-height: 350px;
 }
-.current-balance-widget__title {
+.balance-trend-widget__title {
   margin-bottom: 24px;
 }
-.current-balance-widget__tooltip {
+.balance-trend-widget__tooltip {
   padding: 4px;
 }
-.current-balance-widget__tooltip-date {
+.balance-trend-widget__tooltip-date {
   font-size: 14px;
   margin-bottom: 8px;
 }
-.current-balance-widget__tooltip-value {
+.balance-trend-widget__tooltip-value {
   font-size: 18px;
 
   span {
