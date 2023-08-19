@@ -46,7 +46,7 @@ export default defineComponent({
 }
 .dashboard__info {
   display: grid;
-  grid-template-columns: 1fr 420px;
+  grid-template-columns: minmax(0, 1fr) 420px;
   margin-top: 24px;
   grid-gap: 24px;
 }

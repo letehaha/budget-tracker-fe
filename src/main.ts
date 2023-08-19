@@ -1,6 +1,6 @@
 import { createApp } from 'vue';
 import { router } from '@/routes';
-import { clickOutside } from '@/directives';
+import { clickOutside, nodeResizeObserver } from '@/directives';
 import { initApiCaller } from '@/api';
 import { store } from '@/stores/setup';
 import { useAuthStore } from '@/stores';
@@ -14,6 +14,7 @@ document.body.classList.add(matched ? 'dark' : 'light');
 const app = createApp(App);
 
 app.directive('click-outside', clickOutside);
+app.directive('node-resize-observer', nodeResizeObserver);
 
 app.use(router);
 app.use(store);
