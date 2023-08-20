@@ -64,7 +64,7 @@ import FieldLabel from './components/field-label.vue';
 import InputField from './input-field.vue';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ModelValue = any;
+type ModelValue = Record<string, any>;
 
 const props = withDefaults(defineProps<{
   label?: string;
@@ -101,7 +101,7 @@ const getLabelFromValue = (value: ModelValue) => {
   return value[labelKey];
 };
 
-const dropdownValues = computed(() => props.values.reduce((acc, curr) => {
+const dropdownValues = computed(() => props.values.reduce((acc: ModelValue[], curr) => {
   if (props.withSearchField && filterQuery.value) {
     const query = filterQuery.value.toLocaleLowerCase();
     const value = String(getLabelFromValue(curr)).toLocaleLowerCase();
@@ -113,7 +113,7 @@ const dropdownValues = computed(() => props.values.reduce((acc, curr) => {
     acc.push(curr);
   }
   return acc;
-}, []));
+}, [] as ModelValue[]) as ModelValue[]);
 
 const toggleDropdown = () => {
   if (!props.disabled) {
