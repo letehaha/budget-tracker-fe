@@ -17,17 +17,18 @@
       <div
         v-bind="$attrs"
         class="select-field__input"
-        :title="selectedValue"
+        :title="modelValue ? getLabelFromValue(modelValue) : placeholder"
         @click="toggleDropdown"
       >
-        {{ selectedValue || placeholder }}
+        {{ modelValue ? getLabelFromValue(modelValue) : placeholder }}
         <div class="select-field__arrow" />
       </div>
 
       <dropdown
         :is-visible="isDropdownOpened"
-        :values="labels"
-        :selected-value="selectedValue"
+        :values="dropdownValues"
+        :label-key="labelKey"
+        :selected-value="modelValue"
         @select="selectItem"
       >
         <template #header>
@@ -41,7 +42,7 @@
           </template>
         </template>
         <template #footer>
-          <template v-if="withSearchField && values.length && !labels.length">
+          <template v-if="withSearchField && values.length && !dropdownValues.length">
             <div class="select-field__no-results">
               No results found
             </div>
@@ -54,148 +55,82 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script lang="ts" setup>
+import { ref, computed } from 'vue';
 
 import Dropdown from '@/components/common/dropdown.vue';
 import FieldError from './components/field-error.vue';
 import FieldLabel from './components/field-label.vue';
 import InputField from './input-field.vue';
 
-enum MODEL_EVENTS {
-  input = 'update:model-value',
-}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type ModelValue = any;
 
-export const POSITIONS = Object.freeze({
-  bottom: 'bottom',
-  top: 'top',
+const props = withDefaults(defineProps<{
+  label?: string;
+  modelValue: ModelValue;
+  values: ModelValue[];
+  labelKey?: string |((value: ModelValue) => string);
+  placeholder?: string;
+  withSearchField?: boolean;
+  disabled?: boolean;
+  errorMessage?: string;
+  isValuePreselected?: boolean;
+}>(), {
+  label: undefined,
+  placeholder: undefined,
+  withSearchField: false,
+  disabled: false,
+  errorMessage: undefined,
+  isValuePreselected: false,
+  labelKey: 'label',
 });
 
-export default defineComponent({
-  components: {
-    FieldError,
-    FieldLabel,
-    InputField,
-    Dropdown,
-  },
-  props: {
-    label: { type: String, default: undefined },
-    modelValue: { type: [Object, String], default: undefined },
-    values: { type: Array, required: true },
-    labelKey: { type: [String, Function], default: undefined },
-    placeholder: { type: String, default: undefined },
-    withSearchField: { type: Boolean, default: false },
-    disabled: { type: Boolean, default: false },
-    errorMessage: { type: String, default: undefined },
-    position: { type: String, default: POSITIONS.bottom },
-    isValuePreselected: { type: Boolean, default: false },
-  },
-  data: () => ({
-    isDropdownOpened: false,
-    selectedValue: null,
-    filterQuery: '',
-  }),
-  computed: {
-    labels(): string[] {
-      if (Array.isArray(this.values[0])) {
-        if (this.withSearchField && this.filterQuery) {
-          return this.values.filter(
-            str => str.toLowerCase()
-              .search(this.filterQuery.toLowerCase()) > -1,
-          );
-        }
-        return this.values;
-      }
+const emit = defineEmits<{
+  'update:model-value': [value: ModelValue]
+}>();
 
-      if (typeof this.values[0] === 'object' && this.values[0] !== null) {
-        const values = this.values.map(obj => this.getLabelFromValue(obj));
+const isDropdownOpened = ref(false);
+const filterQuery = ref('');
 
-        if (this.withSearchField && this.filterQuery) {
-          return values.filter(
-            str => str.toLowerCase()
-              .search(this.filterQuery.toLowerCase()) > -1,
-          );
-        }
-        return values;
-      }
+const getLabelFromValue = (value: ModelValue) => {
+  const { labelKey } = props;
 
-      if (this.withSearchField && this.filterQuery) {
-        return this.values.filter(
-          str => str.toLowerCase().search(this.filterQuery.toLowerCase()) > -1,
-        );
-      }
-      return this.values;
-    },
-  },
-  watch: {
-    modelValue: {
-      deep: true,
-      immediate: true,
-      handler(value) {
-        if (value) {
-          if (typeof this.values[0] === 'object' && this.values[0] !== null) {
-            this.selectedValue = this.getLabelFromValue(value);
-          } else {
-            this.selectedValue = value;
-          }
-        } else if (value === null) {
-          this.selectedValue = null;
-        } else if (value === undefined && this.isValuePreselected) {
-          this.selectItem(this.values[0]);
-        }
-      },
-    },
-    values: {
-      handler() {
-        if (this.modelValue) {
-          const modelValueLabel = this.getLabelFromValue(this.modelValue);
+  if (typeof labelKey === 'function') return labelKey(value);
 
-          if (
-            !this.values.find(
-              item => this.getLabelFromValue(item) === modelValueLabel,
-            )
-          ) {
-            this.$emit(MODEL_EVENTS.input, this.values[0]);
-          }
-        }
-      },
-    },
-  },
-  methods: {
-    toggleDropdown() {
-      if (!this.disabled) {
-        this.isDropdownOpened = !this.isDropdownOpened;
-      }
-    },
-    closeDropdown() {
-      this.isDropdownOpened = false;
-    },
-    selectItem(item: string) {
-      const index = this.values.findIndex(el => item === el);
+  return value[labelKey];
+};
 
-      if (!this.disabled) {
-        this.selectedValue = this.labels[index];
-        if (this.labels.length === this.values.length) {
-          this.$emit(MODEL_EVENTS.input, this.values[index]);
-        } else {
-          const matchLabelToItem = this.values.find(
-            item => this.getLabelFromValue(item) === this.labels[index],
-          );
-          this.$emit(MODEL_EVENTS.input, matchLabelToItem);
-        }
-        this.filterQuery = '';
-        this.closeDropdown();
-      }
-    },
-    getLabelFromValue(value) {
-      if (!this.labelKey) return value.label;
+const dropdownValues = computed(() => props.values.reduce((acc, curr) => {
+  if (props.withSearchField && filterQuery.value) {
+    const query = filterQuery.value.toLocaleLowerCase();
+    const value = String(getLabelFromValue(curr)).toLocaleLowerCase();
 
-      if (typeof this.labelKey === 'function') return this.labelKey(value);
+    if (value.includes(query)) {
+      acc.push(curr);
+    }
+  } else {
+    acc.push(curr);
+  }
+  return acc;
+}, []));
 
-      return value[this.labelKey];
-    },
-  },
-});
+const toggleDropdown = () => {
+  if (!props.disabled) {
+    isDropdownOpened.value = !isDropdownOpened.value;
+  }
+};
+const closeDropdown = () => { isDropdownOpened.value = false; };
+
+const selectItem = ({ index }) => {
+  const { disabled } = props;
+
+  if (!disabled) {
+    emit('update:model-value', dropdownValues.value[index]);
+    closeDropdown();
+    filterQuery.value = '';
+  }
+};
 </script>
 
 <style lang="scss">

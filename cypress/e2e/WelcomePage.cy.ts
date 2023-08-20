@@ -58,7 +58,7 @@ describe('Welcome page', () => {
     cy
       .get('.select-field__wrapper')
       .click()
-      .get('.select-field__dropdown-values')
+      .get('[role="listbox"]')
       .children()
       .last()
       .click();
