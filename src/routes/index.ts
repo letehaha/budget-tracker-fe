@@ -38,6 +38,11 @@ const routes = [
         component: () => import('@/pages/crypto/crypto.vue'),
       },
       {
+        path: '/analytics',
+        name: ROUTES_NAMES.analytics,
+        component: () => import('@/pages/analytics/index.vue'),
+      },
+      {
         path: '/records',
         name: ROUTES_NAMES.records,
         component: () => import('@/pages/records/records.vue'),

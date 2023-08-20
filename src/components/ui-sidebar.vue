@@ -29,6 +29,14 @@
         </span>
       </router-link>
       <router-link
+        :to="{ name: ROUTES_NAMES.analytics }"
+        class="sidebar__navigation-link"
+      >
+        <span>
+          Analytics
+        </span>
+      </router-link>
+      <router-link
         :to="{ name: ROUTES_NAMES.crypto }"
         class="sidebar__navigation-link"
       >
