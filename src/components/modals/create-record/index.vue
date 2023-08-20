@@ -80,8 +80,7 @@
         <select-field
           v-model="form.paymentType"
           label="Payment Type"
-          :values="Object.values(PAYMENT_TYPES)"
-          label-key="name"
+          :values="VERBOSE_PAYMENT_TYPES"
           is-value-preselected
         />
       </form-row>
@@ -179,6 +178,20 @@ const getTxTypeFromFormType = (formType: FORM_TYPES): TRANSACTION_TYPES => {
     : TRANSACTION_TYPES.income;
 };
 
+type VerbosePaymentType = {
+  value: PAYMENT_TYPES;
+  label: string;
+}
+const VERBOSE_PAYMENT_TYPES: VerbosePaymentType[] = [
+  { value: PAYMENT_TYPES.creditCard, label: 'Credit Card' },
+  { value: PAYMENT_TYPES.bankTransfer, label: 'Bank Transfer' },
+  { value: PAYMENT_TYPES.cash, label: 'Cash' },
+  { value: PAYMENT_TYPES.debitCard, label: 'Debit Card' },
+  { value: PAYMENT_TYPES.mobilePayment, label: 'Mobile Payment' },
+  { value: PAYMENT_TYPES.voucher, label: 'Voucher' },
+  { value: PAYMENT_TYPES.webPayment, label: 'Web Payment' },
+];
+
 export default defineComponent({
   name: 'create-record',
   components: {
@@ -206,14 +219,10 @@ export default defineComponent({
   },
   emits: ['close'],
   setup(props, { emit }) {
-    const accountsStore = useAccountsStore();
-    const categoriesStore = useCategoriesStore();
-    const currenciesStore = useCurrenciesStore();
     const { getCurrency, currenciesMap } = useCurrenciesStore();
-
-    const { accountsRecord, systemAccounts } = storeToRefs(accountsStore);
-    const { currencies } = storeToRefs(currenciesStore);
-    const { categories, rawCategories } = storeToRefs(categoriesStore);
+    const { accountsRecord, systemAccounts } = storeToRefs(useAccountsStore());
+    const { currencies } = storeToRefs(useCurrenciesStore());
+    const { categories, rawCategories } = storeToRefs(useCategoriesStore());
 
     const isFormCreation = computed(() => !props.transaction);
 
@@ -223,7 +232,7 @@ export default defineComponent({
       toAccount?: AccountModel;
       category: CategoryModel;
       time: string;
-      paymentType: PAYMENT_TYPES;
+      paymentType: VerbosePaymentType;
       note?: string;
       type: FORM_TYPES;
       targetAmount?: number;
@@ -234,7 +243,7 @@ export default defineComponent({
       targetAmount: null,
       category: categories.value[0],
       time: new Date().toISOString().substring(0, 19),
-      paymentType: PAYMENT_TYPES.creditCard,
+      paymentType: VERBOSE_PAYMENT_TYPES.find(item => item.value === PAYMENT_TYPES.creditCard),
       note: null,
       type: FORM_TYPES.expense,
     });
@@ -272,50 +281,33 @@ export default defineComponent({
       ),
     );
 
-    watch(
-      () => props.transaction,
-      (value) => {
-        if (value) {
-          form.value = {
-            amount: fromSystemAmount(value.amount),
-            account: accountsRecord.value[value.accountId],
-            type: getFormTypeFromTransaction(value),
-            category: rawCategories.value.find(i => i.id === value.categoryId),
-            time: new Date(value.time).toISOString().substring(0, 19),
-            paymentType: value.paymentType,
-            note: value.note,
-          };
-        }
-      },
-      {
-        immediate: true,
-        deep: true,
-      },
-    );
+    watch(() => props.transaction, (value) => {
+      if (value) {
+        form.value = {
+          amount: fromSystemAmount(value.amount),
+          account: accountsRecord.value[value.accountId],
+          type: getFormTypeFromTransaction(value),
+          category: rawCategories.value.find(i => i.id === value.categoryId),
+          time: new Date(value.time).toISOString().substring(0, 19),
+          paymentType: VERBOSE_PAYMENT_TYPES.find(item => item.value === value.paymentType),
+          note: value.note,
+        };
+      }
+    }, { immediate: true, deep: true });
 
-    watch(
-      () => props.oppositeTransaction,
-      (value) => {
-        if (value) {
-          form.value.toAccount = accountsRecord.value[value.accountId];
-          form.value.targetAmount = fromSystemAmount(value.amount);
-        }
-      },
-      {
-        immediate: true,
-        deep: true,
-      },
-    );
+    watch(() => props.oppositeTransaction, (value) => {
+      if (value) {
+        form.value.toAccount = accountsRecord.value[value.accountId];
+        form.value.targetAmount = fromSystemAmount(value.amount);
+      }
+    }, { immediate: true, deep: true });
 
-    watch(
-      () => form.value.account,
-      (value) => {
-        // If fromAccount is the same as toAccount, make toAccount empty
-        if (form.value.toAccount?.id === value?.id) {
-          form.value.toAccount = null;
-        }
-      },
-    );
+    watch(() => form.value.account, (value) => {
+      // If fromAccount is the same as toAccount, make toAccount empty
+      if (form.value.toAccount?.id === value?.id) {
+        form.value.toAccount = null;
+      }
+    });
 
     watch(isTransferTx, (value) => {
       form.value.category = value ? null : categories.value[0];
@@ -355,7 +347,7 @@ export default defineComponent({
           note,
           time: new Date(time).toISOString(),
           transactionType: getTxTypeFromFormType(formTxType),
-          paymentType,
+          paymentType: paymentType.value,
           accountId,
         };
 
@@ -420,6 +412,7 @@ export default defineComponent({
       TRANSACTION_TYPES,
       PAYMENT_TYPES,
       form,
+      VERBOSE_PAYMENT_TYPES,
       systemAccounts,
       currencyCode,
       currenciesMap,
