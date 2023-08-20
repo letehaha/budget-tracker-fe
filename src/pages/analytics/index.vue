@@ -182,7 +182,7 @@ export default defineComponent({
       currentChartWidth.value = entry.contentRect.width;
     };
 
-    const selectPeriod = ({ item }: { item: typeof timePeriods[0] }) => {
+    const selectPeriod = ({ item }) => {
       currentTimePeriod.value = item;
       isDropdownVisible.value = false;
     };

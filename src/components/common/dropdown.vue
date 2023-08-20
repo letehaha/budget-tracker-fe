@@ -35,7 +35,7 @@
 
 <script lang="ts" setup>
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ValueEntity = any;
+type ValueEntity = Record<string, any>;
 
 const emit = defineEmits<{
   select: [item: { item: ValueEntity, index: number }]
