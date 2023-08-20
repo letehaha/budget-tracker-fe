@@ -44,3 +44,11 @@ export const redirectRouteGuard: NavigationGuard = (to, from, next): void => {
     next('/sign-in');
   }
 };
+
+export const devOnly = (to, from, next): void => {
+  if (process.env.NODE_ENV === 'development') {
+    next();
+  } else {
+    next('/');
+  }
+};
