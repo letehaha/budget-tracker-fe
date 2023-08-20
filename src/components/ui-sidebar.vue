@@ -28,14 +28,16 @@
           Records
         </span>
       </router-link>
-      <router-link
-        :to="{ name: ROUTES_NAMES.analytics }"
-        class="sidebar__navigation-link"
-      >
-        <span>
-          Analytics
-        </span>
-      </router-link>
+      <template v-if="isDevEnv">
+        <router-link
+          :to="{ name: ROUTES_NAMES.analytics }"
+          class="sidebar__navigation-link"
+        >
+          <span>
+            Analytics
+          </span>
+        </router-link>
+      </template>
       <router-link
         :to="{ name: ROUTES_NAMES.crypto }"
         class="sidebar__navigation-link"
@@ -69,6 +71,7 @@ import { defineComponent } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { useAuthStore } from '@/stores';
+import { isDevEnv } from '@/js/const';
 import { ROUTES_NAMES } from '@/routes';
 import Button from '@/components/common/ui-button.vue';
 
@@ -87,6 +90,7 @@ export default defineComponent({
 
     return {
       logOutHandler,
+      isDevEnv,
       ROUTES_NAMES,
     };
   },

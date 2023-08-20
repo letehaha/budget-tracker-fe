@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import { redirectRouteGuard, authPageGuard, baseCurrencyExists } from './guards';
+import {
+  redirectRouteGuard, authPageGuard, baseCurrencyExists, devOnly,
+} from './guards';
 import { ROUTES_NAMES } from './constants';
 
 export { ROUTES_NAMES, ROUTER_LAYOUTS } from './constants';
@@ -40,6 +42,7 @@ const routes = [
       {
         path: '/analytics',
         name: ROUTES_NAMES.analytics,
+        beforeEnter: [devOnly],
         component: () => import('@/pages/analytics/index.vue'),
       },
       {
