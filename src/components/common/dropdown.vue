@@ -6,20 +6,25 @@
   >
     <slot name="header" />
 
-    <div class="ui-dropdown__values">
+    <div
+      class="ui-dropdown__values"
+      role="listbox"
+    >
       <template
-        v-for="item in values"
+        v-for="(item, index) in values"
         :key="item"
       >
         <button
           type="button"
+          role="option"
           class="ui-dropdown__item"
+          :aria-selected="isItemHighlighted(item)"
           :class="{
             'ui-dropdown__item--highlighed': isItemHighlighted(item),
           }"
-          @click="emit('select', item)"
+          @click="emit('select', { item, index })"
         >
-          {{ item }}
+          {{ getLabelFromValue(item) }}
         </button>
       </template>
     </div>
@@ -29,31 +34,36 @@
 </template>
 
 <script lang="ts" setup>
-interface ValueEntity {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  value: any;
-  label: string;
-}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type ValueEntity = any;
 
 const emit = defineEmits<{
-  select: [item: string | ValueEntity]
+  select: [item: { item: ValueEntity, index: number }]
 }>();
 
 const props = withDefaults(defineProps<{
   isVisible?: boolean;
-  values: string[] | ValueEntity[];
-  selectedValue: string | ValueEntity | null;
+  values: ValueEntity[];
+  selectedValue: ValueEntity | null;
+  labelKey?: string |((value: ValueEntity) => string);
   position?: 'top' | 'bottom';
 }>(), {
   isVisible: false,
   position: 'bottom',
+  labelKey: 'label',
 });
 
-const isItemHighlighted = (item: typeof props['selectedValue']) => {
-  if (typeof item === 'string') return props.selectedValue === item;
+const getLabelFromValue = (value: ValueEntity) => {
+  const { labelKey } = props;
 
-  return item.value === (props.selectedValue as ValueEntity).value;
+  if (typeof labelKey === 'function') return labelKey(value);
+
+  return value[labelKey];
 };
+
+const isItemHighlighted = (item: typeof props['selectedValue']) => (
+  getLabelFromValue(item) === getLabelFromValue(props.selectedValue)
+);
 </script>
 
 <style lang="scss">

@@ -6,7 +6,7 @@ export const useFormatCurrency = () => {
   const { baseCurrency } = storeToRefs(useCurrenciesStore());
 
   const formatBaseCurrency = (amount) => formatUIAmount(amount, {
-    currency: baseCurrency.value.currency.code,
+    currency: baseCurrency.value?.currency?.code,
   });
 
   return {
