@@ -80,7 +80,7 @@
         <select-field
           v-model="form.paymentType"
           label="Payment Type"
-          :values="PAYMENT_TYPES"
+          :values="Object.values(PAYMENT_TYPES)"
           label-key="name"
           is-value-preselected
         />

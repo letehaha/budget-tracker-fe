@@ -23,43 +23,31 @@
         {{ selectedValue || placeholder }}
         <div class="select-field__arrow" />
       </div>
-      <div
-        v-if="isDropdownOpened"
-        :class="`select-field__dropdown--${position}`"
-        class="select-field__dropdown"
+
+      <dropdown
+        :is-visible="isDropdownOpened"
+        :values="labels"
+        :selected-value="selectedValue"
+        @select="selectItem"
       >
-        <template v-if="withSearchField">
-          <div class="select-field__search">
-            <input-field
-              v-model="filterQuery"
-              placeholder="Search..."
-            />
-          </div>
-        </template>
-        <div class="select-field__dropdown-values">
-          <template
-            v-for="(item, i) in labels"
-            :key="item"
-          >
-            <button
-              type="button"
-              :class="{
-                'select-field__dropdown-item--highlighed':
-                  selectedValue === item,
-              }"
-              class="select-field__dropdown-item"
-              @click="selectItem(i)"
-            >
-              {{ item }}
-            </button>
+        <template #header>
+          <template v-if="withSearchField">
+            <div class="select-field__search">
+              <input-field
+                v-model="filterQuery"
+                placeholder="Search..."
+              />
+            </div>
           </template>
-        </div>
-        <template v-if="withSearchField && values.length && !labels.length">
-          <div class="select-field__no-results">
-            No results found
-          </div>
         </template>
-      </div>
+        <template #footer>
+          <template v-if="withSearchField && values.length && !labels.length">
+            <div class="select-field__no-results">
+              No results found
+            </div>
+          </template>
+        </template>
+      </dropdown>
     </div>
 
     <FieldError :error-message="errorMessage" />
@@ -69,6 +57,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 
+import Dropdown from '@/components/common/dropdown.vue';
 import FieldError from './components/field-error.vue';
 import FieldLabel from './components/field-label.vue';
 import InputField from './input-field.vue';
@@ -87,11 +76,12 @@ export default defineComponent({
     FieldError,
     FieldLabel,
     InputField,
+    Dropdown,
   },
   props: {
     label: { type: String, default: undefined },
     modelValue: { type: [Object, String], default: undefined },
-    values: { type: [Array, Object], required: true },
+    values: { type: Array, required: true },
     labelKey: { type: [String, Function], default: undefined },
     placeholder: { type: String, default: undefined },
     withSearchField: { type: Boolean, default: false },
@@ -151,7 +141,7 @@ export default defineComponent({
         } else if (value === null) {
           this.selectedValue = null;
         } else if (value === undefined && this.isValuePreselected) {
-          this.selectItem(0);
+          this.selectItem(this.values[0]);
         }
       },
     },
@@ -180,7 +170,9 @@ export default defineComponent({
     closeDropdown() {
       this.isDropdownOpened = false;
     },
-    selectItem(index) {
+    selectItem(item: string) {
+      const index = this.values.findIndex(el => item === el);
+
       if (!this.disabled) {
         this.selectedValue = this.labels[index];
         if (this.labels.length === this.values.length) {
@@ -212,7 +204,6 @@ export default defineComponent({
   width: 100%;
   flex: 1;
 }
-
 .select-field__input {
   font-size: 16px;
   line-height: 1;
@@ -234,62 +225,9 @@ export default defineComponent({
     cursor: initial;
   }
 }
-
 .select-field__wrapper {
   position: relative;
 }
-
-.select-field__dropdown {
-  @include dropdown-shadow();
-
-  position: absolute;
-  top: 100%;
-  width: 100%;
-  left: 0;
-  visibility: hidden;
-  opacity: 0;
-  padding: 8px 0;
-  transition: 0.2s ease-out;
-  background-color: var(--app-surface-color);
-  z-index: var(--z-select-field);
-  border-radius: 4px;
-
-  .select-field--active & {
-    visibility: visible;
-    opacity: 1;
-  }
-}
-
-.select-field__dropdown-values {
-  overflow: auto;
-  max-height: 200px;
-}
-
-.select-field__dropdown-item {
-  display: flex;
-  align-items: center;
-  transition: background-color 0.3s ease-out;
-  border: none;
-  background-color: var(--app-surface-color);
-  font-size: 14px;
-  line-height: 1.2;
-  color: var(--app-on-surface-color);
-  padding: 16px;
-  width: 100%;
-  text-align: left;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  cursor: pointer;
-
-  &--highlighed {
-    background-color: var(--app-bg-color);
-  }
-
-  &:hover {
-    background-color: var(--app-bg-color);
-  }
-}
-
 .select-field__arrow {
   position: absolute;
   width: 20px;
