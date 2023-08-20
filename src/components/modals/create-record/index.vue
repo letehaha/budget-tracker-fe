@@ -115,14 +115,12 @@
   </div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import {
-  defineComponent,
   ref,
   watch,
   computed,
   onMounted,
-  PropType,
 } from 'vue';
 import { storeToRefs } from 'pinia';
 import {
@@ -192,245 +190,194 @@ const VERBOSE_PAYMENT_TYPES: VerbosePaymentType[] = [
   { value: PAYMENT_TYPES.webPayment, label: 'Web Payment' },
 ];
 
-export default defineComponent({
-  name: 'create-record',
-  components: {
-    FormHeader,
-    FormRow,
-    AccountField,
-    // CurrencyField,
-    TypeSelector,
-    DateField,
-    InputField,
-    SelectField,
-    CategorySelectField,
-    TextareaField,
-    UiButton,
-  },
-  props: {
-    transaction: {
-      type: Object as PropType<TransactionModel>,
-      default: undefined,
-    },
-    oppositeTransaction: {
-      type: Object as PropType<TransactionModel>,
-      default: undefined,
-    },
-  },
-  emits: ['close'],
-  setup(props, { emit }) {
-    const { getCurrency, currenciesMap } = useCurrenciesStore();
-    const { accountsRecord, systemAccounts } = storeToRefs(useAccountsStore());
-    const { currencies } = storeToRefs(useCurrenciesStore());
-    const { categories, rawCategories } = storeToRefs(useCategoriesStore());
+const props = withDefaults(defineProps<{
+  transaction?: TransactionModel;
+  oppositeTransaction?: TransactionModel;
+}>(), {
+  transaction: undefined,
+  oppositeTransaction: undefined,
+});
 
-    const isFormCreation = computed(() => !props.transaction);
+const emit = defineEmits([MODAL_EVENTS.closeModal]);
 
-    const form = ref<{
+const { getCurrency, currenciesMap } = useCurrenciesStore();
+const { accountsRecord, systemAccounts } = storeToRefs(useAccountsStore());
+const { categories, rawCategories } = storeToRefs(useCategoriesStore());
+
+const isFormCreation = computed(() => !props.transaction);
+
+const form = ref<{
+  amount: number;
+  account: AccountModel;
+  toAccount?: AccountModel;
+  category: CategoryModel;
+  time: string;
+  paymentType: VerbosePaymentType;
+  note?: string;
+  type: FORM_TYPES;
+  targetAmount?: number;
+}>({
+  amount: null,
+  account: null,
+  toAccount: null,
+  targetAmount: null,
+  category: categories.value[0],
+  time: new Date().toISOString().substring(0, 19),
+  paymentType: VERBOSE_PAYMENT_TYPES.find(item => item.value === PAYMENT_TYPES.creditCard),
+  note: null,
+  type: FORM_TYPES.expense,
+});
+const isLoading = ref(false);
+
+const currentTxType = computed(() => form.value.type);
+const isTransferTx = computed(() => currentTxType.value === FORM_TYPES.transfer);
+
+const isCurrenciesDifferent = computed(() => {
+  if (!form.value.account || !form.value.toAccount) return false;
+
+  return form.value.account.currencyId !== form.value.toAccount.currencyId;
+});
+
+const currencyCode = computed(() => {
+  if (form.value.account?.currencyId) {
+    return currenciesMap[form.value.account.currencyId].currency.code;
+  }
+  return undefined;
+});
+
+const targetCurrency = computed(() => {
+  if (form.value.toAccount?.currencyId) getCurrency(form.value.toAccount.currencyId);
+  return undefined;
+});
+
+const filteredAccounts = computed(() => systemAccounts.value.filter(
+  (item) => item.id !== form.value.account?.id,
+));
+
+watch(() => props.transaction, (value) => {
+  if (value) {
+    form.value = {
+      amount: fromSystemAmount(value.amount),
+      account: accountsRecord.value[value.accountId],
+      type: getFormTypeFromTransaction(value),
+      category: rawCategories.value.find(i => i.id === value.categoryId),
+      time: new Date(value.time).toISOString().substring(0, 19),
+      paymentType: VERBOSE_PAYMENT_TYPES.find(item => item.value === value.paymentType),
+      note: value.note,
+    };
+  }
+}, { immediate: true, deep: true });
+
+watch(() => props.oppositeTransaction, (value) => {
+  if (value) {
+    form.value.toAccount = accountsRecord.value[value.accountId];
+    form.value.targetAmount = fromSystemAmount(value.amount);
+  }
+}, { immediate: true, deep: true });
+
+watch(() => form.value.account, (value) => {
+  // If fromAccount is the same as toAccount, make toAccount empty
+  if (form.value.toAccount?.id === value?.id) {
+    form.value.toAccount = null;
+  }
+});
+
+watch(isTransferTx, (value) => {
+  form.value.category = value ? null : categories.value[0];
+});
+
+const submit = async () => {
+  isLoading.value = true;
+
+  try {
+    const {
+      amount,
+      note,
+      time,
+      type: formTxType,
+      paymentType,
+      account: { id: accountId },
+      toAccount,
+      category,
+    } = form.value;
+
+    const params: {
       amount: number;
-      account: AccountModel;
-      toAccount?: AccountModel;
-      category: CategoryModel;
-      time: string;
-      paymentType: VerbosePaymentType;
       note?: string;
-      type: FORM_TYPES;
-      targetAmount?: number;
-    }>({
-      amount: null,
-      account: null,
-      toAccount: null,
-      targetAmount: null,
-      category: categories.value[0],
-      time: new Date().toISOString().substring(0, 19),
-      paymentType: VERBOSE_PAYMENT_TYPES.find(item => item.value === PAYMENT_TYPES.creditCard),
-      note: null,
-      type: FORM_TYPES.expense,
-    });
-    const isLoading = ref(false);
+      time: string;
+      transactionType: TRANSACTION_TYPES;
+      paymentType: PAYMENT_TYPES;
+      accountId: number;
+      categoryId?: number;
 
-    const currentTxType = computed(() => form.value.type);
-    const isTransferTx = computed(
-      () => currentTxType.value === FORM_TYPES.transfer,
-    );
-    const isCurrenciesDifferent = computed(() => {
-      if (!form.value.account || !form.value.toAccount) {
-        return false;
-      }
-
-      return form.value.account.currencyId !== form.value.toAccount.currencyId;
-    });
-
-    const currencyCode = computed(() => {
-      if (form.value.account?.currencyId) {
-        return currenciesMap[form.value.account.currencyId].currency.code;
-      }
-      return undefined;
-    });
-
-    const targetCurrency = computed(() => {
-      if (form.value.toAccount?.currencyId) {
-        return getCurrency(form.value.toAccount.currencyId);
-      }
-      return undefined;
-    });
-
-    const filteredAccounts = computed(
-      () => systemAccounts.value.filter(
-        (item) => item.id !== form.value.account?.id,
-      ),
-    );
-
-    watch(() => props.transaction, (value) => {
-      if (value) {
-        form.value = {
-          amount: fromSystemAmount(value.amount),
-          account: accountsRecord.value[value.accountId],
-          type: getFormTypeFromTransaction(value),
-          category: rawCategories.value.find(i => i.id === value.categoryId),
-          time: new Date(value.time).toISOString().substring(0, 19),
-          paymentType: VERBOSE_PAYMENT_TYPES.find(item => item.value === value.paymentType),
-          note: value.note,
-        };
-      }
-    }, { immediate: true, deep: true });
-
-    watch(() => props.oppositeTransaction, (value) => {
-      if (value) {
-        form.value.toAccount = accountsRecord.value[value.accountId];
-        form.value.targetAmount = fromSystemAmount(value.amount);
-      }
-    }, { immediate: true, deep: true });
-
-    watch(() => form.value.account, (value) => {
-      // If fromAccount is the same as toAccount, make toAccount empty
-      if (form.value.toAccount?.id === value?.id) {
-        form.value.toAccount = null;
-      }
-    });
-
-    watch(isTransferTx, (value) => {
-      form.value.category = value ? null : categories.value[0];
-    });
-
-    const submit = async () => {
-      isLoading.value = true;
-
-      try {
-        const {
-          amount,
-          note,
-          time,
-          type: formTxType,
-          paymentType,
-          account: { id: accountId },
-          toAccount,
-          category,
-        } = form.value;
-
-        const params: {
-          amount: number;
-          note?: string;
-          time: string;
-          transactionType: TRANSACTION_TYPES;
-          paymentType: PAYMENT_TYPES;
-          accountId: number;
-          categoryId?: number;
-
-          isTransfer?: boolean;
-          destinationAmount?: number;
-          destinationAccountId?: number;
-          destinationCurrencyId?: number;
-          destinationCurrencyCode?: string;
-        } = {
-          amount: toSystemAmount(Number(amount)),
-          note,
-          time: new Date(time).toISOString(),
-          transactionType: getTxTypeFromFormType(formTxType),
-          paymentType: paymentType.value,
-          accountId,
-        };
-
-        if (isTransferTx.value) {
-          params.destinationAccountId = toAccount.id;
-          params.destinationAmount = isCurrenciesDifferent.value
-            ? toSystemAmount(Number(form.value.targetAmount))
-            : toSystemAmount(Number(amount));
-          params.isTransfer = true;
-        } else {
-          params.categoryId = category.id;
-        }
-
-        if (isFormCreation.value) {
-          await createTransaction(params);
-        } else {
-          await editTransaction({
-            txId: props.transaction.id,
-            ...params,
-          });
-        }
-
-        emit(MODAL_EVENTS.closeModal);
-        eventBus.emit(BUS_EVENTS.transactionChange);
-      } catch (e) {
-        // eslint-disable-next-line no-console
-        console.error(e);
-      } finally {
-        isLoading.value = false;
-      }
-    };
-    const deleteTransactionHandler = async () => {
-      try {
-        isLoading.value = true;
-
-        await deleteTransaction(props.transaction.id);
-
-        emit(MODAL_EVENTS.closeModal);
-        eventBus.emit(BUS_EVENTS.transactionChange);
-      } catch (e) {
-        // eslint-disable-next-line no-console
-        console.error(e);
-      } finally {
-        isLoading.value = false;
-      }
+      isTransfer?: boolean;
+      destinationAmount?: number;
+      destinationAccountId?: number;
+      destinationCurrencyId?: number;
+      destinationCurrencyCode?: string;
+    } = {
+      amount: toSystemAmount(Number(amount)),
+      note,
+      time: new Date(time).toISOString(),
+      transactionType: getTxTypeFromFormType(formTxType),
+      paymentType: paymentType.value,
+      accountId,
     };
 
-    const closeModal = () => {
-      emit(MODAL_EVENTS.closeModal);
-    };
+    if (isTransferTx.value) {
+      params.destinationAccountId = toAccount.id;
+      params.destinationAmount = isCurrenciesDifferent.value
+        ? toSystemAmount(Number(form.value.targetAmount))
+        : toSystemAmount(Number(amount));
+      params.isTransfer = true;
+    } else {
+      params.categoryId = category.id;
+    }
 
-    const selectTransactionType = (type: FORM_TYPES, disabled = false) => {
-      if (!disabled) form.value.type = type;
-    };
+    if (isFormCreation.value) {
+      await createTransaction(params);
+    } else {
+      await editTransaction({
+        txId: props.transaction.id,
+        ...params,
+      });
+    }
 
-    onMounted(() => {
-      form.value.account = systemAccounts.value[0];
-    });
+    emit(MODAL_EVENTS.closeModal);
+    eventBus.emit(BUS_EVENTS.transactionChange);
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error(e);
+  } finally {
+    isLoading.value = false;
+  }
+};
+const deleteTransactionHandler = async () => {
+  try {
+    isLoading.value = true;
 
-    return {
-      FORM_TYPES,
-      TRANSACTION_TYPES,
-      PAYMENT_TYPES,
-      form,
-      VERBOSE_PAYMENT_TYPES,
-      systemAccounts,
-      currencyCode,
-      currenciesMap,
-      currencies,
-      isCurrenciesDifferent,
-      targetCurrency,
-      isFormCreation,
-      filteredAccounts,
-      isTransferTx,
-      isLoading,
-      closeModal,
-      categories,
-      currentTxType,
-      selectTransactionType,
-      deleteTransactionHandler,
-      submit,
-    };
-  },
+    await deleteTransaction(props.transaction.id);
+
+    emit(MODAL_EVENTS.closeModal);
+    eventBus.emit(BUS_EVENTS.transactionChange);
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error(e);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+const closeModal = () => {
+  emit(MODAL_EVENTS.closeModal);
+};
+
+const selectTransactionType = (type: FORM_TYPES, disabled = false) => {
+  if (!disabled) form.value.type = type;
+};
+
+onMounted(() => {
+  form.value.account = systemAccounts.value[0];
 });
 </script>
 
