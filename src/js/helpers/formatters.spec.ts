@@ -1,22 +1,22 @@
 import {
-  formatAmount,
+  formatUIAmount,
   formatFiat,
   toSystemAmount,
   fromSystemAmount,
 } from './formatters';
 
 describe('js/helpers/formatters', () => {
-  describe('formatAmount', () => {
+  describe('formatUIAmount', () => {
     test.each([
-      [10_000, '100.00'],
-      [1, '0.01'],
-      [-1, '-0.01'],
-      [-10_000, '-100.00'],
-      [0.0125, '0.00'],
+      [10_000, '$100.00'],
+      [1, '$0.01'],
+      [-1, '-$0.01'],
+      [-10_000, '-$100.00'],
+      [0.0125, '$0.00'],
       [NaN, 'NaN'],
       [Infinity, 'Infinity'],
     ])('%s to be %s', (value, expected) => {
-      expect(formatAmount(value)).toBe(expected);
+      expect(formatUIAmount(value)).toBe(expected);
     });
   });
 

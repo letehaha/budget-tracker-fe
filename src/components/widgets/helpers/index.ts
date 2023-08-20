@@ -1,10 +1,11 @@
+import { format } from 'date-fns';
 import { BalanceHistoryEntity } from '@/api';
 
 // TODO: optimize implementation
 export function aggregateData(data: BalanceHistoryEntity[]) {
   // Extract unique account IDs and dates from the data.
   const accountIds = new Set(data.map(item => item.accountId));
-  const datesList = new Set(data.map(item => item.date));
+  const datesList = new Set(data.map(item => format(new Date(item.date), 'yyyy-MM-dd')));
 
   // Determine the earliest and latest dates in the dataset.
   const firstDate = new Date([...datesList][0]);

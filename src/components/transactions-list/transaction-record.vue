@@ -27,7 +27,6 @@
     <div class="transaction__right">
       <div class="transaction__amount">
         {{ formattedAmount }}
-        {{ currenciesMap[tx.currencyId].code }}
       </div>
       <div class="transaction__time">
         {{ formateDate(transaction.time) }}
@@ -44,10 +43,10 @@ import {
 import { storeToRefs } from 'pinia';
 import { TRANSACTION_TYPES, TransactionModel } from 'shared-types';
 
-import { useCategoriesStore, useAccountsStore, useCurrenciesStore } from '@/stores';
+import { useCategoriesStore, useAccountsStore } from '@/stores';
 import { loadTransactionsByTransferId } from '@/api/transactions';
 
-import { formatAmount } from '@/js/helpers';
+import { formatUIAmount } from '@/js/helpers';
 
 import { MODAL_TYPES, useModalCenter } from '@/components/modal-center/index';
 
@@ -66,10 +65,8 @@ export default defineComponent({
   setup(props) {
     const { getCategoryTypeById } = useCategoriesStore();
     const accountsStore = useAccountsStore();
-    const currenciesStore = useCurrenciesStore();
     const { addModal } = useModalCenter();
     const { accountsRecord } = storeToRefs(accountsStore);
-    const { currenciesMap } = storeToRefs(currenciesStore);
 
     const transaction = reactive(props.tx);
     const oppositeTransferTransaction = ref<TransactionModel | null>(null);
@@ -127,14 +124,15 @@ export default defineComponent({
         amount *= -1;
       }
 
-      return formatAmount(amount);
+      return formatUIAmount(amount, {
+        currency: props.tx.currencyCode,
+      });
     });
 
     return {
       TRANSACTION_TYPES,
       category,
-      currenciesMap,
-      formatAmount,
+      formatUIAmount,
       formateDate,
       formattedAmount,
       editTransaction,

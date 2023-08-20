@@ -7,7 +7,7 @@
         :placeholder="isCurrenciesLoading ? 'Loading...' : 'Select currency'"
         with-search-field
         :disabled="!filteredCurrencies.length"
-        :label-key="(item: CurrencyRecord) => `${item.code} - ${item.currency}`"
+        :label-key="(item: CurrencyModel) => `${item.code} - ${item.currency}`"
       />
     </div>
     <ui-button
@@ -24,10 +24,10 @@ import { defineComponent, ref, computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useCurrenciesStore } from '@/stores';
 import { addUserCurrencies } from '@/api/currencies';
-import { CurrencyRecord } from '@/js/records';
 import { useNotificationCenter } from '@/components/notification-center';
 import SelectField from '@/components/fields/select-field.vue';
 import UiButton from '@/components/common/ui-button.vue';
+import { CurrencyModel } from 'shared-types';
 
 export default defineComponent({
   components: { SelectField, UiButton },
@@ -40,10 +40,10 @@ export default defineComponent({
     } = storeToRefs(currenciesStore);
 
     const isCurrenciesLoading = ref(false);
-    const selectedCurrency = ref<CurrencyRecord>(null);
+    const selectedCurrency = ref<CurrencyModel>(null);
     const filteredCurrencies = computed(
       () => systemCurrencies.value.filter(
-        item => !userCurrencies.value.some(el => el.code === item.code),
+        item => !userCurrencies.value.some(el => el.currency.code === item.code),
       ),
     );
 
@@ -65,7 +65,6 @@ export default defineComponent({
     };
 
     return {
-      CurrencyRecord,
       filteredCurrencies,
       addCurrency,
       selectedCurrency,

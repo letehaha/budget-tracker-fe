@@ -1,6 +1,3 @@
-export const formatAmount = (value: number): string => (
-  (value / 100).toFixed(2)
-);
 export const formatFiat = (value: unknown): string => Number(value).toFixed(2);
 
 /**
@@ -9,23 +6,25 @@ export const formatFiat = (value: unknown): string => Number(value).toFixed(2);
  * @param {Number} value
  * @returns Correct system amount with no decimals
  */
-export const toSystemAmount = (value: number): number => (
-  Number((value * 100).toFixed(0))
-);
+export function toSystemAmount(value: number): number {
+  return Number((value * 100).toFixed(0));
+}
 
 /**
  *
  * @param value
  * @returns System value which might be displayed to the user
  */
-export const fromSystemAmount = (value: number): number => value / 100;
+export function fromSystemAmount(value: number): number {
+  return value / 100;
+}
 
-export const toLocalNumber = (
+export function toLocalNumber(
   value: string | number | undefined | null,
   options: Intl.NumberFormatOptions & {
     locale?: Intl.LocalesArgument;
   } = {},
-) => {
+): string {
   if (value !== undefined && value !== null) {
     return Number(value).toLocaleString(options.locale ?? 'en-US', {
       ...options,
@@ -33,13 +32,13 @@ export const toLocalNumber = (
       minimumFractionDigits: options.minimumFractionDigits ?? 2,
     });
   }
-  return value;
-};
+  return String(value);
+}
 
-export const toLocalFiatCurrency = (
+export function toLocalFiatCurrency(
   value: string | number | undefined | null,
   options: Intl.NumberFormatOptions = {},
-) => {
+): string {
   if (value !== undefined && value !== null) {
     return toLocalNumber(
       value,
@@ -54,8 +53,8 @@ export const toLocalFiatCurrency = (
       },
     );
   }
-  return value;
-};
+  return String(value);
+}
 
 /**
  * Format large numbers to be like:
@@ -76,7 +75,7 @@ export const toLocalFiatCurrency = (
  * @param {boolean} options.isFiat - add fiat currency symbol and formatting
  * @param {string} options.currency - fiat currency symbol
  */
-export const formatLargeNumber = (
+export function formatLargeNumber(
   value: number | string,
   options: Pick<Intl.NumberFormatOptions, 'maximumFractionDigits' | 'minimumFractionDigits' | 'currency'> & {
     millionSuffix?: string;
@@ -89,7 +88,7 @@ export const formatLargeNumber = (
     lamports?: boolean;
     isFiat?: boolean;
   } = {},
-) => {
+) {
   const suffixes = {
     millionSuffix: options.millionSuffix ?? 'M',
     thousandSuffix: options.thousandSuffix ?? 'k',
@@ -132,4 +131,12 @@ export const formatLargeNumber = (
     currency: options.currency,
   });
   return `${formatted}${suffix}`;
-};
+}
+
+export function formatUIAmount(
+  value: number,
+  { currency }: { currency?: Intl.NumberFormatOptions['currency'] } = {},
+): string {
+  if (value === Infinity || Number.isNaN(value)) return String(value);
+  return toLocalFiatCurrency(Number((value / 100).toFixed(2)), { currency });
+}

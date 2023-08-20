@@ -1,7 +1,7 @@
 <template>
   <Tabs
     :options="tabs"
-    :tabs-alignment="CSSJustifyContentValues.flexStart"
+    tabs-alignment="flex-start"
   >
     <template #default="{ activeTab }">
       <transition
@@ -17,14 +17,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import Tabs, { CSSJustifyContentValues } from '@/components/ui-tabs.vue';
-import Currencies from './tabs/currencies/index.vue';
+import { defineAsyncComponent, defineComponent } from 'vue';
+import Tabs from '@/components/ui-tabs.vue';
 
 export default defineComponent({
   components: {
     Tabs,
-    Currencies,
+    Currencies: defineAsyncComponent(() => import('./tabs/currencies/index.vue')),
   },
   setup() {
     const tabs = [
@@ -38,7 +37,6 @@ export default defineComponent({
       },
     ];
     return {
-      CSSJustifyContentValues,
       tabs,
     };
   },

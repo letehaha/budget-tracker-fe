@@ -3,7 +3,7 @@
     <div class="edit-currency__row edit-currency__ratio">
       <input-field
         v-model="form.baseRate"
-        :label="`1 ${currency.code} =`"
+        :label="`1 ${currency.currency.code} =`"
         :custom-disabled="!isChecked"
         @focus="onBaseFocus"
       />
@@ -156,12 +156,12 @@ export default defineComponent({
       try {
         await deleteCustomRate([
           {
-            baseCode: props.currency.code,
+            baseCode: props.currency.currency.code,
             quoteCode: props.currency.quoteCode,
           },
           {
             baseCode: props.currency.quoteCode,
-            quoteCode: props.currency.code,
+            quoteCode: props.currency.currency.code,
           },
         ]);
 
@@ -181,13 +181,13 @@ export default defineComponent({
       try {
         await editUserCurrenciesExchangeRates([
           {
-            baseCode: props.currency.code,
+            baseCode: props.currency.currency.code,
             quoteCode: props.currency.quoteCode,
             rate: Number(form.baseRate),
           },
           {
             baseCode: props.currency.quoteCode,
-            quoteCode: props.currency.code,
+            quoteCode: props.currency.currency.code,
             rate: Number(form.quoteRate),
           },
         ]);
