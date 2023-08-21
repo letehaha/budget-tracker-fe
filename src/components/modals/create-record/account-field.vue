@@ -7,6 +7,7 @@
           placeholder="Select account"
           :values="accounts"
           label-key="name"
+          :disabled="disabled"
           is-value-preselected
           :model-value="formAccount"
           @update:model-value="updateFormAccount"
@@ -19,6 +20,7 @@
           placeholder="Select account"
           :values="filteredAccounts"
           label-key="name"
+          :disabled="disabled"
           :model-value="formToAccount"
           @update:model-value="emit('update:form-to-account', $event)"
         />
@@ -31,6 +33,7 @@
           placeholder="Select account"
           :values="accounts"
           label-key="name"
+          :disabled="disabled"
           is-value-preselected
           :model-value="formAccount"
           @update:model-value="updateFormAccount"
@@ -96,6 +99,10 @@ export default defineComponent({
     filteredAccounts: {
       type: Array as PropType<AccountModel[]>,
       required: true,
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
     },
   },
   emits: ['close-modal', 'update:form-account', 'update:form-to-account'],

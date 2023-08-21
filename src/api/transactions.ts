@@ -73,44 +73,27 @@ export const createTransaction = async ({
   }
 };
 
-export const editTransaction = async ({
-  txId,
-  amount,
-  note = '',
-  time,
-  transactionType,
-  paymentType,
-  accountId,
-  categoryId,
-  isTransfer,
-  destinationAccountId,
-  destinationAmount,
-}: {
+interface editExternalTransactionPayload {
   txId: number;
-  amount: number;
   note?: string;
-  time: string;
-  transactionType: TRANSACTION_TYPES;
-  paymentType: PAYMENT_TYPES;
-  accountId: number;
   categoryId?: number;
+}
+interface editSystemTransactionPayload extends editExternalTransactionPayload {
+  amount?: number;
+  time?: string;
+  transactionType?: TRANSACTION_TYPES;
+  paymentType?: PAYMENT_TYPES;
+  accountId?: number;
   isTransfer?: boolean;
   destinationAccountId?: number;
   destinationAmount?: number;
-}): Promise<void> => {
+}
+
+export const editTransaction = async (
+  { txId, ...rest }: editExternalTransactionPayload | editSystemTransactionPayload,
+): Promise<void> => {
   try {
-    await api.put(`/transactions/${txId}`, {
-      amount,
-      note,
-      time,
-      transactionType,
-      paymentType,
-      accountId,
-      categoryId,
-      isTransfer,
-      destinationAccountId,
-      destinationAmount,
-    });
+    await api.put(`/transactions/${txId}`, rest);
   } catch (e) {
     throw new Error(e);
   }

@@ -2,24 +2,22 @@
   <div class="form-header">
     <div />
     <div class="form-header__title">
-      Add Record
+      {{ isFormCreation ? 'Add Record' : 'Edit Record' }}
     </div>
     <button
       class="form-header__action"
       type="button"
-      @click="$emit('close')"
+      @click="emit('close')"
     >
       Cancel
     </button>
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script lang="ts" setup>
+const emit = defineEmits(['close']);
 
-export default defineComponent({
-  emits: ['close'],
-});
+defineProps<{ isFormCreation: boolean }>();
 </script>
 
 <style lang="scss" scoped>

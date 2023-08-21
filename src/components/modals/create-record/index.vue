@@ -8,9 +8,13 @@
     }"
   >
     <div class="create-record__header">
-      <form-header @close="closeModal" />
+      <form-header
+        :is-form-creation="isFormCreation"
+        @close="closeModal"
+      />
 
       <type-selector
+        :is-form-creation="isFormCreation"
         :selected-transaction-type="currentTxType"
         @change-tx-type="selectTransactionType"
       />
@@ -21,6 +25,7 @@
           v-model="form.amount"
           label="Amount"
           type="number"
+          :disabled="isRecordExternal"
           only-positive
           placeholder="Amount"
         >
@@ -35,6 +40,7 @@
         v-model:form-to-account="form.toAccount"
         :is-transfer-transaction="isTransferTx"
         :accounts="systemAccounts"
+        :disabled="isRecordExternal"
         :filtered-accounts="filteredAccounts"
         @close-modal="$emit('close')"
       />
@@ -73,6 +79,7 @@
       <form-row>
         <date-field
           v-model="form.time"
+          :disabled="isRecordExternal"
           label="Datetime"
         />
       </form-row>
@@ -80,6 +87,7 @@
         <select-field
           v-model="form.paymentType"
           label="Payment Type"
+          :disabled="isRecordExternal"
           :values="VERBOSE_PAYMENT_TYPES"
           is-value-preselected
         />
@@ -121,6 +129,7 @@ import {
   watch,
   computed,
   onMounted,
+  nextTick,
 } from 'vue';
 import { storeToRefs } from 'pinia';
 import {
@@ -129,6 +138,7 @@ import {
   TRANSACTION_TYPES,
   PAYMENT_TYPES,
   TransactionModel,
+  ACCOUNT_TYPES,
 } from 'shared-types';
 import {
   useAccountsStore,
@@ -190,6 +200,10 @@ const VERBOSE_PAYMENT_TYPES: VerbosePaymentType[] = [
   { value: PAYMENT_TYPES.webPayment, label: 'Web Payment' },
 ];
 
+defineOptions({
+  name: 'record-form',
+});
+
 const props = withDefaults(defineProps<{
   transaction?: TransactionModel;
   oppositeTransaction?: TransactionModel;
@@ -201,7 +215,7 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits([MODAL_EVENTS.closeModal]);
 
 const { getCurrency, currenciesMap } = useCurrenciesStore();
-const { accountsRecord, systemAccounts } = storeToRefs(useAccountsStore());
+const { accountsRecord, accounts, systemAccounts } = storeToRefs(useAccountsStore());
 const { categories, rawCategories } = storeToRefs(useCategoriesStore());
 
 const isFormCreation = computed(() => !props.transaction);
@@ -227,6 +241,21 @@ const form = ref<{
   note: null,
   type: FORM_TYPES.expense,
 });
+
+const isRecordExternal = computed(() => {
+  if (!props.transaction) return false;
+  return props.transaction.accountType !== ACCOUNT_TYPES.system;
+});
+// If record is external, the account field will be disabled, so we need to preselect
+// the account
+watch(() => isRecordExternal.value, (value) => {
+  if (value) {
+    nextTick(() => {
+      form.value.account = accounts.value.find(item => item.id === props.transaction.accountId);
+    });
+  }
+}, { immediate: true });
+
 const isLoading = ref(false);
 
 const currentTxType = computed(() => form.value.type);
@@ -301,46 +330,61 @@ const submit = async () => {
       category,
     } = form.value;
 
-    const params: {
-      amount: number;
-      note?: string;
-      time: string;
-      transactionType: TRANSACTION_TYPES;
-      paymentType: PAYMENT_TYPES;
-      accountId: number;
-      categoryId?: number;
-
-      isTransfer?: boolean;
-      destinationAmount?: number;
-      destinationAccountId?: number;
-      destinationCurrencyId?: number;
-      destinationCurrencyCode?: string;
-    } = {
-      amount: toSystemAmount(Number(amount)),
-      note,
-      time: new Date(time).toISOString(),
-      transactionType: getTxTypeFromFormType(formTxType),
-      paymentType: paymentType.value,
-      accountId,
-    };
-
-    if (isTransferTx.value) {
-      params.destinationAccountId = toAccount.id;
-      params.destinationAmount = isCurrenciesDifferent.value
-        ? toSystemAmount(Number(form.value.targetAmount))
-        : toSystemAmount(Number(amount));
-      params.isTransfer = true;
-    } else {
-      params.categoryId = category.id;
-    }
-
     if (isFormCreation.value) {
-      await createTransaction(params);
+      const creationParams: Parameters<typeof createTransaction>[0] = {
+        amount: toSystemAmount(Number(amount)),
+        note,
+        time: new Date(time).toISOString(),
+        transactionType: getTxTypeFromFormType(formTxType),
+        paymentType: paymentType.value,
+        accountId,
+      };
+
+      if (isTransferTx.value) {
+        creationParams.destinationAccountId = toAccount.id;
+        creationParams.destinationAmount = isCurrenciesDifferent.value
+          ? toSystemAmount(Number(form.value.targetAmount))
+          : toSystemAmount(Number(amount));
+        creationParams.isTransfer = true;
+      } else {
+        creationParams.categoryId = category.id;
+      }
+
+      await createTransaction(creationParams);
     } else {
-      await editTransaction({
+      let editionParams: Parameters<typeof editTransaction>[0] = {
         txId: props.transaction.id,
-        ...params,
-      });
+      };
+
+      if (isRecordExternal.value) {
+        editionParams = {
+          ...editionParams,
+          note,
+          categoryId: category.id,
+        };
+      } else {
+        editionParams = {
+          ...editionParams,
+          amount: toSystemAmount(Number(amount)),
+          note,
+          time: new Date(time).toISOString(),
+          transactionType: getTxTypeFromFormType(formTxType),
+          paymentType: paymentType.value,
+          accountId,
+        };
+
+        if (isTransferTx.value) {
+          editionParams.destinationAccountId = toAccount.id;
+          editionParams.destinationAmount = isCurrenciesDifferent.value
+            ? toSystemAmount(Number(form.value.targetAmount))
+            : toSystemAmount(Number(amount));
+          editionParams.isTransfer = true;
+        } else {
+          editionParams.categoryId = category.id;
+        }
+      }
+
+      await editTransaction(editionParams);
     }
 
     emit(MODAL_EVENTS.closeModal);

@@ -13,14 +13,17 @@
         </template>
       </template>
 
-      <input
-        v-bind="computedAttrs"
-        type="datetime-local"
-        :value="modelValue"
-        :style="inputFieldStyles"
-        :tabindex="tabindex"
-        class="date-field__input"
-      >
+      <div class="date-field__wrapper">
+        <input
+          v-bind="computedAttrs"
+          type="datetime-local"
+          :value="modelValue"
+          :disabled="($attrs.disabled as boolean)"
+          :style="inputFieldStyles"
+          :tabindex="tabindex"
+          class="date-field__input"
+        >
+      </div>
     </FieldLabel>
 
     <div
@@ -82,6 +85,11 @@ export default defineComponent({
   position: relative;
   width: 100%;
   flex: 1;
+}
+.date-field__wrapper {
+  .date-field--disabled & {
+    opacity: 0.3;
+  }
 }
 .date-field__input {
   font-size: 16px;
