@@ -163,9 +163,6 @@ export default defineComponent({
     appearance: textfield;
   }
 }
-.input-field--disabled {
-  opacity: 0.6;
-}
 .input-field__input {
   font-size: 16px;
   line-height: 1;
@@ -183,6 +180,10 @@ export default defineComponent({
 }
 .input-field__wrapper {
   position: relative;
+
+  .input-field--disabled & {
+    opacity: 0.3;
+  }
 }
 .input-fields__sublabel {
   position: absolute;
