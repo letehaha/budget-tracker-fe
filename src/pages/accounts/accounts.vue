@@ -31,10 +31,10 @@
       </template>
     </h1>
 
-    <template v-if="accounts.length">
+    <template v-if="formattedAccounts.length">
       <div class="accounts__list">
         <template
-          v-for="account in accounts"
+          v-for="account in formattedAccounts"
           :key="account.id"
         >
           <router-link
@@ -70,58 +70,46 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script lang="ts" setup>
 import { storeToRefs } from 'pinia';
-import { ACCOUNT_TYPES, AccountModel } from 'shared-types';
+import { computed } from 'vue';
+import { AccountModel } from 'shared-types';
 
 import { ROUTES_NAMES } from '@/routes/constants';
+import { useFormatCurrency } from '@/composable';
 import { useBanksMonobankStore, useAccountsStore } from '@/stores';
-import { formatUIAmount } from '@/js/helpers';
 import { MODAL_TYPES, useModalCenter } from '@/components/modal-center/index';
 
-export default defineComponent({
-  setup() {
-    const monobankStore = useBanksMonobankStore();
-    const accountsStore = useAccountsStore();
+const monobankStore = useBanksMonobankStore();
+const { accounts } = storeToRefs(useAccountsStore());
+const {
+  isMonoAccountPaired: isPaired,
+  isTokenPresent,
+} = storeToRefs(monobankStore);
 
-    const { accounts } = storeToRefs(accountsStore);
-    const {
-      isMonoAccountPaired: isPaired,
-      isTokenPresent,
-    } = storeToRefs(monobankStore);
+const { formatAmountByCurrencyId } = useFormatCurrency();
+const { addModal } = useModalCenter();
 
-    const { addModal } = useModalCenter();
+const refreshMonoAccounts = () => {
+  monobankStore.refreshAccounts();
+};
 
-    const refreshMonoAccounts = () => {
-      monobankStore.refreshAccounts();
-    };
+const formattedAccounts = computed(
+  () => [...accounts.value].sort((a, b) => +b.isEnabled - +a.isEnabled),
+);
 
-    const setMonobankToken = ({ isUpdate = false } = {}) => {
-      addModal({
-        type: MODAL_TYPES.monobankSetToken,
-        data: {
-          isUpdate,
-        },
-      });
-    };
+const setMonobankToken = ({ isUpdate = false } = {}) => {
+  addModal({
+    type: MODAL_TYPES.monobankSetToken,
+    data: {
+      isUpdate,
+    },
+  });
+};
 
-    const formatBalance = (account: AccountModel) => (
-      formatUIAmount(account.currentBalance - account.creditLimit)
-    );
-
-    return {
-      ROUTES_NAMES,
-      ACCOUNT_TYPES,
-      setMonobankToken,
-      accounts: [...accounts.value].sort((a, b) => +b.isEnabled - +a.isEnabled),
-      isPaired,
-      isTokenPresent,
-      refreshMonoAccounts,
-      formatBalance,
-    };
-  },
-});
+const formatBalance = (account: AccountModel) => (
+  formatAmountByCurrencyId(account.currentBalance - account.creditLimit, account.currencyId)
+);
 </script>
 
 <style lang="scss" scoped>
