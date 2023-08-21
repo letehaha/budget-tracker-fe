@@ -66,16 +66,6 @@
         </form-row>
       </template>
 
-      <!-- <currency-field
-        v-model:form-currency="form.currency"
-        v-model:form-target-amount="form.targetAmount"
-        :currencies="currencies"
-        :is-form-creation="isFormCreation"
-        :is-transfer-transaction="isTransferTx"
-        :form-account="form.account"
-        :form-to-account="form.toAccount"
-      /> -->
-
       <form-row>
         <date-field
           v-model="form.time"
@@ -166,7 +156,6 @@ import FormHeader from './form-header.vue';
 import TypeSelector from './type-selector.vue';
 import FormRow from './form-row.vue';
 import AccountField from './account-field.vue';
-// import CurrencyField from './currency-field.vue';
 
 import { FORM_TYPES } from './types';
 
