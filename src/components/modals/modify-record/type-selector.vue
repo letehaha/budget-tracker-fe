@@ -1,32 +1,41 @@
 <template>
   <div class="type-selector">
-    <div
-      class="type-selector__item"
+    <button
+      type="button"
+      class="button-style-reset type-selector__item"
+      :disabled="!isFormCreation"
       :class="{
+        'type-selector__item--disabled': !isFormCreation,
         'type-selector__item--active': selectedTransactionType === FORM_TYPES.expense,
       }"
       @click="selectTransactionType(FORM_TYPES.expense)"
     >
       Expense
-    </div>
-    <div
-      class="type-selector__item"
+    </button>
+    <button
+      type="button"
+      class="button-style-reset type-selector__item"
+      :disabled="!isFormCreation"
       :class="{
+        'type-selector__item--disabled': !isFormCreation,
         'type-selector__item--active': selectedTransactionType === FORM_TYPES.income,
       }"
       @click="selectTransactionType(FORM_TYPES.income)"
     >
       Income
-    </div>
-    <div
-      class="type-selector__item"
+    </button>
+    <button
+      type="button"
+      class="button-style-reset type-selector__item"
+      :disabled="!isFormCreation"
       :class="{
+        'type-selector__item--disabled': !isFormCreation,
         'type-selector__item--active': selectedTransactionType === FORM_TYPES.transfer,
       }"
       @click="selectTransactionType(FORM_TYPES.transfer)"
     >
       Transfer
-    </div>
+    </button>
   </div>
 </template>
 
@@ -46,6 +55,10 @@ export default defineComponent({
   props: {
     selectedTransactionType: {
       type: String as PropType<FORM_TYPES>,
+      required: true,
+    },
+    isFormCreation: {
+      type: Boolean,
       required: true,
     },
   },
@@ -104,5 +117,9 @@ export default defineComponent({
   background-color: #fff;
   border-radius: 10px;
   color: #000;
+}
+.type-selector__item--disabled {
+  opacity: 0.6;
+  cursor: initial;
 }
 </style>
