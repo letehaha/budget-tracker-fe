@@ -1,13 +1,13 @@
 <template>
   <div
-    class="create-record"
+    class="modify-record"
     :class="{
-      'create-record--income': currentTxType === FORM_TYPES.income,
-      'create-record--expense': currentTxType === FORM_TYPES.expense,
-      'create-record--transfer': currentTxType === FORM_TYPES.transfer,
+      'modify-record--income': currentTxType === FORM_TYPES.income,
+      'modify-record--expense': currentTxType === FORM_TYPES.expense,
+      'modify-record--transfer': currentTxType === FORM_TYPES.transfer,
     }"
   >
-    <div class="create-record__header">
+    <div class="modify-record__header">
       <form-header
         :is-form-creation="isFormCreation"
         @close="closeModal"
@@ -19,7 +19,7 @@
         @change-tx-type="selectTransactionType"
       />
     </div>
-    <div class="create-record__form">
+    <div class="modify-record__form">
       <form-row>
         <input-field
           v-model="form.amount"
@@ -90,10 +90,10 @@
         />
       </form-row>
     </div>
-    <div class="create-record__actions">
+    <div class="modify-record__actions">
       <ui-button
         v-if="transaction"
-        class="create-record__action"
+        class="modify-record__action"
         :disabled="isLoading"
         @click="deleteTransactionHandler"
       >
@@ -101,8 +101,8 @@
       </ui-button>
       <ui-button
         class="
-          create-record__action
-          create-record__action--submit
+          modify-record__action
+          modify-record__action--submit
         "
         :disabled="isLoading"
         @click="submit"
@@ -416,14 +416,14 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 $border-top-radius: 10px;
-.create-record {
+.modify-record {
   background-color: var(--app-bg-color);
   width: 100%;
   max-width: 600px;
   border-top-right-radius: $border-top-radius;
   border-top-left-radius: $border-top-radius;
 }
-.create-record__header {
+.modify-record__header {
   padding: 24px;
   margin-bottom: 24px;
 
@@ -432,27 +432,27 @@ $border-top-radius: 10px;
 
   transition: .2s ease-out;
 
-  .create-record--income & {
+  .modify-record--income & {
     background-color: var(--app-income-color);
   }
-  .create-record--expense & {
+  .modify-record--expense & {
     background-color: var(--app-expense-color);
   }
-  .create-record--transfer & {
+  .modify-record--transfer & {
     background-color: var(--app-transfer-color);
   }
 }
-.create-record__form {
+.modify-record__form {
   padding: 0 24px;
 }
-.create-record__actions {
+.modify-record__actions {
   display: flex;
   align-items: center;
   justify-content: space-between;
 
   padding: 24px;
 }
-.create-record__action--submit {
+.modify-record__action--submit {
   margin-left: auto;
 }
 </style>
