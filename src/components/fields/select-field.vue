@@ -68,7 +68,7 @@ type ModelValue = Record<string, any>;
 
 const props = withDefaults(defineProps<{
   label?: string;
-  modelValue: ModelValue;
+  modelValue: ModelValue | null;
   values: ModelValue[];
   labelKey?: string |((value: ModelValue) => string);
   placeholder?: string;
