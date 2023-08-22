@@ -1,9 +1,12 @@
 import { merge } from 'lodash-es';
 import { format } from 'date-fns';
+import * as Highcharts from 'highcharts';
 import { useFormatCurrency } from '@/composable';
 
-const defaultConfig = {
-  credits: false,
+const defaultConfig: Highcharts.Options = {
+  credits: {
+    enabled: false,
+  },
 };
 
 export const useHighcharts = () => {
@@ -11,7 +14,9 @@ export const useHighcharts = () => {
 
   const getDefaultConfig = () => ({ ...defaultConfig });
 
-  const buildAreaChartConfig = (extendConfig) => merge(getDefaultConfig(), {
+  const buildAreaChartConfig = (
+    extendConfig: Highcharts.Options,
+  ): Highcharts.Options => merge(getDefaultConfig(), {
     chart: {
       type: 'area',
       backgroundColor: 'transparent',
@@ -86,10 +91,10 @@ export const useHighcharts = () => {
         return `
           <div class="balance-trend-widget__tooltip">
             <div class="balance-trend-widget__tooltip-date">
-              ${format(this.x, 'MMMM d, yyyy')}
+              ${format(Number(this.x), 'MMMM d, yyyy')}
             </div>
             <div class="balance-trend-widget__tooltip-value">
-              Balance: <span>${formatBaseCurrency(this.y)}</span>
+              Balance: <span>${formatBaseCurrency(this.y, { systemAmount: false })}</span>
             </div>
           </div>
         `;
@@ -100,7 +105,7 @@ export const useHighcharts = () => {
         color: 'var(--app-text-base)',
       },
     },
-  }, extendConfig);
+  } as Highcharts.Options, extendConfig);
 
   return {
     getDefaultConfig,

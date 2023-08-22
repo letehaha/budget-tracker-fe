@@ -63,6 +63,7 @@ const chartOptions = computed(() => buildAreaChartConfig({
   chart: { height: 350 },
   series: [
     {
+      type: 'area',
       showInLegend: false,
       data: balanceHistory.value.map((point) => [
         new Date(point.date).getTime(),
