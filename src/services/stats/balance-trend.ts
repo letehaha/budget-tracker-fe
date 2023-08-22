@@ -1,8 +1,8 @@
 import { format } from 'date-fns';
-import { BalanceHistoryEntity } from '@/api';
+import { getBalanceHistory, BalanceHistoryEntity } from '@/api';
 
 // TODO: optimize implementation
-export function aggregateData(data: BalanceHistoryEntity[]) {
+export function aggregateBalanceTrendData(data: BalanceHistoryEntity[]) {
   // Extract unique account IDs and dates from the data.
   const accountIds = new Set(data.map(item => item.accountId));
   const datesList = new Set(data.map(item => format(new Date(item.date), 'yyyy-MM-dd')));
@@ -71,3 +71,11 @@ export function aggregateData(data: BalanceHistoryEntity[]) {
 
   return toArray;
 }
+
+export const loadBalanceTrendData = async ({ from }: { from: Date }) => {
+  const result = await getBalanceHistory({ from });
+
+  if (!result?.length) return [];
+
+  return aggregateBalanceTrendData(result);
+};
