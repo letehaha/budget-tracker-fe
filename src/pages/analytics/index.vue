@@ -33,18 +33,8 @@ import {
 } from 'vue';
 import { Chart as Highcharts } from 'highcharts-vue';
 import { subDays } from 'date-fns';
-import { getBalanceHistory } from '@/api';
 import { useHighcharts } from '@/composable';
-
-import { aggregateData } from '@/components/widgets/helpers';
-
-const loadBalanceData = async ({ from }: { from: Date }) => {
-  const result = await getBalanceHistory({ from });
-
-  if (!result?.length) return [];
-
-  return aggregateData(result);
-};
+import { loadBalanceTrendData } from '@/services';
 
 defineOptions({
   name: 'analytics-root',
@@ -64,7 +54,7 @@ const isDropdownVisible = ref(false);
 const currentTimePeriod = ref<typeof timePeriods[0]>(timePeriods[0]);
 
 watchEffect(async () => {
-  balanceHistory.value = await loadBalanceData({
+  balanceHistory.value = await loadBalanceTrendData({
     from: subDays(new Date(), currentTimePeriod.value.value),
   });
 });
