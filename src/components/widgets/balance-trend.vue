@@ -85,6 +85,7 @@ const chartOptions = computed(() => {
     },
     series: [
       {
+        type: 'area',
         showInLegend: false,
         data: [
           ...balanceHistory.value.map((point) => [

@@ -1,5 +1,6 @@
 import { format } from 'date-fns';
 import { getBalanceHistory, BalanceHistoryEntity } from '@/api';
+import { fromSystemAmount } from '@/js/helpers';
 
 // TODO: optimize implementation
 export function aggregateBalanceTrendData(data: BalanceHistoryEntity[]) {
@@ -73,9 +74,14 @@ export function aggregateBalanceTrendData(data: BalanceHistoryEntity[]) {
 }
 
 export const loadBalanceTrendData = async ({ from }: { from: Date }) => {
-  const result = await getBalanceHistory({ from });
+  let result = await getBalanceHistory({ from });
 
   if (!result?.length) return [];
+
+  result = result.map(item => ({
+    ...item,
+    amount: fromSystemAmount(item.amount),
+  }));
 
   return aggregateBalanceTrendData(result);
 };
