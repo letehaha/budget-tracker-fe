@@ -1,6 +1,6 @@
-import { aggregateData } from './index';
+import { aggregateBalanceTrendData } from './balance-trend';
 
-describe('aggregateData', () => {
+describe('aggregateBalanceTrendData', () => {
   test.each([
     ['should handle an empty array', [], []],
     [
@@ -34,6 +34,6 @@ describe('aggregateData', () => {
       ],
     ],
   ])('%s', (_, input, output) => {
-    expect(aggregateData(input)).toStrictEqual(output);
+    expect(aggregateBalanceTrendData(input)).toStrictEqual(output);
   });
 });

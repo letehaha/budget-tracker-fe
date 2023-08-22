@@ -42,21 +42,12 @@ import {
   subDays, getDaysInMonth, addDays,
   startOfMonth, endOfMonth, startOfDay, subMonths,
 } from 'date-fns';
-import { getBalanceHistory, getTotalBalance } from '@/api';
+import { getTotalBalance } from '@/api';
 import { calculatePercentageDifference } from '@/js/helpers';
 import { useFormatCurrency, useHighcharts } from '@/composable';
-
-import { aggregateData } from './helpers';
+import { loadBalanceTrendData } from '@/services';
 
 const currentDayInMonth = new Date().getDate();
-
-const loadBalanceData = async ({ from }: { from: Date }) => {
-  const result = await getBalanceHistory({ from });
-
-  if (!result?.length) return [];
-
-  return aggregateData(result);
-};
 
 // Calculate it manually so shart will always have first and last ticks (dates)
 function generateDateSteps(datesToShow = 5) {
@@ -131,7 +122,7 @@ const onChartResize = (entries: ResizeObserverEntry[]) => {
 };
 
 onMounted(async () => {
-  balanceHistory.value = await loadBalanceData({
+  balanceHistory.value = await loadBalanceTrendData({
     from: subDays(new Date(), currentDayInMonth - 1),
   });
   todayBalance.value = await getTotalBalance({ date: new Date() });
