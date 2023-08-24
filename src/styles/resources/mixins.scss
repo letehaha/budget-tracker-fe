@@ -83,3 +83,27 @@
   border-radius: 5px;
   padding: 16px;
 }
+
+@mixin link-primary-color() {
+  color: var(--ac-link-primary-base);
+
+  &:hover {
+    color: var(--ac-link-primary-hover);
+  }
+  &:focus,
+  &:active {
+    color: var(--ac-link-primary-active);
+  }
+}
+
+@mixin link-danger-color() {
+  color: var(--ac-link-danger-base);
+
+  &:hover {
+    color: var(--ac-link-danger-hover);
+  }
+  &:focus,
+  &:active {
+    color: var(--ac-link-danger-active);
+  }
+}

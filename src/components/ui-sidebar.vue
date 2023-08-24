@@ -120,7 +120,7 @@ export default defineComponent({
   gap: 16px;
 }
 .sidebar__navigation-link {
-  color: var(---app-text-on-primary);
+  color: var(--abc-text-white-base);
   border-radius: 4px;
   padding: 12px 16px;
   transition: .15s ease-out;
