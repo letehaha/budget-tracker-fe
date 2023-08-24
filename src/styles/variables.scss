@@ -1,7 +1,11 @@
+@import "./colors";
+
 $primary-color: #2ecc71;
 $danger-color: #e1301c;
 
 body {
+  --app-color-primary: var(--app-base-color-brand-light-500);
+
   --app-border-default: #DFDFE3;
   --app-border-disabled: #D0D1DA;
 
@@ -11,20 +15,7 @@ body {
   --app-bg-field-disabled: #FAFAFA;
   --app-bg-navbar: #191919;
 
-  --app-buttons-default: #7E56DA;
-  --app-buttons-hover: #603EBB;
-  --app-buttons-active: #603EBB;
-  --app-buttons-disabled: #C9B3EF;
-  --app-buttons-click: #462B9C;
   --app-buttons-light-bg: #F2ECFD;
-
-  --app-text-base: #0A121A;
-  --app-text-secondary: #5C6068;
-  --app-text-tertiary: #8D8F9F;
-  --app-text-light-grey: #D0D1DA;
-  --app-text-on-primary: #FFFFFF;
-
-  --primary-text-color: #333;
 
   @each $shade, $color in makeColorPalette($primary-color) {
     --primary-#{$shade}: #{$color};
@@ -72,20 +63,8 @@ body {
     --app-bg-field-disabled: #2C2C2C;
     --app-bg-navbar: #252525;
 
-    --app-buttons-default: #8D70DA;
-    --app-buttons-hover: #7C62D0;
-    --app-buttons-active: #866DCE;
-    --app-buttons-disabled: #8F869E;
-    --app-buttons-click: #6B4DCC;
     // TODO: add in design
     --app-buttons-light-bg: #F2ECFD;
-
-    --app-text-base: #FAFAFA;
-    --app-text-secondary: #D9D9D9;
-    --app-text-tertiary: #C7C6C6;
-    --app-text-light-grey: #D0D1DA;
-    // TODO: app in design
-    --app-text-on-primary: #FFFFFF;
 
     @each $cssVar, $value in (
       --app-primary: #8E6BDF,

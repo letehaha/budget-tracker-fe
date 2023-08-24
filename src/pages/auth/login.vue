@@ -176,11 +176,8 @@ export default defineComponent({
   text-align: center;
 }
 .login__signup-link {
-  transition: .2s ease-out;
-  color: var(--app-buttons-default);
+  @include link-primary-color();
 
-  &:hover {
-    color: var(--app-buttons-hover);
-  }
+  transition: color .2s ease-out;
 }
 </style>
