@@ -36,7 +36,8 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, computed } from 'vue';
+import { ref, computed } from 'vue';
+import { useQuery } from '@tanstack/vue-query';
 import { Chart as Highcharts } from 'highcharts-vue';
 import {
   subDays, getDaysInMonth, addDays,
@@ -68,10 +69,30 @@ defineOptions({
   name: 'balance-trend-widget',
 });
 
-const balanceHistory = ref<{ amount: number; date: string }[]>([]);
 const currentChartWidth = ref(null);
 const { formatBaseCurrency } = useFormatCurrency();
 const { buildAreaChartConfig } = useHighcharts();
+
+const { data: balanceHistory } = useQuery({
+  queryKey: ['widget-balance-trend'],
+  queryFn: () => loadBalanceTrendData({
+    from: subDays(new Date(), currentDayInMonth - 1),
+  }),
+  staleTime: Infinity,
+});
+const { data: todayBalance } = useQuery({
+  queryKey: ['widget-balance-total-balance'],
+  queryFn: () => getTotalBalance({ date: new Date() }),
+  staleTime: Infinity,
+});
+const { data: previousBalance } = useQuery({
+  queryKey: ['widget-balance-previous-balance'],
+  queryFn: () => getTotalBalance({
+    date: subMonths(new Date(), 1),
+  }),
+  staleTime: Infinity,
+});
+
 const chartOptions = computed(() => {
   const pixelsPerTick = 120;
   const ticksAmount = currentChartWidth.value
@@ -88,7 +109,7 @@ const chartOptions = computed(() => {
         type: 'area',
         showInLegend: false,
         data: [
-          ...balanceHistory.value.map((point) => [
+          ...(balanceHistory.value || []).map((point) => [
             new Date(point.date).getTime(),
             point.amount,
           ]),
@@ -105,8 +126,6 @@ const chartOptions = computed(() => {
     ],
   });
 });
-const todayBalance = ref(null);
-const previousBalance = ref(null);
 const balancesDiff = computed<number>(() => {
   if (!todayBalance.value || !previousBalance.value) return 0;
 
@@ -121,16 +140,6 @@ const onChartResize = (entries: ResizeObserverEntry[]) => {
   const entry = entries[0];
   currentChartWidth.value = entry.contentRect.width;
 };
-
-onMounted(async () => {
-  balanceHistory.value = await loadBalanceTrendData({
-    from: subDays(new Date(), currentDayInMonth - 1),
-  });
-  todayBalance.value = await getTotalBalance({ date: new Date() });
-  previousBalance.value = await getTotalBalance({
-    date: subMonths(new Date(), 1),
-  });
-});
 </script>
 
 <style lang="scss">
