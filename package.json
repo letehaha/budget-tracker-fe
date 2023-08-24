@@ -25,6 +25,7 @@
     "not dead"
   ],
   "dependencies": {
+    "@tanstack/vue-query": "^4.34.0",
     "@vuelidate/core": "^2.0.3",
     "@vuelidate/validators": "^2.0.3",
     "core-js": "^3.32.0",
@@ -54,7 +55,7 @@
     "@vue/eslint-config-typescript": "^11.0.3",
     "@vue/test-utils": "^2.4.1",
     "css-loader": "^6.8.1",
-    "cypress": "^12.17.3",
+    "cypress": "^12.17.4",
     "dotenv": "^16.3.1",
     "eslint": "^8.47.0",
     "eslint-friendly-formatter": "^4.0.1",

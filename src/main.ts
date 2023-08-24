@@ -1,4 +1,5 @@
 import { createApp } from 'vue';
+import { VueQueryPlugin } from '@tanstack/vue-query';
 import { router } from '@/routes';
 import { clickOutside, nodeResizeObserver } from '@/directives';
 import { initApiCaller } from '@/api';
@@ -18,6 +19,8 @@ app.directive('node-resize-observer', nodeResizeObserver);
 
 app.use(router);
 app.use(store);
+
+app.use(VueQueryPlugin);
 
 app.mount('#app');
 
