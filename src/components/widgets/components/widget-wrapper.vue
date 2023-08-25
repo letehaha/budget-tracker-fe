@@ -39,7 +39,8 @@ withDefaults(defineProps<{
   border-radius: 12px;
 }
 .widget-wrapper--higher {
-  max-height: 700px;
+  // 24px is a gap between widgets
+  max-height: 724px;
 }
 .widget-wrapper__header {
   margin-bottom: 12px;
