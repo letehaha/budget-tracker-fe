@@ -80,45 +80,43 @@ $transition: box-shadow 0.2s ease-out;
 }
 
 .button--primary {
-  background-color: var(--app-buttons-default);
-  border-color: var(--app-buttons-default);
-  color: var(--app-text-on-primary);
+  background-color: var(--ac-button-primary-base);
+  border-color: var(--ac-button-primary-base);
+  color: var(--ac-button-primary-text);
 
   &:not([disabled]):hover {
-    background-color: var(--app-buttons-hover);
-    border-color: var(--app-buttons-hover);
+    background-color: var(--ac-button-primary-hover);
+    border-color: var(--ac-button-primary-hover);
   }
-  &:active {
-    background-color: var(--app-buttons-active);
-    border-color: var(--app-buttons-active);
+  &:focus {
+    background-color: var(--ac-button-primary-focus);
+    border-color: var(--ac-button-primary-focus);
   }
   &[disabled] {
-    background-color: var(--app-buttons-disabled);
-    border-color: var(--app-buttons-disabled);
+    opacity: 0.3;
   }
 }
 .button--danger {
-  background-color: var(--app-error);
-  border-color: var(--app-error);
-  color: var(--app-text-on-primary);
+  background-color: var(--ac-button-danger-base);
+  border-color: var(--ac-button-danger-base);
+  color: var(--ac-button-danger-text);
 
   &:not([disabled]):hover {
-    background-color: var(--app-error);
-    border-color: var(--app-error);
+    background-color: var(--ac-button-danger-hover);
+    border-color: var(--ac-button-danger-hover);
   }
-  &:active {
-    background-color: var(--app-error);
-    border-color: var(--app-error);
+  &:focus {
+    background-color: var(--ac-button-danger-focus);
+    border-color: var(--ac-button-danger-focus);
   }
   &[disabled] {
-    background-color: var(--app-error);
-    border-color: var(--app-error);
+    opacity: 0.3;
   }
 }
 .button--light-dark {
   background-color: #444;
   border-color: #444;
-  color: var(--app-text-on-primary);
+  color: var(--abc-text-white-base);
 
   &:not([disabled]):hover {
     background-color: lighten(#444, 5);
@@ -134,35 +132,19 @@ $transition: box-shadow 0.2s ease-out;
 }
 .button--outline {
   background-color: transparent;
-  border-color: var(--app-buttons-default);
-  color: var(--app-buttons-default);
+  border-color: var(--ac-button-primary-base);
+  color: var(--ac-button-primary-base);
 
   &:not([disabled]):hover {
-    border-color: var(--app-buttons-hover);
-    color: var(--app-buttons-hover);
+    border-color: var(--ac-button-primary-hover);
+    color: var(--ac-button-primary-hover);
   }
-  &:active {
-    border-color: var(--app-buttons-active);
-    color: var(--app-buttons-active);
-  }
-  &[disabled] {
-    border-color: var(--app-buttons-disabled);
-    color: var(--app-buttons-disabled);
-  }
-}
-.button--outline {
-  background-color: transparent;
-  border-color: transparent;
-  color: var(--app-buttons-default);
-
-  &:not([disabled]):hover {
-    color: var(--app-buttons-hover);
-  }
-  &:active {
-    color: var(--app-buttons-active);
+  &:focus {
+    border-color: var(--ac-button-primary-focus);
+    color: var(--ac-button-primary-focus);
   }
   &[disabled] {
-    color: var(--app-buttons-disabled);
+    opacity: 0.3;
   }
 }
 </style>

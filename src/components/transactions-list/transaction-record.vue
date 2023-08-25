@@ -1,38 +1,40 @@
 <template>
-  <div
-    class="transaction"
+  <button
+    class="button-style-reset transaction-record"
+    type="button"
+    aria-haspopup="true"
     :class="{
-      'transaction--income': transaction.transactionType === TRANSACTION_TYPES.income,
-      'transaction--expense': transaction.transactionType === TRANSACTION_TYPES.expense,
+      'transaction-record--income': transaction.transactionType === TRANSACTION_TYPES.income,
+      'transaction-record--expense': transaction.transactionType === TRANSACTION_TYPES.expense,
     }"
     @click="editTransaction"
   >
-    <div class="transaction__info">
+    <div class="transaction-record__info">
       <template v-if="transaction.isTransfer">
-        <div class="transaction__category">
+        <div class="transaction-record__category">
           {{ accountMovement }}
         </div>
       </template>
       <template v-else>
         <template v-if="category">
-          <div class="transaction__category">
+          <div class="transaction-record__category">
             {{ category.name }}
           </div>
         </template>
       </template>
-      <div class="transaction__note">
+      <div class="transaction-record__note">
         {{ transaction.note }}
       </div>
     </div>
-    <div class="transaction__right">
-      <div class="transaction__amount">
+    <div class="transaction-record__right">
+      <div class="transaction-record__amount">
         {{ formattedAmount }}
       </div>
-      <div class="transaction__time">
+      <div class="transaction-record__time">
         {{ formateDate(transaction.time) }}
       </div>
     </div>
-  </div>
+  </button>
 </template>
 
 <script lang="ts">
@@ -143,8 +145,8 @@ export default defineComponent({
 });
 </script>
 
-<style lang="scss" scoped>
-.transaction {
+<style lang="scss">
+.transaction-record {
   padding: 10px;
   border-radius: 6px;
   margin-bottom: 10px;
@@ -152,31 +154,32 @@ export default defineComponent({
   justify-content: space-between;
   align-items: flex-start;
   cursor: pointer;
+  width: 100%;
 }
-.transaction__category {
+.transaction-record__category {
   font-size: 16px;
   white-space: nowrap;
   letter-spacing: 0.5px;
   color: var(--app-on-surface-color);
 }
-.transaction__time {
+.transaction-record__time {
   color: var(--app-on-surface-color);
 }
-.transaction__note {
+.transaction-record__note {
   color: #666;
   font-size: 14px;
   letter-spacing: 0.5px;
 }
-.transaction__right {
+.transaction-record__right {
   flex: none;
 }
-.transaction__amount {
+.transaction-record__amount {
   text-align: right;
 
-  .transaction--income & {
+  .transaction-record--income & {
     color: #2ecc71;
   }
-  .transaction--expense & {
+  .transaction-record--expense & {
     color: #e74c3c;
   }
 }
