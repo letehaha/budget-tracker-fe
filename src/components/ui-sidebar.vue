@@ -99,10 +99,15 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .sidebar {
+  --sidebar-bg: var(--abc-background-dark-200);
+  --sidebar-btn-bg-active: var(--abc-brand-light-500);
+  --sidebar-btn-bg-hover: var(--abc-background-dark-400);
+  --sidebar-btn-text: var(--abc-text-white-base);
+
   width: 180px;
   flex-grow: 0;
   padding: 48px 16px;
-  background-color: var(--app-bg-navbar);
+  background-color: var(--sidebar-bg);
   display: flex;
   flex-direction: column;
 }
@@ -113,29 +118,30 @@ export default defineComponent({
   letter-spacing: 0.5px;
   text-align: center;
   margin-bottom: 40px;
-  color: var(--app-on-surface-color);
+  color: var(--abc-text-white-base);
 }
 .sidebar__navigation {
   display: grid;
   gap: 16px;
 }
 .sidebar__navigation-link {
-  color: var(--abc-text-white-base);
+  color: var(--sidebar-btn-text);
   border-radius: 4px;
   padding: 12px 16px;
-  transition: .15s ease-out;
+  transition: opacity .15s ease-out;
 
   span {
     opacity: .7;
   }
 
   &:hover {
-    background-color: #444;
+    background-color: var(--sidebar-btn-bg-hover);
   }
 
   &.router-link-exact-active {
     font-weight: 500;
-    background-color: var(--app-primary);
+    background-color: var(--sidebar-btn-bg-active);
+    color: var(--sidebar-btn-text-active);
 
     span {
       opacity: 1;
