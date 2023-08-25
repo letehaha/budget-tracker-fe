@@ -1,8 +1,8 @@
 <template>
-  <div class="balance-trend-widget">
-    <h3 class="balance-trend-widget__title">
-      Balance trend
-    </h3>
+  <WidgetWrapper
+    class="balance-trend-widget"
+    title="Balance trend"
+  >
     <div class="balance-trend-widget__details">
       <div class="balance-trend-widget__details-titles">
         <div class="balance-trend-widget__details-title balance-trend-widget__details-title--today">
@@ -27,12 +27,13 @@
         </div>
       </div>
     </div>
+
     <highcharts
       v-node-resize-observer="{ callback: onChartResize }"
       class="balance-trend-widget__chart"
       :options="chartOptions"
     />
-  </div>
+  </WidgetWrapper>
 </template>
 
 <script lang="ts" setup>
@@ -47,6 +48,8 @@ import { getTotalBalance } from '@/api';
 import { calculatePercentageDifference } from '@/js/helpers';
 import { useFormatCurrency, useHighcharts } from '@/composable';
 import { loadBalanceTrendData } from '@/services';
+
+import WidgetWrapper from './components/widget-wrapper.vue';
 
 const currentDayInMonth = new Date().getDate();
 
@@ -143,31 +146,6 @@ const onChartResize = (entries: ResizeObserverEntry[]) => {
 </script>
 
 <style lang="scss">
-.balance-trend-widget {
-  background-color: var(--app-surface-color);
-  padding: 24px;
-  border-radius: 12px;
-  max-height: 350px;
-}
-.balance-trend-widget__title {
-  margin-bottom: 12px;
-}
-.balance-trend-widget__tooltip {
-  padding: 4px;
-}
-.balance-trend-widget__tooltip-date {
-  font-size: 14px;
-  margin-bottom: 8px;
-}
-.balance-trend-widget__tooltip-value {
-  font-size: 18px;
-
-  span {
-    font-size: 16px;
-    font-weight: 500;
-    letter-spacing: 1px;
-  }
-}
 .balance-trend-widget__details {
   margin-bottom: 12px;
 }
