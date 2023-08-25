@@ -89,11 +89,11 @@ export const useHighcharts = () => {
       borderColor: 'transparent',
       formatter() {
         return `
-          <div class="balance-trend-widget__tooltip">
-            <div class="balance-trend-widget__tooltip-date">
+          <div class="balance-trend-widget-tooltip">
+            <div class="balance-trend-widget-tooltip__date">
               ${format(Number(this.x), 'MMMM d, yyyy')}
             </div>
-            <div class="balance-trend-widget__tooltip-value">
+            <div class="balance-trend-widget-tooltip__value">
               Balance: <span>${formatBaseCurrency(this.y, { systemAmount: false })}</span>
             </div>
           </div>
