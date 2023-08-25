@@ -122,6 +122,7 @@ import {
   nextTick,
 } from 'vue';
 import { storeToRefs } from 'pinia';
+import { useQueryClient } from '@tanstack/vue-query';
 import {
   CategoryModel,
   AccountModel,
@@ -142,7 +143,6 @@ import {
   deleteTransaction,
 } from '@/api/transactions';
 
-import { eventBus, BUS_EVENTS } from '@/js/utils';
 import { toSystemAmount, fromSystemAmount } from '@/js/helpers';
 import InputField from '@/components/fields/input-field.vue';
 import SelectField from '@/components/fields/select-field.vue';
@@ -206,6 +206,7 @@ const emit = defineEmits([MODAL_EVENTS.closeModal]);
 const { getCurrency, currenciesMap } = useCurrenciesStore();
 const { accountsRecord, accounts, systemAccounts } = storeToRefs(useAccountsStore());
 const { categories, rawCategories } = storeToRefs(useCategoriesStore());
+const queryClient = useQueryClient();
 
 const isFormCreation = computed(() => !props.transaction);
 
@@ -377,7 +378,8 @@ const submit = async () => {
     }
 
     emit(MODAL_EVENTS.closeModal);
-    eventBus.emit(BUS_EVENTS.transactionChange);
+    // Reload all cached data in the app
+    queryClient.invalidateQueries();
   } catch (e) {
     // eslint-disable-next-line no-console
     console.error(e);
@@ -392,7 +394,8 @@ const deleteTransactionHandler = async () => {
     await deleteTransaction(props.transaction.id);
 
     emit(MODAL_EVENTS.closeModal);
-    eventBus.emit(BUS_EVENTS.transactionChange);
+    // Reload all cached data in the app
+    queryClient.invalidateQueries();
   } catch (e) {
     // eslint-disable-next-line no-console
     console.error(e);
