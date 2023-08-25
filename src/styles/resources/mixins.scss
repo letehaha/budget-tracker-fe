@@ -55,6 +55,7 @@
   background-color: transparent;
   cursor: pointer;
   color: inherit;
+  text-align: left;
 }
 @mixin ui-box {
   background-color: var(--app-bg-box);
