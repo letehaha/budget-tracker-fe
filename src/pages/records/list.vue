@@ -1,48 +1,53 @@
 <template>
   <div class="transactions-list">
     <div class="transactions-list__list">
-      <TransactionsList :transactions="transactions" />
+      <template v-if="isFetched">
+        <TransactionsList :transactions="transactionsPages.pages.flat()" />
+      </template>
     </div>
-    <button
-      class="transactions-list__load-more"
-      type="button"
-      @click="loadNext"
-    >
-      Load more
-    </button>
+    <template v-if="hasNextPage">
+      <button
+        class="transactions-list__load-more"
+        type="button"
+        @click="() => fetchNextPage()"
+      >
+        Load more
+      </button>
+    </template>
+    <template v-else>
+      <p>No more data to load</p>
+    </template>
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref } from 'vue';
+<script lang="ts" setup>
+import { useInfiniteQuery } from '@tanstack/vue-query';
 import { loadTransactions } from '@/api/transactions';
 
 import TransactionsList from '@/components/transactions-list/transactions-list.vue';
 
-export default defineComponent({
-  components: {
-    TransactionsList,
+const limit = 20;
+
+const fetchTransactions = ({ pageParam = 0 }) => {
+  const from = pageParam * limit;
+  return loadTransactions({ limit, from });
+};
+
+const {
+  data: transactionsPages,
+  fetchNextPage,
+  hasNextPage,
+  isFetched,
+} = useInfiniteQuery({
+  queryKey: ['records-page-records-list'],
+  queryFn: fetchTransactions,
+  getNextPageParam: (lastPage, pages) => {
+    // No more pages to load
+    if (lastPage.length < limit) return undefined;
+    // returns the number of pages fetched so far as the next page param
+    return pages.length;
   },
-  setup() {
-    const limit = 20;
-    const from = ref(0);
-    const transactions = ref([]);
-
-    const loadNext = async () => {
-      const result = await loadTransactions({ limit, from: from.value });
-
-      transactions.value.push(...result);
-
-      from.value += limit;
-    };
-
-    loadNext();
-
-    return {
-      transactions,
-      loadNext,
-    };
-  },
+  staleTime: Infinity,
 });
 </script>
 

@@ -28,9 +28,8 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  ref, computed, watchEffect, defineAsyncComponent,
-} from 'vue';
+import { ref, computed, defineAsyncComponent } from 'vue';
+import { useQuery } from '@tanstack/vue-query';
 import { Chart as Highcharts } from 'highcharts-vue';
 import { subDays } from 'date-fns';
 import { useHighcharts } from '@/composable';
@@ -43,7 +42,6 @@ defineOptions({
 const Dropdown = defineAsyncComponent(() => import('@/components/common/dropdown.vue'));
 
 const { buildAreaChartConfig } = useHighcharts();
-const balanceHistory = ref<{ amount: number; date: string }[]>([]);
 const currentChartWidth = ref(null);
 const timePeriods = [
   { value: 7, label: '7 days' },
@@ -53,10 +51,13 @@ const timePeriods = [
 const isDropdownVisible = ref(false);
 const currentTimePeriod = ref<typeof timePeriods[0]>(timePeriods[0]);
 
-watchEffect(async () => {
-  balanceHistory.value = await loadBalanceTrendData({
+const { data: balanceHistory } = useQuery({
+  queryKey: ['analytics-balance-history-trend', currentTimePeriod],
+  queryFn: () => loadBalanceTrendData({
     from: subDays(new Date(), currentTimePeriod.value.value),
-  });
+  }),
+  staleTime: Infinity,
+  placeholderData: [],
 });
 
 const chartOptions = computed(() => buildAreaChartConfig({
