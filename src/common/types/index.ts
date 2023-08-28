@@ -47,3 +47,6 @@ export enum KEYBOARD_CODES {
   arrowRight = 39,
   arrowBottom = 40,
 }
+
+export type UnwrapPromise<T> = T extends Promise<infer U> ? U : T;
+export type UnwrapArray<T> = T extends (infer U)[] ? U : T;

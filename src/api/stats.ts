@@ -31,6 +31,51 @@ export const getBalanceHistory = async (
   return history;
 };
 
+export const getExpensesHistory = async (
+  { from, to, ...rest }: Params = {},
+): Promise<BalanceHistoryEntity[]> => {
+  const params: endpointsTypes.GetBalanceHistoryPayload = {
+    ...rest,
+  };
+
+  if (from) params.from = formatDate(from);
+  if (to) params.to = formatDate(to);
+
+  const history = await api.get('/stats/expenses-history', params);
+
+  return history;
+};
+
+export const getExpensesAmountForPeriod = async (
+  { from, to, ...rest }: Params = {},
+): Promise<number> => {
+  const params: endpointsTypes.GetBalanceHistoryPayload = {
+    ...rest,
+  };
+
+  if (from) params.from = formatDate(from);
+  if (to) params.to = formatDate(to);
+
+  const history = await api.get('/stats/expenses-amount-for-period', params);
+
+  return history;
+};
+
+export const getSpendingsByCategories = async (
+  { from, to, ...rest }: Params = {},
+): Promise<endpointsTypes.GetSpendingsByCategoriesReturnType> => {
+  const params: endpointsTypes.GetBalanceHistoryPayload = {
+    ...rest,
+  };
+
+  if (from) params.from = formatDate(from);
+  if (to) params.to = formatDate(to);
+
+  const history = await api.get('/stats/spendings-by-categories', params);
+
+  return history;
+};
+
 export const getTotalBalance = async ({ date }: { date: Date }) => {
   const params = {
     date: formatDate(date),

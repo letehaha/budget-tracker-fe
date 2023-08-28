@@ -146,9 +146,6 @@ const onChartResize = (entries: ResizeObserverEntry[]) => {
 </script>
 
 <style lang="scss">
-.balance-trend-widget__details {
-  margin-bottom: 12px;
-}
 .balance-trend-widget__details-titles,
 .balance-trend-widget__details-values {
   display: flex;
