@@ -28,6 +28,13 @@
         >
           <div class="category-select-field__dropdown-values">
             <!-- Show top parent category at the top of list of child categories -->
+            <div class="category-select-field__search-field">
+              <input-field
+                name="search"
+                v-model="searchValue"
+                placeholder="Search..."
+              />
+            </div>
             <template v-if="previousLevelsIndices.length">
               <button
                 type="button"
@@ -55,7 +62,7 @@
 
             <!-- Show list of categories -->
             <template
-              v-for="item in levelValues"
+              v-for="item in displayedItems"
               :key="item.id"
             >
               <button
@@ -87,6 +94,7 @@
 
 <script lang="ts">
 import { CategoryModel } from 'shared-types';
+import InputField from '@/components/fields/input-field.vue';
 import {
   defineComponent, ref, Ref, computed, ComputedRef, PropType,
 } from 'vue';
@@ -110,6 +118,7 @@ export default defineComponent({
     FieldError,
     FieldLabel,
     ChevronRightIcon,
+    InputField,
     ChevronLeftIcon,
   },
   props: {
@@ -132,6 +141,8 @@ export default defineComponent({
     // not sure why it works only using `as`
     const levelValues = ref<CategoryModel[]>(props.values);
 
+    const searchValue = ref<string>("")
+
     const isDropdownOpened = ref(false);
     const previousLevelsIndices: Ref<number[]> = ref([]);
 
@@ -151,6 +162,23 @@ export default defineComponent({
       return category;
     });
 
+    const displayedItems = computed(() => {
+    let result = [];
+
+      for (let category of levelValues.value) {
+        if (category.name.includes(searchValue.value)) {
+            result.push(category);
+        }
+
+        if (category.subCategories && category.subCategories.length && searchValue.value) {
+            let filteredSubCategories = category.subCategories.filter(sub => sub.name.includes(searchValue.value));
+            result = result.concat(filteredSubCategories);
+        }
+      }
+
+      return result;
+    });
+
     const toggleDropdown = (state?: boolean) => {
       isDropdownOpened.value = state ?? !isDropdownOpened.value;
     };
@@ -159,7 +187,7 @@ export default defineComponent({
       // push to `previousLevelsIndices` index of selecteItem so we will have
       // history of parent categories with which we can move through the history
       // of previous categories
-      previousLevelsIndices.value.push(levelValues.value.findIndex(
+      previousLevelsIndices.value.push(displayedItems.value.findIndex(
         item => item.id === selectedItem.id,
       ));
     };
@@ -178,6 +206,7 @@ export default defineComponent({
         emit(EVENTS.input, item);
         toggleDropdown(false);
       }
+      searchValue.value = ''
     };
     const backLevelUp = () => {
       /**
@@ -200,6 +229,8 @@ export default defineComponent({
     };
 
     return {
+      displayedItems,
+      searchValue,
       isDropdownOpened,
       selectedValue,
       levelValues,
