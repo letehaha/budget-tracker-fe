@@ -35,6 +35,13 @@
                 placeholder="Search..."
               />
             </div>
+            <div class="category-select-field__search-field">
+              <input-field
+                name="search"
+                v-model="searchValue"
+                placeholder="Search..."
+              />
+            </div>
             <template v-if="previousLevelsIndices.length">
               <button
                 type="button"
@@ -143,6 +150,7 @@ export default defineComponent({
 
     const searchValue = ref<string>("")
 
+
     const isDropdownOpened = ref(false);
     const previousLevelsIndices: Ref<number[]> = ref([]);
 
@@ -206,6 +214,7 @@ export default defineComponent({
         emit(EVENTS.input, item);
         toggleDropdown(false);
       }
+      searchValue.value = ''
       searchValue.value = ''
     };
     const backLevelUp = () => {
