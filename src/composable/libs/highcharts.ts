@@ -1,31 +1,33 @@
-import { merge } from 'lodash-es';
+import { merge, cloneDeep } from 'lodash-es';
 import { format } from 'date-fns';
 import * as Highcharts from 'highcharts';
 import { useFormatCurrency } from '@/composable';
 
 const defaultConfig: Highcharts.Options = {
+  chart: {
+    backgroundColor: 'transparent',
+  },
   credits: {
     enabled: false,
+  },
+  title: {
+    text: null,
   },
 };
 
 export const useHighcharts = () => {
   const { formatBaseCurrency } = useFormatCurrency();
 
-  const getDefaultConfig = () => ({ ...defaultConfig });
+  const getDefaultConfig = () => cloneDeep(defaultConfig);
 
   const buildAreaChartConfig = (
     extendConfig: Highcharts.Options,
   ): Highcharts.Options => merge(getDefaultConfig(), {
-    chart: {
-      type: 'area',
-      backgroundColor: 'transparent',
-    },
+    chart: { type: 'area' },
     // So xAxis will be rendered correctly but not as hours
     time: {
       useUTC: false,
     },
-    title: null,
     xAxis: {
       type: 'datetime',
       dateTimeLabelFormats: {
@@ -107,8 +109,90 @@ export const useHighcharts = () => {
     },
   } as Highcharts.Options, extendConfig);
 
+  const buildDonutChartConfig = (
+    extendConfig: Highcharts.Options,
+    { centerFormatter }: {
+      centerFormatter?: (options: {
+        renderer: Highcharts.SVGRenderer
+      }) => Highcharts.SVGElement;
+    } = {},
+  ) => merge(getDefaultConfig(), {
+    chart: { type: 'pie', margin: 0 },
+    tooltip: {
+      enabled: false, // No tooltip
+    },
+    plotOptions: {
+      pie: {
+        innerSize: '70%',
+        borderColor: null,
+        // Default colors, but you can customize this array as you like
+        colors: Highcharts.getOptions().colors,
+        dataLabels: {
+          enabled: false,
+        },
+        point: {
+          events: {
+            mouseOver(this: Highcharts.Point) {
+              const chart: Highcharts.Chart & {
+                hoverLabel?: Highcharts.SVGElement,
+              } = this.series.chart;
+              const pieSeries: Highcharts.PlotPieOptions = this.series;
+              const center = pieSeries.center;
+
+              // Remove any existing label
+              if (chart.hoverLabel) {
+                chart.hoverLabel.destroy();
+              }
+
+              if (centerFormatter) {
+                chart.hoverLabel = centerFormatter({ renderer: chart.renderer });
+              } else {
+                // Create the custom text element in the center of the chart
+                chart.hoverLabel = chart.renderer.text(
+                  `
+                    <div class="spending-categories-widget-tooltip">
+                      <div class="spending-categories-widget-tooltip__name">
+                        ${this.name}
+                      </div>
+                      <div class="spending-categories-widget-tooltip__value">
+                        ${formatBaseCurrency(this.y, { systemAmount: false })}
+                      </div>
+                    </div>
+                  `,
+                  // below "x" and "y" will be overriden
+                  0,
+                  0,
+                  true,
+                ).add();
+              }
+
+              // Adjust the position based on the bounding box of the text
+              const bbox = chart.hoverLabel.getBBox();
+              chart.hoverLabel.attr({
+                x: +center[0] - (bbox.width / 2),
+                // this is an offset to adjust vertical centering
+                y: +center[1] + (bbox.height / 4),
+              });
+            },
+            mouseOut() {
+              const chart: Highcharts.Chart & {
+                hoverLabel?: Highcharts.SVGElement,
+              } = this.series.chart;
+
+              if (chart.hoverLabel) {
+                chart.hoverLabel.destroy();
+                delete chart.hoverLabel;
+              }
+            },
+          },
+        },
+      },
+    },
+  } as Highcharts.Options, extendConfig);
+
   return {
     getDefaultConfig,
     buildAreaChartConfig,
+    buildDonutChartConfig,
   };
 };

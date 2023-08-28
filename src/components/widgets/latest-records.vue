@@ -12,7 +12,10 @@
         Show all
       </router-link>
     </template>
-    <TransactionsList :transactions="transactions" />
+    <TransactionsList
+      class="latest-records-widget__list"
+      :transactions="transactions"
+    />
   </WidgetWrapper>
 </template>
 
@@ -30,7 +33,7 @@ const { isAppInitialized } = storeToRefs(useRootStore());
 
 const { data: transactions } = useQuery({
   queryKey: ['widget-latest-records'],
-  queryFn: () => apiLoadTransactions({ limit: 8 }),
+  queryFn: () => apiLoadTransactions({ limit: 10 }),
   staleTime: Infinity,
   placeholderData: [],
   enabled: isAppInitialized,
@@ -42,5 +45,8 @@ const { data: transactions } = useQuery({
   display: block;
   color: var(--ac-link-primary-base);
   text-align: center;
+}
+.latest-records-widget__list {
+  gap: 5px;
 }
 </style>

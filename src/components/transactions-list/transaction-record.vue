@@ -37,11 +37,9 @@
   </button>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import { format } from 'date-fns';
-import {
-  defineComponent, computed, reactive, PropType, ref,
-} from 'vue';
+import { computed, reactive, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import { TRANSACTION_TYPES, TransactionModel } from 'shared-types';
 
@@ -60,88 +58,74 @@ const setOppositeTransaction = async (transaction: TransactionModel) => {
   return transactions.find(item => item.id !== transaction.id);
 };
 
-export default defineComponent({
-  props: {
-    tx: { type: Object as PropType<TransactionModel>, required: true },
-  },
-  setup(props) {
-    const { getCategoryTypeById } = useCategoriesStore();
-    const accountsStore = useAccountsStore();
-    const { addModal } = useModalCenter();
-    const { accountsRecord } = storeToRefs(accountsStore);
+const props = defineProps<{
+  tx: TransactionModel;
+}>();
 
-    const transaction = reactive(props.tx);
-    const oppositeTransferTransaction = ref<TransactionModel | null>(null);
+const { getCategoryTypeById } = useCategoriesStore();
+const accountsStore = useAccountsStore();
+const { addModal } = useModalCenter();
+const { accountsRecord } = storeToRefs(accountsStore);
 
-    if (transaction.isTransfer) {
-      (async () => {
-        oppositeTransferTransaction.value = (
-          await setOppositeTransaction(transaction)
-        );
-      })();
-    }
+const transaction = reactive(props.tx);
+const oppositeTransferTransaction = ref<TransactionModel | null>(null);
 
-    const category = computed(
-      () => getCategoryTypeById(transaction.categoryId),
+if (transaction.isTransfer) {
+  (async () => {
+    oppositeTransferTransaction.value = (
+      await setOppositeTransaction(transaction)
     );
-    const accountFrom = computed(
-      () => accountsRecord.value[transaction.accountId],
-    );
-    const accountTo = computed(
-      () => accountsRecord.value[oppositeTransferTransaction.value?.accountId],
-    );
+  })();
+}
 
-    const accountMovement = computed(
-      () => `${accountFrom.value.name} => ${accountTo.value?.name}`,
-    );
+const category = computed(
+  () => getCategoryTypeById(transaction.categoryId),
+);
+const accountFrom = computed(
+  () => accountsRecord.value[transaction.accountId],
+);
+const accountTo = computed(
+  () => accountsRecord.value[oppositeTransferTransaction.value?.accountId],
+);
 
-    const formateDate = date => format(new Date(date), 'd MMMM y');
+const accountMovement = computed(
+  () => `${accountFrom.value.name} => ${accountTo.value?.name}`,
+);
 
-    const editTransaction = async () => {
-      const baseTx = transaction;
-      const oppositeTx = oppositeTransferTransaction.value;
+const formateDate = date => format(new Date(date), 'd MMMM y');
 
-      const modalOptions = {
-        transaction: baseTx,
-        oppositeTransaction: undefined,
-      };
+const editTransaction = async () => {
+  const baseTx = transaction;
+  const oppositeTx = oppositeTransferTransaction.value;
 
-      if (baseTx.isTransfer) {
-        const isValid = baseTx.transactionType === TRANSACTION_TYPES.expense;
+  const modalOptions = {
+    transaction: baseTx,
+    oppositeTransaction: undefined,
+  };
 
-        modalOptions.transaction = isValid ? baseTx : oppositeTx;
-        modalOptions.oppositeTransaction = isValid ? oppositeTx : baseTx;
-      }
+  if (baseTx.isTransfer) {
+    const isValid = baseTx.transactionType === TRANSACTION_TYPES.expense;
 
-      addModal({
-        type: MODAL_TYPES.createRecord,
-        data: modalOptions,
-      });
-    };
+    modalOptions.transaction = isValid ? baseTx : oppositeTx;
+    modalOptions.oppositeTransaction = isValid ? oppositeTx : baseTx;
+  }
 
-    const formattedAmount = computed(() => {
-      let amount = transaction.amount;
+  addModal({
+    type: MODAL_TYPES.createRecord,
+    data: modalOptions,
+  });
+};
 
-      if (transaction.transactionType === TRANSACTION_TYPES.expense) {
-        amount *= -1;
-      }
+const formattedAmount = computed(() => {
+  let amount = transaction.amount;
 
-      return formatUIAmount(amount, {
-        currency: props.tx.currencyCode,
-      });
-    });
+  if (transaction.transactionType === TRANSACTION_TYPES.expense) {
+    amount *= -1;
+  }
 
-    return {
-      TRANSACTION_TYPES,
-      category,
-      formatUIAmount,
-      formateDate,
-      formattedAmount,
-      editTransaction,
-      transaction,
-      accountMovement,
-    };
-  },
+  return formatUIAmount(amount, {
+    currency: props.tx.currencyCode,
+  });
 });
 </script>
 
@@ -149,7 +133,6 @@ export default defineComponent({
 .transaction-record {
   padding: 10px;
   border-radius: 6px;
-  margin-bottom: 10px;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;

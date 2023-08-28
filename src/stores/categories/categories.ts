@@ -1,6 +1,5 @@
 import {
   ref,
-  Ref,
   computed,
   WritableComputedRef,
 } from 'vue';
@@ -10,8 +9,14 @@ import { loadSystemCategories } from '@/api';
 import { getRawCategories } from './helpers';
 
 export const useCategoriesStore = defineStore('categories', () => {
-  const categories: Ref<CategoryModel[]> = ref([]);
-  const rawCategories: Ref<CategoryModel[]> = ref([]);
+  const categories = ref<CategoryModel[]>([]);
+  const rawCategories = ref<CategoryModel[]>([]);
+  const categoriesMap = computed<Record<number, CategoryModel>>(
+    () => rawCategories.value.reduce((acc, curr) => {
+      acc[curr.id] = curr;
+      return acc;
+    }, {}),
+  );
 
   const loadCategories = async () => {
     try {
@@ -33,6 +38,7 @@ export const useCategoriesStore = defineStore('categories', () => {
 
   return {
     categories,
+    categoriesMap,
     rawCategories,
     loadCategories,
     getCategoryTypeById,
