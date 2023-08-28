@@ -47,7 +47,7 @@ import { subDays, subMonths } from 'date-fns';
 import { useQuery } from '@tanstack/vue-query';
 import { Chart as Highcharts } from 'highcharts-vue';
 import { useFormatCurrency, useHighcharts } from '@/composable';
-import { calculatePercentageDifference } from '@/js/helpers';
+import { calculatePercentageDifference, fromSystemAmount } from '@/js/helpers';
 import { useCategoriesStore } from '@/stores/categories/categories';
 import { getSpendingsByCategories, getExpensesAmountForPeriod } from '@/api';
 
@@ -99,7 +99,10 @@ const expensesDiff = computed(() => {
 
 function computeTotalAmount(group): number {
   // Sum amounts from the current group's transactions
-  let total = group.transactions.reduce((sum, transaction) => sum + transaction.amount / 100, 0);
+  let total = group.transactions.reduce(
+    (sum, transaction) => fromSystemAmount(sum + transaction.amount),
+    0,
+  );
 
   // Recursively sum amounts from nested categories
   for (const nestedGroup of Object.values(group.nestedCategories)) {
@@ -132,9 +135,6 @@ const chartOptions = computed(() => buildDonutChartConfig({
 </script>
 
 <style lang="scss">
-.expenses-structure-widget__details {
-  margin-bottom: 12px;
-}
 .expenses-structure-widget__details-titles,
 .expenses-structure-widget__details-values {
   display: flex;
