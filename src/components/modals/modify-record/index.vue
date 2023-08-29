@@ -413,7 +413,9 @@ const selectTransactionType = (type: FORM_TYPES, disabled = false) => {
 };
 
 onMounted(() => {
-  form.value.account = systemAccounts.value[0];
+  if (!props.transaction) {
+    form.value.account = systemAccounts.value[0];
+  }
 });
 </script>
 
