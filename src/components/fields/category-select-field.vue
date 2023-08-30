@@ -37,8 +37,8 @@
             <!-- Show top parent category at the top of list of child categories -->
             <div class="category-select-field__search-field">
               <input-field
-                name="search"
                 v-model="searchValue"
+                name="search"
                 placeholder="Search..."
               />
             </div>
@@ -86,7 +86,7 @@
 
                 <span>{{ item.name }}</span>
 
-                <template v-if="item.subCategories.length">
+                <template v-if="item.subCategories.length && !searchValue.length">
                   <div class="category-select-field__dropdown-child-amount">
                     <span>({{ item.subCategories.length }})</span>
                     <ChevronRightIcon />
@@ -184,13 +184,14 @@ export default defineComponent({
       let result = [];
 
       for (const category of categories) {
-        if (category.name && category.name.includes(query)) {
+        if (category.name.includes(query)) {
           result.push(category);
         }
 
-        if (category.subCategories && Array.isArray(category.subCategories && searchValue.value.length)) {
-          const subResult = filterCategories(category.subCategories, query);
-          result = result.concat(subResult);
+        // eslint-disable-next-line vue/max-len
+        if (category.subCategories && category.subCategories.length > 0 && searchValue.value.length) {
+          const filteredSubCategories = filterCategories(category.subCategories, query);
+          result = [...result, ...filteredSubCategories];
         }
       }
 
@@ -214,7 +215,7 @@ export default defineComponent({
        * will disable diving level deeper and will select category even if it
        * has child categories
        */
-      if (item.subCategories.length && !ignorePreselect) {
+      if (item.subCategories.length && !ignorePreselect && !searchValue.value.length) {
         definePreviousLevelsIndices(item);
         levelValues.value = item.subCategories;
 
@@ -244,6 +245,7 @@ export default defineComponent({
       }
       previousLevelsIndices.value.length -= 1;
       levelValues.value = level;
+      searchValue.value = '';
     };
 
     return {
