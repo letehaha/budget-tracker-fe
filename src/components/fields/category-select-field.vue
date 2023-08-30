@@ -188,7 +188,7 @@ export default defineComponent({
           result.push(category);
         }
 
-        if (category.subCategories && Array.isArray(category.subCategories)) {
+        if (category.subCategories && Array.isArray(category.subCategories && searchValue.value.length)) {
           const subResult = filterCategories(category.subCategories, query);
           result = result.concat(subResult);
         }
