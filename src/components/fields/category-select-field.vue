@@ -35,6 +35,13 @@
             class="category-select-field__dropdown-values"
           >
             <!-- Show top parent category at the top of list of child categories -->
+            <div class="category-select-field__search-field">
+              <input-field
+                name="search"
+                v-model="searchValue"
+                placeholder="Search..."
+              />
+            </div>
             <template v-if="previousLevelsIndices.length">
               <button
                 type="button"
@@ -64,7 +71,7 @@
 
             <!-- Show list of categories -->
             <template
-              v-for="item in levelValues"
+              v-for="item in displayedItems"
               :key="item.id"
             >
               <button
@@ -122,6 +129,7 @@ export default defineComponent({
   components: {
     FieldError,
     FieldLabel,
+    InputField,
     ChevronRightIcon,
     ChevronLeftIcon,
     CategoryCircle,
@@ -147,6 +155,8 @@ export default defineComponent({
     const levelValues = ref<FormattedCategory[]>(props.values);
 
     const DOMList = ref<HTMLDivElement>(null);
+    const searchValue = ref<string>('');
+
     const isDropdownOpened = ref(false);
     const previousLevelsIndices: Ref<number[]> = ref([]);
 
@@ -169,6 +179,25 @@ export default defineComponent({
     const toggleDropdown = (state?: boolean) => {
       isDropdownOpened.value = state ?? !isDropdownOpened.value;
     };
+
+    const filterCategories = (categories, query) => {
+      let result = [];
+
+      for (const category of categories) {
+        if (category.name && category.name.includes(query)) {
+          result.push(category);
+        }
+
+        if (category.subCategories && Array.isArray(category.subCategories)) {
+          const subResult = filterCategories(category.subCategories, query);
+          result = result.concat(subResult);
+        }
+      }
+
+      return result;
+    };
+
+    const displayedItems = computed(() => filterCategories(levelValues.value, searchValue.value));
 
     const definePreviousLevelsIndices = (selectedItem: FormattedCategory) => {
       // push to `previousLevelsIndices` index of selecteItem so we will have
@@ -195,6 +224,7 @@ export default defineComponent({
         emit(EVENTS.input, item);
         toggleDropdown(false);
       }
+      searchValue.value = '';
     };
     const backLevelUp = () => {
       /**
@@ -217,6 +247,8 @@ export default defineComponent({
     };
 
     return {
+      displayedItems,
+      searchValue,
       isDropdownOpened,
       selectedValue,
       levelValues,
