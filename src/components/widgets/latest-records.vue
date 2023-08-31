@@ -24,6 +24,7 @@ import { storeToRefs } from 'pinia';
 import { useQuery } from '@tanstack/vue-query';
 import { ROUTES_NAMES } from '@/routes/constants';
 import { useRootStore } from '@/stores';
+import { VUE_QUERY_CACHE_KEYS } from '@/common/const';
 import { loadTransactions as apiLoadTransactions } from '@/api/transactions';
 
 import TransactionsList from '@/components/transactions-list/transactions-list.vue';
@@ -32,7 +33,7 @@ import WidgetWrapper from './components/widget-wrapper.vue';
 const { isAppInitialized } = storeToRefs(useRootStore());
 
 const { data: transactions } = useQuery({
-  queryKey: ['widget-latest-records'],
+  queryKey: VUE_QUERY_CACHE_KEYS.widgetLatestRecords,
   queryFn: () => apiLoadTransactions({ limit: 10 }),
   staleTime: Infinity,
   placeholderData: [],

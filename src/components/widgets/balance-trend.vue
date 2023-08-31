@@ -45,6 +45,7 @@ import {
   startOfMonth, endOfMonth, startOfDay, subMonths,
 } from 'date-fns';
 import { getTotalBalance } from '@/api';
+import { VUE_QUERY_CACHE_KEYS } from '@/common/const';
 import { calculatePercentageDifference } from '@/js/helpers';
 import { useFormatCurrency, useHighcharts } from '@/composable';
 import { loadBalanceTrendData } from '@/services';
@@ -77,19 +78,19 @@ const { formatBaseCurrency } = useFormatCurrency();
 const { buildAreaChartConfig } = useHighcharts();
 
 const { data: balanceHistory } = useQuery({
-  queryKey: ['widget-balance-trend'],
+  queryKey: VUE_QUERY_CACHE_KEYS.widgetBalanceTrend,
   queryFn: () => loadBalanceTrendData({
     from: subDays(new Date(), currentDayInMonth - 1),
   }),
   staleTime: Infinity,
 });
 const { data: todayBalance } = useQuery({
-  queryKey: ['widget-balance-total-balance'],
+  queryKey: VUE_QUERY_CACHE_KEYS.widgetBalanceTotalBalance,
   queryFn: () => getTotalBalance({ date: new Date() }),
   staleTime: Infinity,
 });
 const { data: previousBalance } = useQuery({
-  queryKey: ['widget-balance-previous-balance'],
+  queryKey: VUE_QUERY_CACHE_KEYS.widgetBalancePreviousBalance,
   queryFn: () => getTotalBalance({
     date: subMonths(new Date(), 1),
   }),

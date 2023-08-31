@@ -25,6 +25,7 @@ import { useInfiniteQuery } from '@tanstack/vue-query';
 import { loadTransactions } from '@/api/transactions';
 
 import TransactionsList from '@/components/transactions-list/transactions-list.vue';
+import { VUE_QUERY_CACHE_KEYS } from '@/common/const';
 
 const limit = 20;
 
@@ -39,7 +40,7 @@ const {
   hasNextPage,
   isFetched,
 } = useInfiniteQuery({
-  queryKey: ['records-page-records-list'],
+  queryKey: [VUE_QUERY_CACHE_KEYS.recordsPageRecordsList],
   queryFn: fetchTransactions,
   getNextPageParam: (lastPage, pages) => {
     // No more pages to load
