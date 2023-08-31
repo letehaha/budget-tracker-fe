@@ -100,7 +100,7 @@ const expensesDiff = computed(() => {
 function computeTotalAmount(group): number {
   // Sum amounts from the current group's transactions
   let total = group.transactions.reduce(
-    (sum, transaction) => sum + fromSystemAmount(transaction.amount),
+    (sum, transaction) => sum + fromSystemAmount(transaction.refAmount),
     0,
   );
 
