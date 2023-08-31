@@ -1,6 +1,7 @@
 import { format } from 'date-fns';
 import { endpointsTypes } from 'shared-types';
 import { api } from '@/api/_api';
+import { fromSystemAmount } from '@/js/helpers';
 
 const formatDate = (date: Date) => format(date, 'yyyy-MM-dd');
 
@@ -26,24 +27,12 @@ export const getBalanceHistory = async (
   if (from) params.from = formatDate(from);
   if (to) params.to = formatDate(to);
 
-  const history = await api.get('/stats/balance-history', params);
+  const history: BalanceHistoryEntity[] = await api.get('/stats/balance-history', params);
 
-  return history;
-};
-
-export const getExpensesHistory = async (
-  { from, to, ...rest }: Params = {},
-): Promise<BalanceHistoryEntity[]> => {
-  const params: endpointsTypes.GetBalanceHistoryPayload = {
-    ...rest,
-  };
-
-  if (from) params.from = formatDate(from);
-  if (to) params.to = formatDate(to);
-
-  const history = await api.get('/stats/expenses-history', params);
-
-  return history;
+  return history.map(item => ({
+    ...item,
+    amount: fromSystemAmount(item.amount),
+  }));
 };
 
 export const getExpensesAmountForPeriod = async (
@@ -56,9 +45,9 @@ export const getExpensesAmountForPeriod = async (
   if (from) params.from = formatDate(from);
   if (to) params.to = formatDate(to);
 
-  const history = await api.get('/stats/expenses-amount-for-period', params);
+  const amount: number = await api.get('/stats/expenses-amount-for-period', params);
 
-  return history;
+  return fromSystemAmount(amount);
 };
 
 export const getSpendingsByCategories = async (
@@ -83,5 +72,5 @@ export const getTotalBalance = async ({ date }: { date: Date }) => {
 
   const balance: number = await api.get('/stats/total-balance', params);
 
-  return balance;
+  return fromSystemAmount(balance);
 };

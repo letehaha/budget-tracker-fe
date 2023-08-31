@@ -2,47 +2,49 @@ import {
   TRANSACTION_TYPES, PAYMENT_TYPES, ACCOUNT_TYPES, TransactionModel,
 } from 'shared-types';
 import { api } from '@/api/_api';
+import { fromSystemAmount } from '@/js/helpers';
+
+const formatTransaction = (transaction: TransactionModel): TransactionModel => ({
+  ...transaction,
+  amount: fromSystemAmount(transaction.amount),
+  refAmount: fromSystemAmount(transaction.refAmount),
+  cashbackAmount: fromSystemAmount(transaction.cashbackAmount),
+  refCommissionRate: fromSystemAmount(transaction.refCommissionRate),
+  commissionRate: fromSystemAmount(transaction.commissionRate),
+});
 
 export const loadTransactions = async (
-  {
-    limit = 8,
-    from = 0,
-    accountType,
-  }: {
+  params: {
     limit?: number;
     from?: number;
     accountType?: ACCOUNT_TYPES;
   } = {},
 ): Promise<TransactionModel[]> => {
-  try {
-    const result = await api.get('/transactions', { limit, from, accountType });
+  const result = await api.get('/transactions', params);
 
-    return result;
-  } catch (e) {
-    throw new Error(e);
-  }
+  return result.map(item => formatTransaction(item));
 };
 
 export const loadTransactionById = async (
   { id }: { id: number },
-): Promise<TransactionModel> => api.get(`/transactions/${id}`);
+): Promise<TransactionModel> => {
+  const result = await api.get(`/transactions/${id}`);
 
-// Add cache
+  return formatTransaction(result);
+};
+
 export const loadTransactionsByTransferId = async (
   transferId: string,
-): Promise<TransactionModel[]> => api.get(`/transactions/transfer/${transferId}`);
+): Promise<TransactionModel[]> => {
+  const result = await api.get(`/transactions/transfer/${transferId}`);
+
+  return result.map(item => formatTransaction(item));
+};
 
 export const createTransaction = async ({
-  amount,
   note = '',
-  time,
-  transactionType,
-  paymentType,
-  accountId,
-  categoryId,
-  destinationAccountId,
-  destinationAmount,
   isTransfer = false,
+  ...rest
 }: {
   amount: number;
   note?: string;
@@ -57,15 +59,8 @@ export const createTransaction = async ({
 }): Promise<void> => {
   try {
     await api.post('/transactions', {
-      amount,
+      ...rest,
       note,
-      time,
-      transactionType,
-      paymentType,
-      accountId,
-      categoryId,
-      destinationAccountId,
-      destinationAmount,
       isTransfer,
     });
   } catch (e) {
@@ -92,17 +87,9 @@ interface editSystemTransactionPayload extends editExternalTransactionPayload {
 export const editTransaction = async (
   { txId, ...rest }: editExternalTransactionPayload | editSystemTransactionPayload,
 ): Promise<void> => {
-  try {
-    await api.put(`/transactions/${txId}`, rest);
-  } catch (e) {
-    throw new Error(e);
-  }
+  await api.put(`/transactions/${txId}`, rest);
 };
 
 export const deleteTransaction = async (txId: number): Promise<void> => {
-  try {
-    await api.delete(`/transactions/${txId}`);
-  } catch (e) {
-    throw new Error(e);
-  }
+  await api.delete(`/transactions/${txId}`);
 };

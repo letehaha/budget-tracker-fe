@@ -135,14 +135,11 @@ export function formatLargeNumber(
 
 export function formatUIAmount(
   value: number,
-  { currency, systemAmount = true }: {
+  { currency }: {
     currency?: Intl.NumberFormatOptions['currency'],
-    systemAmount?: boolean;
   } = {},
 ): string {
   if (value === Infinity || Number.isNaN(value)) return String(value);
-  if (systemAmount) {
-    return toLocalFiatCurrency(Number((value / 100).toFixed(2)), { currency });
-  }
+
   return toLocalFiatCurrency(value, { currency });
 }

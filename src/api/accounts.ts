@@ -1,10 +1,21 @@
 import { AccountModel, endpointsTypes } from 'shared-types';
 import { api } from '@/api/_api';
+import { fromSystemAmount } from '@/js/helpers';
+
+const formatAccount = (account: AccountModel): AccountModel => ({
+  ...account,
+  creditLimit: fromSystemAmount(account.creditLimit),
+  currentBalance: fromSystemAmount(account.currentBalance),
+  initialBalance: fromSystemAmount(account.initialBalance),
+  refCreditLimit: fromSystemAmount(account.refCreditLimit),
+  refCurrentBalance: fromSystemAmount(account.refCurrentBalance),
+  refInitialBalance: fromSystemAmount(account.refInitialBalance),
+});
 
 export const loadAccounts = async (): Promise<AccountModel[]> => {
   const result = await api.get('/accounts');
 
-  return result;
+  return result.map(item => formatAccount(item));
 };
 
 export const createAccount = async (
@@ -25,7 +36,7 @@ export const editAccount = async (
 ): Promise<AccountModel> => {
   const result = await api.put(`/accounts/${id}`, data);
 
-  return result;
+  return formatAccount(result);
 };
 
 export interface DeleteAccountPayload {
