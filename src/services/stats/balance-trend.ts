@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import { getBalanceHistory, BalanceHistoryEntity } from '@/api';
-import { fromSystemAmount } from '@/js/helpers';
+import { fromSystemAmount } from '@/api/helpers';
 
 // TODO: optimize implementation
 export function aggregateBalanceTrendData(data: BalanceHistoryEntity[]) {

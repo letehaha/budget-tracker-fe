@@ -54,8 +54,6 @@ import { ACCOUNT_TYPES, CurrencyModel } from 'shared-types';
 import { ROUTES_NAMES } from '@/routes/constants';
 import { useAccountsStore, useCurrenciesStore } from '@/stores';
 
-import { toSystemAmount } from '@/js/helpers';
-
 import {
   useNotificationCenter,
   NotificationType,
@@ -101,8 +99,8 @@ export default defineComponent({
         await accountsStore.createAccount({
           currencyId: form.currency.id,
           name: form.name,
-          creditLimit: toSystemAmount(Number(form.creditLimit)),
-          initialBalance: toSystemAmount(Number(form.initialBalance)),
+          creditLimit: form.creditLimit,
+          initialBalance: form.initialBalance,
         });
 
         addNotification({

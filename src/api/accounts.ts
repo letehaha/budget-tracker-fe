@@ -1,6 +1,6 @@
 import { AccountModel, endpointsTypes } from 'shared-types';
 import { api } from '@/api/_api';
-import { fromSystemAmount } from '@/js/helpers';
+import { fromSystemAmount, toSystemAmount } from '@/api/helpers';
 
 const formatAccount = (account: AccountModel): AccountModel => ({
   ...account,
@@ -21,8 +21,13 @@ export const loadAccounts = async (): Promise<AccountModel[]> => {
 export const createAccount = async (
   payload: Omit<endpointsTypes.CreateAccountBody, 'accountTypeId'>,
 ): Promise<AccountModel> => {
+  const params = payload;
+
+  if (params.creditLimit) params.creditLimit = toSystemAmount(Number(params.creditLimit));
+  if (params.initialBalance) params.initialBalance = toSystemAmount(Number(params.initialBalance));
+
   const result = await api.post('/accounts', {
-    ...payload,
+    ...params,
     // For now we just doesn't allow users to select account type
     // (credit card, debit card, etc) on UI
     accountTypeId: 1,
@@ -34,7 +39,12 @@ export const createAccount = async (
 export const editAccount = async (
   { id, ...data }: endpointsTypes.UpdateAccountBody & { id: number },
 ): Promise<AccountModel> => {
-  const result = await api.put(`/accounts/${id}`, data);
+  const params = data;
+
+  if (params.creditLimit) params.creditLimit = toSystemAmount(Number(params.creditLimit));
+  if (params.currentBalance) params.currentBalance = toSystemAmount(Number(params.currentBalance));
+
+  const result = await api.put(`/accounts/${id}`, params);
 
   return formatAccount(result);
 };

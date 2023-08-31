@@ -143,7 +143,6 @@ import {
   deleteTransaction,
 } from '@/api/transactions';
 
-import { toSystemAmount } from '@/js/helpers';
 import InputField from '@/components/fields/input-field.vue';
 import SelectField from '@/components/fields/select-field.vue';
 import CategorySelectField from '@/components/fields/category-select-field.vue';
@@ -321,7 +320,7 @@ const submit = async () => {
 
     if (isFormCreation.value) {
       const creationParams: Parameters<typeof createTransaction>[0] = {
-        amount: toSystemAmount(Number(amount)),
+        amount,
         note,
         time: new Date(time).toISOString(),
         transactionType: getTxTypeFromFormType(formTxType),
@@ -332,8 +331,8 @@ const submit = async () => {
       if (isTransferTx.value) {
         creationParams.destinationAccountId = toAccount.id;
         creationParams.destinationAmount = isCurrenciesDifferent.value
-          ? toSystemAmount(Number(form.value.targetAmount))
-          : toSystemAmount(Number(amount));
+          ? form.value.targetAmount
+          : amount;
         creationParams.isTransfer = true;
       } else {
         creationParams.categoryId = category.id;
@@ -354,7 +353,7 @@ const submit = async () => {
       } else {
         editionParams = {
           ...editionParams,
-          amount: toSystemAmount(Number(amount)),
+          amount,
           note,
           time: new Date(time).toISOString(),
           transactionType: getTxTypeFromFormType(formTxType),
@@ -365,8 +364,8 @@ const submit = async () => {
         if (isTransferTx.value) {
           editionParams.destinationAccountId = toAccount.id;
           editionParams.destinationAmount = isCurrenciesDifferent.value
-            ? toSystemAmount(Number(form.value.targetAmount))
-            : toSystemAmount(Number(amount));
+            ? form.value.targetAmount
+            : amount;
           editionParams.isTransfer = true;
         } else {
           editionParams.categoryId = category.id;

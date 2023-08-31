@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
 import { endpointsTypes } from 'shared-types';
 import { api } from '@/api/_api';
-import { fromSystemAmount } from '@/js/helpers';
+import { fromSystemAmount } from '@/api/helpers';
 
 const formatDate = (date: Date) => format(date, 'yyyy-MM-dd');
 

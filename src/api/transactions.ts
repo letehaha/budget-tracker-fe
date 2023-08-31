@@ -2,9 +2,9 @@ import {
   TRANSACTION_TYPES, PAYMENT_TYPES, ACCOUNT_TYPES, TransactionModel,
 } from 'shared-types';
 import { api } from '@/api/_api';
-import { fromSystemAmount } from '@/js/helpers';
+import { fromSystemAmount, toSystemAmount } from '@/api/helpers';
 
-const formatTransaction = (transaction: TransactionModel): TransactionModel => ({
+const formatTransactionResponse = (transaction: TransactionModel): TransactionModel => ({
   ...transaction,
   amount: fromSystemAmount(transaction.amount),
   refAmount: fromSystemAmount(transaction.refAmount),
@@ -12,6 +12,17 @@ const formatTransaction = (transaction: TransactionModel): TransactionModel => (
   refCommissionRate: fromSystemAmount(transaction.refCommissionRate),
   commissionRate: fromSystemAmount(transaction.commissionRate),
 });
+
+const formatTransactionPayload = <T>(transaction: T): T => {
+  const params = transaction;
+  const fieldsToPatch = ['amount', 'destinationAmount'];
+
+  fieldsToPatch.forEach(field => {
+    if (params[field]) params[field] = toSystemAmount(Number(params[field]));
+  });
+
+  return params;
+};
 
 export const loadTransactions = async (
   params: {
@@ -22,7 +33,7 @@ export const loadTransactions = async (
 ): Promise<TransactionModel[]> => {
   const result = await api.get('/transactions', params);
 
-  return result.map(item => formatTransaction(item));
+  return result.map(item => formatTransactionResponse(item));
 };
 
 export const loadTransactionById = async (
@@ -30,7 +41,7 @@ export const loadTransactionById = async (
 ): Promise<TransactionModel> => {
   const result = await api.get(`/transactions/${id}`);
 
-  return formatTransaction(result);
+  return formatTransactionResponse(result);
 };
 
 export const loadTransactionsByTransferId = async (
@@ -38,7 +49,7 @@ export const loadTransactionsByTransferId = async (
 ): Promise<TransactionModel[]> => {
   const result = await api.get(`/transactions/transfer/${transferId}`);
 
-  return result.map(item => formatTransaction(item));
+  return result.map(item => formatTransactionResponse(item));
 };
 
 export const createTransaction = async ({
@@ -58,11 +69,13 @@ export const createTransaction = async ({
   isTransfer?: boolean;
 }): Promise<void> => {
   try {
-    await api.post('/transactions', {
+    const params = formatTransactionPayload({
       ...rest,
       note,
       isTransfer,
     });
+
+    await api.post('/transactions', params);
   } catch (e) {
     throw new Error(e);
   }
@@ -87,7 +100,9 @@ interface editSystemTransactionPayload extends editExternalTransactionPayload {
 export const editTransaction = async (
   { txId, ...rest }: editExternalTransactionPayload | editSystemTransactionPayload,
 ): Promise<void> => {
-  await api.put(`/transactions/${txId}`, rest);
+  const params = formatTransactionPayload(rest);
+
+  await api.put(`/transactions/${txId}`, params);
 };
 
 export const deleteTransaction = async (txId: number): Promise<void> => {
