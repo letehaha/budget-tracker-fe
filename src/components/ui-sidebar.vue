@@ -71,7 +71,7 @@ import { defineComponent } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { useAuthStore } from '@/stores';
-import { isDevEnv } from '@/js/const';
+import { isDevEnv } from '@/common/const';
 import { ROUTES_NAMES } from '@/routes';
 import Button from '@/components/common/ui-button.vue';
 

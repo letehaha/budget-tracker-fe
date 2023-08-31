@@ -56,6 +56,7 @@ const props = withDefaults(defineProps<{
 const getLabelFromValue = (value: ValueEntity) => {
   const { labelKey } = props;
 
+  if (!value) return null;
   if (typeof labelKey === 'function') return labelKey(value);
 
   return value[labelKey];

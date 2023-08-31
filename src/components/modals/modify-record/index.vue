@@ -143,7 +143,6 @@ import {
   deleteTransaction,
 } from '@/api/transactions';
 
-import { toSystemAmount, fromSystemAmount } from '@/js/helpers';
 import InputField from '@/components/fields/input-field.vue';
 import SelectField from '@/components/fields/select-field.vue';
 import CategorySelectField from '@/components/fields/category-select-field.vue';
@@ -151,12 +150,11 @@ import TextareaField from '@/components/fields/textarea-field.vue';
 import DateField from '@/components/fields/date-field.vue';
 import UiButton from '@/components/common/ui-button.vue';
 import { EVENTS as MODAL_EVENTS } from '@/components/modal-center/ui-modal.vue';
-
+import { VUE_QUERY_TX_CHANGE_QUERY } from '@/common/const';
 import FormHeader from './form-header.vue';
 import TypeSelector from './type-selector.vue';
 import FormRow from './form-row.vue';
 import AccountField from './account-field.vue';
-
 import { FORM_TYPES } from './types';
 
 const getFormTypeFromTransaction = (tx: TransactionModel): FORM_TYPES => {
@@ -276,7 +274,7 @@ const filteredAccounts = computed(() => systemAccounts.value.filter(
 watch(() => props.transaction, (value) => {
   if (value) {
     form.value = {
-      amount: fromSystemAmount(value.amount),
+      amount: value.amount,
       account: accountsRecord.value[value.accountId],
       type: getFormTypeFromTransaction(value),
       category: rawCategories.value.find(i => i.id === value.categoryId),
@@ -290,7 +288,7 @@ watch(() => props.transaction, (value) => {
 watch(() => props.oppositeTransaction, (value) => {
   if (value) {
     form.value.toAccount = accountsRecord.value[value.accountId];
-    form.value.targetAmount = fromSystemAmount(value.amount);
+    form.value.targetAmount = value.amount;
   }
 }, { immediate: true, deep: true });
 
@@ -322,7 +320,7 @@ const submit = async () => {
 
     if (isFormCreation.value) {
       const creationParams: Parameters<typeof createTransaction>[0] = {
-        amount: toSystemAmount(Number(amount)),
+        amount,
         note,
         time: new Date(time).toISOString(),
         transactionType: getTxTypeFromFormType(formTxType),
@@ -333,8 +331,8 @@ const submit = async () => {
       if (isTransferTx.value) {
         creationParams.destinationAccountId = toAccount.id;
         creationParams.destinationAmount = isCurrenciesDifferent.value
-          ? toSystemAmount(Number(form.value.targetAmount))
-          : toSystemAmount(Number(amount));
+          ? form.value.targetAmount
+          : amount;
         creationParams.isTransfer = true;
       } else {
         creationParams.categoryId = category.id;
@@ -355,7 +353,7 @@ const submit = async () => {
       } else {
         editionParams = {
           ...editionParams,
-          amount: toSystemAmount(Number(amount)),
+          amount,
           note,
           time: new Date(time).toISOString(),
           transactionType: getTxTypeFromFormType(formTxType),
@@ -366,8 +364,8 @@ const submit = async () => {
         if (isTransferTx.value) {
           editionParams.destinationAccountId = toAccount.id;
           editionParams.destinationAmount = isCurrenciesDifferent.value
-            ? toSystemAmount(Number(form.value.targetAmount))
-            : toSystemAmount(Number(amount));
+            ? form.value.targetAmount
+            : amount;
           editionParams.isTransfer = true;
         } else {
           editionParams.categoryId = category.id;
@@ -379,7 +377,7 @@ const submit = async () => {
 
     emit(MODAL_EVENTS.closeModal);
     // Reload all cached data in the app
-    queryClient.invalidateQueries();
+    queryClient.invalidateQueries({ queryKey: [VUE_QUERY_TX_CHANGE_QUERY] });
   } catch (e) {
     // eslint-disable-next-line no-console
     console.error(e);
@@ -395,7 +393,7 @@ const deleteTransactionHandler = async () => {
 
     emit(MODAL_EVENTS.closeModal);
     // Reload all cached data in the app
-    queryClient.invalidateQueries();
+    queryClient.invalidateQueries({ queryKey: [VUE_QUERY_TX_CHANGE_QUERY] });
   } catch (e) {
     // eslint-disable-next-line no-console
     console.error(e);

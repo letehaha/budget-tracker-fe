@@ -1,24 +1,5 @@
 export const formatFiat = (value: unknown): string => Number(value).toFixed(2);
 
-/**
- * Converts passed value to the system one, since system does not have decimals
- *
- * @param {Number} value
- * @returns Correct system amount with no decimals
- */
-export function toSystemAmount(value: number): number {
-  return Number((value * 100).toFixed(0));
-}
-
-/**
- *
- * @param value
- * @returns System value which might be displayed to the user
- */
-export function fromSystemAmount(value: number): number {
-  return value / 100;
-}
-
 export function toLocalNumber(
   value: string | number | undefined | null,
   options: Intl.NumberFormatOptions & {
@@ -135,14 +116,11 @@ export function formatLargeNumber(
 
 export function formatUIAmount(
   value: number,
-  { currency, systemAmount = true }: {
+  { currency }: {
     currency?: Intl.NumberFormatOptions['currency'],
-    systemAmount?: boolean;
   } = {},
 ): string {
   if (value === Infinity || Number.isNaN(value)) return String(value);
-  if (systemAmount) {
-    return toLocalFiatCurrency(Number((value / 100).toFixed(2)), { currency });
-  }
+
   return toLocalFiatCurrency(value, { currency });
 }

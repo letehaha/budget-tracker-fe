@@ -96,7 +96,7 @@ export const useHighcharts = () => {
               ${format(Number(this.x), 'MMMM d, yyyy')}
             </div>
             <div class="balance-trend-widget-tooltip__value">
-              Balance: <span>${formatBaseCurrency(this.y, { systemAmount: false })}</span>
+              Balance: <span>${formatBaseCurrency(this.y)}</span>
             </div>
           </div>
         `;
@@ -155,7 +155,7 @@ export const useHighcharts = () => {
                         ${this.name}
                       </div>
                       <div class="spending-categories-widget-tooltip__value">
-                        ${formatBaseCurrency(this.y, { systemAmount: false })}
+                        ${formatBaseCurrency(this.y)}
                       </div>
                     </div>
                   `,

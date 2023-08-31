@@ -34,6 +34,7 @@ import { Chart as Highcharts } from 'highcharts-vue';
 import { subDays } from 'date-fns';
 import { useHighcharts } from '@/composable';
 import { loadBalanceTrendData } from '@/services';
+import { VUE_QUERY_CACHE_KEYS } from '@/common/const';
 
 defineOptions({
   name: 'analytics-root',
@@ -52,7 +53,10 @@ const isDropdownVisible = ref(false);
 const currentTimePeriod = ref<typeof timePeriods[0]>(timePeriods[0]);
 
 const { data: balanceHistory } = useQuery({
-  queryKey: ['analytics-balance-history-trend', currentTimePeriod],
+  queryKey: [
+    ...VUE_QUERY_CACHE_KEYS.analyticsBalanceHistoryTrend,
+    currentTimePeriod,
+  ],
   queryFn: () => loadBalanceTrendData({
     from: subDays(new Date(), currentTimePeriod.value.value),
   }),

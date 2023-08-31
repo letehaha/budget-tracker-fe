@@ -5,12 +5,8 @@ import { useCurrenciesStore } from '@/stores';
 export const useFormatCurrency = () => {
   const { currenciesMap, baseCurrency } = storeToRefs(useCurrenciesStore());
 
-  const formatBaseCurrency = (
-    amount: number,
-    { systemAmount = true }: { systemAmount?: boolean } = {},
-  ) => formatUIAmount(amount, {
+  const formatBaseCurrency = (amount: number) => formatUIAmount(amount, {
     currency: baseCurrency.value?.currency?.code,
-    systemAmount,
   });
 
   const formatAmountByCurrencyId = (amount, currencyId) => formatUIAmount(amount, {

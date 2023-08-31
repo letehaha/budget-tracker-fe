@@ -52,7 +52,7 @@
 import { defineComponent, reactive, ref } from 'vue';
 import { API_ERROR_CODES } from 'shared-types';
 import { useBanksMonobankStore } from '@/stores';
-import { MONOBANK_API_TOKEN_LENGTH } from '@/js/const';
+import { MONOBANK_API_TOKEN_LENGTH } from '@/common/const';
 import { ApiErrorResponseError } from '@/js/errors';
 import { useFormValidation } from '@/composable';
 import { required, minLength } from '@/js/helpers/validators';

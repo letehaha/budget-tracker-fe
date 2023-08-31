@@ -47,10 +47,11 @@ import { subDays, subMonths } from 'date-fns';
 import { useQuery } from '@tanstack/vue-query';
 import { Chart as Highcharts } from 'highcharts-vue';
 import { useFormatCurrency, useHighcharts } from '@/composable';
-import { calculatePercentageDifference, fromSystemAmount } from '@/js/helpers';
+import { calculatePercentageDifference } from '@/js/helpers';
+import { fromSystemAmount } from '@/api/helpers';
 import { useCategoriesStore } from '@/stores/categories/categories';
 import { getSpendingsByCategories, getExpensesAmountForPeriod } from '@/api';
-
+import { VUE_QUERY_CACHE_KEYS } from '@/common/const';
 import WidgetWrapper from './components/widget-wrapper.vue';
 
 const currentDayInMonth = new Date().getDate();
@@ -62,7 +63,7 @@ defineOptions({
 const { formatBaseCurrency } = useFormatCurrency();
 
 const { data: spendingsByCategories } = useQuery({
-  queryKey: ['widget-expenses-structure-total'],
+  queryKey: VUE_QUERY_CACHE_KEYS.widgetExpensesStructureTotal,
   queryFn: () => getSpendingsByCategories({
     from: subDays(new Date(), currentDayInMonth - 1),
   }),
@@ -71,7 +72,7 @@ const { data: spendingsByCategories } = useQuery({
 });
 
 const { data: currentMonthExpense } = useQuery({
-  queryKey: ['widget-expenses-structure-current-amount'],
+  queryKey: VUE_QUERY_CACHE_KEYS.widgetExpensesStructureCurrentAmount,
   queryFn: () => getExpensesAmountForPeriod({
     from: subDays(new Date(), currentDayInMonth - 1),
   }),
@@ -80,7 +81,7 @@ const { data: currentMonthExpense } = useQuery({
 });
 
 const { data: prevMonthExpense } = useQuery({
-  queryKey: ['widget-expenses-structure-prev-amount'],
+  queryKey: VUE_QUERY_CACHE_KEYS.widgetExpensesStructurePrevAmount,
   queryFn: () => getExpensesAmountForPeriod({
     from: subMonths(subDays(new Date(), currentDayInMonth - 1), 1),
     to: subDays(new Date(), currentDayInMonth - 1),
@@ -100,7 +101,7 @@ const expensesDiff = computed(() => {
 function computeTotalAmount(group): number {
   // Sum amounts from the current group's transactions
   let total = group.transactions.reduce(
-    (sum, transaction) => sum + fromSystemAmount(transaction.amount),
+    (sum, transaction) => sum + fromSystemAmount(transaction.refAmount),
     0,
   );
 

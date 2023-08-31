@@ -52,7 +52,6 @@ import { AccountModel } from 'shared-types';
 import { ROUTES_NAMES } from '@/routes';
 import { useAccountsStore } from '@/stores';
 import { useFormValidation } from '@/composable';
-import { toSystemAmount, fromSystemAmount } from '@/js/helpers';
 import {
   required, minLength, decimal, minValue,
 } from '@/js/helpers/validators';
@@ -87,8 +86,8 @@ export default defineComponent({
       creditLimit: number;
     }>({
       name: props.account.name,
-      currentBalance: fromSystemAmount(props.account.currentBalance),
-      creditLimit: fromSystemAmount(props.account.creditLimit),
+      currentBalance: props.account.currentBalance,
+      creditLimit: props.account.creditLimit,
     });
 
     const {
@@ -138,8 +137,8 @@ export default defineComponent({
         await accountsStore.editAccount({
           id: props.account.id,
           name: form.name,
-          creditLimit: toSystemAmount(Number(form.creditLimit)),
-          currentBalance: toSystemAmount(Number(form.currentBalance)),
+          creditLimit: form.creditLimit,
+          currentBalance: form.currentBalance,
         });
 
         addSuccessNotification('Account data changed successfully');

@@ -1,6 +1,8 @@
 import { ref, computed } from 'vue';
 import { defineStore, storeToRefs } from 'pinia';
-import { ACCOUNT_TYPES, MonobankUserModel, endpointsTypes } from 'shared-types';
+import {
+  ACCOUNT_TYPES, MonobankUserModel, endpointsTypes, API_ERROR_CODES,
+} from 'shared-types';
 import {
   loadMonoUser,
   refreshMonoAccounts,
@@ -10,7 +12,6 @@ import {
   updateMonoUser,
   loadTransactions,
 } from '@/api';
-import { API_ERROR_CODES } from '@/js/const';
 import { getHoursInMilliseconds } from '@/js/helpers';
 import { TooManyRequestsError } from '@/js/errors';
 import { useAccountsStore } from '@/stores/accounts';
