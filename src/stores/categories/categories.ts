@@ -1,8 +1,4 @@
-import {
-  ref,
-  computed,
-  WritableComputedRef,
-} from 'vue';
+import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
 import { CategoryModel } from 'shared-types';
 import { loadSystemCategories } from '@/api';
@@ -30,17 +26,10 @@ export const useCategoriesStore = defineStore('categories', () => {
     }
   };
 
-  const getCategoryTypeById: WritableComputedRef<
-    (id: number) => CategoryModel
-  > = computed(
-    () => (id: number) => rawCategories.value.find(item => item.id === id),
-  );
-
   return {
     categories,
     categoriesMap,
     rawCategories,
     loadCategories,
-    getCategoryTypeById,
   };
 });
