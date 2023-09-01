@@ -10,20 +10,25 @@
     @click="editTransaction"
   >
     <div class="transaction-record__info">
-      <template v-if="transaction.isTransfer">
-        <div class="transaction-record__category">
-          {{ accountMovement }}
-        </div>
+      <template v-if="!transaction.isTransfer && category">
+        <CategoryCircle :category="category" />
       </template>
-      <template v-else>
-        <template v-if="category">
+      <div>
+        <template v-if="transaction.isTransfer">
           <div class="transaction-record__category">
-            {{ category.name }}
+            {{ accountMovement }}
           </div>
         </template>
-      </template>
-      <div class="transaction-record__note">
-        {{ transaction.note }}
+        <template v-else>
+          <template v-if="category">
+            <div class="transaction-record__category">
+              {{ category.name }}
+            </div>
+          </template>
+        </template>
+        <div class="transaction-record__note">
+          {{ transaction.note }}
+        </div>
       </div>
     </div>
     <div class="transaction-record__right">
@@ -49,6 +54,7 @@ import { loadTransactionsByTransferId } from '@/api/transactions';
 import { formatUIAmount } from '@/js/helpers';
 
 import { MODAL_TYPES, useModalCenter } from '@/components/modal-center/index';
+import CategoryCircle from '@/components/common/category-circle.vue';
 
 const setOppositeTransaction = async (transaction: TransactionModel) => {
   const transactions = await loadTransactionsByTransferId(
@@ -62,7 +68,7 @@ const props = defineProps<{
   tx: TransactionModel;
 }>();
 
-const { getCategoryTypeById } = useCategoriesStore();
+const { categoriesMap } = storeToRefs(useCategoriesStore());
 const accountsStore = useAccountsStore();
 const { addModal } = useModalCenter();
 const { accountsRecord } = storeToRefs(accountsStore);
@@ -78,12 +84,8 @@ if (transaction.isTransfer) {
   })();
 }
 
-const category = computed(
-  () => getCategoryTypeById(transaction.categoryId),
-);
-const accountFrom = computed(
-  () => accountsRecord.value[transaction.accountId],
-);
+const category = computed(() => categoriesMap.value[transaction.categoryId]);
+const accountFrom = computed(() => accountsRecord.value[transaction.accountId]);
 const accountTo = computed(
   () => accountsRecord.value[oppositeTransferTransaction.value?.accountId],
 );
@@ -138,6 +140,12 @@ const formattedAmount = computed(() => {
   align-items: flex-start;
   cursor: pointer;
   width: 100%;
+}
+.transaction-record__info {
+  display: grid;
+  grid-template-columns: min-content minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
 }
 .transaction-record__category {
   font-size: 16px;

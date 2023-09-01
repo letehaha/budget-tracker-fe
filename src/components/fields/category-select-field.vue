@@ -18,6 +18,10 @@
           class="category-select-field__input"
           @click="() => toggleDropdown()"
         >
+          <template v-if="selectedValue">
+            <CategoryCircle :category="selectedValue" />
+          </template>
+
           {{ selectedValue.name || placeholder }}
           <div class="category-select-field__arrow" />
         </div>
@@ -26,7 +30,10 @@
           :class="`category-select-field__dropdown--${position}`"
           class="category-select-field__dropdown"
         >
-          <div class="category-select-field__dropdown-values">
+          <div
+            ref="DOMList"
+            class="category-select-field__dropdown-values"
+          >
             <!-- Show top parent category at the top of list of child categories -->
             <template v-if="previousLevelsIndices.length">
               <button
@@ -45,6 +52,8 @@
                 }"
                 @click="selectItem(topLevelCategory, true)"
               >
+                <CategoryCircle :category="topLevelCategory" />
+
                 {{ topLevelCategory.name }}
               </button>
 
@@ -66,7 +75,9 @@
                 }"
                 @click="selectItem(item)"
               >
-                {{ item.name }}
+                <CategoryCircle :category="item" />
+
+                <span>{{ item.name }}</span>
 
                 <template v-if="item.subCategories.length">
                   <div class="category-select-field__dropdown-child-amount">
@@ -93,6 +104,7 @@ import { CategoryModel } from 'shared-types';
 import ChevronRightIcon from '@/assets/icons/chevron-right.svg?component';
 import ChevronLeftIcon from '@/assets/icons/chevron-left.svg?component';
 
+import CategoryCircle from '@/components/common/category-circle.vue';
 import FieldError from './components/field-error.vue';
 import FieldLabel from './components/field-label.vue';
 
@@ -111,6 +123,7 @@ export default defineComponent({
     FieldLabel,
     ChevronRightIcon,
     ChevronLeftIcon,
+    CategoryCircle,
   },
   props: {
     label: { type: String, default: undefined },
@@ -132,6 +145,7 @@ export default defineComponent({
     // not sure why it works only using `as`
     const levelValues = ref<CategoryModel[]>(props.values);
 
+    const DOMList = ref<HTMLDivElement>(null);
     const isDropdownOpened = ref(false);
     const previousLevelsIndices: Ref<number[]> = ref([]);
 
@@ -173,6 +187,8 @@ export default defineComponent({
       if (item.subCategories.length && !ignorePreselect) {
         definePreviousLevelsIndices(item);
         levelValues.value = item.subCategories;
+
+        DOMList.value?.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
         selectedValue.value = item;
         emit(EVENTS.input, item);
@@ -205,6 +221,7 @@ export default defineComponent({
       levelValues,
       previousLevelsIndices,
       topLevelCategory,
+      DOMList,
 
       toggleDropdown,
       selectItem,
@@ -232,6 +249,11 @@ export default defineComponent({
   border-radius: 4px;
   width: 100%;
   cursor: pointer;
+
+  display: grid;
+  grid-template-columns: min-content minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
 }
 .category-select-field__wrapper {
   position: relative;
@@ -260,8 +282,11 @@ export default defineComponent({
   max-height: 250px;
 }
 .category-select-field__dropdown-item {
-  display: flex;
+  display: grid;
+  grid-template-columns: min-content minmax(0, 1fr) min-content;
   align-items: center;
+  gap: 8px;
+
   transition: background-color 0.3s ease-out;
   border: none;
   background-color: var(--app-surface-color);
@@ -291,17 +316,10 @@ export default defineComponent({
   margin: 16px 0 8px 16px;
 }
 .category-select-field__dropdown-child-amount {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
   display: flex;
   align-items: center;
+  gap: 8px;
   color: var(--app-on-surface-color);
-
-  span {
-    margin-right: 8px;
-  }
 
   svg {
     width: 12px;

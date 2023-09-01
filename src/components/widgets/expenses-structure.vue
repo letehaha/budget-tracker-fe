@@ -24,8 +24,8 @@
         <div
           class="expenses-structure-widget__diff"
           :class="{
-            'expenses-structure-widget__diff--positive': expensesDiff > 0,
-            'expenses-structure-widget__diff--negative': expensesDiff < 0,
+            'expenses-structure-widget__diff--positive': expensesDiff < 0,
+            'expenses-structure-widget__diff--negative': expensesDiff > 0,
           }"
         >
           {{ `${expensesDiff}%` }}
