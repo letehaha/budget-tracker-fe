@@ -33,6 +33,25 @@ describe('aggregateBalanceTrendData', () => {
         { date: '2021-01-03', amount: 5150 },
       ],
     ],
+    [
+      'should handle single date correctly',
+      [
+        { date: '2023-09-01', amount: 1970421, accountId: 95 },
+        { date: '2023-09-01T00:00:00.000Z', amount: 0, accountId: 93 },
+        { date: '2023-09-01T00:00:00.000Z', amount: 0, accountId: 99 },
+        { date: '2023-09-01T00:00:00.000Z', amount: 4418383, accountId: 113 },
+        { date: '2023-09-01T00:00:00.000Z', amount: 88367664, accountId: 109 },
+        { date: '2023-09-01T00:00:00.000Z', amount: 0, accountId: 94 },
+        { date: '2023-09-01T00:00:00.000Z', amount: 0, accountId: 96 },
+        { date: '2023-09-01T00:00:00.000Z', amount: 0, accountId: 112 },
+        { date: '2023-09-01T00:00:00.000Z', amount: 0, accountId: 98 },
+        { date: '2023-09-01T00:00:00.000Z', amount: 144945061, accountId: 110 },
+        { date: '2023-09-01T00:00:00.000Z', amount: 0, accountId: 100 },
+      ],
+      [
+        { date: '2023-09-01', amount: 1970421 + 4418383 + 88367664 + 144945061 },
+      ],
+    ],
   ])('%s', (_, input, output) => {
     expect(aggregateBalanceTrendData(input)).toStrictEqual(output);
   });
