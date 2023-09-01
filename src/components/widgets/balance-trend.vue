@@ -44,12 +44,14 @@ import {
   subDays, getDaysInMonth, addDays,
   startOfMonth, endOfMonth, startOfDay, subMonths,
 } from 'date-fns';
+import { storeToRefs } from 'pinia';
 import { getTotalBalance } from '@/api';
 import { VUE_QUERY_CACHE_KEYS } from '@/common/const';
-import { calculatePercentageDifference } from '@/js/helpers';
+import { calculatePercentageDifference, formatLargeNumber } from '@/js/helpers';
 import { useFormatCurrency, useHighcharts } from '@/composable';
 import { loadBalanceTrendData } from '@/services';
 
+import { useCurrenciesStore } from '@/stores';
 import WidgetWrapper from './components/widget-wrapper.vue';
 
 const currentDayInMonth = new Date().getDate();
@@ -75,6 +77,7 @@ defineOptions({
 
 const currentChartWidth = ref(null);
 const { formatBaseCurrency } = useFormatCurrency();
+const { baseCurrency } = storeToRefs(useCurrenciesStore());
 const { buildAreaChartConfig } = useHighcharts();
 
 const { data: balanceHistory } = useQuery({
@@ -103,10 +106,24 @@ const chartOptions = computed(() => {
     ? Math.round(currentChartWidth.value / pixelsPerTick)
     : 5;
 
-  return buildAreaChartConfig({
-    chart: { height: 220 },
+  const config = buildAreaChartConfig({
+    chart: {
+      height: 220,
+      marginTop: 20,
+    },
     xAxis: {
       tickPositions: generateDateSteps(ticksAmount),
+    },
+    yAxis: {
+      tickAmount: 5,
+      labels: {
+        formatter() {
+          return formatLargeNumber(this.value, {
+            isFiat: true,
+            currency: baseCurrency.value.currency.code,
+          });
+        },
+      },
     },
     series: [
       {
@@ -129,6 +146,8 @@ const chartOptions = computed(() => {
       },
     ],
   });
+
+  return config;
 });
 const balancesDiff = computed<number>(() => {
   if (!todayBalance.value || !previousBalance.value) return 0;

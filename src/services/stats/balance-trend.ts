@@ -3,9 +3,11 @@ import { getBalanceHistory, BalanceHistoryEntity } from '@/api';
 
 // TODO: optimize implementation
 export function aggregateBalanceTrendData(data: BalanceHistoryEntity[]) {
+  const formatDate = date => format(new Date(date), 'yyyy-MM-dd');
+
   // Extract unique account IDs and dates from the data.
   const accountIds = new Set(data.map(item => item.accountId));
-  const datesList = new Set(data.map(item => format(new Date(item.date), 'yyyy-MM-dd')));
+  const datesList = new Set(data.map(item => formatDate(item.date)));
 
   // Determine the earliest and latest dates in the dataset.
   const firstDate = new Date([...datesList][0]);
@@ -14,7 +16,7 @@ export function aggregateBalanceTrendData(data: BalanceHistoryEntity[]) {
   // Generate a list of all dates from the earliest to the latest.
   const allDates = [];
   for (let dt = firstDate; dt <= lastDate; dt.setDate(dt.getDate() + 1)) {
-    allDates.push(new Date(dt).toISOString().slice(0, 10));
+    allDates.push(formatDate(dt));
   }
 
   // Initialize an object to store the filled data per account.
@@ -28,7 +30,7 @@ export function aggregateBalanceTrendData(data: BalanceHistoryEntity[]) {
 
     if (firstEntry) {
       allDates.forEach(date => {
-        if (new Date(date) < new Date(firstEntry.date)) {
+        if (new Date(date) <= new Date(firstEntry.date)) {
           if (!filledDataPerAccount[accountId]) filledDataPerAccount[accountId] = {};
           filledDataPerAccount[accountId][date] = firstEntry.amount;
         }
@@ -49,7 +51,7 @@ export function aggregateBalanceTrendData(data: BalanceHistoryEntity[]) {
         const previousDate = new Date(date);
         previousDate.setDate(previousDate.getDate() - 1);
         filledDataPerAccount[accountId][date] = (
-          filledDataPerAccount[accountId][previousDate.toISOString().slice(0, 10)] || 0
+          filledDataPerAccount[accountId][formatDate(previousDate)] || 0
         );
       }
     });
