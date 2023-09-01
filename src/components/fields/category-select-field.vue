@@ -103,10 +103,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  ref, Ref, computed, PropType,
-} from 'vue';
-import { CategoryModel } from 'shared-types';
+import { ref, Ref, computed } from 'vue';
 import { type FormattedCategory } from '@/common/types';
 import ChevronRightIcon from '@/assets/icons/chevron-right.svg?component';
 import ChevronLeftIcon from '@/assets/icons/chevron-left.svg?component';
@@ -115,19 +112,19 @@ import CategoryCircle from '@/components/common/category-circle.vue';
 import FieldError from './components/field-error.vue';
 import FieldLabel from './components/field-label.vue';
 
-const props = defineProps({
-  label: { type: String, default: undefined },
-  modelValue: {
-    type: Object as PropType<CategoryModel>,
-    default: undefined,
-  },
-  values: {
-    type: Array as PropType<FormattedCategory[]>,
-    required: true,
-  },
-  labelKey: { type: String, default: undefined },
-  placeholder: { type: String, default: undefined },
-  errorMessage: { type: String, default: undefined },
+const props = withDefaults(defineProps<{
+  label?: string;
+  modelValue: FormattedCategory | null;
+  labelKey?: string |((value: FormattedCategory) => string);
+  values: FormattedCategory[];
+  placeholder?: string;
+  errorMessage?: string;
+}>(), {
+  label: undefined,
+  modelValue: undefined,
+  placeholder: undefined,
+  errorMessage: undefined,
+  labelKey: 'label',
 });
 
 const emit = defineEmits<{
@@ -205,7 +202,7 @@ const selectItem = (item: FormattedCategory, ignorePreselect = false) => {
     DOMList.value?.scrollTo({ top: 0, behavior: 'smooth' });
   } else {
     selectedValue.value = item;
-    emit(EVENTS.input, item);
+    emit('update:model-value', item);
     toggleDropdown(false);
   }
   searchQuery.value = '';
