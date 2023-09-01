@@ -11,12 +11,7 @@
   >
     <div class="transaction-record__info">
       <template v-if="!transaction.isTransfer && category">
-        <div
-          class="transaction-record__category-color"
-          :style="{
-            backgroundColor: category.color,
-          }"
-        />
+        <CategoryCircle :category="category" />
       </template>
       <div>
         <template v-if="transaction.isTransfer">
@@ -59,6 +54,7 @@ import { loadTransactionsByTransferId } from '@/api/transactions';
 import { formatUIAmount } from '@/js/helpers';
 
 import { MODAL_TYPES, useModalCenter } from '@/components/modal-center/index';
+import CategoryCircle from '@/components/common/category-circle.vue';
 
 const setOppositeTransaction = async (transaction: TransactionModel) => {
   const transactions = await loadTransactionsByTransferId(
@@ -72,7 +68,7 @@ const props = defineProps<{
   tx: TransactionModel;
 }>();
 
-const { categoriesMap } = useCategoriesStore();
+const { categoriesMap } = storeToRefs(useCategoriesStore());
 const accountsStore = useAccountsStore();
 const { addModal } = useModalCenter();
 const { accountsRecord } = storeToRefs(accountsStore);
@@ -88,7 +84,7 @@ if (transaction.isTransfer) {
   })();
 }
 
-const category = computed(() => categoriesMap[transaction.categoryId]);
+const category = computed(() => categoriesMap.value[transaction.categoryId]);
 const accountFrom = computed(() => accountsRecord.value[transaction.accountId]);
 const accountTo = computed(
   () => accountsRecord.value[oppositeTransferTransaction.value?.accountId],
@@ -156,11 +152,6 @@ const formattedAmount = computed(() => {
   white-space: nowrap;
   letter-spacing: 0.5px;
   color: var(--app-on-surface-color);
-}
-.transaction-record__category-color {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
 }
 .transaction-record__time {
   color: var(--app-on-surface-color);
