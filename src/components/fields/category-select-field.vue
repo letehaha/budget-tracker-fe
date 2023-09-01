@@ -27,7 +27,6 @@
         </div>
         <div
           v-if="isDropdownOpened"
-          :class="`category-select-field__dropdown--${position}`"
           class="category-select-field__dropdown"
         >
           <div
@@ -37,7 +36,7 @@
             <!-- Show top parent category at the top of list of child categories -->
             <div class="category-select-field__search-field">
               <input-field
-                v-model="searchValue"
+                v-model="searchQuery"
                 name="search"
                 placeholder="Search..."
               />
@@ -71,7 +70,7 @@
 
             <!-- Show list of categories -->
             <template
-              v-for="item in displayedItems"
+              v-for="item in filteredItems"
               :key="item.id"
             >
               <button
@@ -86,7 +85,7 @@
 
                 <span>{{ item.name }}</span>
 
-                <template v-if="item.subCategories.length && !searchValue.length">
+                <template v-if="item.subCategories.length && !searchQuery.length">
                   <div class="category-select-field__dropdown-child-amount">
                     <span>({{ item.subCategories.length }})</span>
                     <ChevronRightIcon />
@@ -103,9 +102,9 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {
-  defineComponent, ref, Ref, computed, PropType,
+  ref, Ref, computed, PropType,
 } from 'vue';
 import { CategoryModel } from 'shared-types';
 import { type FormattedCategory } from '@/common/types';
@@ -116,155 +115,121 @@ import CategoryCircle from '@/components/common/category-circle.vue';
 import FieldError from './components/field-error.vue';
 import FieldLabel from './components/field-label.vue';
 
-enum EVENTS {
-  input = 'update:modelValue',
-}
-
-export const POSITIONS = Object.freeze({
-  bottom: 'bottom',
-  top: 'top',
+const props = defineProps({
+  label: { type: String, default: undefined },
+  modelValue: {
+    type: Object as PropType<CategoryModel>,
+    default: undefined,
+  },
+  values: {
+    type: Array as PropType<FormattedCategory[]>,
+    required: true,
+  },
+  labelKey: { type: String, default: undefined },
+  placeholder: { type: String, default: undefined },
+  errorMessage: { type: String, default: undefined },
 });
 
-export default defineComponent({
-  components: {
-    FieldError,
-    FieldLabel,
-    InputField,
-    ChevronRightIcon,
-    ChevronLeftIcon,
-    CategoryCircle,
-  },
-  props: {
-    label: { type: String, default: undefined },
-    modelValue: {
-      type: Object as PropType<CategoryModel>,
-      default: undefined,
-    },
-    values: {
-      type: Array as PropType<FormattedCategory[]>,
-      required: true,
-    },
-    labelKey: { type: String, default: undefined },
-    placeholder: { type: String, default: undefined },
-    errorMessage: { type: String, default: undefined },
-    position: { type: String, default: POSITIONS.bottom },
-  },
-  setup(props, { emit }) {
-    const selectedValue = ref(props.modelValue || props.values[0]);
-    // not sure why it works only using `as`
-    const levelValues = ref<FormattedCategory[]>(props.values);
+const emit = defineEmits<{
+  'update:model-value': [value: FormattedCategory]
+}>();
+const selectedValue = ref(props.modelValue || props.values[0]);
+// not sure why it works only using `as`
+const levelValues = ref<FormattedCategory[]>(props.values);
 
-    const DOMList = ref<HTMLDivElement>(null);
-    const searchValue = ref<string>('');
+const DOMList = ref<HTMLDivElement>(null);
+const searchQuery = ref<string>('');
 
-    const isDropdownOpened = ref(false);
-    const previousLevelsIndices: Ref<number[]> = ref([]);
+const isDropdownOpened = ref(false);
+const previousLevelsIndices: Ref<number[]> = ref([]);
 
-    const topLevelCategory = computed<FormattedCategory>(() => {
-      /**
+const topLevelCategory = computed<FormattedCategory>(() => {
+  /**
        * If we are in a category's subcategories list, finds the subcategories
        * parent category to show it in the UI
        */
-      let category;
-      for (let i = 0; i < previousLevelsIndices.value.length; i++) {
-        if (i === 0) {
-          category = props.values[previousLevelsIndices.value[i]];
-        } else {
-          category = category[previousLevelsIndices.value[i]];
-        }
-      }
-      return category;
-    });
+  let category;
+  for (let i = 0; i < previousLevelsIndices.value.length; i++) {
+    if (i === 0) {
+      category = props.values[previousLevelsIndices.value[i]];
+    } else {
+      category = category[previousLevelsIndices.value[i]];
+    }
+  }
+  return category;
+});
 
-    const toggleDropdown = (state?: boolean) => {
-      isDropdownOpened.value = state ?? !isDropdownOpened.value;
-    };
+const toggleDropdown = (state?: boolean) => {
+  isDropdownOpened.value = state ?? !isDropdownOpened.value;
+};
 
-    const filterCategories = (categories, query) => {
-      let result = [];
+const filterCategories = (categories, query) => {
+  let result = [];
+  const lowerCaseQuery = query.toLowerCase();
 
-      for (const category of categories) {
-        if (category.name.includes(query)) {
-          result.push(category);
-        }
+  for (const category of categories) {
+    if (category.name.toLowerCase().includes(lowerCaseQuery)) {
+      result.push(category);
+    }
 
-        // eslint-disable-next-line vue/max-len
-        if (category.subCategories && category.subCategories.length > 0 && searchValue.value.length) {
-          const filteredSubCategories = filterCategories(category.subCategories, query);
-          result = [...result, ...filteredSubCategories];
-        }
-      }
+    if (category.subCategories?.length > 0 && searchQuery.value.length) {
+      const filteredSubCategories = filterCategories(category.subCategories, query);
+      result = [...result, ...filteredSubCategories];
+    }
+  }
 
-      return result;
-    };
+  return result;
+};
 
-    const displayedItems = computed(() => filterCategories(levelValues.value, searchValue.value));
+const filteredItems = computed(() => filterCategories(levelValues.value, searchQuery.value));
 
-    const definePreviousLevelsIndices = (selectedItem: FormattedCategory) => {
-      // push to `previousLevelsIndices` index of selecteItem so we will have
-      // history of parent categories with which we can move through the history
-      // of previous categories
-      previousLevelsIndices.value.push(levelValues.value.findIndex(
-        item => item.id === selectedItem.id,
-      ));
-    };
+const definePreviousLevelsIndices = (selectedItem: FormattedCategory) => {
+  // push to `previousLevelsIndices` index of selecteItem so we will have
+  // history of parent categories with which we can move through the history
+  // of previous categories
+  previousLevelsIndices.value.push(levelValues.value.findIndex(
+    item => item.id === selectedItem.id,
+  ));
+};
 
-    const selectItem = (item: FormattedCategory, ignorePreselect = false) => {
-      /**
+const selectItem = (item: FormattedCategory, ignorePreselect = false) => {
+  /**
        * If item has child categories, it goes level deeper. `ignorePreselect`
        * will disable diving level deeper and will select category even if it
        * has child categories
        */
-      if (item.subCategories.length && !ignorePreselect && !searchValue.value.length) {
-        definePreviousLevelsIndices(item);
-        levelValues.value = item.subCategories;
+  if (item.subCategories.length && !ignorePreselect && !searchQuery.value.length) {
+    definePreviousLevelsIndices(item);
+    levelValues.value = item.subCategories;
 
-        DOMList.value?.scrollTo({ top: 0, behavior: 'smooth' });
-      } else {
-        selectedValue.value = item;
-        emit(EVENTS.input, item);
-        toggleDropdown(false);
-      }
-      searchValue.value = '';
-    };
-    const backLevelUp = () => {
-      /**
+    DOMList.value?.scrollTo({ top: 0, behavior: 'smooth' });
+  } else {
+    selectedValue.value = item;
+    emit(EVENTS.input, item);
+    toggleDropdown(false);
+  }
+  searchQuery.value = '';
+};
+const backLevelUp = () => {
+  /**
        * Uses `previousLevelsIndices` to navigate through the history and make
        * previous level as the current one.
        *
        * At the end clears `previousLevelsIndices` by removing the last element
        * in the history.
        */
-      let level;
-      for (let i = 0; i < previousLevelsIndices.value.length; i++) {
-        if (i === 0) {
-          level = props.values;
-        } else {
-          level = level[previousLevelsIndices.value[i - 1]].subCategories;
-        }
-      }
-      previousLevelsIndices.value.length -= 1;
-      levelValues.value = level;
-      searchValue.value = '';
-    };
-
-    return {
-      displayedItems,
-      searchValue,
-      isDropdownOpened,
-      selectedValue,
-      levelValues,
-      previousLevelsIndices,
-      topLevelCategory,
-      DOMList,
-
-      toggleDropdown,
-      selectItem,
-      definePreviousLevelsIndices,
-      backLevelUp,
-    };
-  },
-});
+  let level;
+  for (let i = 0; i < previousLevelsIndices.value.length; i++) {
+    if (i === 0) {
+      level = props.values;
+    } else {
+      level = level[previousLevelsIndices.value[i - 1]].subCategories;
+    }
+  }
+  previousLevelsIndices.value.length -= 1;
+  levelValues.value = level;
+  searchQuery.value = '';
+};
 </script>
 
 <style lang="scss">
