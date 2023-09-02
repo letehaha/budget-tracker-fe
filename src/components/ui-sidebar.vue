@@ -138,7 +138,7 @@ export default defineComponent({
     background-color: var(--sidebar-btn-bg-hover);
   }
 
-  &.router-link-exact-active {
+  &.router-link-active {
     font-weight: 500;
     background-color: var(--sidebar-btn-bg-active);
     color: var(--sidebar-btn-text-active);
