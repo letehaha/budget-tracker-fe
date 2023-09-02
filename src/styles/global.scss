@@ -35,6 +35,7 @@ a {
   margin: 0 auto;
 }
 
+button,
 .button-style-reset {
   @include button-style-reset();
 }

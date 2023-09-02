@@ -13,6 +13,8 @@ export const ROUTES_NAMES = Object.freeze({
   analytics: `${ROUTER_LAYOUTS.dashboard}.analytics`,
   records: `${ROUTER_LAYOUTS.dashboard}.records`,
   settings: `${ROUTER_LAYOUTS.dashboard}.settings`,
+  settingsCurrencies: `${ROUTER_LAYOUTS.dashboard}.settings.currencies`,
+  settingsCategories: `${ROUTER_LAYOUTS.dashboard}.settings.categories`,
 
   auth: ROUTER_LAYOUTS.auth,
   signIn: `${ROUTER_LAYOUTS.auth}.sign-in`,
