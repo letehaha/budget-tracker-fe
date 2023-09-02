@@ -6,15 +6,7 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
 import CurrenciesList from './list.vue';
 import AddNewCurrency from './add-new-currency.vue';
-
-export default defineComponent({
-  components: {
-    AddNewCurrency,
-    CurrenciesList,
-  },
-});
 </script>

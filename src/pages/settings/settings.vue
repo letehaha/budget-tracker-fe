@@ -4,19 +4,8 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-
+<script setup lang="ts">
 import SettingsTabs from './tabs.vue';
-
-export default defineComponent({
-  components: {
-    SettingsTabs,
-  },
-  setup() {
-    return {};
-  },
-});
 </script>
 
 <style lang="scss" scoped>

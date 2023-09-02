@@ -48,17 +48,14 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {
-  defineComponent,
   reactive,
   computed,
   onMounted,
   ref,
   watch,
-  PropType,
 } from 'vue';
-import { storeToRefs } from 'pinia';
 import { API_ERROR_CODES } from 'shared-types';
 import { useCurrenciesStore } from '@/stores';
 import { editUserCurrenciesExchangeRates, deleteCustomRate } from '@/api/currencies';
@@ -77,156 +74,128 @@ const calculateRatio = (value) => {
   return Number.isFinite(result) ? result : 0;
 };
 
-export default defineComponent({
-  components: { UiButton, UiTooltip, InputField },
-  props: {
-    currency: {
-      type: Object as PropType<CurrencyWithExchangeRate>,
-      required: true,
-    },
-    deletionDisabled: {
-      type: Boolean,
-      required: true,
-    },
-  },
-  emits: ['submit', 'delete'],
-  setup(props, { emit }) {
-    const currenciesStore = useCurrenciesStore();
-    const {
-      addSuccessNotification,
-      addErrorNotification,
-    } = useNotificationCenter();
-    const { currencies } = storeToRefs(currenciesStore);
-    const form = reactive({
-      baseRate: props.currency.rate,
-      quoteRate: props.currency.quoteRate,
-    });
-    const isBaseEditing = ref(false);
-    const isQuoteEditing = ref(false);
-    const isChecked = ref<boolean>(false);
+const props = defineProps<{
+  currency: CurrencyWithExchangeRate;
+  deletionDisabled: boolean;
+}>();
 
-    const isRateChanged = computed(() => (
-      +props.currency.rate !== +form.baseRate
-      || +props.currency.quoteRate !== +form.quoteRate
-    ));
+const emit = defineEmits<{
+  submit: [];
+  delete: [];
+}>();
 
-    const isFormDirty = computed(() => (
-      isRateChanged.value
-      || (props.currency.custom && !isChecked.value)
-    ));
+const currenciesStore = useCurrenciesStore();
+const { addSuccessNotification, addErrorNotification } = useNotificationCenter();
 
-    const onBaseFocus = () => {
-      isBaseEditing.value = true;
-      isQuoteEditing.value = false;
-    };
-    const onQuoteFocus = () => {
-      isQuoteEditing.value = true;
-      isBaseEditing.value = false;
-    };
-    const toggleChange = (event) => {
-      isChecked.value = !event.target.checked;
-    };
-
-    watch(
-      () => form.baseRate,
-      (value) => {
-        if (isBaseEditing.value) {
-          form.quoteRate = calculateRatio(value);
-        }
-      },
-    );
-    watch(
-      () => form.quoteRate,
-      (value) => {
-        if (isQuoteEditing.value) {
-          form.baseRate = calculateRatio(value);
-        }
-      },
-    );
-
-    onMounted(() => {
-      isChecked.value = props.currency.custom;
-    });
-
-    const onDeleteHandler = () => {
-      emit('delete');
-    };
-
-    const deleteExchangeRates = async () => {
-      try {
-        await deleteCustomRate([
-          {
-            baseCode: props.currency.currency.code,
-            quoteCode: props.currency.quoteCode,
-          },
-          {
-            baseCode: props.currency.quoteCode,
-            quoteCode: props.currency.currency.code,
-          },
-        ]);
-
-        emit('submit');
-
-        addSuccessNotification('Successfully updated.');
-      } catch (e) {
-        if (e.data.code === API_ERROR_CODES.validationError) {
-          addErrorNotification(e.data.message);
-          return;
-        }
-        addErrorNotification('Unexpected error');
-      }
-    };
-
-    const updateExchangeRates = async () => {
-      try {
-        await editUserCurrenciesExchangeRates([
-          {
-            baseCode: props.currency.currency.code,
-            quoteCode: props.currency.quoteCode,
-            rate: Number(form.baseRate),
-          },
-          {
-            baseCode: props.currency.quoteCode,
-            quoteCode: props.currency.currency.code,
-            rate: Number(form.quoteRate),
-          },
-        ]);
-        await currenciesStore.loadCurrencies();
-
-        emit('submit');
-
-        addSuccessNotification('Successfully updated.');
-      } catch (e) {
-        if (e.data.code === API_ERROR_CODES.validationError) {
-          addErrorNotification(e.data.message);
-          return;
-        }
-        addErrorNotification('Unexpected error. Currency is not updated.');
-      }
-    };
-
-    const onSaveHandler = async () => {
-      if (isRateChanged.value && !props.currency.custom) {
-        await updateExchangeRates();
-      } else if (props.currency.custom) {
-        await deleteExchangeRates();
-      }
-    };
-
-    return {
-      DISABLED_DELETE_TEXT,
-      isChecked,
-      toggleChange,
-      onSaveHandler,
-      onDeleteHandler,
-      form,
-      onBaseFocus,
-      onQuoteFocus,
-      isFormDirty,
-      currencies,
-    };
-  },
+const form = reactive({
+  baseRate: props.currency.rate,
+  quoteRate: props.currency.quoteRate,
 });
+const isBaseEditing = ref(false);
+const isQuoteEditing = ref(false);
+const isChecked = ref<boolean>(false);
+
+const isRateChanged = computed(() => (
+  +props.currency.rate !== +form.baseRate
+  || +props.currency.quoteRate !== +form.quoteRate
+));
+
+const isFormDirty = computed(() => (
+  isRateChanged.value
+  || (props.currency.custom && !isChecked.value)
+));
+
+const onBaseFocus = () => {
+  isBaseEditing.value = true;
+  isQuoteEditing.value = false;
+};
+const onQuoteFocus = () => {
+  isQuoteEditing.value = true;
+  isBaseEditing.value = false;
+};
+const toggleChange = (event) => {
+  isChecked.value = !event.target.checked;
+};
+
+watch(() => form.baseRate, value => {
+  if (isBaseEditing.value) {
+    form.quoteRate = calculateRatio(value);
+  }
+});
+watch(() => form.quoteRate, value => {
+  if (isQuoteEditing.value) {
+    form.baseRate = calculateRatio(value);
+  }
+});
+
+onMounted(() => {
+  isChecked.value = props.currency.custom;
+});
+
+const onDeleteHandler = () => {
+  emit('delete');
+};
+
+const deleteExchangeRates = async () => {
+  try {
+    await deleteCustomRate([
+      {
+        baseCode: props.currency.currency.code,
+        quoteCode: props.currency.quoteCode,
+      },
+      {
+        baseCode: props.currency.quoteCode,
+        quoteCode: props.currency.currency.code,
+      },
+    ]);
+
+    emit('submit');
+
+    addSuccessNotification('Successfully updated.');
+  } catch (e) {
+    if (e.data.code === API_ERROR_CODES.validationError) {
+      addErrorNotification(e.data.message);
+      return;
+    }
+    addErrorNotification('Unexpected error');
+  }
+};
+
+const updateExchangeRates = async () => {
+  try {
+    await editUserCurrenciesExchangeRates([
+      {
+        baseCode: props.currency.currency.code,
+        quoteCode: props.currency.quoteCode,
+        rate: Number(form.baseRate),
+      },
+      {
+        baseCode: props.currency.quoteCode,
+        quoteCode: props.currency.currency.code,
+        rate: Number(form.quoteRate),
+      },
+    ]);
+    await currenciesStore.loadCurrencies();
+
+    emit('submit');
+
+    addSuccessNotification('Successfully updated.');
+  } catch (e) {
+    if (e.data.code === API_ERROR_CODES.validationError) {
+      addErrorNotification(e.data.message);
+      return;
+    }
+    addErrorNotification('Unexpected error. Currency is not updated.');
+  }
+};
+
+const onSaveHandler = async () => {
+  if (isRateChanged.value && !props.currency.custom) {
+    await updateExchangeRates();
+  } else if (props.currency.custom) {
+    await deleteExchangeRates();
+  }
+};
 </script>
 
 <style lang="scss" scoped>

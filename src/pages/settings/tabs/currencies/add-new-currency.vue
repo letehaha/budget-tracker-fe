@@ -19,59 +19,47 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, computed } from 'vue';
+<script setup lang="ts">
+import { ref, computed } from 'vue';
 import { storeToRefs } from 'pinia';
+import { CurrencyModel } from 'shared-types';
 import { useCurrenciesStore } from '@/stores';
 import { addUserCurrencies } from '@/api/currencies';
 import { useNotificationCenter } from '@/components/notification-center';
 import SelectField from '@/components/fields/select-field.vue';
 import UiButton from '@/components/common/ui-button.vue';
-import { CurrencyModel } from 'shared-types';
 
-export default defineComponent({
-  components: { SelectField, UiButton },
-  setup() {
-    const currenciesStore = useCurrenciesStore();
-    const { addErrorNotification } = useNotificationCenter();
-    const {
-      currencies: userCurrencies,
-      systemCurrencies,
-    } = storeToRefs(currenciesStore);
+const currenciesStore = useCurrenciesStore();
+const { addErrorNotification } = useNotificationCenter();
+const {
+  currencies: userCurrencies,
+  systemCurrencies,
+} = storeToRefs(currenciesStore);
 
-    const isCurrenciesLoading = ref(false);
-    const selectedCurrency = ref<CurrencyModel>(null);
-    const filteredCurrencies = computed(
-      () => systemCurrencies.value.filter(
-        item => !userCurrencies.value.some(el => el.currency.code === item.code),
-      ),
-    );
+const isCurrenciesLoading = ref(false);
+const selectedCurrency = ref<CurrencyModel>(null);
+const filteredCurrencies = computed(
+  () => systemCurrencies.value.filter(
+    item => !userCurrencies.value.some(el => el.currency.code === item.code),
+  ),
+);
 
-    const addCurrency = async () => {
-      try {
-        isCurrenciesLoading.value = true;
+const addCurrency = async () => {
+  try {
+    isCurrenciesLoading.value = true;
 
-        await addUserCurrencies([{
-          // TODO: add more options
-          currencyId: selectedCurrency.value.id,
-        }]);
+    await addUserCurrencies([{
+      // TODO: add more options
+      currencyId: selectedCurrency.value.id,
+    }]);
 
-        await currenciesStore.loadCurrencies();
-      } catch (e) {
-        addErrorNotification('Unexpected error. Currency is not added.');
-      } finally {
-        isCurrenciesLoading.value = false;
-      }
-    };
-
-    return {
-      filteredCurrencies,
-      addCurrency,
-      selectedCurrency,
-      isCurrenciesLoading,
-    };
-  },
-});
+    await currenciesStore.loadCurrencies();
+  } catch (e) {
+    addErrorNotification('Unexpected error. Currency is not added.');
+  } finally {
+    isCurrenciesLoading.value = false;
+  }
+};
 </script>
 
 <style lang="scss" scoped>

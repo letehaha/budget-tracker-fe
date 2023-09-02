@@ -16,29 +16,16 @@
   </Tabs>
 </template>
 
-<script lang="ts">
-import { defineAsyncComponent, defineComponent } from 'vue';
+<script setup lang="ts">
+import { defineAsyncComponent } from 'vue';
 import Tabs from '@/components/ui-tabs.vue';
 
-export default defineComponent({
-  components: {
-    Tabs,
-    Currencies: defineAsyncComponent(() => import('./tabs/currencies/index.vue')),
+const Currencies = defineAsyncComponent(() => import('./tabs/currencies/index.vue'));
+
+const tabs = [
+  {
+    name: 'currencies',
+    label: 'Currencies',
   },
-  setup() {
-    const tabs = [
-      {
-        name: 'currencies',
-        label: 'Currencies',
-      },
-      {
-        name: 'account-types',
-        label: 'Account types',
-      },
-    ];
-    return {
-      tabs,
-    };
-  },
-});
+];
 </script>
