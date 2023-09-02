@@ -1,31 +1,48 @@
 <template>
   <div class="ui-tabs">
     <div class="ui-tabs__header">
-      <div
+      <component
+        :is="isTabsLink ? 'router-link' : 'button'"
         v-for="item in options"
         :key="item.name"
         class="ui-tabs__header-item"
-        :class="{
-          'ui-tabs__header-item--active': activeTab.name === item.name,
+        v-bind="isTabsLink ? {
+          to: item.to,
+        } : {
+          type: 'button',
+          class: [
+            'button-style-reset',
+            { 'ui-tabs__header-item--active': activeTab?.name === item.name },
+          ],
         }"
-        @click="selectTab(item)"
+        v-on="isTabsLink ? {} : {
+          click: () => selectTab(item),
+        }"
       >
         <span class="ui-tabs__header-item-text">
           {{ item.label }}
         </span>
-      </div>
+      </component>
     </div>
     <slot v-bind="{ activeTab }" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, CSSProperties } from 'vue';
+import {
+  ref, computed, watch, CSSProperties,
+} from 'vue';
+import { RouteLocationRaw, useRouter } from 'vue-router';
 
-interface Tab {
+export interface Tab {
   name: string;
   label: string;
+  to?: RouteLocationRaw;
+  // Marks if tab should be activated initially
+  initial?: boolean;
 }
+
+const router = useRouter();
 
 const emit = defineEmits<{
   change: [value: Tab]
@@ -44,8 +61,22 @@ const props = withDefaults(defineProps<{
   initialTab: undefined,
 });
 
-const initialTab = props.initialTab ?? props.options[0];
-const activeTab = ref(initialTab);
+const isTabsLink = computed(() => !!props.options.find(item => item.to));
+
+const activeTab = ref<Tab>(null);
+
+const setInitialTab = () => {
+  let initialTab = props.options.find(item => item.initial);
+  if (!initialTab && props.initialTab) initialTab = props.initialTab;
+  if (!initialTab && props.options[0]) initialTab = props.options[0];
+
+  if (isTabsLink.value) {
+    router.replace(initialTab.to);
+  } else {
+    activeTab.value = initialTab;
+  }
+};
+setInitialTab();
 
 watch(() => props.initialTab, value => {
   activeTab.value = value;
@@ -62,7 +93,7 @@ const selectTab = (item: Tab) => {
   display: flex;
   justify-content: v-bind(tabsAlignment);
   align-items: center;
-  gap: 24px;
+  gap: 8px;
   height: 50px;
 }
 
@@ -71,6 +102,11 @@ const selectTab = (item: Tab) => {
   line-height: 1.21;
   cursor: pointer;
   color: var(--app-text-base);
+  padding: 8px;
+
+  &.router-link-exact-active {
+    color: var(--app-primary);
+  }
 }
 
 .ui-tabs__header-item--active {
