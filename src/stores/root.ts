@@ -4,11 +4,11 @@ import { getHoursInMilliseconds } from '@/js/helpers';
 import { eventBus, BUS_EVENTS } from '@/js/utils';
 
 import { useUserStore } from '@/stores/user';
-import { useCategoriesStore } from '@/stores/categories/categories';
 import { useAuthStore } from '@/stores/auth';
 import { useCurrenciesStore } from '@/stores/currencies';
 import { useAccountsStore } from '@/stores/accounts';
 import { useBanksMonobankStore } from '@/stores/integrations/banks/monobank';
+import { useCategoriesStore } from '@/stores/categories/categories';
 
 export const useRootStore = defineStore('root', () => {
   const authStore = useAuthStore();

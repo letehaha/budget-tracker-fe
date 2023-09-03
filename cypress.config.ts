@@ -18,7 +18,7 @@ export default defineConfig({
     screenshotOnRunFailure: true,
     retries: 1,
     video: true,
-    requestTimeout: 10000,
-    defaultCommandTimeout: 10000,
+    requestTimeout: 5000,
+    defaultCommandTimeout: 5000,
   },
 });

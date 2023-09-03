@@ -1,3 +1,5 @@
+import { CategoryModel } from 'shared-types';
+
 export * from './binance-response';
 
 export enum API_STATUS_CODES {
@@ -50,3 +52,7 @@ export enum KEYBOARD_CODES {
 
 export type UnwrapPromise<T> = T extends Promise<infer U> ? U : T;
 export type UnwrapArray<T> = T extends (infer U)[] ? U : T;
+
+export interface FormattedCategory extends CategoryModel {
+  subCategories: FormattedCategory[];
+}

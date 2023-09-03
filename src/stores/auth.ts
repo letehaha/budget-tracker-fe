@@ -2,8 +2,8 @@ import { ref, Ref } from 'vue';
 import { defineStore } from 'pinia';
 import { API_ERROR_CODES } from 'shared-types';
 import { authLogin, authRegister, api } from '@/api';
+import { useCategoriesStore } from '@/stores';
 import { useUserStore } from './user';
-import { useCategoriesStore } from './categories/categories';
 import { resetAllDefinedStores } from './setup';
 
 export const useAuthStore = defineStore('auth', () => {
@@ -29,9 +29,9 @@ export const useAuthStore = defineStore('auth', () => {
         await userStore.loadUser();
         await categoriesStore.loadCategories();
 
+        isLoggedIn.value = true;
         userToken.value = result.token;
         localStorage.setItem('user-token', result.token);
-        isLoggedIn.value = true;
       }
     } catch (e) {
       const possibleErrorCodes = [

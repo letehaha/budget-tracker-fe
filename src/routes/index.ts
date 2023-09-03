@@ -15,7 +15,7 @@ const routes = [
     redirect: () => ({ name: ROUTES_NAMES.home }),
     children: [
       {
-        path: '/',
+        path: '/dashboard',
         name: ROUTES_NAMES.home,
         component: () => import('@/pages/dashboard/dashboard.vue'),
       },
@@ -54,6 +54,18 @@ const routes = [
         path: '/settings',
         name: ROUTES_NAMES.settings,
         component: () => import('@/pages/settings/settings.vue'),
+        children: [
+          {
+            path: 'categories',
+            name: ROUTES_NAMES.settingsCategories,
+            component: () => import('@/pages/settings/subpages/categories/index.vue'),
+          },
+          {
+            path: 'currencies',
+            name: ROUTES_NAMES.settingsCurrencies,
+            component: () => import('@/pages/settings/subpages/currencies/index.vue'),
+          },
+        ],
       },
     ],
   },
@@ -92,5 +104,8 @@ const routes = [
 
 export const router = createRouter({
   history: createWebHistory(),
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore dunno why but TS is stupidly angry here for now reason, after
+  // adding nested routes for settings
   routes,
 });

@@ -1,1 +1,1 @@
-export * from './get-raw-categories.helper';
+export * from './format-categories.helper';

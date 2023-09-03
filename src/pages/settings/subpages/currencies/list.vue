@@ -61,13 +61,8 @@
   </div>
 </template>
 
-<script lang="ts">
-import {
-  defineComponent,
-  ref,
-  onMounted,
-  computed,
-} from 'vue';
+<script setup lang="ts">
+import { ref, onMounted, computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import { API_ERROR_CODES, UserCurrencyModel, UserExchangeRatesModel } from 'shared-types';
 import { useCurrenciesStore, useAccountsStore } from '@/stores';
@@ -78,95 +73,79 @@ import { CurrencyWithExchangeRate } from './types';
 
 type ActiveItemIndex = number;
 
-export default defineComponent({
-  components: { EditCurrency },
-  setup() {
-    const currenciesStore = useCurrenciesStore();
-    const accountsStore = useAccountsStore();
-    const {
-      addSuccessNotification,
-      addErrorNotification,
-    } = useNotificationCenter();
-    const { currencies } = storeToRefs(currenciesStore);
-    const { accountsCurrencyIds } = storeToRefs(accountsStore);
-    const rates = ref<UserExchangeRatesModel[]>([]);
+const currenciesStore = useCurrenciesStore();
+const accountsStore = useAccountsStore();
+const {
+  addSuccessNotification,
+  addErrorNotification,
+} = useNotificationCenter();
+const { currencies } = storeToRefs(currenciesStore);
+const { accountsCurrencyIds } = storeToRefs(accountsStore);
+const rates = ref<UserExchangeRatesModel[]>([]);
 
-    const currenciesList = computed<CurrencyWithExchangeRate[]>(
-      () => currencies.value.map(item => {
-        const rate = rates.value.find(i => i.baseCode === item.currency.code);
-        const quoteRate = Number(Number(1 / Number(rate?.rate)).toFixed(4));
-
-        return {
-          ...item,
-          rate: Number(rate?.rate?.toFixed(4)),
-          custom: rate?.custom ?? false,
-          quoteCode: rate?.quoteCode,
-          quoteRate,
-        };
-      }),
-    );
-
-    const activeItemIndex = ref<ActiveItemIndex | null>(null);
-
-    const toggleActiveItem = (index: ActiveItemIndex) => {
-      activeItemIndex.value = activeItemIndex.value === index ? null : index;
-    };
-
-    const loadRates = async () => {
-      try {
-        rates.value = await loadUserCurrenciesExchangeRates();
-      } catch (err) {
-        if (err.data.code === API_ERROR_CODES.unauthorized) return;
-        addErrorNotification('Unexpected error. Cannot load exchange rates.');
-      }
-    };
-
-    onMounted(() => {
-      loadRates();
-    });
-
-    const onDeleteHandler = async (index: ActiveItemIndex) => {
-      try {
-        await deleteUserCurrency(
-          currencies.value[index].currencyId,
-        );
-
-        activeItemIndex.value = null;
-
-        await currenciesStore.loadCurrencies();
-
-        addSuccessNotification('Successfully deleted.');
-      } catch (e) {
-        if (e.data.code === API_ERROR_CODES.unauthorized) return;
-        if (e.data.code === API_ERROR_CODES.validationError) {
-          addErrorNotification(e.data.message);
-          return;
-        }
-        addErrorNotification('Unexpected error. Currency is not deleted.');
-      }
-    };
-
-    const onSubmitHandler = () => {
-      loadRates();
-      toggleActiveItem(null);
-    };
-
-    const isDeletionDisabled = (currency: UserCurrencyModel) => (
-      accountsCurrencyIds.value.includes(currency.currencyId)
-    );
+const currenciesList = computed<CurrencyWithExchangeRate[]>(
+  () => currencies.value.map(item => {
+    const rate = rates.value.find(i => i.baseCode === item.currency.code);
+    const quoteRate = Number(Number(1 / Number(rate?.rate)).toFixed(4));
 
     return {
-      rates,
-      loadRates,
-      currenciesList,
-      toggleActiveItem,
-      activeItemIndex,
-      onSubmitHandler,
-      onDeleteHandler,
-      isDeletionDisabled,
+      ...item,
+      rate: Number(rate?.rate?.toFixed(4)),
+      custom: rate?.custom ?? false,
+      quoteCode: rate?.quoteCode,
+      quoteRate,
     };
-  },
+  }),
+);
+
+const activeItemIndex = ref<ActiveItemIndex>(null);
+
+const toggleActiveItem = (index: ActiveItemIndex) => {
+  activeItemIndex.value = activeItemIndex.value === index ? null : index;
+};
+
+const loadRates = async () => {
+  try {
+    rates.value = await loadUserCurrenciesExchangeRates();
+  } catch (err) {
+    if (err.data.code === API_ERROR_CODES.unauthorized) return;
+    addErrorNotification('Unexpected error. Cannot load exchange rates.');
+  }
+};
+
+onMounted(() => {
+  loadRates();
 });
+
+const onDeleteHandler = async (index: ActiveItemIndex) => {
+  try {
+    await deleteUserCurrency(
+      currencies.value[index].currencyId,
+    );
+
+    activeItemIndex.value = null;
+
+    await currenciesStore.loadCurrencies();
+
+    addSuccessNotification('Successfully deleted.');
+  } catch (e) {
+    if (e.data.code === API_ERROR_CODES.unauthorized) return;
+    if (e.data.code === API_ERROR_CODES.validationError) {
+      addErrorNotification(e.data.message);
+      return;
+    }
+    addErrorNotification('Unexpected error. Currency is not deleted.');
+  }
+};
+
+const onSubmitHandler = () => {
+  loadRates();
+  toggleActiveItem(null);
+};
+
+const isDeletionDisabled = (currency: UserCurrencyModel) => (
+  accountsCurrencyIds.value.includes(currency.currencyId)
+);
 </script>
 
 <style lang="scss" scoped>

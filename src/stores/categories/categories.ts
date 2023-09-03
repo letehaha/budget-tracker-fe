@@ -2,34 +2,39 @@ import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
 import { CategoryModel } from 'shared-types';
 import { loadSystemCategories } from '@/api';
-import { getRawCategories } from './helpers';
+import { type FormattedCategory } from '@/common/types';
+import { useNotificationCenter } from '@/components/notification-center';
+import { buildCategiesObjectGraph } from './helpers';
 
 export const useCategoriesStore = defineStore('categories', () => {
+  const notificationStore = useNotificationCenter();
+
   const categories = ref<CategoryModel[]>([]);
-  const rawCategories = ref<CategoryModel[]>([]);
-  const categoriesMap = computed<Record<number, CategoryModel>>(
-    () => rawCategories.value.reduce((acc, curr) => {
-      acc[curr.id] = curr;
-      return acc;
-    }, {}),
-  );
 
   const loadCategories = async () => {
     try {
       const result = await loadSystemCategories();
 
-      categories.value = result;
-      rawCategories.value = getRawCategories(result);
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.log(e);
+      if (result?.length) categories.value = result;
+    } catch (err) {
+      notificationStore.addErrorNotification('Cannot load categories');
     }
   };
+
+  const formattedCategories = computed<FormattedCategory[]>(
+    () => buildCategiesObjectGraph(categories.value),
+  );
+  const categoriesMap = computed<Record<number, CategoryModel>>(
+    () => categories.value.reduce((acc, curr) => {
+      acc[curr.id] = curr;
+      return acc;
+    }, {}),
+  );
 
   return {
     categories,
     categoriesMap,
-    rawCategories,
+    formattedCategories,
     loadCategories,
   };
 });

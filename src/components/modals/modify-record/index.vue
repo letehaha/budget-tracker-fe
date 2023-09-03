@@ -50,7 +50,7 @@
           <category-select-field
             v-model="form.category"
             label="Category"
-            :values="categories"
+            :values="formattedCategories"
             label-key="name"
           />
         </form-row>
@@ -124,7 +124,6 @@ import {
 import { storeToRefs } from 'pinia';
 import { useQueryClient } from '@tanstack/vue-query';
 import {
-  CategoryModel,
   AccountModel,
   TRANSACTION_TYPES,
   PAYMENT_TYPES,
@@ -142,7 +141,7 @@ import {
   editTransaction,
   deleteTransaction,
 } from '@/api/transactions';
-
+import { type FormattedCategory } from '@/common/types';
 import InputField from '@/components/fields/input-field.vue';
 import SelectField from '@/components/fields/select-field.vue';
 import CategorySelectField from '@/components/fields/category-select-field.vue';
@@ -203,7 +202,7 @@ const emit = defineEmits([MODAL_EVENTS.closeModal]);
 
 const { getCurrency, currenciesMap } = useCurrenciesStore();
 const { accountsRecord, accounts, systemAccounts } = storeToRefs(useAccountsStore());
-const { categories, rawCategories } = storeToRefs(useCategoriesStore());
+const { formattedCategories } = storeToRefs(useCategoriesStore());
 const queryClient = useQueryClient();
 
 const isFormCreation = computed(() => !props.transaction);
@@ -212,7 +211,7 @@ const form = ref<{
   amount: number;
   account: AccountModel;
   toAccount?: AccountModel;
-  category: CategoryModel;
+  category: FormattedCategory;
   time: string;
   paymentType: VerbosePaymentType;
   note?: string;
@@ -223,7 +222,7 @@ const form = ref<{
   account: null,
   toAccount: null,
   targetAmount: null,
-  category: categories.value[0],
+  category: formattedCategories.value[0],
   time: new Date().toISOString().substring(0, 19),
   paymentType: VERBOSE_PAYMENT_TYPES.find(item => item.value === PAYMENT_TYPES.creditCard),
   note: null,
@@ -277,7 +276,7 @@ watch(() => props.transaction, (value) => {
       amount: value.amount,
       account: accountsRecord.value[value.accountId],
       type: getFormTypeFromTransaction(value),
-      category: rawCategories.value.find(i => i.id === value.categoryId),
+      category: formattedCategories.value.find(i => i.id === value.categoryId),
       time: new Date(value.time).toISOString().substring(0, 19),
       paymentType: VERBOSE_PAYMENT_TYPES.find(item => item.value === value.paymentType),
       note: value.note,
@@ -300,7 +299,7 @@ watch(() => form.value.account, (value) => {
 });
 
 watch(isTransferTx, (value) => {
-  form.value.category = value ? null : categories.value[0];
+  form.value.category = value ? null : formattedCategories.value[0];
 });
 
 const submit = async () => {
