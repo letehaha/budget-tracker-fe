@@ -30,13 +30,13 @@ describe('Welcome page', () => {
     cy.signInUser(TEST_USERS.noDataWithBaseCurrency);
 
     cy.location().should((location) => {
-      expect(location.pathname).to.eq('/');
+      expect(location.pathname).to.eq('/dashboard');
     });
 
     cy.visit('/welcome');
 
     cy.location().should((location) => {
-      expect(location.pathname).to.eq('/');
+      expect(location.pathname).to.eq('/dashboard');
     });
   });
 
@@ -66,7 +66,7 @@ describe('Welcome page', () => {
     cy.get('button[type="button"]').contains('Confirm Currency').click();
 
     cy.location().should((location) => {
-      expect(location.pathname).to.eq('/');
+      expect(location.pathname).to.eq('/dashboard');
     });
   });
 
