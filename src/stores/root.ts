@@ -8,6 +8,7 @@ import { useAuthStore } from '@/stores/auth';
 import { useCurrenciesStore } from '@/stores/currencies';
 import { useAccountsStore } from '@/stores/accounts';
 import { useBanksMonobankStore } from '@/stores/integrations/banks/monobank';
+import { useCategoriesStore } from '@/stores/categories/categories';
 
 export const useRootStore = defineStore('root', () => {
   const authStore = useAuthStore();
@@ -15,6 +16,7 @@ export const useRootStore = defineStore('root', () => {
   const monobankStore = useBanksMonobankStore();
   const accountsStore = useAccountsStore();
   const userStore = useUserStore();
+  const categoriesStore = useCategoriesStore();
 
   const isAppInitialized = ref(false);
   const isFinancialDataSyncingError = ref<null | Error>(null);
@@ -44,6 +46,7 @@ export const useRootStore = defineStore('root', () => {
       }
 
       await Promise.all([
+        categoriesStore.loadCategories(),
         currenciesStore.loadCurrencies(),
         currenciesStore.loadBaseCurrency(),
         accountsStore.loadAccounts(),

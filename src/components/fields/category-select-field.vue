@@ -98,9 +98,9 @@
 
 <script lang="ts">
 import {
-  defineComponent, ref, Ref, computed, ComputedRef, PropType,
+  defineComponent, ref, Ref, computed, PropType,
 } from 'vue';
-import { CategoryModel } from 'shared-types';
+import { type FormattedCategory } from '@/common/types';
 import ChevronRightIcon from '@/assets/icons/chevron-right.svg?component';
 import ChevronLeftIcon from '@/assets/icons/chevron-left.svg?component';
 
@@ -128,11 +128,11 @@ export default defineComponent({
   props: {
     label: { type: String, default: undefined },
     modelValue: {
-      type: Object as PropType<CategoryModel>,
+      type: Object as PropType<FormattedCategory>,
       default: undefined,
     },
     values: {
-      type: Array as PropType<CategoryModel[]>,
+      type: Array as PropType<FormattedCategory[]>,
       required: true,
     },
     labelKey: { type: String, default: undefined },
@@ -143,13 +143,13 @@ export default defineComponent({
   setup(props, { emit }) {
     const selectedValue = ref(props.modelValue || props.values[0]);
     // not sure why it works only using `as`
-    const levelValues = ref<CategoryModel[]>(props.values);
+    const levelValues = ref<FormattedCategory[]>(props.values);
 
     const DOMList = ref<HTMLDivElement>(null);
     const isDropdownOpened = ref(false);
     const previousLevelsIndices: Ref<number[]> = ref([]);
 
-    const topLevelCategory: ComputedRef<CategoryModel> = computed(() => {
+    const topLevelCategory = computed<FormattedCategory>(() => {
       /**
        * If we are in a category's subcategories list, finds the subcategories
        * parent category to show it in the UI
@@ -169,7 +169,7 @@ export default defineComponent({
       isDropdownOpened.value = state ?? !isDropdownOpened.value;
     };
 
-    const definePreviousLevelsIndices = (selectedItem: CategoryModel) => {
+    const definePreviousLevelsIndices = (selectedItem: FormattedCategory) => {
       // push to `previousLevelsIndices` index of selecteItem so we will have
       // history of parent categories with which we can move through the history
       // of previous categories
@@ -178,7 +178,7 @@ export default defineComponent({
       ));
     };
 
-    const selectItem = (item: CategoryModel, ignorePreselect = false) => {
+    const selectItem = (item: FormattedCategory, ignorePreselect = false) => {
       /**
        * If item has child categories, it goes level deeper. `ignorePreselect`
        * will disable diving level deeper and will select category even if it

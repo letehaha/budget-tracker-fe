@@ -19,8 +19,6 @@ export const VUE_QUERY_CACHE_KEYS = Object.freeze({
   analyticsBalanceHistoryTrend: [TX_CHANGE_QUERY, 'analytics-balance-history-trend'],
 
   recordsPageRecordsList: [TX_CHANGE_QUERY, 'records-page-records-list'],
-
-  categoriesList: ['system-categories-list'],
 });
 
 export {

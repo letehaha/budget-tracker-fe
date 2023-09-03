@@ -129,25 +129,24 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import { ref, reactive } from 'vue';
-import { useQueryClient } from '@tanstack/vue-query';
-import { CategoryModel, API_ERROR_CODES } from 'shared-types';
+import { API_ERROR_CODES } from 'shared-types';
 import { useCategoriesStore } from '@/stores';
 import { editCategory, createCategory, deleteCategory as apiDeleteCategory } from '@/api';
 import { useNotificationCenter } from '@/components/notification-center';
 import CategoryCircle from '@/components/common/category-circle.vue';
 import InputField from '@/components/fields/input-field.vue';
 import UiButton from '@/components/common/ui-button.vue';
-import { VUE_QUERY_CACHE_KEYS } from '@/common/const';
+import { type FormattedCategory } from '@/common/types';
 
 defineOptions({
   name: 'settings-categories',
 });
-const queryClient = useQueryClient();
+const categoriesStore = useCategoriesStore();
 
 const { addErrorNotification, addSuccessNotification } = useNotificationCenter();
-const { categories } = storeToRefs(useCategoriesStore());
-const currentLevel = ref<CategoryModel[]>(categories.value);
-const selectedCategory = ref<CategoryModel>(null);
+const { formattedCategories } = storeToRefs(categoriesStore);
+const currentLevel = ref<FormattedCategory[]>(formattedCategories.value);
+const selectedCategory = ref<FormattedCategory>(null);
 
 const form = reactive({
   name: null,
@@ -175,7 +174,7 @@ const startCreating = () => {
 const goBack = () => {
   closeForm();
   selectedCategory.value = null;
-  currentLevel.value = categories.value;
+  currentLevel.value = formattedCategories.value;
 };
 const applyChanges = async () => {
   try {
@@ -201,13 +200,13 @@ const applyChanges = async () => {
       await createCategory(params);
     }
     addSuccessNotification('Successfully updated!');
-    await queryClient.invalidateQueries({ queryKey: VUE_QUERY_CACHE_KEYS.categoriesList });
+    await categoriesStore.loadCategories();
     goBack();
   } catch (err) {
     addErrorNotification('Unexpected error!');
   }
 };
-const selectCategory = (category: CategoryModel) => {
+const selectCategory = (category: FormattedCategory) => {
   closeForm();
   selectedCategory.value = category;
 
@@ -219,7 +218,7 @@ const deleteCategory = async () => {
   try {
     await apiDeleteCategory({ categoryId: selectedCategory.value.id });
 
-    await queryClient.invalidateQueries({ queryKey: VUE_QUERY_CACHE_KEYS.categoriesList });
+    await categoriesStore.loadCategories();
     addSuccessNotification('Successfully deleted!');
     goBack();
   } catch (err) {

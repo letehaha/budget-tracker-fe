@@ -2,11 +2,13 @@ import { ref, Ref } from 'vue';
 import { defineStore } from 'pinia';
 import { API_ERROR_CODES } from 'shared-types';
 import { authLogin, authRegister, api } from '@/api';
+import { useCategoriesStore } from '@/stores';
 import { useUserStore } from './user';
 import { resetAllDefinedStores } from './setup';
 
 export const useAuthStore = defineStore('auth', () => {
   const userStore = useUserStore();
+  const categoriesStore = useCategoriesStore();
 
   const isLoggedIn = ref(false);
   const userToken: Ref<string | null> = ref(null);
@@ -22,11 +24,12 @@ export const useAuthStore = defineStore('auth', () => {
       });
 
       if (result.token) {
-        isLoggedIn.value = true;
         api.setToken(result.token);
 
         await userStore.loadUser();
+        await categoriesStore.loadCategories();
 
+        isLoggedIn.value = true;
         userToken.value = result.token;
         localStorage.setItem('user-token', result.token);
       }
