@@ -20,7 +20,7 @@
           v-if="selectedCategory"
           type="button"
           class="categories-page__category-edit"
-          @click="enableEditing"
+          @click="startEditing"
         >
           Edit
         </button>
@@ -69,8 +69,19 @@
           </div>
         </template>
       </div>
+
+      <template v-if="selectedCategory">
+        <div class="categories-page__add-subcategory">
+          <button
+            type="button"
+            @click="startCreating"
+          >
+            Add subcategory +
+          </button>
+        </div>
+      </template>
     </div>
-    <template v-if="isEditing">
+    <template v-if="isFormVisible">
       <form
         class="categories-page__card"
         @submit.prevent="applyChanges"
@@ -79,13 +90,13 @@
           <button
             type="button"
             class="categories-page__categories-back"
-            @click="cancelEditing"
+            @click="closeForm"
           >
             Cancel
           </button>
 
           <h3 class="categories-page__title">
-            Edit Category
+            {{ isEditing ? 'Edit Category' : 'Create Category' }}
           </h3>
 
           <button
@@ -100,6 +111,7 @@
           <InputField
             v-model="form.name"
             label="Category name"
+            placeholder="Category name"
           />
         </div>
       </form>
@@ -113,7 +125,7 @@ import { ref, reactive } from 'vue';
 import { useQueryClient } from '@tanstack/vue-query';
 import { CategoryModel } from 'shared-types';
 import { useCategoriesStore } from '@/stores';
-import { editCategory } from '@/api';
+import { editCategory, createCategory } from '@/api';
 import { useNotificationCenter } from '@/components/notification-center';
 import CategoryCircle from '@/components/common/category-circle.vue';
 import InputField from '@/components/fields/input-field.vue';
@@ -132,26 +144,54 @@ const selectedCategory = ref<CategoryModel>(null);
 const form = reactive({
   name: null,
 });
+const isFormVisible = ref(false);
 const isEditing = ref(false);
-const enableEditing = () => {
-  form.name = selectedCategory.value.name;
-
-  isEditing.value = true;
-};
-const cancelEditing = () => {
+const isCreating = ref(false);
+const closeForm = () => {
   isEditing.value = false;
+  isCreating.value = false;
+  isFormVisible.value = false;
+  form.name = null;
+};
+const startEditing = () => {
+  closeForm();
+  form.name = selectedCategory.value.name;
+  isEditing.value = true;
+  isFormVisible.value = true;
+};
+const startCreating = () => {
+  closeForm();
+  isCreating.value = true;
+  isFormVisible.value = true;
 };
 const goBack = () => {
-  cancelEditing();
+  closeForm();
   selectedCategory.value = null;
   currentLevel.value = categories.value;
 };
 const applyChanges = async () => {
   try {
-    await editCategory({
-      categoryId: selectedCategory.value.id,
-      name: form.name,
-    });
+    if (isEditing.value) {
+      await editCategory({
+        categoryId: selectedCategory.value.id,
+        name: form.name,
+      });
+    } else if (isCreating.value) {
+      let params: Parameters<typeof createCategory>[0] = {
+        name: form.name,
+        imageUrl: '',
+        color: '',
+      };
+      if (selectedCategory.value) {
+        params = {
+          ...params,
+          imageUrl: selectedCategory.value.imageUrl,
+          color: selectedCategory.value.color,
+          parentId: selectedCategory.value.id,
+        };
+      }
+      await createCategory(params);
+    }
     addSuccessNotification('Successfully updated!');
     await queryClient.invalidateQueries({ queryKey: VUE_QUERY_CACHE_KEYS.categoriesList });
     goBack();
@@ -160,7 +200,7 @@ const applyChanges = async () => {
   }
 };
 const selectCategory = (category: CategoryModel) => {
-  cancelEditing();
+  closeForm();
   selectedCategory.value = category;
 
   if (category.subCategories) {
@@ -261,5 +301,16 @@ const selectCategory = (category: CategoryModel) => {
 .categories-page__form {
   padding: 0 16px;
   margin-top: 48px;
+}
+.categories-page__add-subcategory {
+  padding: 0 16px;
+  margin-top: 24px;
+  text-align: center;
+  color: var(--app-primary);
+
+  button {
+    padding: 8px 16px;
+    border-radius: 8px;
+  }
 }
 </style>

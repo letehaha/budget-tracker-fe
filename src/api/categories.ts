@@ -7,6 +7,14 @@ export const loadSystemCategories = async (): Promise<CategoryModel[]> => {
   return result;
 };
 
+export const createCategory = async (
+  params: endpointsTypes.CreateCategoryBody,
+): Promise<endpointsTypes.CreateCategoryResponse> => {
+  const result = await api.post('/categories', params);
+
+  return result;
+};
+
 export const editCategory = async (
   {
     categoryId,
