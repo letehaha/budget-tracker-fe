@@ -70,16 +70,14 @@
         </template>
       </div>
 
-      <template v-if="selectedCategory">
-        <div class="categories-page__add-subcategory">
-          <button
-            type="button"
-            @click="startCreating"
-          >
-            Add subcategory +
-          </button>
-        </div>
-      </template>
+      <div class="categories-page__add-subcategory">
+        <button
+          type="button"
+          @click="startCreating"
+        >
+          Add subcategory +
+        </button>
+      </div>
     </div>
     <template v-if="isFormVisible">
       <form
@@ -107,13 +105,22 @@
           </button>
         </div>
 
-        <div class="categories-page__form">
+        <div class="categories-page__fields">
           <InputField
             v-model="form.name"
             label="Category name"
             placeholder="Category name"
           />
         </div>
+        <template v-if="isEditing">
+          <div class="categories-page__form-actions">
+            <UiButton
+              @click="deleteCategory"
+            >
+              Delete
+            </UiButton>
+          </div>
+        </template>
       </form>
     </template>
   </div>
@@ -123,12 +130,13 @@
 import { storeToRefs } from 'pinia';
 import { ref, reactive } from 'vue';
 import { useQueryClient } from '@tanstack/vue-query';
-import { CategoryModel } from 'shared-types';
+import { CategoryModel, API_ERROR_CODES } from 'shared-types';
 import { useCategoriesStore } from '@/stores';
-import { editCategory, createCategory } from '@/api';
+import { editCategory, createCategory, deleteCategory as apiDeleteCategory } from '@/api';
 import { useNotificationCenter } from '@/components/notification-center';
 import CategoryCircle from '@/components/common/category-circle.vue';
 import InputField from '@/components/fields/input-field.vue';
+import UiButton from '@/components/common/ui-button.vue';
 import { VUE_QUERY_CACHE_KEYS } from '@/common/const';
 
 defineOptions({
@@ -205,6 +213,21 @@ const selectCategory = (category: CategoryModel) => {
 
   if (category.subCategories) {
     currentLevel.value = category.subCategories;
+  }
+};
+const deleteCategory = async () => {
+  try {
+    await apiDeleteCategory({ categoryId: selectedCategory.value.id });
+
+    await queryClient.invalidateQueries({ queryKey: VUE_QUERY_CACHE_KEYS.categoriesList });
+    addSuccessNotification('Successfully deleted!');
+    goBack();
+  } catch (err) {
+    if (err.data.code === API_ERROR_CODES.validationError) {
+      addErrorNotification(err.data.message);
+      return;
+    }
+    addErrorNotification('Unexpected error. Category is not deleted.');
   }
 };
 </script>
@@ -298,7 +321,11 @@ const selectCategory = (category: CategoryModel) => {
     opacity: .7;
   }
 }
-.categories-page__form {
+.categories-page__fields {
+  padding: 0 16px;
+  margin-top: 48px;
+}
+.categories-page__form-actions {
   padding: 0 16px;
   margin-top: 48px;
 }

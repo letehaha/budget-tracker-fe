@@ -25,3 +25,9 @@ export const editCategory = async (
 
   return result;
 };
+
+export const deleteCategory = async (
+  { categoryId }: { categoryId: number },
+) => {
+  await api.delete(`/categories/${categoryId}`);
+};
