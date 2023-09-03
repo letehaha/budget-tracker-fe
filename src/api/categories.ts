@@ -1,8 +1,19 @@
-import { CategoryModel } from 'shared-types';
+import { CategoryModel, endpointsTypes } from 'shared-types';
 import { api } from '@/api/_api';
 
 export const loadSystemCategories = async (): Promise<CategoryModel[]> => {
   const result = await api.get('/categories');
+
+  return result;
+};
+
+export const editCategory = async (
+  {
+    categoryId,
+    ...params
+  }: endpointsTypes.EditCategoryBody & { categoryId: number },
+): Promise<endpointsTypes.EditCategoryResponse> => {
+  const result = await api.put(`/categories/${categoryId}`, params);
 
   return result;
 };

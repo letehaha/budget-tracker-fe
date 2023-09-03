@@ -1,11 +1,16 @@
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { defineStore } from 'pinia';
+import { useQuery } from '@tanstack/vue-query';
 import { CategoryModel } from 'shared-types';
 import { loadSystemCategories } from '@/api';
+import { VUE_QUERY_CACHE_KEYS } from '@/common/const';
+import { useAuthStore } from '@/stores/auth';
 import { getRawCategories } from './helpers';
 
 export const useCategoriesStore = defineStore('categories', () => {
-  const categories = ref<CategoryModel[]>([]);
+  const authStore = useAuthStore();
+  const isLoggedIn = computed(() => !!authStore.isLoggedIn);
+
   const rawCategories = ref<CategoryModel[]>([]);
   const categoriesMap = computed<Record<number, CategoryModel>>(
     () => rawCategories.value.reduce((acc, curr) => {
@@ -14,22 +19,21 @@ export const useCategoriesStore = defineStore('categories', () => {
     }, {}),
   );
 
-  const loadCategories = async () => {
-    try {
-      const result = await loadSystemCategories();
+  const { data: categories } = useQuery({
+    queryFn: loadSystemCategories,
+    queryKey: VUE_QUERY_CACHE_KEYS.categoriesList,
+    enabled: isLoggedIn,
+    staleTime: Infinity,
+    placeholderData: [],
+  });
 
-      categories.value = result;
-      rawCategories.value = getRawCategories(result);
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.log(e);
-    }
-  };
+  watch(categories, value => {
+    rawCategories.value = getRawCategories(value);
+  });
 
   return {
     categories,
     categoriesMap,
     rawCategories,
-    loadCategories,
   };
 });
