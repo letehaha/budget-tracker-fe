@@ -58,7 +58,7 @@ const {
   border: none;
   cursor: pointer;
 
-  color: var(--primary-500);
+  color: var(--app-primary);
 
   display: block;
   margin: auto;

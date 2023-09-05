@@ -90,9 +90,13 @@ const accountTo = computed(
   () => accountsRecord.value[oppositeTransferTransaction.value?.accountId],
 );
 
-const accountMovement = computed(
-  () => `${accountFrom.value?.name} => ${accountTo.value?.name}`,
-);
+const accountMovement = computed(() => {
+  const separator = transaction.transactionType === TRANSACTION_TYPES.expense
+    ? '=>'
+    : '<=';
+
+  return `${accountFrom.value?.name} ${separator} ${accountTo.value?.name}`;
+});
 
 const formateDate = date => format(new Date(date), 'd MMMM y');
 
