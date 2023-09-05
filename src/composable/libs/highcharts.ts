@@ -13,6 +13,10 @@ const defaultConfig: Highcharts.Options = {
   title: {
     text: null,
   },
+  accessibility: {
+    // To remove warning about need to add accesibility.js
+    enabled: false,
+  },
 };
 
 export const useHighcharts = () => {

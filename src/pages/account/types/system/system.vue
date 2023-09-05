@@ -1,7 +1,7 @@
 <template>
-  <div class="account">
+  <div class="system-account">
     <template v-if="account">
-      <div class="account__form">
+      <div class="system-account__form">
         <input-field
           v-model="form.name"
           label="Account name"
@@ -27,15 +27,15 @@
       </div>
     </template>
 
-    <div class="account__actions">
+    <div class="system-account__actions">
       <ui-button
-        class="account__delete-action"
+        class="system-account__delete-action"
         @click="deleteAccount"
       >
         Delete
       </ui-button>
       <ui-button
-        class="account__delete-action"
+        class="system-account__delete-action"
         @click="updateAccount"
       >
         Save
@@ -44,8 +44,8 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType, reactive } from 'vue';
+<script setup lang="ts">
+import { reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import { AccountModel } from 'shared-types';
 
@@ -61,111 +61,91 @@ import { useNotificationCenter } from '@/components/notification-center';
 import UiButton from '@/components/common/ui-button.vue';
 import InputField from '@/components/fields/input-field.vue';
 
-export default defineComponent({
-  components: {
-    UiButton,
-    InputField,
-  },
-  props: {
-    account: {
-      type: Object as PropType<AccountModel>,
-      required: true,
+const props = defineProps<{
+  account: AccountModel;
+}>();
+
+const router = useRouter();
+const {
+  addSuccessNotification,
+  addErrorNotification,
+} = useNotificationCenter();
+const accountsStore = useAccountsStore();
+
+const form = reactive<{
+  name: string;
+  currentBalance: number;
+  creditLimit: number;
+}>({
+  name: props.account.name,
+  currentBalance: props.account.currentBalance,
+  creditLimit: props.account.creditLimit,
+});
+
+const {
+  isFormValid,
+  getFieldErrorMessage,
+} = useFormValidation(
+  { form },
+  {
+    form: {
+      name: {
+        required,
+        minLength: minLength(2),
+      },
+      currentBalance: {
+        required,
+        decimal,
+      },
+      creditLimit: {
+        required,
+        decimal,
+        minValue: minValue(0),
+      },
     },
   },
-  setup(props) {
-    const router = useRouter();
-    const {
-      addSuccessNotification,
-      addErrorNotification,
-    } = useNotificationCenter();
-    const accountsStore = useAccountsStore();
+);
 
-    const form = reactive<{
-      name: string;
-      currentBalance: number;
-      creditLimit: number;
-    }>({
-      name: props.account.name,
-      currentBalance: props.account.currentBalance,
-      creditLimit: props.account.creditLimit,
+const deleteAccount = async () => {
+  const accountName = props.account.name;
+
+  try {
+    await accountsStore.deleteAccount({
+      id: props.account.id,
     });
 
-    const {
-      isFormValid,
-      getFieldErrorMessage,
-    } = useFormValidation(
-      { form },
-      {
-        form: {
-          name: {
-            required,
-            minLength: minLength(2),
-          },
-          currentBalance: {
-            required,
-            decimal,
-          },
-          creditLimit: {
-            required,
-            decimal,
-            minValue: minValue(0),
-          },
-        },
-      },
-    );
+    addSuccessNotification(`Account ${accountName} removed successfully`);
 
-    const deleteAccount = async () => {
-      const accountName = props.account.name;
+    router.push({ name: ROUTES_NAMES.accounts });
+  } catch (e) {
+    addErrorNotification('An error occured while trying to delete account');
+  }
+};
 
-      try {
-        await accountsStore.deleteAccount({
-          id: props.account.id,
-        });
+const updateAccount = async () => {
+  if (!isFormValid()) return;
 
-        addSuccessNotification(`Account ${accountName} removed successfully`);
+  try {
+    await accountsStore.editAccount({
+      id: props.account.id,
+      name: form.name,
+      creditLimit: form.creditLimit,
+      currentBalance: form.currentBalance,
+    });
 
-        router.push({ name: ROUTES_NAMES.accounts });
-      } catch (e) {
-        addErrorNotification('An error occured while trying to delete account');
-      }
-    };
-
-    const updateAccount = async () => {
-      if (!isFormValid()) return;
-
-      try {
-        await accountsStore.editAccount({
-          id: props.account.id,
-          name: form.name,
-          creditLimit: form.creditLimit,
-          currentBalance: form.currentBalance,
-        });
-
-        addSuccessNotification('Account data changed successfully');
-      } catch (e) {
-        addErrorNotification('An error occured while trying to update account');
-      }
-    };
-
-    return {
-      deleteAccount,
-      updateAccount,
-      getFieldErrorMessage,
-      form,
-    };
-  },
-});
+    addSuccessNotification('Account data changed successfully');
+  } catch (e) {
+    addErrorNotification('An error occured while trying to update account');
+  }
+};
 </script>
 
-<style lang="scss" scoped>
-.account {
-  padding: 24px;
-}
-.account__form {
+<style lang="scss">
+.system-account__form {
   display: grid;
   gap: 24px;
 }
-.account__actions {
+.system-account__actions {
   margin-top: 32px;
   display: flex;
   justify-content: space-between;

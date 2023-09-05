@@ -200,7 +200,7 @@ const props = withDefaults(defineProps<{
 
 const emit = defineEmits([MODAL_EVENTS.closeModal]);
 
-const { getCurrency, currenciesMap } = useCurrenciesStore();
+const { currenciesMap } = storeToRefs(useCurrenciesStore());
 const { accountsRecord, accounts, systemAccounts } = storeToRefs(useAccountsStore());
 const { formattedCategories, categoriesMap } = storeToRefs(useCategoriesStore());
 const queryClient = useQueryClient();
@@ -256,15 +256,14 @@ const isCurrenciesDifferent = computed(() => {
 
 const currencyCode = computed(() => {
   if (form.value.account?.currencyId) {
-    return currenciesMap[form.value.account.currencyId].currency.code;
+    return currenciesMap.value[form.value.account.currencyId].currency.code;
   }
   return undefined;
 });
 
-const targetCurrency = computed(() => {
-  if (form.value.toAccount?.currencyId) getCurrency(form.value.toAccount.currencyId);
-  return undefined;
-});
+const targetCurrency = computed(
+  () => currenciesMap.value[form.value.toAccount?.currencyId],
+);
 
 const filteredAccounts = computed(() => systemAccounts.value.filter(
   (item) => item.id !== form.value.account?.id,

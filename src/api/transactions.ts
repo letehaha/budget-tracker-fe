@@ -1,5 +1,5 @@
 import {
-  TRANSACTION_TYPES, PAYMENT_TYPES, ACCOUNT_TYPES, TransactionModel,
+  TRANSACTION_TYPES, PAYMENT_TYPES, TransactionModel, endpointsTypes,
 } from 'shared-types';
 import { api } from '@/api/_api';
 import { fromSystemAmount, toSystemAmount } from '@/api/helpers';
@@ -25,12 +25,8 @@ const formatTransactionPayload = <T>(transaction: T): T => {
 };
 
 export const loadTransactions = async (
-  params: {
-    limit?: number;
-    from?: number;
-    accountType?: ACCOUNT_TYPES;
-  } = {},
-): Promise<TransactionModel[]> => {
+  params: endpointsTypes.GetTransactionsQuery,
+): Promise<endpointsTypes.GetTransactionsResponse> => {
   const result = await api.get('/transactions', params);
 
   return result.map(item => formatTransactionResponse(item));
