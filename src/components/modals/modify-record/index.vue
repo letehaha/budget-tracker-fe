@@ -124,11 +124,12 @@ import {
 import { storeToRefs } from 'pinia';
 import { useQueryClient } from '@tanstack/vue-query';
 import {
-  AccountModel,
+  type AccountModel,
   TRANSACTION_TYPES,
   PAYMENT_TYPES,
-  TransactionModel,
+  type TransactionModel,
   ACCOUNT_TYPES,
+  type CategoryModel,
 } from 'shared-types';
 import {
   useAccountsStore,
@@ -141,7 +142,6 @@ import {
   editTransaction,
   deleteTransaction,
 } from '@/api/transactions';
-import { type FormattedCategory } from '@/common/types';
 import InputField from '@/components/fields/input-field.vue';
 import SelectField from '@/components/fields/select-field.vue';
 import CategorySelectField from '@/components/fields/category-select-field.vue';
@@ -202,7 +202,7 @@ const emit = defineEmits([MODAL_EVENTS.closeModal]);
 
 const { getCurrency, currenciesMap } = useCurrenciesStore();
 const { accountsRecord, accounts, systemAccounts } = storeToRefs(useAccountsStore());
-const { formattedCategories } = storeToRefs(useCategoriesStore());
+const { formattedCategories, categoriesMap } = storeToRefs(useCategoriesStore());
 const queryClient = useQueryClient();
 
 const isFormCreation = computed(() => !props.transaction);
@@ -211,7 +211,7 @@ const form = ref<{
   amount: number;
   account: AccountModel;
   toAccount?: AccountModel;
-  category: FormattedCategory;
+  category: CategoryModel;
   time: string;
   paymentType: VerbosePaymentType;
   note?: string;
@@ -276,7 +276,7 @@ watch(() => props.transaction, (value) => {
       amount: value.amount,
       account: accountsRecord.value[value.accountId],
       type: getFormTypeFromTransaction(value),
-      category: formattedCategories.value.find(i => i.id === value.categoryId),
+      category: categoriesMap.value[value.categoryId],
       time: new Date(value.time).toISOString().substring(0, 19),
       paymentType: VERBOSE_PAYMENT_TYPES.find(item => item.value === value.paymentType),
       note: value.note,

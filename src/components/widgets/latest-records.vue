@@ -34,7 +34,7 @@ const { isAppInitialized } = storeToRefs(useRootStore());
 
 const { data: transactions } = useQuery({
   queryKey: VUE_QUERY_CACHE_KEYS.widgetLatestRecords,
-  queryFn: () => apiLoadTransactions({ limit: 10 }),
+  queryFn: () => apiLoadTransactions({ limit: 9 }),
   staleTime: Infinity,
   placeholderData: [],
   enabled: isAppInitialized,

@@ -100,6 +100,7 @@
 import {
   defineComponent, ref, Ref, computed, PropType,
 } from 'vue';
+import { CategoryModel } from 'shared-types';
 import { type FormattedCategory } from '@/common/types';
 import ChevronRightIcon from '@/assets/icons/chevron-right.svg?component';
 import ChevronLeftIcon from '@/assets/icons/chevron-left.svg?component';
@@ -128,7 +129,7 @@ export default defineComponent({
   props: {
     label: { type: String, default: undefined },
     modelValue: {
-      type: Object as PropType<FormattedCategory>,
+      type: Object as PropType<CategoryModel>,
       default: undefined,
     },
     values: {
