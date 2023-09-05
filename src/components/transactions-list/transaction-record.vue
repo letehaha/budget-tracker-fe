@@ -91,7 +91,7 @@ const accountTo = computed(
 );
 
 const accountMovement = computed(
-  () => `${accountFrom.value.name} => ${accountTo.value?.name}`,
+  () => `${accountFrom.value?.name} => ${accountTo.value?.name}`,
 );
 
 const formateDate = date => format(new Date(date), 'd MMMM y');
