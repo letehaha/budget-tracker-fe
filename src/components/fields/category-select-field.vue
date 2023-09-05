@@ -43,6 +43,7 @@
             </div>
             <template v-if="previousLevelsIndices.length">
               <button
+                v-if="!searchQuery.length"
                 type="button"
                 class="category-select-field__dropdown-back-level"
                 @click="backLevelUp"
@@ -51,6 +52,7 @@
                 Previous level
               </button>
               <button
+                v-if="!searchQuery.length"
                 type="button"
                 class="category-select-field__dropdown-item"
                 :class="{
@@ -63,7 +65,10 @@
                 {{ topLevelCategory.name }}
               </button>
 
-              <h3 class="category-select-field__dropdown-subcategories-title">
+              <h3
+                v-if="!searchQuery.length"
+                class="category-select-field__dropdown-subcategories-title"
+              >
                 Subcategories
               </h3>
             </template>
@@ -131,8 +136,10 @@ const emit = defineEmits<{
   'update:model-value': [value: FormattedCategory]
 }>();
 const selectedValue = ref(props.modelValue || props.values[0]);
-// not sure why it works only using `as`
-const levelValues = ref<FormattedCategory[]>(props.values);
+
+const levelValues = ref(props.values);
+
+const rootCategories = ref(props.values);
 
 const DOMList = ref<HTMLDivElement>(null);
 const searchQuery = ref<string>('');
@@ -142,9 +149,9 @@ const previousLevelsIndices: Ref<number[]> = ref([]);
 
 const topLevelCategory = computed<FormattedCategory>(() => {
   /**
-       * If we are in a category's subcategories list, finds the subcategories
-       * parent category to show it in the UI
-       */
+    * If we are in a category's subcategories list, finds the subcategories
+    * parent category to show it in the UI
+  */
   let category;
   for (let i = 0; i < previousLevelsIndices.value.length; i++) {
     if (i === 0) {
@@ -178,7 +185,15 @@ const filterCategories = (categories, query) => {
   return result;
 };
 
-const filteredItems = computed(() => filterCategories(levelValues.value, searchQuery.value));
+const filteredItems = computed(() => {
+  let category;
+  if (previousLevelsIndices.value.length && searchQuery.value.length) {
+    category = rootCategories.value;
+  } else {
+    category = levelValues.value;
+  }
+  return filterCategories(category, searchQuery.value);
+});
 
 const definePreviousLevelsIndices = (selectedItem: FormattedCategory) => {
   // push to `previousLevelsIndices` index of selecteItem so we will have
@@ -191,10 +206,10 @@ const definePreviousLevelsIndices = (selectedItem: FormattedCategory) => {
 
 const selectItem = (item: FormattedCategory, ignorePreselect = false) => {
   /**
-       * If item has child categories, it goes level deeper. `ignorePreselect`
-       * will disable diving level deeper and will select category even if it
-       * has child categories
-       */
+    * If item has child categories, it goes level deeper. `ignorePreselect`
+    * will disable diving level deeper and will select category even if it
+    * has child categories
+  */
   if (item.subCategories.length && !ignorePreselect && !searchQuery.value.length) {
     definePreviousLevelsIndices(item);
     levelValues.value = item.subCategories;
@@ -207,14 +222,15 @@ const selectItem = (item: FormattedCategory, ignorePreselect = false) => {
   }
   searchQuery.value = '';
 };
+
 const backLevelUp = () => {
   /**
-       * Uses `previousLevelsIndices` to navigate through the history and make
-       * previous level as the current one.
-       *
-       * At the end clears `previousLevelsIndices` by removing the last element
-       * in the history.
-       */
+    * Uses `previousLevelsIndices` to navigate through the history and make
+    * previous level as the current one.
+    *
+    * At the end clears `previousLevelsIndices` by removing the last element
+    * in the history.
+  */
   let level;
   for (let i = 0; i < previousLevelsIndices.value.length; i++) {
     if (i === 0) {
