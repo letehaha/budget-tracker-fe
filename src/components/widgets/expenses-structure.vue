@@ -43,7 +43,9 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
 import { storeToRefs } from 'pinia';
-import { subDays, subMonths } from 'date-fns';
+import {
+  subDays, subMonths, startOfMonth, endOfMonth,
+} from 'date-fns';
 import { useQuery } from '@tanstack/vue-query';
 import { Chart as Highcharts } from 'highcharts-vue';
 import { useFormatCurrency, useHighcharts } from '@/composable';
@@ -83,8 +85,8 @@ const { data: currentMonthExpense } = useQuery({
 const { data: prevMonthExpense } = useQuery({
   queryKey: VUE_QUERY_CACHE_KEYS.widgetExpensesStructurePrevAmount,
   queryFn: () => getExpensesAmountForPeriod({
-    from: subMonths(subDays(new Date(), currentDayInMonth - 1), 1),
-    to: subDays(new Date(), currentDayInMonth - 1),
+    from: startOfMonth(subMonths(new Date(), 1)),
+    to: endOfMonth(subMonths(new Date(), 1)),
   }),
   staleTime: Infinity,
   placeholderData: 0,
