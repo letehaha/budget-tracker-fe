@@ -37,12 +37,11 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useQuery } from '@tanstack/vue-query';
 import { Chart as Highcharts } from 'highcharts-vue';
 import {
-  subDays, getDaysInMonth, addDays,
-  startOfMonth, endOfMonth, startOfDay, subMonths,
+  getDaysInMonth, addDays, startOfMonth, endOfMonth, startOfDay, subMonths,
 } from 'date-fns';
 import { storeToRefs } from 'pinia';
 import { getTotalBalance } from '@/api';
@@ -54,13 +53,11 @@ import { loadBalanceTrendData } from '@/services';
 import { useCurrenciesStore } from '@/stores';
 import WidgetWrapper from './components/widget-wrapper.vue';
 
-const currentDayInMonth = new Date().getDate();
-
 // Calculate it manually so shart will always have first and last ticks (dates)
-function generateDateSteps(datesToShow = 5) {
-  const step = Math.round(getDaysInMonth(new Date()) / datesToShow);
-  const start = startOfMonth(new Date()).getTime();
-  const end = startOfDay(endOfMonth(new Date())).getTime();
+function generateDateSteps(datesToShow = 5, date = new Date()) {
+  const step = Math.round(getDaysInMonth(date) / datesToShow);
+  const start = startOfMonth(date).getTime();
+  const end = startOfDay(endOfMonth(date)).getTime();
 
   const dates = [start];
   while (dates[dates.length - 1] < end) {
@@ -75,27 +72,39 @@ defineOptions({
   name: 'balance-trend-widget',
 });
 
+const props = withDefaults(defineProps<{
+  selectedPeriod?: { from: Date; to: Date };
+}>(), {
+  selectedPeriod: () => ({
+    from: startOfMonth(new Date()),
+    to: new Date(),
+  }),
+});
+
+const periodFrom = ref(new Date().getTime());
 const currentChartWidth = ref(null);
 const { formatBaseCurrency } = useFormatCurrency();
 const { baseCurrency } = storeToRefs(useCurrenciesStore());
 const { buildAreaChartConfig } = useHighcharts();
 
+watch(() => props.selectedPeriod.from, () => {
+  periodFrom.value = props.selectedPeriod.from.getTime();
+});
+
 const { data: balanceHistory } = useQuery({
-  queryKey: VUE_QUERY_CACHE_KEYS.widgetBalanceTrend,
-  queryFn: () => loadBalanceTrendData({
-    from: subDays(new Date(), currentDayInMonth - 1),
-  }),
+  queryKey: [...VUE_QUERY_CACHE_KEYS.widgetBalanceTrend, periodFrom],
+  queryFn: () => loadBalanceTrendData(props.selectedPeriod),
   staleTime: Infinity,
 });
 const { data: todayBalance } = useQuery({
-  queryKey: VUE_QUERY_CACHE_KEYS.widgetBalanceTotalBalance,
-  queryFn: () => getTotalBalance({ date: new Date() }),
+  queryKey: [...VUE_QUERY_CACHE_KEYS.widgetBalanceTotalBalance, periodFrom],
+  queryFn: () => getTotalBalance({ date: props.selectedPeriod.to }),
   staleTime: Infinity,
 });
 const { data: previousBalance } = useQuery({
-  queryKey: VUE_QUERY_CACHE_KEYS.widgetBalancePreviousBalance,
+  queryKey: [...VUE_QUERY_CACHE_KEYS.widgetBalancePreviousBalance, periodFrom],
   queryFn: () => getTotalBalance({
-    date: subMonths(new Date(), 1),
+    date: endOfMonth(subMonths(props.selectedPeriod.to, 1)),
   }),
   staleTime: Infinity,
 });
@@ -112,7 +121,7 @@ const chartOptions = computed(() => {
       marginTop: 20,
     },
     xAxis: {
-      tickPositions: generateDateSteps(ticksAmount),
+      tickPositions: generateDateSteps(ticksAmount, props.selectedPeriod.from),
     },
     yAxis: {
       tickAmount: 5,
@@ -136,10 +145,10 @@ const chartOptions = computed(() => {
           ]),
           // fill remaining days with `null` so chart will be rendered for all
           // days in the month
-          ...Array(getDaysInMonth(new Date()) - currentDayInMonth)
+          ...Array(getDaysInMonth(props.selectedPeriod.to) - props.selectedPeriod.to.getDate())
             .fill([])
             .map((_, i) => [
-              addDays(new Date(), i + 1).getTime(),
+              addDays(props.selectedPeriod.to, i + 1).getTime(),
               null,
             ]),
         ],

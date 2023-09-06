@@ -41,11 +41,9 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
-import {
-  subDays, subMonths, startOfMonth, endOfMonth,
-} from 'date-fns';
+import { subMonths, startOfMonth, endOfMonth } from 'date-fns';
 import { useQuery } from '@tanstack/vue-query';
 import { Chart as Highcharts } from 'highcharts-vue';
 import { useFormatCurrency, useHighcharts } from '@/composable';
@@ -56,37 +54,51 @@ import { getSpendingsByCategories, getExpensesAmountForPeriod } from '@/api';
 import { VUE_QUERY_CACHE_KEYS } from '@/common/const';
 import WidgetWrapper from './components/widget-wrapper.vue';
 
-const currentDayInMonth = new Date().getDate();
-
 defineOptions({
   name: 'expenses-structure-widget',
 });
 
+const props = withDefaults(defineProps<{
+  selectedPeriod?: { from: Date; to: Date };
+}>(), {
+  selectedPeriod: () => ({
+    from: startOfMonth(new Date()),
+    to: new Date(),
+  }),
+});
+
 const { formatBaseCurrency } = useFormatCurrency();
+const periodFrom = ref(new Date().getTime());
+
+watch(() => props.selectedPeriod.from, () => {
+  periodFrom.value = props.selectedPeriod.from.getTime();
+});
 
 const { data: spendingsByCategories } = useQuery({
-  queryKey: VUE_QUERY_CACHE_KEYS.widgetExpensesStructureTotal,
+  queryKey: [...VUE_QUERY_CACHE_KEYS.widgetExpensesStructureTotal, periodFrom],
   queryFn: () => getSpendingsByCategories({
-    from: subDays(new Date(), currentDayInMonth - 1),
+    from: props.selectedPeriod.from,
+    to: props.selectedPeriod.to,
   }),
   staleTime: Infinity,
   placeholderData: {},
 });
 
 const { data: currentMonthExpense } = useQuery({
-  queryKey: VUE_QUERY_CACHE_KEYS.widgetExpensesStructureCurrentAmount,
+  queryKey: [...VUE_QUERY_CACHE_KEYS.widgetExpensesStructureCurrentAmount, periodFrom],
   queryFn: () => getExpensesAmountForPeriod({
-    from: subDays(new Date(), currentDayInMonth - 1),
+    from: props.selectedPeriod.from,
+    to: props.selectedPeriod.to,
   }),
   staleTime: Infinity,
   placeholderData: 0,
 });
 
 const { data: prevMonthExpense } = useQuery({
-  queryKey: VUE_QUERY_CACHE_KEYS.widgetExpensesStructurePrevAmount,
+  queryKey: [...VUE_QUERY_CACHE_KEYS.widgetExpensesStructurePrevAmount, periodFrom],
   queryFn: () => getExpensesAmountForPeriod({
-    from: startOfMonth(subMonths(new Date(), 1)),
-    to: endOfMonth(subMonths(new Date(), 1)),
+    from: startOfMonth(subMonths(props.selectedPeriod.from, 1)),
+    to: endOfMonth(subMonths(props.selectedPeriod.to, 1)),
   }),
   staleTime: Infinity,
   placeholderData: 0,
