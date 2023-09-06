@@ -34,5 +34,6 @@ const categoryColor = computed(() => {
   width: 20px;
   height: 20px;
   border-radius: 50%;
+  flex-shrink: 0;
 }
 </style>

@@ -251,8 +251,7 @@ export default defineComponent({
   width: 100%;
   cursor: pointer;
 
-  display: grid;
-  grid-template-columns: min-content minmax(0, 1fr);
+  display: flex;
   align-items: center;
   gap: 8px;
 }
@@ -327,9 +326,11 @@ export default defineComponent({
   }
 }
 .category-select-field__dropdown-back-level {
-  margin: 8px 16px 16px;
+  margin: 2px 8px 8px;
+  padding: 8px;
+  border-radius: 4px;
   border: none;
-  color: var(--primary-500);
+  color: var(--app-primary);
   cursor: pointer;
   background-color: transparent;
 

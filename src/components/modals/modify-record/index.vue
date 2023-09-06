@@ -201,7 +201,7 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits([MODAL_EVENTS.closeModal]);
 
 const { currenciesMap } = storeToRefs(useCurrenciesStore());
-const { accountsRecord, accounts, systemAccounts } = storeToRefs(useAccountsStore());
+const { accountsRecord, systemAccounts } = storeToRefs(useAccountsStore());
 const { formattedCategories, categoriesMap } = storeToRefs(useCategoriesStore());
 const queryClient = useQueryClient();
 
@@ -238,7 +238,9 @@ const isRecordExternal = computed(() => {
 watch(() => isRecordExternal.value, (value) => {
   if (value) {
     nextTick(() => {
-      form.value.account = accounts.value.find(item => item.id === props.transaction.accountId);
+      if (accountsRecord.value[props.transaction.accountId]) {
+        form.value.account = accountsRecord.value[props.transaction.accountId];
+      }
     });
   }
 }, { immediate: true });
