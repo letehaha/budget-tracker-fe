@@ -251,8 +251,7 @@ export default defineComponent({
   width: 100%;
   cursor: pointer;
 
-  display: grid;
-  grid-template-columns: min-content minmax(0, 1fr);
+  display: flex;
   align-items: center;
   gap: 8px;
 }
