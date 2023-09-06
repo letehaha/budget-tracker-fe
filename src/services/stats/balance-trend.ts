@@ -74,8 +74,8 @@ export function aggregateBalanceTrendData(data: BalanceHistoryEntity[]) {
   return toArray;
 }
 
-export const loadBalanceTrendData = async ({ from }: { from: Date }) => {
-  const result = await getBalanceHistory({ from });
+export const loadBalanceTrendData = async ({ from, to }: { from: Date; to?: Date }) => {
+  const result = await getBalanceHistory({ from, to });
 
   if (!result?.length) return [];
 

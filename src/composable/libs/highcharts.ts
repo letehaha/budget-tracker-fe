@@ -35,7 +35,7 @@ export const useHighcharts = () => {
     xAxis: {
       type: 'datetime',
       dateTimeLabelFormats: {
-        day: '%d %b',
+        day: '%e %b',
       },
       // Show fullheight crosshair for the selected point
       // crosshair: true
