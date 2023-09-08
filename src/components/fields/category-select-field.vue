@@ -109,6 +109,7 @@
 
 <script setup lang="ts">
 import { ref, Ref, computed } from 'vue';
+import { CategoryModel } from 'shared-types';
 import { type FormattedCategory } from '@/common/types';
 import ChevronRightIcon from '@/assets/icons/chevron-right.svg?component';
 import ChevronLeftIcon from '@/assets/icons/chevron-left.svg?component';
@@ -120,7 +121,7 @@ import FieldLabel from './components/field-label.vue';
 
 const props = withDefaults(defineProps<{
   label?: string;
-  modelValue: FormattedCategory | null;
+  modelValue: CategoryModel | null;
   labelKey?: string |((value: FormattedCategory) => string);
   values: FormattedCategory[];
   placeholder?: string;
