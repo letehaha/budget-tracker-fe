@@ -168,7 +168,7 @@ const toggleDropdown = (state?: boolean) => {
   isDropdownOpened.value = state ?? !isDropdownOpened.value;
 };
 
-const filterCategories = (categories, query) => {
+const filterCategories = (categories: FormattedCategory[], query: string): FormattedCategory[] => {
   let result = [];
   const lowerCaseQuery = query.toLowerCase();
 
