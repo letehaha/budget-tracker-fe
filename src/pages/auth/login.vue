@@ -130,7 +130,10 @@ export default defineComponent({
           };
 
           formError.value = errorCodes[e.data.code] || 'Unexpected error.';
+          return;
         }
+
+        formError.value = 'Unexpected error.';
       } finally {
         isFormLoading.value = false;
       }

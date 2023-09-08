@@ -42,7 +42,7 @@ export const useAuthStore = defineStore('auth', () => {
         ];
 
         if (possibleErrorCodes.includes(e.data.code)) {
-          throw e.data;
+          throw e;
         }
       }
 

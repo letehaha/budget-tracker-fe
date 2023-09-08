@@ -39,9 +39,7 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
     } catch (e) {
       if (e instanceof NetworkError && e?.data?.code === API_ERROR_CODES.monobankUserNotPaired) {
         isMonoAccountPaired.value = false;
-        return;
       }
-      throw new UnexpectedError();
     }
   };
 
@@ -55,7 +53,6 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
       if (e instanceof TooManyRequestsError) {
         throw e;
       }
-      throw new UnexpectedError();
     }
   };
 
