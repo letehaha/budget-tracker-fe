@@ -42,9 +42,9 @@ console.log('API_VER', API_VER);
 class ApiCaller {
   logout: () => void;
 
-  authToken;
+  authToken: string | null;
 
-  _baseURL;
+  _baseURL: string;
 
   constructor() {
     this._baseURL = import.meta.env.API_HTTP;
@@ -63,8 +63,9 @@ class ApiCaller {
     const validQuery: ApiCall['query'] = {};
 
     for (const key in query) {
-      // Additional check to avoid unwanted prototype's properties
-      if (query[key]) validQuery[key] = query[key].toString();
+      if (query[key]) {
+        validQuery[key] = query[key]?.toString() ?? '';
+      }
     }
 
     return this._call({
@@ -155,7 +156,7 @@ class ApiCaller {
       method: opts.method,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: this.authToken,
+        Authorization: this.authToken || '',
       },
     };
 

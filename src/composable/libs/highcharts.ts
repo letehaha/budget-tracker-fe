@@ -11,7 +11,7 @@ const defaultConfig: Highcharts.Options = {
     enabled: false,
   },
   title: {
-    text: null,
+    text: undefined,
   },
   accessibility: {
     // To remove warning about need to add accesibility.js

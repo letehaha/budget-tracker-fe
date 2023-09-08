@@ -13,7 +13,7 @@ export const useAccountsStore = defineStore('accounts', () => {
   const accounts = ref<AccountModel[]>([]);
   const accountsRecord = ref<Record<number, AccountModel>>({});
 
-  const getAccountById: WritableComputedRef<(id: number) => AccountModel> = computed(
+  const getAccountById: WritableComputedRef<(id: number) => AccountModel | undefined> = computed(
     () => (id: number) => accounts.value.find(i => i.id === id),
   );
 

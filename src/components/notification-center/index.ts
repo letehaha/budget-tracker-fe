@@ -16,18 +16,18 @@ const notificationIds: Record<NotificationID, unknown> = {};
 
 export const useNotificationCenter = (): {
   notifications: Ref<Notification[]>;
-  addNotification: (notification: Notification) => NotificationID;
-  removeNotification: (id: NotificationID) => void;
+  addNotification: (notification: Notification) => NotificationID | void;
+  removeNotification: (id?: NotificationID) => void;
   addSuccessNotification: (message: string) => void;
   addWarningNotification: (message: string) => void;
   addErrorNotification: (message: string) => void;
   addInfoNotification: (message: string) => void;
 } => {
-  const removeNotification = (id: NotificationID) => {
+  const removeNotification = (id?: NotificationID) => {
     notifications.value = notifications.value.filter(item => item.id !== id);
   };
 
-  const addNotification = (notification: Notification): NotificationID => {
+  const addNotification = (notification: Notification): NotificationID | void => {
     const id = notification.id ?? idCounter++;
 
     if (notificationIds[id]) {
@@ -51,28 +51,28 @@ export const useNotificationCenter = (): {
     return id;
   };
 
-  const addSuccessNotification = (message) => {
+  const addSuccessNotification = (message: string) => {
     addNotification({
       text: message,
       type: NotificationType.success,
     });
   };
 
-  const addWarningNotification = (message) => {
+  const addWarningNotification = (message: string) => {
     addNotification({
       text: message,
       type: NotificationType.warning,
     });
   };
 
-  const addErrorNotification = (message) => {
+  const addErrorNotification = (message: string) => {
     addNotification({
       text: message,
       type: NotificationType.error,
     });
   };
 
-  const addInfoNotification = (message) => {
+  const addInfoNotification = (message: string) => {
     addNotification({
       text: message,
       type: NotificationType.info,

@@ -1,4 +1,4 @@
-import { CategoryModel } from 'shared-types';
+import { API_ERROR_CODES, CategoryModel } from 'shared-types';
 
 export * from './binance-response';
 
@@ -15,7 +15,8 @@ export enum API_STATUS_CODES {
 
 export interface ApiBaseError {
   statusText?: string;
-  code: number | string;
+  code: API_ERROR_CODES;
+  message?: string;
 }
 
 export type ApiBadRequestError = ApiBaseError;

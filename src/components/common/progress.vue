@@ -26,7 +26,7 @@ export default defineComponent({
     this.validateProgressValue(this.progress);
   },
   methods: {
-    validateProgressValue(value) {
+    validateProgressValue(value: string | number) {
       if (value > this.maxProgress) {
         // eslint-disable-next-line no-console
         console.error(

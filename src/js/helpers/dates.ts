@@ -1,4 +1,4 @@
-export const getHoursInMilliseconds = hours => {
+export const getHoursInMilliseconds = (hours: number) => {
   if (Number.isNaN(hours)) return hours;
   if (!Number.isFinite(hours)) return hours;
 

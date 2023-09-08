@@ -137,6 +137,7 @@ import CategoryCircle from '@/components/common/category-circle.vue';
 import InputField from '@/components/fields/input-field.vue';
 import UiButton from '@/components/common/ui-button.vue';
 import { type FormattedCategory } from '@/common/types';
+import { ApiErrorResponseError } from '@/js/errors';
 
 defineOptions({
   name: 'settings-categories',
@@ -146,10 +147,10 @@ const categoriesStore = useCategoriesStore();
 const { addErrorNotification, addSuccessNotification } = useNotificationCenter();
 const { formattedCategories } = storeToRefs(categoriesStore);
 const currentLevel = ref<FormattedCategory[]>(formattedCategories.value);
-const selectedCategory = ref<FormattedCategory>(null);
+const selectedCategory = ref<FormattedCategory | null>(null);
 
 const form = reactive({
-  name: null,
+  name: '',
 });
 const isFormVisible = ref(false);
 const isEditing = ref(false);
@@ -158,11 +159,13 @@ const closeForm = () => {
   isEditing.value = false;
   isCreating.value = false;
   isFormVisible.value = false;
-  form.name = null;
+  form.name = '';
 };
 const startEditing = () => {
   closeForm();
-  form.name = selectedCategory.value.name;
+  if (selectedCategory.value) {
+    form.name = selectedCategory.value.name;
+  }
   isEditing.value = true;
   isFormVisible.value = true;
 };
@@ -177,6 +180,8 @@ const goBack = () => {
   currentLevel.value = formattedCategories.value;
 };
 const applyChanges = async () => {
+  if (!selectedCategory.value) return;
+
   try {
     if (isEditing.value) {
       await editCategory({
@@ -222,9 +227,11 @@ const deleteCategory = async () => {
     addSuccessNotification('Successfully deleted!');
     goBack();
   } catch (err) {
-    if (err.data.code === API_ERROR_CODES.validationError) {
-      addErrorNotification(err.data.message);
-      return;
+    if (err instanceof ApiErrorResponseError) {
+      if (err.data.code === API_ERROR_CODES.validationError) {
+        addErrorNotification(err.data.message);
+        return;
+      }
     }
     addErrorNotification('Unexpected error. Category is not deleted.');
   }

@@ -1,4 +1,4 @@
-import { ref } from 'vue';
+import { ref, shallowRef } from 'vue';
 import { defineStore, storeToRefs } from 'pinia';
 import { getHoursInMilliseconds } from '@/js/helpers';
 import { eventBus, BUS_EVENTS } from '@/js/utils';
@@ -19,7 +19,7 @@ export const useRootStore = defineStore('root', () => {
   const categoriesStore = useCategoriesStore();
 
   const isAppInitialized = ref(false);
-  const isFinancialDataSyncingError = ref<null | Error>(null);
+  const isFinancialDataSyncingError = shallowRef<null | Error>(null);
   const isFinancialDataSyncing = ref(false);
 
   const { isLoggedIn } = storeToRefs(authStore);
@@ -28,7 +28,9 @@ export const useRootStore = defineStore('root', () => {
   const isAllowedToSyncFinancialData = ref(false);
 
   const checkSyncFinancialDataPossibility = () => {
-    const latestAccountRefreshDate = new Date(+localStorage.getItem('latest-account-refresh-date')).getTime();
+    const latestAccountRefreshDate = new Date(
+      Number(localStorage.getItem('latest-account-refresh-date')),
+    ).getTime();
     const diff = new Date().getTime() - latestAccountRefreshDate;
 
     isAllowedToSyncFinancialData.value = diff > getHoursInMilliseconds(0.5);
@@ -72,7 +74,7 @@ export const useRootStore = defineStore('root', () => {
         eventBus.emit(BUS_EVENTS.transactionChange);
       }
     } catch (e) {
-      isFinancialDataSyncingError.value = e;
+      isFinancialDataSyncingError.value = e as Error;
     } finally {
       isFinancialDataSyncing.value = false;
     }

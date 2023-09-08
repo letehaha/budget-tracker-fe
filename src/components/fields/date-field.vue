@@ -15,13 +15,13 @@
 
       <div class="date-field__wrapper">
         <input
-          v-bind="computedAttrs"
           type="datetime-local"
           :value="modelValue"
           :disabled="($attrs.disabled as boolean)"
           :style="inputFieldStyles"
           :tabindex="tabindex"
           class="date-field__input"
+          v-on="computedEvents"
         >
       </div>
     </FieldLabel>
@@ -62,18 +62,19 @@ export default defineComponent({
     onlyPositive: Boolean,
   },
   setup(props, { attrs, emit, slots }) {
-    const computedAttrs = {
+    const computedEvents = {
       ...attrs,
-      onInput: event => {
-        if (props.modelValue === event.target.value) return;
-        emit(MODEL_EVENTS.input, event.target.value);
+      onInput: (event: InputEvent) => {
+        const eventTarget = event.target as HTMLInputElement;
+        if (props.modelValue === eventTarget.value) return;
+        emit(MODEL_EVENTS.input, eventTarget.value);
       },
     };
 
     const isSubLabelExist = computed(() => !!slots.subLabel);
 
     return {
-      computedAttrs,
+      computedEvents,
       isSubLabelExist,
     };
   },

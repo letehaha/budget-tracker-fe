@@ -8,7 +8,7 @@ import {
 } from '@/stores';
 
 export const authPageGuard: NavigationGuard = (to, from, next): void => {
-  const token = localStorage.getItem('user-token');
+  const token = localStorage.getItem('user-token') || '';
 
   if (useAuthStore().isLoggedIn || token) {
     api.setToken(token);
@@ -32,7 +32,7 @@ export const baseCurrencyExists: NavigationGuard = (to, from, next): void => {
 };
 
 export const redirectRouteGuard: NavigationGuard = (to, from, next): void => {
-  const token = localStorage.getItem('user-token');
+  const token = localStorage.getItem('user-token') || '';
   const authStore = useAuthStore();
 
   if (token) {
@@ -45,7 +45,7 @@ export const redirectRouteGuard: NavigationGuard = (to, from, next): void => {
   }
 };
 
-export const devOnly = (to, from, next): void => {
+export const devOnly: NavigationGuard = (to, from, next): void => {
   if (process.env.NODE_ENV === 'development') {
     next();
   } else {

@@ -4,7 +4,7 @@ import { UserModel } from 'shared-types';
 import { loadUserData } from '@/api';
 
 export const useUserStore = defineStore('user', () => {
-  const user = ref<UserModel>(null);
+  const user = ref<UserModel | null>(null);
 
   const loadUser = async () => {
     try {

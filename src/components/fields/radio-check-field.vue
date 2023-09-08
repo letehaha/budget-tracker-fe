@@ -1,14 +1,12 @@
 <template>
-  <div
+  <label
     class="radio-check-field"
     :class="{
       'radio-check-field--disabled': $attrs.disabled,
     }"
-    :for="id"
     :title="label"
   >
     <input
-      :id="id"
       class="radio-check-field__input"
       type="checkbox"
       :checked="value"
@@ -22,23 +20,17 @@
     <p class="radio-check-field__label">
       {{ label }}
     </p>
-  </div>
+  </label>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-
-export default defineComponent({
-  props: {
-    label: { type: String, default: undefined },
-    value: { type: Boolean, required: true },
-    readonly: { type: Boolean, default: false },
-  },
-  computed: {
-    id() {
-      return `radio-check-field-${this._uid}`;
-    },
-  },
+<script setup lang="ts">
+withDefaults(defineProps<{
+  label?: string;
+  value: boolean;
+  readonly?: boolean;
+}>(), {
+  label: undefined,
+  readonly: false,
 });
 </script>
 

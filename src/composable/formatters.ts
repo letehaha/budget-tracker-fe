@@ -9,8 +9,8 @@ export const useFormatCurrency = () => {
     currency: baseCurrency.value?.currency?.code,
   });
 
-  const formatAmountByCurrencyId = (amount, currencyId) => formatUIAmount(amount, {
-    currency: currenciesMap.value[currencyId]?.currency.code,
+  const formatAmountByCurrencyId = (amount: number, currencyId: number) => formatUIAmount(amount, {
+    currency: currenciesMap.value?.[currencyId]?.currency?.code,
   });
 
   return {

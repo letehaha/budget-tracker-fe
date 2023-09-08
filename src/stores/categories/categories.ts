@@ -24,11 +24,11 @@ export const useCategoriesStore = defineStore('categories', () => {
   const formattedCategories = computed<FormattedCategory[]>(
     () => buildCategiesObjectGraph(categories.value),
   );
-  const categoriesMap = computed<Record<number, CategoryModel>>(
+  const categoriesMap = computed(
     () => categories.value.reduce((acc, curr) => {
       acc[curr.id] = curr;
       return acc;
-    }, {}),
+    }, {} as Record<number, CategoryModel>),
   );
 
   return {

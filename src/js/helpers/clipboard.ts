@@ -8,7 +8,7 @@ export function writeToClipboard(
         value = element;
       } else if (typeof element === 'number') {
         value = String(element);
-      } else if (element instanceof HTMLElement) {
+      } else if (element instanceof HTMLElement && element.textContent) {
         value = element.textContent;
       } else if (element instanceof HTMLInputElement) {
         value = element.value;

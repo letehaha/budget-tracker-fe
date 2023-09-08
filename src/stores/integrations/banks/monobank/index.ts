@@ -13,7 +13,7 @@ import {
   loadTransactions,
 } from '@/api';
 import { getHoursInMilliseconds } from '@/js/helpers';
-import { TooManyRequestsError } from '@/js/errors';
+import { NetworkError, TooManyRequestsError, UnexpectedError } from '@/js/errors';
 import { useAccountsStore } from '@/stores/accounts';
 
 export const useBanksMonobankStore = defineStore('banks-monobank', () => {
@@ -37,9 +37,11 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
         isMonoAccountPaired.value = true;
       }
     } catch (e) {
-      if (e?.data?.code === API_ERROR_CODES.monobankUserNotPaired) {
+      if (e instanceof NetworkError && e?.data?.code === API_ERROR_CODES.monobankUserNotPaired) {
         isMonoAccountPaired.value = false;
+        return;
       }
+      throw new UnexpectedError();
     }
   };
 
@@ -53,7 +55,7 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
       if (e instanceof TooManyRequestsError) {
         throw e;
       }
-      throw new Error(e);
+      throw new UnexpectedError();
     }
   };
 
@@ -62,7 +64,9 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
       return;
     }
 
-    const latestAccountRefreshDate = new Date(+localStorage.getItem('latest-account-refresh-date')).getTime();
+    const latestAccountRefreshDate = new Date(
+      Number(localStorage.getItem('latest-account-refresh-date')),
+    ).getTime();
     const diff = new Date().getTime() - latestAccountRefreshDate;
 
     if (diff <= getHoursInMilliseconds(1)) return;
@@ -75,7 +79,7 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
       if (e instanceof TooManyRequestsError) {
         throw e;
       }
-      throw new Error(e);
+      throw new UnexpectedError();
     }
   };
 
@@ -91,7 +95,7 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
       if (e instanceof TooManyRequestsError) {
         throw e;
       }
-      throw new Error(e);
+      throw new UnexpectedError();
     }
   };
 
@@ -118,7 +122,7 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
       if (e instanceof TooManyRequestsError) {
         throw e;
       }
-      throw e;
+      throw new UnexpectedError();
     }
     return undefined;
   };
@@ -131,7 +135,7 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
           .map(acc => loadTransactionsFromLatest({ accountId: acc.id })),
       );
     } catch (e) {
-      throw e;
+      throw new UnexpectedError();
     }
   };
 
@@ -142,7 +146,7 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
       await pairMonoAccount({ token });
       await accountsStore.loadAccounts();
     } catch (e) {
-      throw new Error(e);
+      throw new UnexpectedError();
     }
   };
 
@@ -154,7 +158,7 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
 
       user.value = response;
     } catch (e) {
-      throw new Error(e);
+      throw new UnexpectedError();
     }
   };
 

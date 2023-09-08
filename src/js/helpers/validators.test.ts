@@ -17,7 +17,7 @@ describe('js/helpers/validators', () => {
       ['10', false],
       [[], false],
       [{}, false],
-    ])('%s to be %s', (value, expected) => {
+    ])('%s to be %s', (value: number | string, expected) => {
       expect(amount(value)).toBe(expected);
     });
   });

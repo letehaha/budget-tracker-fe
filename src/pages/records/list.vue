@@ -1,7 +1,7 @@
 <template>
   <div class="transactions-list">
     <div class="transactions-list__list">
-      <template v-if="isFetched">
+      <template v-if="isFetched && transactionsPages">
         <TransactionsList :transactions="transactionsPages.pages.flat()" />
       </template>
     </div>

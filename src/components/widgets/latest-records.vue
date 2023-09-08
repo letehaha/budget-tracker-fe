@@ -14,7 +14,7 @@
     </template>
     <TransactionsList
       class="latest-records-widget__list"
-      :transactions="transactions"
+      :transactions="transactions || []"
     />
   </WidgetWrapper>
 </template>

@@ -67,6 +67,7 @@ import FormWrapper from '@/components/fields/form-wrapper.vue';
 import UiButton from '@/components/common/ui-button.vue';
 import UiBox from '@/components/box.vue';
 import InputField from '@/components/fields/input-field.vue';
+import { ApiErrorResponseError } from '@/js/errors';
 
 export default defineComponent({
   components: {
@@ -122,12 +123,14 @@ export default defineComponent({
 
         router.push({ name: ROUTES_NAMES.home });
       } catch (e) {
-        const errorCodes = {
-          [API_ERROR_CODES.notFound]: 'Incorrect email or password.',
-          [API_ERROR_CODES.invalidCredentials]: 'Password is invalid.',
-        };
+        if (e instanceof ApiErrorResponseError) {
+          const errorCodes: Partial<{ [K in API_ERROR_CODES]: string }> = {
+            [API_ERROR_CODES.notFound]: 'Incorrect email or password.',
+            [API_ERROR_CODES.invalidCredentials]: 'Password is invalid.',
+          };
 
-        formError.value = errorCodes[e.code] || 'Unexpected error.';
+          formError.value = errorCodes[e.data.code] || 'Unexpected error.';
+        }
       } finally {
         isFormLoading.value = false;
       }
