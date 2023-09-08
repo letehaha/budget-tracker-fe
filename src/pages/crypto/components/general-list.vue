@@ -25,32 +25,26 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, computed } from 'vue';
+<script setup lang="ts">
+import { computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import { formatFiat } from '@/js/helpers';
 import { useCryptoBinanceStore } from '@/stores';
 
-export default defineComponent({
-  setup() {
-    const binanceStore = useCryptoBinanceStore();
-    const {
-      existingBalances: balances,
-      totalUSDBalance: totalBalance,
-    } = storeToRefs(binanceStore);
+const binanceStore = useCryptoBinanceStore();
+const {
+  existingBalances: balances,
+  totalUSDBalance: totalBalance,
+} = storeToRefs(binanceStore);
 
-    const fiatTotalBalance = computed(() => formatFiat(totalBalance.value));
+const fiatTotalBalance = computed(() => formatFiat(totalBalance.value));
 
-    const getPrice = balance => (
-      balance.price ? balance.price * balance.total : balance.total
-    );
-
-    return {
-      balances,
-      fiatTotalBalance,
-      getPrice,
-      formatFiat,
-    };
+const getPrice = (
+  balance: {
+    price?: string | number;
+    total: string | number
   },
-});
+): number => (
+  balance.price ? +balance.price * +balance.total : +balance.total
+);
 </script>

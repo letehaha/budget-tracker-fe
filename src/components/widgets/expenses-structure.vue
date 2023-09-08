@@ -19,7 +19,7 @@
       </div>
       <div class="expenses-structure-widget__details-values">
         <div class="expenses-structure-widget__today-balance">
-          {{ formatBaseCurrency(-currentMonthExpense) }}
+          {{ formatBaseCurrency(-(currentMonthExpense || 0)) }}
         </div>
         <div
           class="expenses-structure-widget__diff"
@@ -52,6 +52,7 @@ import { fromSystemAmount } from '@/api/helpers';
 import { useCategoriesStore } from '@/stores/categories/categories';
 import { getSpendingsByCategories, getExpensesAmountForPeriod } from '@/api';
 import { VUE_QUERY_CACHE_KEYS } from '@/common/const';
+import { UnwrapPromise } from '@/common/types';
 import WidgetWrapper from './components/widget-wrapper.vue';
 
 defineOptions({
@@ -106,13 +107,15 @@ const { data: prevMonthExpense } = useQuery({
 
 const expensesDiff = computed(() => {
   const percentage = Number(calculatePercentageDifference(
-    currentMonthExpense.value,
-    prevMonthExpense.value,
+    currentMonthExpense.value || 0,
+    prevMonthExpense.value || 0,
   )).toFixed(2);
   return Number(percentage);
 });
 
-function computeTotalAmount(group): number {
+function computeTotalAmount(
+  group: UnwrapPromise<ReturnType<typeof getSpendingsByCategories>>[number],
+): number {
   // Sum amounts from the current group's transactions
   let total = group.transactions.reduce(
     (sum, transaction) => sum + fromSystemAmount(transaction.refAmount),
@@ -133,7 +136,7 @@ const chartOptions = computed(() => buildDonutChartConfig({
   chart: { height: 220 },
   series: [{
     type: 'pie',
-    data: Object.entries(spendingsByCategories.value).reduce((acc, curr) => {
+    data: Object.entries((spendingsByCategories.value || {})).reduce((acc, curr) => {
       const [categoryId, value] = curr;
       const totalTransactionsValue = computeTotalAmount(value);
 
@@ -143,7 +146,11 @@ const chartOptions = computed(() => buildDonutChartConfig({
         y: totalTransactionsValue,
       });
       return acc;
-    }, []),
+    }, [] as {
+      name: string;
+      color: string;
+      y: number;
+    }[]),
   }],
 }));
 

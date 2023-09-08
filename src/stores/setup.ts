@@ -1,9 +1,10 @@
-import { createPinia } from 'pinia';
+import { createPinia, Store } from 'pinia';
 import { cloneDeep } from 'lodash-es';
 
 export const store = createPinia();
 
-const definedStores = [];
+const definedStores: Store[] = [];
+
 export const resetAllDefinedStores = (): void => (
   definedStores.forEach(s => s.$reset())
 );

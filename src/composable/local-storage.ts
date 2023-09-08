@@ -7,7 +7,7 @@ export const useLocalStorage = (): {
     localStorage.setItem(name, value);
   };
 
-  const getLSItem = (name: string): string => localStorage.getItem(name);
+  const getLSItem = (name: string): string => localStorage.getItem(name) || '';
 
   const removeLSItem = (name: string) => {
     localStorage.removeItem(name);

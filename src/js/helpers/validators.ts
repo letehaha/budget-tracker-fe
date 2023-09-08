@@ -1,5 +1,5 @@
-export const amount = (value: unknown): boolean => (
-  Number.isFinite(value) && Number(value) && Number(value) > 0
+export const amount = (value: number | string): boolean => (
+  Number.isFinite(value) && Number(value) > 0
 );
 // eslint-disable-next-line vue/max-len
 export const maxDecimalPoints = (points: number | string) => (value: number | string): boolean => {

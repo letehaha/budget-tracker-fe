@@ -143,7 +143,7 @@ const levelValues = ref(props.values);
 
 const rootCategories = ref(props.values);
 
-const DOMList = ref<HTMLDivElement>(null);
+const DOMList = ref<HTMLDivElement | null>(null);
 const searchQuery = ref<string>('');
 
 const isDropdownOpened = ref(false);
@@ -170,7 +170,7 @@ const toggleDropdown = (state?: boolean) => {
 };
 
 const filterCategories = (categories: FormattedCategory[], query: string): FormattedCategory[] => {
-  let result = [];
+  let result: FormattedCategory[] = [];
   const lowerCaseQuery = query.toLowerCase();
 
   for (const category of categories) {
@@ -233,7 +233,7 @@ const backLevelUp = () => {
     * At the end clears `previousLevelsIndices` by removing the last element
     * in the history.
   */
-  let level;
+  let level: FormattedCategory[] = [];
   for (let i = 0; i < previousLevelsIndices.value.length; i++) {
     if (i === 0) {
       level = props.values;

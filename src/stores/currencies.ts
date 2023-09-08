@@ -11,7 +11,7 @@ import { CurrencyModel, UserCurrencyModel } from 'shared-types';
 export const useCurrenciesStore = defineStore('currencies', () => {
   const systemCurrencies = ref<CurrencyModel[]>([]);
   const currencies = ref<UserCurrencyModel[]>([]);
-  const baseCurrency = ref<UserCurrencyModel>(null);
+  const baseCurrency = ref<UserCurrencyModel | null>(null);
   const isBaseCurrencyExists = computed(() => Boolean(baseCurrency.value));
 
   const systemCurrenciesAssociatedWithUser = computed(
@@ -23,11 +23,11 @@ export const useCurrenciesStore = defineStore('currencies', () => {
     }, [] as CurrencyModel[]),
   );
 
-  const currenciesMap = computed<Record<number, UserCurrencyModel>>(
+  const currenciesMap = computed(
     () => currencies.value.reduce((acc, curr) => {
       acc[curr.currencyId] = curr;
       return acc;
-    }, {}),
+    }, {} as Record<number, UserCurrencyModel>),
   );
 
   const loadCurrencies = async () => {

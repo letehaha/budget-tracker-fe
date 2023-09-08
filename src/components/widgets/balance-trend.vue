@@ -82,7 +82,7 @@ const props = withDefaults(defineProps<{
 });
 
 const periodFrom = ref(new Date().getTime());
-const currentChartWidth = ref(null);
+const currentChartWidth = ref(0);
 const { formatBaseCurrency } = useFormatCurrency();
 const { baseCurrency } = storeToRefs(useCurrenciesStore());
 const { buildAreaChartConfig } = useHighcharts();
@@ -99,6 +99,8 @@ const { data: balanceHistory } = useQuery({
 const { data: todayBalance } = useQuery({
   queryKey: [...VUE_QUERY_CACHE_KEYS.widgetBalanceTotalBalance, periodFrom],
   queryFn: () => getTotalBalance({ date: props.selectedPeriod.to }),
+  placeholderData: 0,
+  initialData: 0,
   staleTime: Infinity,
 });
 const { data: previousBalance } = useQuery({
@@ -106,6 +108,8 @@ const { data: previousBalance } = useQuery({
   queryFn: () => getTotalBalance({
     date: endOfMonth(subMonths(props.selectedPeriod.to, 1)),
   }),
+  placeholderData: 0,
+  initialData: 0,
   staleTime: Infinity,
 });
 
@@ -129,7 +133,7 @@ const chartOptions = computed(() => {
         formatter() {
           return formatLargeNumber(this.value, {
             isFiat: true,
-            currency: baseCurrency.value.currency.code,
+            currency: baseCurrency.value?.currency?.code,
           });
         },
       },

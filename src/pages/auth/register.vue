@@ -54,6 +54,7 @@ import { useAuthStore } from '@/stores';
 import UiButton from '@/components/common/ui-button.vue';
 import InputField from '@/components/fields/input-field.vue';
 import { useNotificationCenter } from '@/components/notification-center';
+import { ApiErrorResponseError } from '@/js/errors';
 
 export default defineComponent({
   components: {
@@ -82,9 +83,11 @@ export default defineComponent({
 
         router.push({ name: ROUTES_NAMES.welcome });
       } catch (e) {
-        if (e.data.code === API_ERROR_CODES.userExists) {
-          addErrorNotification('User with that username already exists!');
-          return;
+        if (e instanceof ApiErrorResponseError) {
+          if (e.data.code === API_ERROR_CODES.userExists) {
+            addErrorNotification('User with that username already exists!');
+            return;
+          }
         }
 
         addErrorNotification('Unexpected error');

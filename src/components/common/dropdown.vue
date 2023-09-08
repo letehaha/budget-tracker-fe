@@ -53,7 +53,7 @@ const props = withDefaults(defineProps<{
   labelKey: 'label',
 });
 
-const getLabelFromValue = (value: ValueEntity) => {
+const getLabelFromValue = (value: typeof props['selectedValue']) => {
   const { labelKey } = props;
 
   if (!value) return null;

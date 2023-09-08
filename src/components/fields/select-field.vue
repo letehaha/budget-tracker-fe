@@ -122,7 +122,7 @@ const toggleDropdown = () => {
 };
 const closeDropdown = () => { isDropdownOpened.value = false; };
 
-const selectItem = ({ index }) => {
+const selectItem = ({ index }: { index: number }) => {
   const { disabled } = props;
 
   if (!disabled) {

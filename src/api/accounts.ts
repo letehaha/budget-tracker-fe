@@ -13,7 +13,7 @@ const formatAccount = (account: AccountModel): AccountModel => ({
 });
 
 export const loadAccounts = async (): Promise<AccountModel[]> => {
-  const result = await api.get('/accounts');
+  const result: AccountModel[] = await api.get('/accounts');
 
   return result.map(item => formatAccount(item));
 };

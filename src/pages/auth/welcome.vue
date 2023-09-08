@@ -24,7 +24,7 @@
               placeholder="Loading..."
               label="Base Currency"
               with-search-field
-              :label-key="(item: CurrencyModel) => `${item.code} - ${item.currency}`"
+              :label-key="item => `${item.code} - ${item.currency}`"
             />
           </div>
           <p class="welcome__disclaimer">
@@ -77,10 +77,10 @@ export default defineComponent({
 
     const currencies = ref<CurrencyModel[]>([]);
 
-    const selectedCurrency = ref<CurrencyModel>(null);
+    const selectedCurrency = ref<CurrencyModel | null>(null);
     const isCurrenciesLoading = ref(false);
     const isSubmitting = ref(false);
-    const formError = ref<string>(null);
+    const formError = ref<string | null>(null);
 
     const forwardToDashboard = () => {
       router.push({ name: ROUTES_NAMES.home });
@@ -105,6 +105,8 @@ export default defineComponent({
     };
 
     const submitBaseCurrency = async () => {
+      if (!selectedCurrency.value) return;
+
       try {
         formError.value = null;
         isSubmitting.value = true;

@@ -3,6 +3,7 @@ import { defineStore } from 'pinia';
 import { API_ERROR_CODES } from 'shared-types';
 import { authLogin, authRegister, api } from '@/api';
 import { useCategoriesStore } from '@/stores';
+import { ApiErrorResponseError, UnexpectedError } from '@/js/errors';
 import { useUserStore } from './user';
 import { resetAllDefinedStores } from './setup';
 
@@ -34,14 +35,18 @@ export const useAuthStore = defineStore('auth', () => {
         localStorage.setItem('user-token', result.token);
       }
     } catch (e) {
-      const possibleErrorCodes = [
-        API_ERROR_CODES.notFound,
-        API_ERROR_CODES.invalidCredentials,
-      ];
+      if (e instanceof ApiErrorResponseError) {
+        const possibleErrorCodes: API_ERROR_CODES[] = [
+          API_ERROR_CODES.notFound,
+          API_ERROR_CODES.invalidCredentials,
+        ];
 
-      if (possibleErrorCodes.includes(e.data.code)) {
-        throw e.data;
+        if (possibleErrorCodes.includes(e.data.code)) {
+          throw e;
+        }
       }
+
+      throw new UnexpectedError();
     }
   };
 

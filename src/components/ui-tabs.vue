@@ -54,26 +54,28 @@ defineOptions({
 
 const props = withDefaults(defineProps<{
   options: Tab[];
-  initialTab?: Tab;
+  initialTab?: Tab | null;
   tabsAlignment?: CSSProperties['justifyContent'];
 }>(), {
   tabsAlignment: 'space-between',
-  initialTab: undefined,
+  initialTab: null,
 });
 
 const isTabsLink = computed(() => !!props.options.find(item => item.to));
 
-const activeTab = ref<Tab>(null);
+const activeTab = ref<Tab | null>(null);
 
 const setInitialTab = () => {
   let initialTab = props.options.find(item => item.initial);
   if (!initialTab && props.initialTab) initialTab = props.initialTab;
   if (!initialTab && props.options[0]) initialTab = props.options[0];
 
-  if (isTabsLink.value) {
-    router.replace(initialTab.to);
-  } else {
-    activeTab.value = initialTab;
+  if (initialTab) {
+    if (isTabsLink.value && initialTab.to) {
+      router.replace(initialTab.to);
+    } else {
+      activeTab.value = initialTab;
+    }
   }
 };
 setInitialTab();

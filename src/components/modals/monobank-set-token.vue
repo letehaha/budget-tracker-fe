@@ -80,9 +80,7 @@ export default defineComponent({
     const { addNotification } = useNotificationCenter();
 
     const isLoading = ref(false);
-    const form = reactive<{ token: string }>({
-      token: null,
-    });
+    const form = reactive({ token: '' });
     const { isFormValid, getFieldErrorMessage } = useFormValidation(
       { form },
       {

@@ -24,14 +24,10 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-
-export default defineComponent({
-  props: {
-    error: { type: [Array, String], default: undefined },
-  },
-});
+<script setup lang="ts">
+defineProps<{
+  error?: string[] | string | null;
+}>();
 </script>
 
 <style lang="scss" scoped>

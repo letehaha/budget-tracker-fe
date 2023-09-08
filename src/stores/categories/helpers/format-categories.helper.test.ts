@@ -1,7 +1,7 @@
 import { CATEGORY_TYPES } from 'shared-types';
 import { buildCategiesObjectGraph } from './format-categories.helper';
 
-const category = id => ({
+const category = (id: number) => ({
   id,
   color: '',
   name: 'test',
