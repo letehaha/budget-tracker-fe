@@ -113,6 +113,7 @@ import { type FormattedCategory } from '@/common/types';
 import ChevronRightIcon from '@/assets/icons/chevron-right.svg?component';
 import ChevronLeftIcon from '@/assets/icons/chevron-left.svg?component';
 
+import InputField from '@/components/fields/input-field.vue';
 import CategoryCircle from '@/components/common/category-circle.vue';
 import FieldError from './components/field-error.vue';
 import FieldLabel from './components/field-label.vue';
