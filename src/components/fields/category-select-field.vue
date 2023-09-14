@@ -62,7 +62,9 @@
               >
                 <CategoryCircle :category="topLevelCategory" />
 
-                {{ topLevelCategory.name }}
+                <span>
+                  {{ topLevelCategory.name }}
+                </span>
               </button>
 
               <h3
@@ -296,8 +298,7 @@ const backLevelUp = () => {
   max-height: 250px;
 }
 .category-select-field__dropdown-item {
-  display: grid;
-  grid-template-columns: min-content minmax(0, 1fr) min-content;
+  display: flex;
   align-items: center;
   gap: 8px;
 
@@ -314,6 +315,10 @@ const backLevelUp = () => {
   text-overflow: ellipsis;
   cursor: pointer;
   position: relative;
+
+  span {
+    flex-grow: 1;
+  }
 
   &--highlighed {
     background-color: rgba(var(--app-on-surface-color-rgb), 0.05);
