@@ -100,7 +100,6 @@ const { data: todayBalance } = useQuery({
   queryKey: [...VUE_QUERY_CACHE_KEYS.widgetBalanceTotalBalance, periodFrom],
   queryFn: () => getTotalBalance({ date: props.selectedPeriod.to }),
   placeholderData: 0,
-  initialData: 0,
   staleTime: Infinity,
 });
 const { data: previousBalance } = useQuery({
@@ -109,7 +108,6 @@ const { data: previousBalance } = useQuery({
     date: endOfMonth(subMonths(props.selectedPeriod.to, 1)),
   }),
   placeholderData: 0,
-  initialData: 0,
   staleTime: Infinity,
 });
 
