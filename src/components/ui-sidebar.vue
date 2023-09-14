@@ -66,35 +66,21 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
 import { useRouter } from 'vue-router';
 
 import { useAuthStore } from '@/stores';
 import { isDevEnv } from '@/common/const';
 import { ROUTES_NAMES } from '@/routes';
-import Button from '@/components/common/ui-button.vue';
+import UiButton from '@/components/common/ui-button.vue';
 
-export default defineComponent({
-  components: {
-    'ui-button': Button,
-  },
-  setup() {
-    const router = useRouter();
-    const { logout } = useAuthStore();
+const router = useRouter();
+const { logout } = useAuthStore();
 
-    const logOutHandler = () => {
-      logout();
-      router.push({ name: ROUTES_NAMES.signIn });
-    };
-
-    return {
-      logOutHandler,
-      isDevEnv,
-      ROUTES_NAMES,
-    };
-  },
-});
+const logOutHandler = () => {
+  logout();
+  router.push({ name: ROUTES_NAMES.signIn });
+};
 </script>
 
 <style lang="scss" scoped>

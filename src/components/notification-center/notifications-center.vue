@@ -41,8 +41,7 @@
   </transition-group>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
 import WarningIcon from '@/assets/icons/warning.svg?component';
 import ErrorIcon from '@/assets/icons/error.svg?component';
 import SuccessIcon from '@/assets/icons/success.svg?component';
@@ -50,23 +49,7 @@ import XmarkIcon from '@/assets/icons/xmark.svg?component';
 
 import { useNotificationCenter, NotificationType } from './index';
 
-export default defineComponent({
-  components: {
-    WarningIcon,
-    ErrorIcon,
-    SuccessIcon,
-    XmarkIcon,
-  },
-  setup() {
-    const { notifications, removeNotification } = useNotificationCenter();
-
-    return {
-      NotificationType,
-      notifications,
-      removeNotification,
-    };
-  },
-});
+const { notifications, removeNotification } = useNotificationCenter();
 </script>
 
 <style lang="scss">

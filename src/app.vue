@@ -7,8 +7,8 @@
   </main>
 </template>
 
-<script lang="ts">
-import { defineComponent, watch } from 'vue';
+<script setup lang="ts">
+import { watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useRouter } from 'vue-router';
 import {
@@ -21,56 +21,44 @@ import UiModal from '@/components/modal-center/ui-modal.vue';
 
 import NotificationsCenter from '@/components/notification-center/notifications-center.vue';
 
-export default defineComponent({
-  components: {
-    UiModal,
-    NotificationsCenter,
+const router = useRouter();
+const authStore = useAuthStore();
+const rootStore = useRootStore();
+const userCurrenciesStore = useCurrenciesStore();
+
+const { isAppInitialized } = storeToRefs(rootStore);
+const { isLoggedIn } = storeToRefs(authStore);
+const { isBaseCurrencyExists } = storeToRefs(userCurrenciesStore);
+
+watch(
+  isLoggedIn,
+  (value, prevValue) => {
+    if (prevValue && !value) {
+      router.push({ name: ROUTES_NAMES.signIn });
+    }
   },
-  setup() {
-    const router = useRouter();
-    const authStore = useAuthStore();
-    const rootStore = useRootStore();
-    const userCurrenciesStore = useCurrenciesStore();
+  { immediate: true },
+);
 
-    const { isAppInitialized } = storeToRefs(rootStore);
-    const { isLoggedIn } = storeToRefs(authStore);
-    const { isBaseCurrencyExists } = storeToRefs(userCurrenciesStore);
-
-    watch(
-      isLoggedIn,
-      (value, prevValue) => {
-        if (prevValue && !value) {
-          router.push({ name: ROUTES_NAMES.signIn });
-        }
-      },
-      { immediate: true },
-    );
-
-    watch(
-      isLoggedIn,
-      async (value) => {
-        if (value) {
-          await rootStore.fetchInitialData();
-          await rootStore.syncFinancialData();
-        }
-      },
-      { immediate: true },
-    );
-
-    watch(
-      isAppInitialized,
-      (value) => {
-        if (value && !isBaseCurrencyExists.value) {
-          router.push({ name: ROUTES_NAMES.welcome });
-        }
-      },
-    );
-
-    return {
-      isLoggedIn,
-    };
+watch(
+  isLoggedIn,
+  async (value) => {
+    if (value) {
+      await rootStore.fetchInitialData();
+      await rootStore.syncFinancialData();
+    }
   },
-});
+  { immediate: true },
+);
+
+watch(
+  isAppInitialized,
+  (value) => {
+    if (value && !isBaseCurrencyExists.value) {
+      router.push({ name: ROUTES_NAMES.welcome });
+    }
+  },
+);
 </script>
 
 <style lang="scss" scoped>

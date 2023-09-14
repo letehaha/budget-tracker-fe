@@ -1,7 +1,7 @@
 <template>
-  <div class="header">
-    <div class="header__actions">
-      <div class="header__action">
+  <div class="layout-header">
+    <div class="layout-header__actions">
+      <div class="layout-header__action">
         <ui-button @click="openFormModal">
           New Record
         </ui-button>
@@ -11,32 +11,32 @@
     <ui-tooltip
       :content="!isAllowedToSyncFinancialData ? 'You can sync data only once in 30 mins' : ''"
       position="bottom"
-      class="header__sync-status-wrapper"
+      class="layout-header__sync-status-wrapper"
     >
       <button
-        class="button-style-reset header__sync-status"
+        class="button-style-reset layout-header__sync-status"
         type="button"
         :class="{
-          'header__sync-status--syncing': isSyncing,
+          'layout-header__sync-status--syncing': isSyncing,
         }"
         :disabled="!isAllowedToSyncFinancialData"
         @click="syncFinancialDataHandler"
       >
         <template v-if="isSyncing">
           <refresh-icon />
-          <span class="header__sync-status-text">Synchronizing...</span>
+          <span class="layout-header__sync-status-text">Synchronizing...</span>
         </template>
         <template v-else>
           <checkmark-in-circle-icon />
-          <span class="header__sync-status-text">Synchronized</span>
+          <span class="layout-header__sync-status-text">Synchronized</span>
         </template>
       </button>
     </ui-tooltip>
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, computed } from 'vue';
+<script setup lang="ts">
+import { computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useRootStore } from '@/stores';
 import { MODAL_TYPES, useModalCenter } from '@/components/modal-center/index';
@@ -45,46 +45,28 @@ import CheckmarkInCircleIcon from '@/assets/icons/checkmark-in-circle.svg?compon
 import RefreshIcon from '@/assets/icons/refresh.svg?component';
 import UiTooltip from '@/components/common/tooltip.vue';
 
-export default defineComponent({
-  components: {
-    UiButton,
-    UiTooltip,
-    CheckmarkInCircleIcon,
-    RefreshIcon,
-  },
-  setup() {
-    const { addModal } = useModalCenter();
-    const rootStore = useRootStore();
-    const {
-      isAppInitialized,
-      isFinancialDataSyncing,
-      isAllowedToSyncFinancialData,
-    } = storeToRefs(rootStore);
+const { addModal } = useModalCenter();
+const rootStore = useRootStore();
+const {
+  isAppInitialized,
+  isFinancialDataSyncing,
+  isAllowedToSyncFinancialData,
+} = storeToRefs(rootStore);
 
-    const isSyncing = computed(() => !isAppInitialized.value || isFinancialDataSyncing.value);
+const isSyncing = computed(() => !isAppInitialized.value || isFinancialDataSyncing.value);
 
-    const openFormModal = () => {
-      addModal({ type: MODAL_TYPES.createRecord });
-    };
-    const syncFinancialDataHandler = () => {
-      if (isAllowedToSyncFinancialData.value) {
-        rootStore.syncFinancialData();
-      }
-    };
-
-    return {
-      isSyncing,
-
-      openFormModal,
-      isAllowedToSyncFinancialData,
-      syncFinancialDataHandler,
-    };
-  },
-});
+const openFormModal = () => {
+  addModal({ type: MODAL_TYPES.createRecord });
+};
+const syncFinancialDataHandler = () => {
+  if (isAllowedToSyncFinancialData.value) {
+    rootStore.syncFinancialData();
+  }
+};
 </script>
 
-<style lang="scss" scoped>
-.header {
+<style lang="scss">
+.layout-header {
   padding: 12px 24px;
   box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.1);
   display: flex;
@@ -93,17 +75,21 @@ export default defineComponent({
   border-bottom: 1px solid var(--app-border-default);
   max-height: var(--header-height);
 }
-.header__actions {
+.layout-header__actions {
   display: flex;
   align-items: center;
 }
-.header__action {
+.layout-header__action {
   margin-right: 16px;
 }
-.header__sync-status-wrapper {
+.layout-header__sync-status-wrapper {
   margin-left: auto;
+
+  .ui-tooltip__content-wrapper {
+    left: 30%
+  }
 }
-.header__sync-status {
+.layout-header__sync-status {
   display: grid;
   grid-template-columns: 14px 1fr;
   align-items: center;
@@ -127,11 +113,11 @@ export default defineComponent({
     }
   }
 
-  &:not(.header__sync-status--syncing) svg {
+  &:not(.layout-header__sync-status--syncing) svg {
     color: var(--primary-700);
   }
 }
-.header__sync-status--syncing {
+.layout-header__sync-status--syncing {
   svg {
     animation-name: keyframes-rotate;
     animation-iteration-count: infinite;
@@ -139,7 +125,7 @@ export default defineComponent({
     animation-timing-function: linear;
   }
 }
-.header__sync-status-text {
+.layout-header__sync-status-text {
   font-weight: 500;
 }
 </style>

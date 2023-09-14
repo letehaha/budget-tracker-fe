@@ -19,27 +19,21 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-
-enum POSITIONS {
-  top = 'top',
-  bottom = 'bottom',
-}
-
-export default defineComponent({
+<script setup lang="ts">
+defineOptions({
   name: 'ui-tooltip',
-  props: {
-    content: { type: String, default: undefined },
-    position: {
-      type: String,
-      default: POSITIONS.top,
-    },
-  },
+});
+
+withDefaults(defineProps<{
+  content?: string;
+  position: 'bottom' | 'top';
+}>(), {
+  content: undefined,
+  position: 'bottom',
 });
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .ui-tooltip {
   position: relative;
 }
