@@ -8,42 +8,59 @@
       </div>
     </div>
 
-    <ui-tooltip
-      :content="!isAllowedToSyncFinancialData ? 'You can sync data only once in 30 mins' : ''"
-      position="bottom"
-      class="layout-header__sync-status-wrapper"
-    >
+    <div class="layout-header__to-left">
       <button
-        class="button-style-reset layout-header__sync-status"
         type="button"
-        :class="{
-          'layout-header__sync-status--syncing': isSyncing,
-        }"
-        :disabled="!isAllowedToSyncFinancialData"
-        @click="syncFinancialDataHandler"
+        class="layout-header__toggle-theme"
+        @click="toggleTheme"
       >
-        <template v-if="isSyncing">
-          <refresh-icon />
-          <span class="layout-header__sync-status-text">Synchronizing...</span>
+        <template v-if="currentTheme === Themes.dark">
+          <moon-icon />
         </template>
         <template v-else>
-          <checkmark-in-circle-icon />
-          <span class="layout-header__sync-status-text">Synchronized</span>
+          <sun-icon />
         </template>
       </button>
-    </ui-tooltip>
+
+      <ui-tooltip
+        :content="!isAllowedToSyncFinancialData ? 'You can sync data only once in 30 mins' : ''"
+        position="bottom"
+        class="layout-header__sync-status-wrapper"
+      >
+        <button
+          class="layout-header__sync-status"
+          type="button"
+          :class="{
+            'layout-header__sync-status--syncing': isSyncing,
+          }"
+          :disabled="!isAllowedToSyncFinancialData"
+          @click="syncFinancialDataHandler"
+        >
+          <template v-if="isSyncing">
+            <refresh-icon />
+            <span class="layout-header__sync-status-text">Synchronizing...</span>
+          </template>
+          <template v-else>
+            <checkmark-in-circle-icon />
+            <span class="layout-header__sync-status-text">Synchronized</span>
+          </template>
+        </button>
+      </ui-tooltip>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue';
 import { storeToRefs } from 'pinia';
+import { SunIcon, MoonIcon } from '@heroicons/vue/24/solid';
 import { useRootStore } from '@/stores';
 import { MODAL_TYPES, useModalCenter } from '@/components/modal-center/index';
 import UiButton from '@/components/common/ui-button.vue';
 import CheckmarkInCircleIcon from '@/assets/icons/checkmark-in-circle.svg?component';
 import RefreshIcon from '@/assets/icons/refresh.svg?component';
 import UiTooltip from '@/components/common/tooltip.vue';
+import { toggleTheme, currentTheme, Themes } from '@/common/utils';
 
 const { addModal } = useModalCenter();
 const rootStore = useRootStore();
@@ -82,9 +99,11 @@ const syncFinancialDataHandler = () => {
 .layout-header__action {
   margin-right: 16px;
 }
-.layout-header__sync-status-wrapper {
+.layout-header__to-left {
   margin-left: auto;
-
+  display: flex;
+}
+.layout-header__sync-status-wrapper {
   .ui-tooltip__content-wrapper {
     left: 30%
   }
@@ -127,5 +146,11 @@ const syncFinancialDataHandler = () => {
 }
 .layout-header__sync-status-text {
   font-weight: 500;
+}
+.layout-header__toggle-theme {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  padding: 4px;
 }
 </style>

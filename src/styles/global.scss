@@ -8,6 +8,7 @@ body {
 
   background-color: var(--app-bg-page);
   color: var(--app-text-base);
+  transition: color .3s ease-out, background-color .3s ease-out;
 }
 
 button, a, input, select, textarea {
