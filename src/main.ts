@@ -5,12 +5,12 @@ import { clickOutside, nodeResizeObserver } from '@/directives';
 import { initApiCaller } from '@/api';
 import { store } from '@/stores/setup';
 import { useAuthStore } from '@/stores';
+import { identifyCurrentTheme } from '@/common/utils';
 import App from './app.vue';
 import '@/styles/index.scss';
 import './registerServiceWorker';
 
-const matched = window.matchMedia('(prefers-color-scheme: dark)').matches;
-document.body.classList.add(matched ? 'dark' : 'light');
+identifyCurrentTheme();
 
 const app = createApp(App);
 
