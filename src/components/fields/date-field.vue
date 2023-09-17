@@ -27,7 +27,7 @@
     </FieldLabel>
 
     <div
-      v-if="isSubLabelExist"
+      v-if="isSubLabelExists"
       class="date-fields__sublabel"
     >
       <slot name="subLabel" />
@@ -37,48 +37,44 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, computed } from 'vue';
+<script setup lang="ts">
+import { computed } from 'vue';
 
 import FieldLabel from './components/field-label.vue';
 import FieldError from './components/field-error.vue';
 
-export const MODEL_EVENTS = {
-  input: 'update:modelValue',
+const props = withDefaults(defineProps<{
+  label?: string;
+  modelValue?: string | number;
+  type?: string;
+  tabindex?: string;
+  errorMessage?: string;
+  inputFieldStyles?: Record<string, string>;
+}>(), {
+  label: undefined,
+  modelValue: undefined,
+  type: undefined,
+  tabindex: undefined,
+  errorMessage: undefined,
+  inputFieldStyles: undefined,
+});
+
+const slots = defineSlots<{
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  subLabel(): any;
+}>();
+
+const emit = defineEmits(['update:modelValue']);
+
+const computedEvents = {
+  input: (event: InputEvent) => {
+    const eventTarget = event.target as HTMLInputElement;
+    if (props.modelValue === eventTarget.value) return;
+    emit('update:modelValue', eventTarget.value);
+  },
 };
 
-export default defineComponent({
-  components: {
-    FieldLabel,
-    FieldError,
-  },
-  props: {
-    label: { type: String, default: undefined },
-    modelValue: { type: [String, Number], default: undefined },
-    type: { type: String, default: undefined },
-    tabindex: { type: String, default: undefined },
-    errorMessage: { type: String, default: undefined },
-    inputFieldStyles: { type: Object, default: undefined },
-    onlyPositive: Boolean,
-  },
-  setup(props, { attrs, emit, slots }) {
-    const computedEvents = {
-      ...attrs,
-      onInput: (event: InputEvent) => {
-        const eventTarget = event.target as HTMLInputElement;
-        if (props.modelValue === eventTarget.value) return;
-        emit(MODEL_EVENTS.input, eventTarget.value);
-      },
-    };
-
-    const isSubLabelExist = computed(() => !!slots.subLabel);
-
-    return {
-      computedEvents,
-      isSubLabelExist,
-    };
-  },
-});
+const isSubLabelExists = computed(() => !!slots.subLabel);
 </script>
 
 <style lang="scss">
