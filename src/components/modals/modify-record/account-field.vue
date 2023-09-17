@@ -1,5 +1,5 @@
 <template>
-  <template v-if="accounts.length">
+  <template v-if="accounts.length || formAccount">
     <template v-if="isTransferTransaction">
       <form-row>
         <select-field
