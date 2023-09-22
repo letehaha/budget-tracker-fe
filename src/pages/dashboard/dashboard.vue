@@ -31,7 +31,7 @@
       />
       <LatestRecordsWidget
         :selected-period="currentPeriod"
-        lass="dashboard-page__latest-records"
+        class="dashboard-page__latest-records"
       />
     </div>
   </section>
@@ -93,6 +93,15 @@ const selectNextPeriod = () => {
   grid-template-columns: repeat(2, minmax(0, 1fr)) 420px;
   grid-template-areas: 'balance-trend spending-categories latest-records';
   grid-gap: 24px;
+
+  @include below(1200) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas: 'balance-trend spending-categories' 'latest-records latest-records';
+  }
+  @include below(900) {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: 'balance-trend' 'spending-categories' 'latest-records';
+  }
 }
 .dashboard-page__charts {
   color: var(--app-on-surface-color);
@@ -102,6 +111,10 @@ const selectNextPeriod = () => {
 }
 .dashboard-page__latest-records {
   grid-area: latest-records;
+
+  @include over(900) {
+    max-width: 420px;
+  }
 }
 .dashboard-page__spending-categories {
   grid-area: spending-categories;

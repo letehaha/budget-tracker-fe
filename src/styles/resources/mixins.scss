@@ -38,6 +38,16 @@
     @content;
   }
 }
+@mixin below($size) {
+  @include respond-to-custom-width($size - 1, max) {
+    @content;
+  }
+}
+@mixin over($size) {
+  @include respond-to-custom-width($size, min) {
+    @content;
+  }
+}
 @mixin respond-to-retina() {
   @media
   only screen and (-webkit-min-device-pixel-ratio: 2),
