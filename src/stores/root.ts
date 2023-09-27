@@ -8,7 +8,6 @@ import { VUE_QUERY_TX_CHANGE_QUERY } from '@/common/const';
 import { useUserStore } from '@/stores/user';
 import { useAuthStore } from '@/stores/auth';
 import { useCurrenciesStore } from '@/stores/currencies';
-import { useAccountsStore } from '@/stores/accounts';
 import { useBanksMonobankStore } from '@/stores/integrations/banks/monobank';
 import { useCategoriesStore } from '@/stores/categories/categories';
 
@@ -16,7 +15,6 @@ export const useRootStore = defineStore('root', () => {
   const authStore = useAuthStore();
   const currenciesStore = useCurrenciesStore();
   const monobankStore = useBanksMonobankStore();
-  const accountsStore = useAccountsStore();
   const userStore = useUserStore();
   const categoriesStore = useCategoriesStore();
   const queryClient = useQueryClient();
@@ -46,7 +44,7 @@ export const useRootStore = defineStore('root', () => {
     if (isLoggedIn.value) {
       isAppInitialized.value = false;
 
-      if (!user) {
+      if (!user.value) {
         await userStore.loadUser();
       }
 
@@ -54,7 +52,6 @@ export const useRootStore = defineStore('root', () => {
         categoriesStore.loadCategories(),
         currenciesStore.loadCurrencies(),
         currenciesStore.loadBaseCurrency(),
-        accountsStore.loadAccounts(),
         monobankStore.loadUserData(),
       ]);
 
@@ -75,7 +72,6 @@ export const useRootStore = defineStore('root', () => {
         ]);
 
         queryClient.invalidateQueries([VUE_QUERY_TX_CHANGE_QUERY]);
-        accountsStore.loadAccounts();
       }
     } catch (e) {
       isFinancialDataSyncingError.value = e as Error;

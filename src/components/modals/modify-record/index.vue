@@ -468,7 +468,7 @@ const deleteTransactionHandler = async () => {
 
     emit(MODAL_EVENTS.closeModal);
     // Reload all cached data in the app
-    queryClient.invalidateQueries({ queryKey: [VUE_QUERY_TX_CHANGE_QUERY] });
+    queryClient.invalidateQueries([VUE_QUERY_TX_CHANGE_QUERY]);
   } catch (e) {
     // eslint-disable-next-line no-console
     console.error(e);

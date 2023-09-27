@@ -1,10 +1,11 @@
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
 import { UserModel } from 'shared-types';
 import { loadUserData } from '@/api';
 
 export const useUserStore = defineStore('user', () => {
   const user = ref<UserModel | null>(null);
+  const isUserExists = computed(() => Boolean(user.value));
 
   const loadUser = async () => {
     try {
@@ -16,6 +17,7 @@ export const useUserStore = defineStore('user', () => {
 
   return {
     user,
+    isUserExists,
     loadUser,
   };
 });
