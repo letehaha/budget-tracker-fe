@@ -1,7 +1,9 @@
 import { ref, shallowRef } from 'vue';
 import { defineStore, storeToRefs } from 'pinia';
+import { useQueryClient } from '@tanstack/vue-query';
+
 import { getHoursInMilliseconds } from '@/js/helpers';
-import { eventBus, BUS_EVENTS } from '@/js/utils';
+import { VUE_QUERY_TX_CHANGE_QUERY } from '@/common/const';
 
 import { useUserStore } from '@/stores/user';
 import { useAuthStore } from '@/stores/auth';
@@ -17,6 +19,7 @@ export const useRootStore = defineStore('root', () => {
   const accountsStore = useAccountsStore();
   const userStore = useUserStore();
   const categoriesStore = useCategoriesStore();
+  const queryClient = useQueryClient();
 
   const isAppInitialized = ref(false);
   const isFinancialDataSyncingError = shallowRef<null | Error>(null);
@@ -71,7 +74,8 @@ export const useRootStore = defineStore('root', () => {
           monobankStore.loadTransactionsForEnabledAccounts(),
         ]);
 
-        eventBus.emit(BUS_EVENTS.transactionChange);
+        queryClient.invalidateQueries([VUE_QUERY_TX_CHANGE_QUERY]);
+        accountsStore.loadAccounts();
       }
     } catch (e) {
       isFinancialDataSyncingError.value = e as Error;
