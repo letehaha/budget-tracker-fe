@@ -16,6 +16,7 @@
       <type-selector
         :is-form-creation="isFormCreation"
         :selected-transaction-type="currentTxType"
+        :transaction="transaction"
         @change-tx-type="selectTransactionType"
       />
     </div>
@@ -25,7 +26,7 @@
           v-model="form.amount"
           label="Amount"
           type="number"
-          :disabled="isRecordExternal"
+          :disabled="isAmountFieldDisabled"
           only-positive
           placeholder="Amount"
         >
@@ -40,9 +41,10 @@
         v-model:form-to-account="form.toAccount"
         :is-transfer-transaction="isTransferTx"
         :accounts="systemAccounts"
-        :disabled="isRecordExternal"
+        :from-account-disabled="fromAccountFieldDisabled"
+        :to-account-disabled="toAccountFieldDisabled"
         :filtered-accounts="filteredAccounts"
-        @close-modal="$emit('close')"
+        @close-modal="emit(MODAL_EVENTS.closeModal)"
       />
 
       <template v-if="currentTxType !== FORM_TYPES.transfer">
@@ -56,13 +58,19 @@
         </form-row>
       </template>
 
-      <template v-if="isCurrenciesDifferent">
+      <template v-if="isTransferTx">
         <form-row>
           <input-field
             v-model="form.targetAmount"
-            :label="`Target amount (${targetCurrency.currency.code})`"
+            :disabled="isTargetAmountFieldDisabled"
+            only-positive
+            label="Target amount"
             type="number"
-          />
+          >
+            <template #iconTrailing>
+              <span>{{ targetCurrency?.currency?.code }}</span>
+            </template>
+          </input-field>
         </form-row>
       </template>
 
@@ -92,7 +100,7 @@
     </div>
     <div class="modify-record__actions">
       <ui-button
-        v-if="transaction"
+        v-if="transaction && transaction.accountType === ACCOUNT_TYPES.system"
         class="modify-record__action"
         :disabled="isLoading"
         @click="deleteTransactionHandler"
@@ -155,6 +163,7 @@ import TypeSelector from './type-selector.vue';
 import FormRow from './form-row.vue';
 import AccountField from './account-field.vue';
 import { FORM_TYPES } from './types';
+import { getDestinationAccountId, getDestinationAmount } from './helpers';
 
 const getFormTypeFromTransaction = (tx: TransactionModel): FORM_TYPES => {
   if (tx.isTransfer) return FORM_TYPES.transfer;
@@ -250,6 +259,39 @@ const isLoading = ref(false);
 const currentTxType = computed(() => form.value.type);
 const isTransferTx = computed(() => currentTxType.value === FORM_TYPES.transfer);
 
+const isAmountFieldDisabled = computed(() => {
+  if (isRecordExternal.value) {
+    if (!isTransferTx.value) return true;
+    if (props.transaction.transactionType === TRANSACTION_TYPES.expense) return true;
+  }
+
+  return false;
+});
+const isTargetAmountFieldDisabled = computed(() => {
+  if (isRecordExternal.value) {
+    if (!isTransferTx.value) return true;
+    if (props.transaction.transactionType === TRANSACTION_TYPES.income) return true;
+  }
+
+  return false;
+});
+const fromAccountFieldDisabled = computed(() => {
+  if (isRecordExternal.value) {
+    if (!isTransferTx.value) return true;
+    if (props.transaction.transactionType === TRANSACTION_TYPES.expense) return true;
+  }
+
+  return false;
+});
+const toAccountFieldDisabled = computed(() => {
+  if (isRecordExternal.value) {
+    if (!isTransferTx.value) return true;
+    if (props.transaction.transactionType === TRANSACTION_TYPES.income) return true;
+  }
+
+  return false;
+});
+
 const isCurrenciesDifferent = computed(() => {
   if (!form.value.account || !form.value.toAccount) return false;
 
@@ -299,8 +341,26 @@ watch(() => form.value.account, (value) => {
   }
 });
 
-watch(isTransferTx, (value) => {
-  form.value.category = value ? null : formattedCategories.value[0];
+watch(currentTxType, (value, prevValue) => {
+  if (props.transaction) {
+    if (value === FORM_TYPES.transfer) {
+      if (props.transaction.transactionType === TRANSACTION_TYPES.income) {
+        form.value.targetAmount = props.transaction.amount;
+        form.value.amount = null;
+
+        form.value.toAccount = accountsRecord.value[props.transaction.accountId];
+        form.value.account = null;
+      }
+    } else if (prevValue === FORM_TYPES.transfer) {
+      if (props.transaction.transactionType === TRANSACTION_TYPES.income) {
+        form.value.amount = props.transaction.amount;
+        form.value.targetAmount = null;
+
+        form.value.account = accountsRecord.value[props.transaction.accountId];
+        form.value.toAccount = null;
+      }
+    }
+  }
 });
 
 const submit = async () => {
@@ -322,7 +382,7 @@ const submit = async () => {
       const creationParams: Parameters<typeof createTransaction>[0] = {
         amount,
         note,
-        time: new Date(time).toISOString(),
+        time: new Date(time).toUTCString(),
         transactionType: getTxTypeFromFormType(formTxType),
         paymentType: paymentType.value,
         accountId,
@@ -348,28 +408,39 @@ const submit = async () => {
         editionParams = {
           ...editionParams,
           note,
-          categoryId: category.id,
+          paymentType: paymentType.value,
+          isTransfer: false,
         };
       } else {
         editionParams = {
           ...editionParams,
           amount,
           note,
-          time: new Date(time).toISOString(),
+          time,
           transactionType: getTxTypeFromFormType(formTxType),
           paymentType: paymentType.value,
           accountId,
+          isTransfer: false,
         };
+      }
 
-        if (isTransferTx.value) {
-          editionParams.destinationAccountId = toAccount.id;
-          editionParams.destinationAmount = isCurrenciesDifferent.value
-            ? form.value.targetAmount
-            : amount;
-          editionParams.isTransfer = true;
-        } else {
-          editionParams.categoryId = category.id;
-        }
+      if (isTransferTx.value) {
+        editionParams.destinationAccountId = getDestinationAccountId({
+          isRecordExternal: isRecordExternal.value,
+          accountId: form.value.account.id,
+          toAccountId: form.value.toAccount.id,
+          sourceTransaction: props.transaction,
+        });
+        editionParams.destinationAmount = getDestinationAmount({
+          sourceTransaction: props.transaction,
+          isRecordExternal: isRecordExternal.value,
+          fromAmount: Number(form.value.amount),
+          toAmount: Number(form.value.targetAmount),
+          isCurrenciesDifferent: isCurrenciesDifferent.value,
+        });
+        editionParams.isTransfer = true;
+      } else {
+        editionParams.categoryId = category.id;
       }
 
       await editTransaction(editionParams);
@@ -387,6 +458,10 @@ const submit = async () => {
 };
 const deleteTransactionHandler = async () => {
   try {
+    if (props.transaction.accountType !== ACCOUNT_TYPES.system) {
+      return;
+    }
+
     isLoading.value = true;
 
     await deleteTransaction(props.transaction.id);

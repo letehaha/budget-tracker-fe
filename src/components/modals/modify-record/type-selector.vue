@@ -3,9 +3,9 @@
     <button
       type="button"
       class="button-style-reset type-selector__item"
-      :disabled="!isFormCreation"
+      :disabled="isExpenseDisabled"
       :class="{
-        'type-selector__item--disabled': !isFormCreation,
+        'type-selector__item--disabled': isExpenseDisabled,
         'type-selector__item--active': selectedTransactionType === FORM_TYPES.expense,
       }"
       @click="selectTransactionType(FORM_TYPES.expense)"
@@ -15,9 +15,9 @@
     <button
       type="button"
       class="button-style-reset type-selector__item"
-      :disabled="!isFormCreation"
+      :disabled="isIncomeDisabled"
       :class="{
-        'type-selector__item--disabled': !isFormCreation,
+        'type-selector__item--disabled': isIncomeDisabled,
         'type-selector__item--active': selectedTransactionType === FORM_TYPES.income,
       }"
       @click="selectTransactionType(FORM_TYPES.income)"
@@ -27,9 +27,7 @@
     <button
       type="button"
       class="button-style-reset type-selector__item"
-      :disabled="!isFormCreation"
       :class="{
-        'type-selector__item--disabled': !isFormCreation,
         'type-selector__item--active': selectedTransactionType === FORM_TYPES.transfer,
       }"
       @click="selectTransactionType(FORM_TYPES.transfer)"
@@ -39,57 +37,36 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue';
-import { PAYMENT_TYPES } from 'shared-types';
-
-import {
-  createTransaction,
-  editTransaction,
-  deleteTransaction,
-} from '@/api/transactions';
-
+<script setup lang="ts">
+import { computed } from 'vue';
+import { ACCOUNT_TYPES, TRANSACTION_TYPES, type TransactionModel } from 'shared-types';
 import { FORM_TYPES } from './types';
 
-export default defineComponent({
-  props: {
-    selectedTransactionType: {
-      type: String as PropType<FORM_TYPES>,
-      required: true,
-    },
-    isFormCreation: {
-      type: Boolean,
-      required: true,
-    },
-  },
-  emits: {
-    'change-tx-type': function (value: FORM_TYPES) {
-      return Object.values(FORM_TYPES).includes(value);
-    },
-  },
-  setup(props, { emit }) {
-    const selectTransactionType = (
-      type: FORM_TYPES,
-      disabled = false,
-    ) => {
-      if (!disabled) {
-        emit('change-tx-type', type);
-      }
-    };
+const props = defineProps<{
+  selectedTransactionType: FORM_TYPES;
+  isFormCreation: boolean;
+  transaction?: TransactionModel;
+}>();
 
-    return {
-      FORM_TYPES,
-      PAYMENT_TYPES,
-      selectTransactionType,
-      createTransaction,
-      editTransaction,
-      deleteTransaction,
-    };
-  },
-});
+const emit = defineEmits<{
+  'change-tx-type': [value: FORM_TYPES]
+}>();
+
+const isExpenseDisabled = computed(() => (
+  props.transaction?.accountType !== ACCOUNT_TYPES.system
+  && props.transaction?.transactionType === TRANSACTION_TYPES.income
+));
+const isIncomeDisabled = computed(() => (
+  props.transaction?.accountType !== ACCOUNT_TYPES.system
+  && props.transaction?.transactionType === TRANSACTION_TYPES.expense
+));
+
+const selectTransactionType = (type: FORM_TYPES) => {
+  emit('change-tx-type', type);
+};
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .type-selector {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -119,7 +96,7 @@ export default defineComponent({
   color: #000;
 }
 .type-selector__item--disabled {
-  opacity: 0.6;
+  opacity: 0.4;
   cursor: initial;
 }
 </style>

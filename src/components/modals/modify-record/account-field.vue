@@ -7,7 +7,7 @@
           placeholder="Select account"
           :values="accounts"
           label-key="name"
-          :disabled="disabled"
+          :disabled="fromAccountDisabled"
           is-value-preselected
           :model-value="formAccount"
           @update:model-value="updateFormAccount"
@@ -20,7 +20,7 @@
           placeholder="Select account"
           :values="filteredAccounts"
           label-key="name"
-          :disabled="disabled"
+          :disabled="toAccountDisabled"
           :model-value="formToAccount"
           @update:model-value="emit('update:form-to-account', $event)"
         />
@@ -33,7 +33,7 @@
           placeholder="Select account"
           :values="accounts"
           label-key="name"
-          :disabled="disabled"
+          :disabled="fromAccountDisabled"
           is-value-preselected
           :model-value="formAccount"
           @update:model-value="updateFormAccount"
@@ -61,8 +61,7 @@
   </template>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue';
+<script setup lang="ts">
 import { useRouter } from 'vue-router';
 import { AccountModel } from 'shared-types';
 
@@ -73,59 +72,34 @@ import InputField from '@/components/fields/input-field.vue';
 
 import FormRow from './form-row.vue';
 
-export default defineComponent({
-  components: {
-    InputField,
-    SelectField,
-    FormRow,
-  },
-  props: {
-    formAccount: {
-      type: Object as PropType<AccountModel>,
-      default: null,
-    },
-    formToAccount: {
-      type: Object as PropType<AccountModel>,
-      default: null,
-    },
-    isTransferTransaction: {
-      type: Boolean,
-      required: true,
-    },
-    accounts: {
-      type: Array as PropType<AccountModel[]>,
-      required: true,
-    },
-    filteredAccounts: {
-      type: Array as PropType<AccountModel[]>,
-      required: true,
-    },
-    disabled: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  emits: ['close-modal', 'update:form-account', 'update:form-to-account'],
-  setup(props, { emit }) {
-    const router = useRouter();
-
-    const redirectToCreateAccountPage = async () => {
-      await router.push({ name: ROUTES_NAMES.createAccount });
-
-      emit('close-modal');
-    };
-
-    const updateFormAccount = (account: AccountModel) => {
-      emit('update:form-account', account);
-    };
-
-    return {
-      emit,
-      updateFormAccount,
-      redirectToCreateAccountPage,
-    };
-  },
+withDefaults(defineProps<{
+  formAccount?: AccountModel;
+  formToAccount?: AccountModel;
+  isTransferTransaction: boolean;
+  accounts: AccountModel[];
+  filteredAccounts: AccountModel[];
+  fromAccountDisabled?: boolean;
+  toAccountDisabled?: boolean;
+}>(), {
+  formAccount: null,
+  formToAccount: null,
+  fromAccountDisabled: false,
+  toAccountDisabled: false,
 });
+
+const emit = defineEmits(['close-modal', 'update:form-account', 'update:form-to-account']);
+
+const router = useRouter();
+
+const redirectToCreateAccountPage = async () => {
+  await router.push({ name: ROUTES_NAMES.createAccount });
+
+  emit('close-modal');
+};
+
+const updateFormAccount = (account: AccountModel) => {
+  emit('update:form-account', account);
+};
 </script>
 
 <style lang="scss" scoped>

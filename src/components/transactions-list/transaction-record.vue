@@ -47,7 +47,7 @@
 import { format } from 'date-fns';
 import { computed, reactive, ref } from 'vue';
 import { storeToRefs } from 'pinia';
-import { TRANSACTION_TYPES, TransactionModel } from 'shared-types';
+import { ACCOUNT_TYPES, TRANSACTION_TYPES, TransactionModel } from 'shared-types';
 
 import { useCategoriesStore, useAccountsStore } from '@/stores';
 import { loadTransactionsByTransferId } from '@/api/transactions';
@@ -105,12 +105,22 @@ const editTransaction = async () => {
   const baseTx = transaction;
   const oppositeTx = oppositeTransferTransaction.value;
 
+  const isExternalTransfer = (
+    baseTx.accountType !== ACCOUNT_TYPES.system
+    || (oppositeTx && oppositeTx.accountType !== ACCOUNT_TYPES.system)
+  );
+
   const modalOptions = {
     transaction: baseTx,
     oppositeTransaction: undefined,
   };
 
-  if (baseTx.isTransfer) {
+  if (isExternalTransfer) {
+    const isBaseExternal = baseTx.accountType !== ACCOUNT_TYPES.system;
+
+    modalOptions.transaction = isBaseExternal ? baseTx : oppositeTx;
+    modalOptions.oppositeTransaction = isBaseExternal ? oppositeTx : baseTx;
+  } else if (!isExternalTransfer && baseTx.isTransfer) {
     const isValid = baseTx.transactionType === TRANSACTION_TYPES.expense;
 
     modalOptions.transaction = isValid ? baseTx : oppositeTx;
