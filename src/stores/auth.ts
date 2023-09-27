@@ -1,5 +1,6 @@
-import { ref, Ref } from 'vue';
+import { ref, Ref, watch } from 'vue';
 import { defineStore } from 'pinia';
+import { useQueryClient } from '@tanstack/vue-query';
 import { API_ERROR_CODES } from 'shared-types';
 import { authLogin, authRegister, api } from '@/api';
 import { useCategoriesStore } from '@/stores';
@@ -10,6 +11,7 @@ import { resetAllDefinedStores } from './setup';
 export const useAuthStore = defineStore('auth', () => {
   const userStore = useUserStore();
   const categoriesStore = useCategoriesStore();
+  const queryClient = useQueryClient();
 
   const isLoggedIn = ref(false);
   const userToken: Ref<string | null> = ref(null);
@@ -66,6 +68,8 @@ export const useAuthStore = defineStore('auth', () => {
 
     resetAllDefinedStores();
   };
+
+  watch(isLoggedIn, () => queryClient.invalidateQueries());
 
   return {
     isLoggedIn,
