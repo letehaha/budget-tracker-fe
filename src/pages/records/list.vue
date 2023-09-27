@@ -40,7 +40,7 @@ const {
   hasNextPage,
   isFetched,
 } = useInfiniteQuery({
-  queryKey: [VUE_QUERY_CACHE_KEYS.recordsPageRecordsList],
+  queryKey: VUE_QUERY_CACHE_KEYS.recordsPageRecordsList,
   queryFn: fetchTransactions,
   getNextPageParam: (lastPage, pages) => {
     // No more pages to load
