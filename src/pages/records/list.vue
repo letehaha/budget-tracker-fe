@@ -27,7 +27,7 @@ import { loadTransactions } from '@/api/transactions';
 import TransactionsList from '@/components/transactions-list/transactions-list.vue';
 import { VUE_QUERY_CACHE_KEYS } from '@/common/const';
 
-const limit = 20;
+const limit = 30;
 
 const fetchTransactions = ({ pageParam = 0 }) => {
   const from = pageParam * limit;
