@@ -3,14 +3,14 @@ import { defineStore } from 'pinia';
 import { useQueryClient } from '@tanstack/vue-query';
 import { API_ERROR_CODES } from 'shared-types';
 import { authLogin, authRegister, api } from '@/api';
-import { useCategoriesStore } from '@/stores';
+import { useCategoriesStore, useCurrenciesStore, useUserStore } from '@/stores';
 import { ApiErrorResponseError, UnexpectedError } from '@/js/errors';
-import { useUserStore } from './user';
 import { resetAllDefinedStores } from './setup';
 
 export const useAuthStore = defineStore('auth', () => {
   const userStore = useUserStore();
   const categoriesStore = useCategoriesStore();
+  const currenciesStore = useCurrenciesStore();
   const queryClient = useQueryClient();
 
   const isLoggedIn = ref(false);
@@ -30,7 +30,10 @@ export const useAuthStore = defineStore('auth', () => {
         api.setToken(result.token);
 
         await userStore.loadUser();
-        await categoriesStore.loadCategories();
+        await Promise.all([
+          currenciesStore.loadBaseCurrency(),
+          categoriesStore.loadCategories(),
+        ]);
 
         isLoggedIn.value = true;
         userToken.value = result.token;
@@ -52,7 +55,14 @@ export const useAuthStore = defineStore('auth', () => {
     }
   };
 
-  const setLoggedIn = () => { isLoggedIn.value = true; };
+  const setLoggedIn = async () => {
+    await Promise.all([
+      currenciesStore.loadBaseCurrency(),
+      categoriesStore.loadCategories(),
+    ]);
+
+    isLoggedIn.value = true;
+  };
 
   const signup = async (
     { password, username }:

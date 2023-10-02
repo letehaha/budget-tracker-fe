@@ -25,6 +25,8 @@ export const useRootStore = defineStore('root', () => {
 
   const { isLoggedIn } = storeToRefs(authStore);
   const { user } = storeToRefs(userStore);
+  const { categories } = storeToRefs(categoriesStore);
+  const { isBaseCurrencyExists } = storeToRefs(currenciesStore);
 
   const isAllowedToSyncFinancialData = ref(false);
 
@@ -49,9 +51,9 @@ export const useRootStore = defineStore('root', () => {
       }
 
       await Promise.all([
-        categoriesStore.loadCategories(),
+        ...(categories.value.length ? [] : [categoriesStore.loadCategories()]),
         currenciesStore.loadCurrencies(),
-        currenciesStore.loadBaseCurrency(),
+        ...(isBaseCurrencyExists.value ? [] : [currenciesStore.loadBaseCurrency()]),
         monobankStore.loadUserData(),
       ]);
 
