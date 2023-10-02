@@ -1,12 +1,8 @@
 import log from 'loglevel';
 import * as errors from '@/js/errors';
-import { eventBus } from './event-bus';
 
 export class ErrorHandler {
-  static process(error: Error, message = ''): void {
-    const msgTrId = message || ErrorHandler._getMessage(error);
-    eventBus.error(msgTrId);
-
+  static process(error: Error): void {
     ErrorHandler.processWithoutFeedback(error);
   }
 

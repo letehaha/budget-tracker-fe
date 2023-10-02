@@ -1,5 +1,8 @@
-import { ref, WritableComputedRef, computed } from 'vue';
-import { defineStore } from 'pinia';
+import {
+  ref, WritableComputedRef, computed, watch,
+} from 'vue';
+import { defineStore, storeToRefs } from 'pinia';
+import { useQuery } from '@tanstack/vue-query';
 import { ACCOUNT_TYPES, AccountModel } from 'shared-types';
 import {
   loadAccounts as apiLoadAccounts,
@@ -8,10 +11,27 @@ import {
   deleteAccount as apiDeleteAccount,
   DeleteAccountPayload,
 } from '@/api';
+import { VUE_QUERY_CACHE_KEYS } from '@/common/const';
+import { useUserStore } from './user';
 
 export const useAccountsStore = defineStore('accounts', () => {
-  const accounts = ref<AccountModel[]>([]);
+  const { isUserExists } = storeToRefs(useUserStore());
+
   const accountsRecord = ref<Record<number, AccountModel>>({});
+
+  const { data: accounts } = useQuery({
+    queryKey: VUE_QUERY_CACHE_KEYS.allAccounts,
+    queryFn: apiLoadAccounts,
+    staleTime: Infinity,
+    placeholderData: [],
+    enabled: isUserExists,
+  });
+
+  watch(accounts, (value) => {
+    for (const acc of value) {
+      accountsRecord.value[acc.id] = acc;
+    }
+  });
 
   const getAccountById: WritableComputedRef<(id: number) => AccountModel | undefined> = computed(
     () => (id: number) => accounts.value.find(i => i.id === id),
@@ -25,22 +45,6 @@ export const useAccountsStore = defineStore('accounts', () => {
     () => accounts.value.filter(item => item.type === ACCOUNT_TYPES.system),
   );
   const enabledAccounts = computed(() => accounts.value.filter(item => item.isEnabled));
-
-  const loadAccounts = async () => {
-    try {
-      const result = await apiLoadAccounts();
-
-      accounts.value = [];
-
-      for (const acc of result) {
-        accounts.value.push(acc);
-        accountsRecord.value[acc.id] = acc;
-      }
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.log(e);
-    }
-  };
 
   const createAccount = async (payload: Parameters<typeof apiCreateAccount>[0]) => {
     try {
@@ -94,7 +98,6 @@ export const useAccountsStore = defineStore('accounts', () => {
     getAccountById,
 
     createAccount,
-    loadAccounts,
     editAccount,
     deleteAccount,
   };

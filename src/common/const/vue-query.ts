@@ -16,11 +16,14 @@ export const VUE_QUERY_CACHE_KEYS = Object.freeze({
   // widget latest records
   widgetLatestRecords: [TX_CHANGE_QUERY, 'widget-latest-records'],
 
+  // others
   analyticsBalanceHistoryTrend: [TX_CHANGE_QUERY, 'analytics-balance-history-trend'],
 
   recordsPageRecordsList: [TX_CHANGE_QUERY, 'records-page-records-list'],
 
   accountSpecificTransactions: ['account-transactions'],
+
+  allAccounts: [TX_CHANGE_QUERY, 'all-accounts'],
 });
 
 export {
