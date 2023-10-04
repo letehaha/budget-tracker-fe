@@ -338,15 +338,30 @@ const transferDestinationAccounts = computed(() => (
 
 watch(() => props.transaction, (value) => {
   if (value) {
-    form.value = {
-      amount: value.amount,
-      account: accountsRecord.value[value.accountId],
+    const initialFormValues = {
       type: getFormTypeFromTransaction(value),
       category: categoriesMap.value[value.categoryId],
       time: new Date(value.time).toISOString().substring(0, 19),
       paymentType: VERBOSE_PAYMENT_TYPES.find(item => item.value === value.paymentType),
       note: value.note,
-    };
+    } as typeof form.value;
+
+    if (value.transferNature === TRANSACTION_TRANSFER_NATURE.transfer_out_wallet) {
+      if (value.transactionType === TRANSACTION_TYPES.income) {
+        initialFormValues.account = OUT_OF_WALLET_ACCOUNT;
+        initialFormValues.targetAmount = value.amount;
+        initialFormValues.toAccount = accountsRecord.value[value.accountId];
+      } else if (value.transactionType === TRANSACTION_TYPES.expense) {
+        initialFormValues.amount = value.amount;
+        initialFormValues.account = accountsRecord.value[value.accountId];
+        initialFormValues.toAccount = OUT_OF_WALLET_ACCOUNT;
+      }
+    } else {
+      initialFormValues.amount = value.amount;
+      initialFormValues.account = accountsRecord.value[value.accountId];
+    }
+
+    form.value = initialFormValues;
   }
 }, { immediate: true, deep: true });
 
@@ -366,20 +381,28 @@ watch(() => form.value.account, (value) => {
 
 watch(currentTxType, (value, prevValue) => {
   if (props.transaction) {
+    const {
+      amount, transactionType, accountId, transferNature,
+    } = props.transaction;
+
     if (value === FORM_TYPES.transfer) {
-      if (props.transaction.transactionType === TRANSACTION_TYPES.income) {
-        form.value.targetAmount = props.transaction.amount;
+      if (transactionType === TRANSACTION_TYPES.income) {
+        form.value.targetAmount = amount;
         form.value.amount = null;
 
-        form.value.toAccount = accountsRecord.value[props.transaction.accountId];
+        form.value.toAccount = accountsRecord.value[accountId];
         form.value.account = null;
+
+        if (transferNature === TRANSACTION_TRANSFER_NATURE.transfer_out_wallet) {
+          form.value.account = OUT_OF_WALLET_ACCOUNT;
+        }
       }
     } else if (prevValue === FORM_TYPES.transfer) {
-      if (props.transaction.transactionType === TRANSACTION_TYPES.income) {
-        form.value.amount = props.transaction.amount;
+      if (transactionType === TRANSACTION_TYPES.income) {
+        form.value.amount = amount;
         form.value.targetAmount = null;
 
-        form.value.account = accountsRecord.value[props.transaction.accountId];
+        form.value.account = accountsRecord.value[accountId];
         form.value.toAccount = null;
       }
     }
@@ -421,14 +444,26 @@ const submit = async () => {
         creationParams.categoryId = category.id;
       }
 
+      // Handle transfer_out_wallet
+      // Always send amount+accountId and never destination data
       if ([
         creationParams.accountId,
         creationParams.destinationAccountId,
       ].includes(OUT_OF_WALLET_ACCOUNT.id)) {
         creationParams.transferNature = TRANSACTION_TRANSFER_NATURE.transfer_out_wallet;
-      }
 
-      // TODO: send correct transactionType
+        if (creationParams.accountId === OUT_OF_WALLET_ACCOUNT.id) {
+          creationParams.transactionType = TRANSACTION_TYPES.income;
+          creationParams.amount = creationParams.destinationAmount;
+          creationParams.accountId = creationParams.destinationAccountId;
+          delete creationParams.destinationAmount;
+          delete creationParams.destinationAccountId;
+        } else if (creationParams.destinationAccountId === OUT_OF_WALLET_ACCOUNT.id) {
+          creationParams.transactionType = TRANSACTION_TYPES.expense;
+          delete creationParams.destinationAmount;
+          delete creationParams.destinationAccountId;
+        }
+      }
 
       await createTransaction(creationParams);
     } else {
@@ -478,9 +513,9 @@ const submit = async () => {
       await editTransaction(editionParams);
     }
 
-    // emit(MODAL_EVENTS.closeModal);
+    emit(MODAL_EVENTS.closeModal);
     // Reload all cached data in the app
-    // queryClient.invalidateQueries([VUE_QUERY_TX_CHANGE_QUERY]);
+    queryClient.invalidateQueries([VUE_QUERY_TX_CHANGE_QUERY]);
   } catch (e) {
     // eslint-disable-next-line no-console
     console.error(e);

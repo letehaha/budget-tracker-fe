@@ -89,7 +89,7 @@ const isTransferTransaction = computed(
 
 const oppositeTransferTransaction = ref<TransactionModel | null>(null);
 
-if (isTransferTransaction.value) {
+if (transaction.transferNature === TRANSACTION_TRANSFER_NATURE.common_transfer) {
   (async () => {
     oppositeTransferTransaction.value = (
       await setOppositeTransaction(transaction)
@@ -108,6 +108,9 @@ const accountMovement = computed(() => {
     ? '=>'
     : '<=';
 
+  if (transaction.transferNature === TRANSACTION_TRANSFER_NATURE.transfer_out_wallet) {
+    return `${accountFrom.value?.name} ${separator} Out of wallet`;
+  }
   return `${accountFrom.value?.name} ${separator} ${accountTo.value?.name}`;
 });
 
@@ -132,7 +135,9 @@ const editTransaction = async () => {
 
     modalOptions.transaction = isBaseExternal ? baseTx : oppositeTx;
     modalOptions.oppositeTransaction = isBaseExternal ? oppositeTx : baseTx;
-  } else if (!isExternalTransfer && txNatureIsTransfer(baseTx.transferNature)) {
+  } else if (
+    !isExternalTransfer && baseTx.transferNature === TRANSACTION_TRANSFER_NATURE.common_transfer
+  ) {
     const isValid = baseTx.transactionType === TRANSACTION_TYPES.expense;
 
     modalOptions.transaction = isValid ? baseTx : oppositeTx;
