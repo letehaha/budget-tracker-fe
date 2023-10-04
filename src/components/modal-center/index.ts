@@ -2,6 +2,7 @@ import { ref, Ref } from 'vue';
 
 export enum MODAL_TYPES {
   createRecord = 'createRecord',
+  recordList = 'recordList',
   monobankTxForm = 'monobankTxForm',
   monobankSetToken = 'monobankSetToken',
 }

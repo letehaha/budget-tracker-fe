@@ -87,7 +87,8 @@ const props = withDefaults(defineProps<{
 });
 
 const emit = defineEmits<{
-  'update:model-value': [value: ModelValue]
+  'update:model-value': [value: ModelValue],
+  'update:isDropdownOpen': [value: boolean]
 }>();
 
 const isDropdownOpened = ref(false);
@@ -118,6 +119,7 @@ const dropdownValues = computed(() => props.values.reduce((acc: ModelValue[], cu
 const toggleDropdown = () => {
   if (!props.disabled) {
     isDropdownOpened.value = !isDropdownOpened.value;
+    emit('update:isDropdownOpen', isDropdownOpened.value);
   }
 };
 const closeDropdown = () => { isDropdownOpened.value = false; };

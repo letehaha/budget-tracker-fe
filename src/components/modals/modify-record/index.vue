@@ -74,6 +74,18 @@
         </form-row>
       </template>
 
+      <template v-if="isTransferTx">
+        <form-row>
+          <ui-button
+            class="modify-record__action modify-record__action-link"
+            :disabled="isLoading"
+            @click="openTransactionModalList"
+          >
+            Link existing transaction
+          </ui-button>
+        </form-row>
+      </template>
+
       <form-row>
         <date-field
           v-model="form.time"
@@ -130,7 +142,7 @@ import {
   nextTick,
 } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useQueryClient } from '@tanstack/vue-query';
+import { useQueryClient, useInfiniteQuery } from '@tanstack/vue-query';
 import {
   type AccountModel,
   TRANSACTION_TYPES,
@@ -149,7 +161,9 @@ import {
   createTransaction,
   editTransaction,
   deleteTransaction,
+  loadTransactions,
 } from '@/api/transactions';
+import { MODAL_TYPES, useModalCenter } from '@/components/modal-center/index';
 import InputField from '@/components/fields/input-field.vue';
 import SelectField from '@/components/fields/select-field.vue';
 import CategorySelectField from '@/components/fields/category-select-field.vue';
@@ -157,7 +171,7 @@ import TextareaField from '@/components/fields/textarea-field.vue';
 import DateField from '@/components/fields/date-field.vue';
 import UiButton from '@/components/common/ui-button.vue';
 import { EVENTS as MODAL_EVENTS } from '@/components/modal-center/ui-modal.vue';
-import { VUE_QUERY_TX_CHANGE_QUERY } from '@/common/const';
+import { VUE_QUERY_TX_CHANGE_QUERY, VUE_QUERY_CACHE_KEYS } from '@/common/const';
 import FormHeader from './form-header.vue';
 import TypeSelector from './type-selector.vue';
 import FormRow from './form-row.vue';
@@ -172,6 +186,8 @@ const getFormTypeFromTransaction = (tx: TransactionModel): FORM_TYPES => {
     ? FORM_TYPES.expense
     : FORM_TYPES.income;
 };
+
+const { addModal } = useModalCenter();
 
 const getTxTypeFromFormType = (formType: FORM_TYPES): TRANSACTION_TYPES => {
   if (formType === FORM_TYPES.transfer) return TRANSACTION_TYPES.expense;
@@ -206,6 +222,42 @@ const props = withDefaults(defineProps<{
   transaction: undefined,
   oppositeTransaction: undefined,
 });
+
+// const limit = 10;
+
+// const fetchTransactions = ({ pageParam = 0 }) => {
+//   const from = pageParam * limit;
+//   return loadTransactions({ limit, from });
+// };
+
+// const {
+//   data: transactionsPages,
+//   // fetchNextPage,
+//   // hasNextPage,
+//   // isFetched,
+// } = useInfiniteQuery({
+//   queryKey: VUE_QUERY_CACHE_KEYS.recordsPageRecordsList,
+//   queryFn: fetchTransactions,
+//   getNextPageParam: (lastPage, pages) => {
+//     // No more pages to load
+//     if (lastPage.length < limit) return undefined;
+//     // returns the number of pages fetched so far as the next page param
+//     return pages.length;
+//   },
+//   staleTime: Infinity,
+// });
+
+const openTransactionModalList = () => {
+  const modalOptions = {
+    oppositeTransaction: undefined,
+    transactionType: props.transaction.transactionType,
+  };
+
+  addModal({
+    type: MODAL_TYPES.recordList,
+    data: modalOptions,
+  });
+};
 
 const emit = defineEmits([MODAL_EVENTS.closeModal]);
 
@@ -532,5 +584,8 @@ $border-top-radius: 10px;
 }
 .modify-record__action--submit {
   margin-left: auto;
+}
+.modify-record__action-link {
+  width: 100%;
 }
 </style>
