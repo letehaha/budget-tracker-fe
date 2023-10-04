@@ -55,9 +55,9 @@ class ApiCaller {
     this.authToken = token;
   }
 
-  get(
+  get<T = Record<string, unknown>>(
     endpoint: ApiCall['endpoint'],
-    query: Record<string, unknown> = {},
+    query: T = {} as T,
     options: ApiCall['options'] = {},
   ) {
     const validQuery: ApiCall['query'] = {};

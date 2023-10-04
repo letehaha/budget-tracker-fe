@@ -1,6 +1,4 @@
-import {
-  TRANSACTION_TYPES, PAYMENT_TYPES, TransactionModel, endpointsTypes,
-} from 'shared-types';
+import { TransactionModel, endpointsTypes, TRANSACTION_TRANSFER_NATURE } from 'shared-types';
 import { api } from '@/api/_api';
 import { fromSystemAmount, toSystemAmount } from '@/api/helpers';
 
@@ -48,53 +46,22 @@ export const loadTransactionsByTransferId = async (
   return result.map(item => formatTransactionResponse(item));
 };
 
-export const createTransaction = async ({
-  note = '',
-  isTransfer = false,
-  ...rest
-}: {
-  amount: number;
-  note?: string;
-  time: string;
-  transactionType: TRANSACTION_TYPES;
-  paymentType: PAYMENT_TYPES;
-  accountId: number;
-  categoryId?: number;
-  destinationAccountId?: number;
-  destinationAmount?: number;
-  isTransfer?: boolean;
-}): Promise<void> => {
+export const createTransaction = async (params: endpointsTypes.CreateTransactionBody) => {
   try {
-    const params = formatTransactionPayload({
-      ...rest,
-      note,
-      isTransfer,
+    const formattedParams = formatTransactionPayload({
+      transferNature: TRANSACTION_TRANSFER_NATURE.not_transfer,
+      note: '',
+      ...params,
     });
 
-    await api.post('/transactions', params);
+    await api.post('/transactions', formattedParams);
   } catch (e) {
     throw new Error(e);
   }
 };
 
-interface editExternalTransactionPayload {
-  txId: number;
-  note?: string;
-  categoryId?: number;
-}
-interface editSystemTransactionPayload extends editExternalTransactionPayload {
-  amount?: number;
-  time?: string;
-  transactionType?: TRANSACTION_TYPES;
-  paymentType?: PAYMENT_TYPES;
-  accountId?: number;
-  isTransfer?: boolean;
-  destinationAccountId?: number;
-  destinationAmount?: number;
-}
-
 export const editTransaction = async (
-  { txId, ...rest }: editExternalTransactionPayload | editSystemTransactionPayload,
+  { txId, ...rest }: endpointsTypes.UpdateTransactionBody & { txId: number },
 ): Promise<void> => {
   const params = formatTransactionPayload(rest);
 

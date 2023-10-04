@@ -1,5 +1,5 @@
 <template>
-  <template v-if="accounts.length || formAccount">
+  <template v-if="accounts.length || account">
     <template v-if="isTransferTransaction">
       <form-row>
         <select-field
@@ -9,7 +9,7 @@
           label-key="name"
           :disabled="fromAccountDisabled"
           is-value-preselected
-          :model-value="formAccount"
+          :model-value="account"
           @update:model-value="updateFormAccount"
         />
       </form-row>
@@ -21,8 +21,8 @@
           :values="filteredAccounts"
           label-key="name"
           :disabled="toAccountDisabled"
-          :model-value="formToAccount"
-          @update:model-value="emit('update:form-to-account', $event)"
+          :model-value="toAccount"
+          @update:model-value="emit('update:to-account', $event)"
         />
       </form-row>
     </template>
@@ -35,7 +35,7 @@
           label-key="name"
           :disabled="fromAccountDisabled"
           is-value-preselected
-          :model-value="formAccount"
+          :model-value="account"
           @update:model-value="updateFormAccount"
         />
       </form-row>
@@ -73,21 +73,21 @@ import InputField from '@/components/fields/input-field.vue';
 import FormRow from './form-row.vue';
 
 withDefaults(defineProps<{
-  formAccount?: AccountModel;
-  formToAccount?: AccountModel;
+  account?: AccountModel | null;
+  toAccount?: AccountModel | null;
   isTransferTransaction: boolean;
   accounts: AccountModel[];
   filteredAccounts: AccountModel[];
   fromAccountDisabled?: boolean;
   toAccountDisabled?: boolean;
 }>(), {
-  formAccount: null,
-  formToAccount: null,
+  account: null,
+  toAccount: null,
   fromAccountDisabled: false,
   toAccountDisabled: false,
 });
 
-const emit = defineEmits(['close-modal', 'update:form-account', 'update:form-to-account']);
+const emit = defineEmits(['close-modal', 'update:account', 'update:to-account']);
 
 const router = useRouter();
 
@@ -98,7 +98,7 @@ const redirectToCreateAccountPage = async () => {
 };
 
 const updateFormAccount = (account: AccountModel) => {
-  emit('update:form-account', account);
+  emit('update:account', account);
 };
 </script>
 

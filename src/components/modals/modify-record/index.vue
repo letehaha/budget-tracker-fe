@@ -37,13 +37,13 @@
       </form-row>
 
       <account-field
-        v-model:form-account="form.account"
-        v-model:form-to-account="form.toAccount"
+        v-model:account="form.account"
+        v-model:to-account="form.toAccount"
         :is-transfer-transaction="isTransferTx"
-        :accounts="systemAccounts"
+        :accounts="isTransferTx ? transferSourceAccounts : systemAccounts"
         :from-account-disabled="fromAccountFieldDisabled"
         :to-account-disabled="toAccountFieldDisabled"
-        :filtered-accounts="filteredAccounts"
+        :filtered-accounts="transferDestinationAccounts"
         @close-modal="emit(MODAL_EVENTS.closeModal)"
       />
 
@@ -65,6 +65,7 @@
             :disabled="isTargetAmountFieldDisabled"
             only-positive
             label="Target amount"
+            placeholder="Target amount"
             type="number"
           >
             <template #iconTrailing>
@@ -138,6 +139,7 @@ import {
   type TransactionModel,
   ACCOUNT_TYPES,
   type CategoryModel,
+  TRANSACTION_TRANSFER_NATURE,
 } from 'shared-types';
 import {
   useAccountsStore,
@@ -165,8 +167,18 @@ import AccountField from './account-field.vue';
 import { FORM_TYPES } from './types';
 import { getDestinationAccountId, getDestinationAmount } from './helpers';
 
+const OUT_OF_WALLET_ACCOUNT = {
+  name: 'Out of wallet',
+  id: null,
+} as AccountModel;
+
 const getFormTypeFromTransaction = (tx: TransactionModel): FORM_TYPES => {
-  if (tx.isTransfer) return FORM_TYPES.transfer;
+  if ([
+    TRANSACTION_TRANSFER_NATURE.common_transfer,
+    TRANSACTION_TRANSFER_NATURE.transfer_out_wallet,
+  ].includes(tx.transferNature)) {
+    return FORM_TYPES.transfer;
+  }
 
   return tx.transactionType === TRANSACTION_TYPES.expense
     ? FORM_TYPES.expense
@@ -265,6 +277,9 @@ const isAmountFieldDisabled = computed(() => {
     if (props.transaction.transactionType === TRANSACTION_TYPES.expense) return true;
   }
 
+  // Means it's "Out of wallet"
+  if (form.value.account?.id === OUT_OF_WALLET_ACCOUNT.id) return true;
+
   return false;
 });
 const isTargetAmountFieldDisabled = computed(() => {
@@ -272,6 +287,9 @@ const isTargetAmountFieldDisabled = computed(() => {
     if (!isTransferTx.value) return true;
     if (props.transaction.transactionType === TRANSACTION_TYPES.income) return true;
   }
+
+  // Means it's "Out of wallet"
+  if (form.value.toAccount?.id === OUT_OF_WALLET_ACCOUNT.id) return true;
 
   return false;
 });
@@ -309,8 +327,13 @@ const targetCurrency = computed(
   () => currenciesMap.value[form.value.toAccount?.currencyId],
 );
 
-const filteredAccounts = computed(() => systemAccounts.value.filter(
-  (item) => item.id !== form.value.account?.id,
+const transferSourceAccounts = computed(() => [
+  OUT_OF_WALLET_ACCOUNT,
+  ...systemAccounts.value,
+]);
+
+const transferDestinationAccounts = computed(() => (
+  transferSourceAccounts.value.filter((item) => item.id !== form.value.account?.id)
 ));
 
 watch(() => props.transaction, (value) => {
@@ -393,10 +416,19 @@ const submit = async () => {
         creationParams.destinationAmount = isCurrenciesDifferent.value
           ? form.value.targetAmount
           : amount;
-        creationParams.isTransfer = true;
+        creationParams.transferNature = TRANSACTION_TRANSFER_NATURE.common_transfer;
       } else {
         creationParams.categoryId = category.id;
       }
+
+      if ([
+        creationParams.accountId,
+        creationParams.destinationAccountId,
+      ].includes(OUT_OF_WALLET_ACCOUNT.id)) {
+        creationParams.transferNature = TRANSACTION_TRANSFER_NATURE.transfer_out_wallet;
+      }
+
+      // TODO: send correct transactionType
 
       await createTransaction(creationParams);
     } else {
@@ -409,7 +441,7 @@ const submit = async () => {
           ...editionParams,
           note,
           paymentType: paymentType.value,
-          isTransfer: false,
+          transferNature: TRANSACTION_TRANSFER_NATURE.not_transfer,
         };
       } else {
         editionParams = {
@@ -420,7 +452,7 @@ const submit = async () => {
           transactionType: getTxTypeFromFormType(formTxType),
           paymentType: paymentType.value,
           accountId,
-          isTransfer: false,
+          transferNature: TRANSACTION_TRANSFER_NATURE.not_transfer,
         };
       }
 
@@ -438,7 +470,7 @@ const submit = async () => {
           toAmount: Number(form.value.targetAmount),
           isCurrenciesDifferent: isCurrenciesDifferent.value,
         });
-        editionParams.isTransfer = true;
+        editionParams.transferNature = TRANSACTION_TRANSFER_NATURE.common_transfer;
       } else {
         editionParams.categoryId = category.id;
       }
@@ -446,9 +478,9 @@ const submit = async () => {
       await editTransaction(editionParams);
     }
 
-    emit(MODAL_EVENTS.closeModal);
+    // emit(MODAL_EVENTS.closeModal);
     // Reload all cached data in the app
-    queryClient.invalidateQueries([VUE_QUERY_TX_CHANGE_QUERY]);
+    // queryClient.invalidateQueries([VUE_QUERY_TX_CHANGE_QUERY]);
   } catch (e) {
     // eslint-disable-next-line no-console
     console.error(e);
