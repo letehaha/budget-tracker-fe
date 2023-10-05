@@ -1,127 +1,3 @@
-<template>
-  <div
-    class="modify-record"
-    :class="{
-      'modify-record--income': currentTxType === FORM_TYPES.income,
-      'modify-record--expense': currentTxType === FORM_TYPES.expense,
-      'modify-record--transfer': currentTxType === FORM_TYPES.transfer,
-    }"
-  >
-    <div class="modify-record__header">
-      <form-header
-        :is-form-creation="isFormCreation"
-        @close="closeModal"
-      />
-
-      <type-selector
-        :is-form-creation="isFormCreation"
-        :selected-transaction-type="currentTxType"
-        :transaction="transaction"
-        @change-tx-type="selectTransactionType"
-      />
-    </div>
-    <div class="modify-record__form">
-      <form-row>
-        <input-field
-          v-model="form.amount"
-          label="Amount"
-          type="number"
-          :disabled="isAmountFieldDisabled"
-          only-positive
-          placeholder="Amount"
-        >
-          <template #iconTrailing>
-            <span>{{ currencyCode }}</span>
-          </template>
-        </input-field>
-      </form-row>
-
-      <account-field
-        v-model:account="form.account"
-        v-model:to-account="form.toAccount"
-        :is-transfer-transaction="isTransferTx"
-        :accounts="isTransferTx ? transferSourceAccounts : systemAccounts"
-        :from-account-disabled="fromAccountFieldDisabled"
-        :to-account-disabled="toAccountFieldDisabled"
-        :filtered-accounts="transferDestinationAccounts"
-        @close-modal="emit(MODAL_EVENTS.closeModal)"
-      />
-
-      <template v-if="currentTxType !== FORM_TYPES.transfer">
-        <form-row>
-          <category-select-field
-            v-model="form.category"
-            label="Category"
-            :values="formattedCategories"
-            label-key="name"
-          />
-        </form-row>
-      </template>
-
-      <template v-if="isTransferTx">
-        <form-row>
-          <input-field
-            v-model="form.targetAmount"
-            :disabled="isTargetAmountFieldDisabled"
-            only-positive
-            label="Target amount"
-            placeholder="Target amount"
-            type="number"
-          >
-            <template #iconTrailing>
-              <span>{{ targetCurrency?.currency?.code }}</span>
-            </template>
-          </input-field>
-        </form-row>
-      </template>
-
-      <form-row>
-        <date-field
-          v-model="form.time"
-          :disabled="isRecordExternal"
-          label="Datetime"
-        />
-      </form-row>
-      <form-row>
-        <select-field
-          v-model="form.paymentType"
-          label="Payment Type"
-          :disabled="isRecordExternal"
-          :values="VERBOSE_PAYMENT_TYPES"
-          is-value-preselected
-        />
-      </form-row>
-      <form-row>
-        <textarea-field
-          v-model="form.note"
-          placeholder="Note"
-          label="Note (optional)"
-        />
-      </form-row>
-    </div>
-    <div class="modify-record__actions">
-      <ui-button
-        v-if="transaction && transaction.accountType === ACCOUNT_TYPES.system"
-        class="modify-record__action"
-        :disabled="isLoading"
-        @click="deleteTransactionHandler"
-      >
-        Delete
-      </ui-button>
-      <ui-button
-        class="
-          modify-record__action
-          modify-record__action--submit
-        "
-        :disabled="isLoading"
-        @click="submit"
-      >
-        {{ isLoading ? 'Loading...' : transaction ? 'Edit' : 'Submit' }}
-      </ui-button>
-    </div>
-  </div>
-</template>
-
 <script lang="ts" setup>
 import {
   ref,
@@ -141,17 +17,9 @@ import {
   type CategoryModel,
   TRANSACTION_TRANSFER_NATURE,
 } from 'shared-types';
-import {
-  useAccountsStore,
-  useCategoriesStore,
-  useCurrenciesStore,
-} from '@/stores';
-
-import {
-  createTransaction,
-  editTransaction,
-  deleteTransaction,
-} from '@/api/transactions';
+import { useAccountsStore, useCategoriesStore, useCurrenciesStore } from '@/stores';
+import { createTransaction, editTransaction, deleteTransaction } from '@/api/transactions';
+import { type VerbosePaymentType, VERBOSE_PAYMENT_TYPES } from '@/common/const';
 import InputField from '@/components/fields/input-field.vue';
 import SelectField from '@/components/fields/select-field.vue';
 import CategorySelectField from '@/components/fields/category-select-field.vue';
@@ -165,47 +33,17 @@ import TypeSelector from './type-selector.vue';
 import FormRow from './form-row.vue';
 import AccountField from './account-field.vue';
 import { FORM_TYPES } from './types';
-import { getDestinationAccountId, getDestinationAmount } from './helpers';
+import {
+  getDestinationAccountId,
+  getDestinationAmount,
+  getFormTypeFromTransaction,
+  getTxTypeFromFormType,
+} from './helpers';
 
 const OUT_OF_WALLET_ACCOUNT = {
   name: 'Out of wallet',
   id: null,
 } as AccountModel;
-
-const getFormTypeFromTransaction = (tx: TransactionModel): FORM_TYPES => {
-  if ([
-    TRANSACTION_TRANSFER_NATURE.common_transfer,
-    TRANSACTION_TRANSFER_NATURE.transfer_out_wallet,
-  ].includes(tx.transferNature)) {
-    return FORM_TYPES.transfer;
-  }
-
-  return tx.transactionType === TRANSACTION_TYPES.expense
-    ? FORM_TYPES.expense
-    : FORM_TYPES.income;
-};
-
-const getTxTypeFromFormType = (formType: FORM_TYPES): TRANSACTION_TYPES => {
-  if (formType === FORM_TYPES.transfer) return TRANSACTION_TYPES.expense;
-
-  return formType === FORM_TYPES.expense
-    ? TRANSACTION_TYPES.expense
-    : TRANSACTION_TYPES.income;
-};
-
-type VerbosePaymentType = {
-  value: PAYMENT_TYPES;
-  label: string;
-}
-const VERBOSE_PAYMENT_TYPES: VerbosePaymentType[] = [
-  { value: PAYMENT_TYPES.creditCard, label: 'Credit Card' },
-  { value: PAYMENT_TYPES.bankTransfer, label: 'Bank Transfer' },
-  { value: PAYMENT_TYPES.cash, label: 'Cash' },
-  { value: PAYMENT_TYPES.debitCard, label: 'Debit Card' },
-  { value: PAYMENT_TYPES.mobilePayment, label: 'Mobile Payment' },
-  { value: PAYMENT_TYPES.voucher, label: 'Voucher' },
-  { value: PAYMENT_TYPES.webPayment, label: 'Web Payment' },
-];
 
 defineOptions({
   name: 'record-form',
@@ -558,6 +396,130 @@ onMounted(() => {
   }
 });
 </script>
+
+<template>
+  <div
+    class="modify-record"
+    :class="{
+      'modify-record--income': currentTxType === FORM_TYPES.income,
+      'modify-record--expense': currentTxType === FORM_TYPES.expense,
+      'modify-record--transfer': currentTxType === FORM_TYPES.transfer,
+    }"
+  >
+    <div class="modify-record__header">
+      <form-header
+        :is-form-creation="isFormCreation"
+        @close="closeModal"
+      />
+
+      <type-selector
+        :is-form-creation="isFormCreation"
+        :selected-transaction-type="currentTxType"
+        :transaction="transaction"
+        @change-tx-type="selectTransactionType"
+      />
+    </div>
+    <div class="modify-record__form">
+      <form-row>
+        <input-field
+          v-model="form.amount"
+          label="Amount"
+          type="number"
+          :disabled="isAmountFieldDisabled"
+          only-positive
+          placeholder="Amount"
+        >
+          <template #iconTrailing>
+            <span>{{ currencyCode }}</span>
+          </template>
+        </input-field>
+      </form-row>
+
+      <account-field
+        v-model:account="form.account"
+        v-model:to-account="form.toAccount"
+        :is-transfer-transaction="isTransferTx"
+        :accounts="isTransferTx ? transferSourceAccounts : systemAccounts"
+        :from-account-disabled="fromAccountFieldDisabled"
+        :to-account-disabled="toAccountFieldDisabled"
+        :filtered-accounts="transferDestinationAccounts"
+        @close-modal="emit(MODAL_EVENTS.closeModal)"
+      />
+
+      <template v-if="currentTxType !== FORM_TYPES.transfer">
+        <form-row>
+          <category-select-field
+            v-model="form.category"
+            label="Category"
+            :values="formattedCategories"
+            label-key="name"
+          />
+        </form-row>
+      </template>
+
+      <template v-if="isTransferTx">
+        <form-row>
+          <input-field
+            v-model="form.targetAmount"
+            :disabled="isTargetAmountFieldDisabled"
+            only-positive
+            label="Target amount"
+            placeholder="Target amount"
+            type="number"
+          >
+            <template #iconTrailing>
+              <span>{{ targetCurrency?.currency?.code }}</span>
+            </template>
+          </input-field>
+        </form-row>
+      </template>
+
+      <form-row>
+        <date-field
+          v-model="form.time"
+          :disabled="isRecordExternal"
+          label="Datetime"
+        />
+      </form-row>
+      <form-row>
+        <select-field
+          v-model="form.paymentType"
+          label="Payment Type"
+          :disabled="isRecordExternal"
+          :values="VERBOSE_PAYMENT_TYPES"
+          is-value-preselected
+        />
+      </form-row>
+      <form-row>
+        <textarea-field
+          v-model="form.note"
+          placeholder="Note"
+          label="Note (optional)"
+        />
+      </form-row>
+    </div>
+    <div class="modify-record__actions">
+      <ui-button
+        v-if="transaction && transaction.accountType === ACCOUNT_TYPES.system"
+        class="modify-record__action"
+        :disabled="isLoading"
+        @click="deleteTransactionHandler"
+      >
+        Delete
+      </ui-button>
+      <ui-button
+        class="
+          modify-record__action
+          modify-record__action--submit
+        "
+        :disabled="isLoading"
+        @click="submit"
+      >
+        {{ isLoading ? 'Loading...' : transaction ? 'Edit' : 'Submit' }}
+      </ui-button>
+    </div>
+  </div>
+</template>
 
 <style lang="scss" scoped>
 $border-top-radius: 10px;
