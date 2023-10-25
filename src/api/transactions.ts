@@ -62,6 +62,7 @@ export const createTransaction = async ({
   categoryId?: number;
   destinationAccountId?: number;
   destinationAmount?: number;
+  destinationTransactionId?: number;
   isTransfer?: boolean;
 }): Promise<void> => {
   try {
@@ -90,6 +91,7 @@ interface editSystemTransactionPayload extends editExternalTransactionPayload {
   accountId?: number;
   isTransfer?: boolean;
   destinationAccountId?: number;
+  destinationTransactionId?: number;
   destinationAmount?: number;
 }
 

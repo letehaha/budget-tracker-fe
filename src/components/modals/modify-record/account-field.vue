@@ -1,7 +1,7 @@
 <template>
   <template v-if="accounts.length || formAccount">
     <template v-if="isTransferTransaction">
-      <form-row>
+      <form-row v-if="!isTransactionRecord || (isTransactionRecord && transactionType === 'expense')">
         <select-field
           label="From account"
           placeholder="Select account"
@@ -14,7 +14,7 @@
         />
       </form-row>
 
-      <form-row>
+      <form-row v-if="!isTransactionRecord || (isTransactionRecord && transactionType === 'income')">
         <select-field
           label="To account"
           placeholder="Select account"
@@ -78,11 +78,14 @@ withDefaults(defineProps<{
   isTransferTransaction: boolean;
   accounts: AccountModel[];
   filteredAccounts: AccountModel[];
+  isTransactionRecord: boolean;
+  transactionType: string;
   fromAccountDisabled?: boolean;
   toAccountDisabled?: boolean;
 }>(), {
   formAccount: null,
   formToAccount: null,
+  isTransactionRecord: false,
   fromAccountDisabled: false,
   toAccountDisabled: false,
 });

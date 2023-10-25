@@ -21,7 +21,7 @@
       />
     </div>
     <div class="modify-record__form">
-      <form-row>
+      <form-row v-if="!transactionItem || transactionItem.transactionType !== 'expense'">
         <input-field
           v-model="form.amount"
           label="Amount"
@@ -40,6 +40,8 @@
         v-model:form-account="form.account"
         v-model:form-to-account="form.toAccount"
         :is-transfer-transaction="isTransferTx"
+        :is-transaction-record="isTransactionLength"
+        :transaction-type="props.transaction.transactionType"
         :accounts="systemAccounts"
         :from-account-disabled="fromAccountFieldDisabled"
         :to-account-disabled="toAccountFieldDisabled"
@@ -58,7 +60,11 @@
         </form-row>
       </template>
 
-      <template v-if="isTransferTx">
+      <template
+        v-if="isTransferTx && !transactionItem
+          || (transactionItem && transactionItem.transactionType === 'expense')
+        "
+      >
         <form-row>
           <input-field
             v-model="form.targetAmount"
@@ -74,7 +80,7 @@
         </form-row>
       </template>
 
-      <template v-if="isTransferTx">
+      <template v-if="isTransferTx && !transactionItem">
         <form-row>
           <ui-button
             class="modify-record__action modify-record__action-link"
@@ -82,6 +88,17 @@
             @click="openTransactionModalList"
           >
             Link existing transaction
+          </ui-button>
+        </form-row>
+      </template>
+      <template v-if="transactionItem && isTransferTx">
+        <form-row class="modify-record__transaction">
+          <TransactionRecrod class="modify-record__transaction-button" :tx="transactionItem" />
+          <ui-button
+            class="modify-record__action modify-record__action-transaction"
+            @click="deleteTransactionRecordHandler"
+          >
+            Delete
           </ui-button>
         </form-row>
       </template>
@@ -142,7 +159,7 @@ import {
   nextTick,
 } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useQueryClient, useInfiniteQuery } from '@tanstack/vue-query';
+import { useQueryClient } from '@tanstack/vue-query';
 import {
   type AccountModel,
   TRANSACTION_TYPES,
@@ -161,9 +178,9 @@ import {
   createTransaction,
   editTransaction,
   deleteTransaction,
-  loadTransactions,
 } from '@/api/transactions';
 import { MODAL_TYPES, useModalCenter } from '@/components/modal-center/index';
+import TransactionRecrod from '@/components/transactions-list/transaction-record.vue';
 import InputField from '@/components/fields/input-field.vue';
 import SelectField from '@/components/fields/select-field.vue';
 import CategorySelectField from '@/components/fields/category-select-field.vue';
@@ -171,7 +188,7 @@ import TextareaField from '@/components/fields/textarea-field.vue';
 import DateField from '@/components/fields/date-field.vue';
 import UiButton from '@/components/common/ui-button.vue';
 import { EVENTS as MODAL_EVENTS } from '@/components/modal-center/ui-modal.vue';
-import { VUE_QUERY_TX_CHANGE_QUERY, VUE_QUERY_CACHE_KEYS } from '@/common/const';
+import { VUE_QUERY_TX_CHANGE_QUERY } from '@/common/const';
 import FormHeader from './form-header.vue';
 import TypeSelector from './type-selector.vue';
 import FormRow from './form-row.vue';
@@ -223,42 +240,6 @@ const props = withDefaults(defineProps<{
   oppositeTransaction: undefined,
 });
 
-// const limit = 10;
-
-// const fetchTransactions = ({ pageParam = 0 }) => {
-//   const from = pageParam * limit;
-//   return loadTransactions({ limit, from });
-// };
-
-// const {
-//   data: transactionsPages,
-//   // fetchNextPage,
-//   // hasNextPage,
-//   // isFetched,
-// } = useInfiniteQuery({
-//   queryKey: VUE_QUERY_CACHE_KEYS.recordsPageRecordsList,
-//   queryFn: fetchTransactions,
-//   getNextPageParam: (lastPage, pages) => {
-//     // No more pages to load
-//     if (lastPage.length < limit) return undefined;
-//     // returns the number of pages fetched so far as the next page param
-//     return pages.length;
-//   },
-//   staleTime: Infinity,
-// });
-
-const openTransactionModalList = () => {
-  const modalOptions = {
-    oppositeTransaction: undefined,
-    transactionType: props.transaction.transactionType,
-  };
-
-  addModal({
-    type: MODAL_TYPES.recordList,
-    data: modalOptions,
-  });
-};
-
 const emit = defineEmits([MODAL_EVENTS.closeModal]);
 
 const { currenciesMap } = storeToRefs(useCurrenciesStore());
@@ -270,7 +251,8 @@ const isFormCreation = computed(() => !props.transaction);
 
 const form = ref<{
   amount: number;
-  account: AccountModel;
+  account?: AccountModel;
+  transactionRecordItem: TransactionModel;
   toAccount?: AccountModel;
   category: CategoryModel;
   time: string;
@@ -281,6 +263,7 @@ const form = ref<{
 }>({
   amount: null,
   account: null,
+  transactionRecordItem: null,
   toAccount: null,
   targetAmount: null,
   category: formattedCategories.value[0],
@@ -289,6 +272,36 @@ const form = ref<{
   note: null,
   type: FORM_TYPES.expense,
 });
+
+const resolveTransaction = ref(null);
+const transactionItem = ref<TransactionModel | null>(null);
+const isTransactionLength = ref(false);
+
+const transactionPromise = new Promise(resolve => {
+  resolveTransaction.value = resolve;
+});
+
+const openTransactionModalList = async () => {
+  let typeOfTransaction;
+  if (props.transaction.transactionType === 'expense') {
+    typeOfTransaction = 'income';
+  } else {
+    typeOfTransaction = 'expense';
+  }
+
+  const modalOptions = {
+    oppositeTransaction: undefined,
+    transactionType: typeOfTransaction,
+    resolveTransaction,
+  };
+
+  await addModal({
+    type: MODAL_TYPES.recordList,
+    data: modalOptions,
+  });
+
+  transactionItem.value = (await transactionPromise) as TransactionModel;
+};
 
 const isRecordExternal = computed(() => {
   if (!props.transaction) return false;
@@ -305,6 +318,12 @@ watch(() => isRecordExternal.value, (value) => {
     });
   }
 }, { immediate: true });
+
+watch(() => transactionItem.value, (value) => {
+  if (value !== null) {
+    isTransactionLength.value = true;
+  }
+});
 
 const isLoading = ref(false);
 
@@ -370,6 +389,7 @@ watch(() => props.transaction, (value) => {
     form.value = {
       amount: value.amount,
       account: accountsRecord.value[value.accountId],
+      transactionRecordItem: value,
       type: getFormTypeFromTransaction(value),
       category: categoriesMap.value[value.categoryId],
       time: new Date(value.time).toISOString().substring(0, 19),
@@ -415,91 +435,121 @@ watch(currentTxType, (value, prevValue) => {
   }
 });
 
+async function handleCreateTransaction() {
+  const {
+    amount,
+    note,
+    time,
+    type: formTxType,
+    paymentType,
+    account: { id: accountId },
+    toAccount,
+    category,
+  } = form.value;
+
+  const creationParams: Parameters<typeof createTransaction>[0] = {
+    amount,
+    note,
+    time: new Date(time).toUTCString(),
+    transactionType: getTxTypeFromFormType(formTxType),
+    paymentType: paymentType.value,
+    accountId,
+  };
+
+  if (isTransferTx.value) {
+    creationParams.isTransfer = true;
+
+    if (transactionItem.value?.id) {
+      creationParams.destinationTransactionId = transactionItem.value.id;
+    } else {
+      creationParams.destinationAccountId = toAccount.id;
+      creationParams.destinationAmount = isCurrenciesDifferent.value
+        ? form.value.targetAmount
+        : amount;
+    }
+  } else {
+    creationParams.categoryId = category.id;
+  }
+
+  await createTransaction(creationParams);
+}
+
+async function handleEditTransaction() {
+  const {
+    amount,
+    note,
+    time,
+    type: formTxType,
+    paymentType,
+    account,
+    category,
+  } = form.value;
+
+  const accountId = account?.id || null;
+
+  let editionParams: Parameters<typeof editTransaction>[0] = {
+    txId: props.transaction.id,
+  };
+
+  if (isRecordExternal.value) {
+    editionParams = {
+      ...editionParams,
+      note,
+      paymentType: paymentType.value,
+      isTransfer: false,
+    };
+  } else {
+    editionParams = {
+      ...editionParams,
+      amount,
+      note,
+      time,
+      transactionType: getTxTypeFromFormType(formTxType),
+      paymentType: paymentType.value,
+      accountId,
+      isTransfer: false,
+    };
+  }
+
+  if (isTransferTx.value) {
+    editionParams.isTransfer = true;
+
+    if (!transactionItem.value?.id) {
+      editionParams.destinationAccountId = getDestinationAccountId({
+        isRecordExternal: isRecordExternal.value,
+        accountId: form.value.account.id,
+        toAccountId: form.value.toAccount.id,
+        sourceTransaction: props.transaction,
+      });
+
+      editionParams.destinationAmount = getDestinationAmount({
+        sourceTransaction: props.transaction,
+        isRecordExternal: isRecordExternal.value,
+        fromAmount: Number(form.value.amount),
+        toAmount: Number(form.value.targetAmount),
+        isCurrenciesDifferent: isCurrenciesDifferent.value,
+      });
+    } else {
+      editionParams.destinationTransactionId = transactionItem.value.id;
+    }
+  } else {
+    editionParams.categoryId = category.id;
+  }
+
+  await editTransaction(editionParams);
+}
+
 const submit = async () => {
   isLoading.value = true;
 
   try {
-    const {
-      amount,
-      note,
-      time,
-      type: formTxType,
-      paymentType,
-      account: { id: accountId },
-      toAccount,
-      category,
-    } = form.value;
-
     if (isFormCreation.value) {
-      const creationParams: Parameters<typeof createTransaction>[0] = {
-        amount,
-        note,
-        time: new Date(time).toUTCString(),
-        transactionType: getTxTypeFromFormType(formTxType),
-        paymentType: paymentType.value,
-        accountId,
-      };
-
-      if (isTransferTx.value) {
-        creationParams.destinationAccountId = toAccount.id;
-        creationParams.destinationAmount = isCurrenciesDifferent.value
-          ? form.value.targetAmount
-          : amount;
-        creationParams.isTransfer = true;
-      } else {
-        creationParams.categoryId = category.id;
-      }
-
-      await createTransaction(creationParams);
+      await handleCreateTransaction();
     } else {
-      let editionParams: Parameters<typeof editTransaction>[0] = {
-        txId: props.transaction.id,
-      };
-
-      if (isRecordExternal.value) {
-        editionParams = {
-          ...editionParams,
-          note,
-          paymentType: paymentType.value,
-          isTransfer: false,
-        };
-      } else {
-        editionParams = {
-          ...editionParams,
-          amount,
-          note,
-          time,
-          transactionType: getTxTypeFromFormType(formTxType),
-          paymentType: paymentType.value,
-          accountId,
-          isTransfer: false,
-        };
-      }
-
-      if (isTransferTx.value) {
-        editionParams.destinationAccountId = getDestinationAccountId({
-          isRecordExternal: isRecordExternal.value,
-          accountId: form.value.account.id,
-          toAccountId: form.value.toAccount.id,
-          sourceTransaction: props.transaction,
-        });
-        editionParams.destinationAmount = getDestinationAmount({
-          sourceTransaction: props.transaction,
-          isRecordExternal: isRecordExternal.value,
-          fromAmount: Number(form.value.amount),
-          toAmount: Number(form.value.targetAmount),
-          isCurrenciesDifferent: isCurrenciesDifferent.value,
-        });
-        editionParams.isTransfer = true;
-      } else {
-        editionParams.categoryId = category.id;
-      }
-
-      await editTransaction(editionParams);
+      await handleEditTransaction();
     }
 
     emit(MODAL_EVENTS.closeModal);
-    // Reload all cached data in the app
     queryClient.invalidateQueries([VUE_QUERY_TX_CHANGE_QUERY]);
   } catch (e) {
     // eslint-disable-next-line no-console
@@ -508,6 +558,7 @@ const submit = async () => {
     isLoading.value = false;
   }
 };
+
 const deleteTransactionHandler = async () => {
   try {
     if (props.transaction.accountType !== ACCOUNT_TYPES.system) {
@@ -527,6 +578,11 @@ const deleteTransactionHandler = async () => {
   } finally {
     isLoading.value = false;
   }
+};
+
+const deleteTransactionRecordHandler = () => {
+  transactionItem.value = null;
+  isTransactionLength.value = false;
 };
 
 const closeModal = () => {
@@ -572,6 +628,13 @@ $border-top-radius: 10px;
     background-color: var(--app-transfer-color);
   }
 }
+
+.modify-record__transaction {
+  display: flex;
+}
+.modify-record__transaction-button {
+  background-color: var(--app-surface-color);
+}
 .modify-record__form {
   padding: 0 24px;
 }
@@ -587,5 +650,8 @@ $border-top-radius: 10px;
 }
 .modify-record__action-link {
   width: 100%;
+}
+.modify-record__action-transaction {
+  margin-left: 10px;
 }
 </style>

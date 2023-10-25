@@ -1,26 +1,44 @@
 <template>
   <div class="record-list" data-cy="record-list-modal">
-    <TransactionsList :transactions="transactionsPages.pages.flat()" />
-    <!-- <h2>{{ props.transaction }}</h2> -->
-    <!-- {{ getTransactionsList }} -->
+    <template v-if="isFetched && transactionsPages">
+      <div
+        v-for="item in transactionsPages?.pages?.flat()"
+        :key="item.id"
+      >
+        <TransactionRecrod :tx="item" @record-click="handlerRecordClick" />
+      </div>
+    </template>
+    <template v-if="hasNextPage">
+      <button
+        class="record-list__load-more"
+        type="button"
+        @click="() => fetchNextPage()"
+      >
+        Load more
+      </button>
+    </template>
+    <template v-else>
+      <p>No more data to load</p>
+    </template>
   </div>
 </template>
 
 <script setup lang=ts>
-// import { TransactionModel } from 'shared-types';
-import TransactionsList from '@/components/transactions-list/transactions-list.vue';
 import { loadTransactions } from '@/api/transactions';
 import { VUE_QUERY_CACHE_KEYS } from '@/common/const';
-import { computed } from 'vue';
 import { useInfiniteQuery } from '@tanstack/vue-query';
-// import TransactionsList from './list.vue';
+import { TransactionModel } from 'shared-types';
+import { EVENTS as MODAL_EVENTS } from '@/components/modal-center/ui-modal.vue';
+import TransactionRecrod from '@/components/transactions-list/transaction-record.vue';
 
 const props = defineProps<{
   transactionType: string;
+  resolveTransaction:(item: TransactionModel) => void;
 }>();
 
-const limit = 10;
+const emit = defineEmits([MODAL_EVENTS.closeModal]);
 
+const limit = 15;
 const fetchTransactions = ({ pageParam = 0 }) => {
   const type = props.transactionType;
   const from = pageParam * limit;
@@ -29,11 +47,11 @@ const fetchTransactions = ({ pageParam = 0 }) => {
 
 const {
   data: transactionsPages,
-  // fetchNextPage,
-  // hasNextPage,
-  // isFetched,
+  fetchNextPage,
+  hasNextPage,
+  isFetched,
 } = useInfiniteQuery({
-  queryKey: VUE_QUERY_CACHE_KEYS.recordsPageRecordsList,
+  queryKey: [VUE_QUERY_CACHE_KEYS.recordsPageTransactionList, props.transactionType],
   queryFn: fetchTransactions,
   getNextPageParam: (lastPage, pages) => {
     // No more pages to load
@@ -44,10 +62,10 @@ const {
   staleTime: Infinity,
 });
 
-const sortTransactions = computed(
-  () => transactionsPages.value.pages.flat()
-    .filter(item => item.transactionType === props.transactionType),
-);
+const handlerRecordClick = (transaction) => {
+  props.resolveTransaction(transaction);
+  emit(MODAL_EVENTS.closeModal);
+};
 </script>
 
 <style lang="scss" scoped>
@@ -55,6 +73,21 @@ const sortTransactions = computed(
     max-width: 420px;
     max-height: 100%;
     padding: 20px;
+    overflow-x: hidden;
     background-color: var(--app-surface-color);
   }
+  .record-list__load-more {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+
+  color: var(--app-primary);
+
+  display: block;
+  margin: auto;
+
+  font-size: 16px;
+
+  margin-top: 32px;
+}
 </style>

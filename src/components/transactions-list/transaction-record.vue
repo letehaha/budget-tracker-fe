@@ -7,7 +7,7 @@
       'transaction-record--income': transaction.transactionType === TRANSACTION_TYPES.income,
       'transaction-record--expense': transaction.transactionType === TRANSACTION_TYPES.expense,
     }"
-    @click="editTransaction"
+    @click="transactionEmit"
   >
     <div class="transaction-record__info">
       <template v-if="!transaction.isTransfer && category">
@@ -47,14 +47,14 @@
 import { format } from 'date-fns';
 import { computed, reactive, ref } from 'vue';
 import { storeToRefs } from 'pinia';
-import { ACCOUNT_TYPES, TRANSACTION_TYPES, TransactionModel } from 'shared-types';
+import { TRANSACTION_TYPES, TransactionModel } from 'shared-types';
 
 import { useCategoriesStore, useAccountsStore } from '@/stores';
 import { loadTransactionsByTransferId } from '@/api/transactions';
 
 import { formatUIAmount } from '@/js/helpers';
 
-import { MODAL_TYPES, useModalCenter } from '@/components/modal-center/index';
+// import { MODAL_TYPES, useModalCenter } from '@/components/modal-center/index';
 import CategoryCircle from '@/components/common/category-circle.vue';
 
 const setOppositeTransaction = async (transaction: TransactionModel) => {
@@ -71,8 +71,12 @@ const props = defineProps<{
 
 const { categoriesMap } = storeToRefs(useCategoriesStore());
 const accountsStore = useAccountsStore();
-const { addModal } = useModalCenter();
+// const { addModal } = useModalCenter();
 const { accountsRecord } = storeToRefs(accountsStore);
+
+const emit = defineEmits<{
+  'record-click': [value: TransactionModel];
+}>();
 
 const transaction = reactive(props.tx);
 const oppositeTransferTransaction = ref<TransactionModel | null>(null);
@@ -101,36 +105,8 @@ const accountMovement = computed(() => {
 
 const formateDate = date => format(new Date(date), 'd MMMM y');
 
-const editTransaction = async () => {
-  const baseTx = transaction;
-  const oppositeTx = oppositeTransferTransaction.value;
-
-  const isExternalTransfer = (
-    baseTx.accountType !== ACCOUNT_TYPES.system
-    || (oppositeTx && oppositeTx.accountType !== ACCOUNT_TYPES.system)
-  );
-
-  const modalOptions = {
-    transaction: baseTx,
-    oppositeTransaction: undefined,
-  };
-
-  if (isExternalTransfer) {
-    const isBaseExternal = baseTx.accountType !== ACCOUNT_TYPES.system;
-
-    modalOptions.transaction = isBaseExternal ? baseTx : oppositeTx;
-    modalOptions.oppositeTransaction = isBaseExternal ? oppositeTx : baseTx;
-  } else if (!isExternalTransfer && baseTx.isTransfer) {
-    const isValid = baseTx.transactionType === TRANSACTION_TYPES.expense;
-
-    modalOptions.transaction = isValid ? baseTx : oppositeTx;
-    modalOptions.oppositeTransaction = isValid ? oppositeTx : baseTx;
-  }
-
-  addModal({
-    type: MODAL_TYPES.createRecord,
-    data: modalOptions,
-  });
+const transactionEmit = () => {
+  emit('record-click', transaction);
 };
 
 const formattedAmount = computed(() => {

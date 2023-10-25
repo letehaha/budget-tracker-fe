@@ -20,6 +20,8 @@ export const VUE_QUERY_CACHE_KEYS = Object.freeze({
 
   recordsPageRecordsList: [TX_CHANGE_QUERY, 'records-page-records-list'],
 
+  recordsPageTransactionList: [TX_CHANGE_QUERY, 'records-page'],
+
   accountSpecificTransactions: ['account-transactions'],
 });
 
