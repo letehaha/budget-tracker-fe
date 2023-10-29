@@ -20,3 +20,9 @@ export const VERBOSE_PAYMENT_TYPES: VerbosePaymentType[] = [
   { value: PAYMENT_TYPES.voucher, label: 'Voucher' },
   { value: PAYMENT_TYPES.webPayment, label: 'Web Payment' },
 ];
+
+export const OUT_OF_WALLET_ACCOUNT_NAME = 'Out of wallet';
+export const OUT_OF_WALLET_ACCOUNT_MOCK = {
+  name: OUT_OF_WALLET_ACCOUNT_NAME,
+  id: null,
+};

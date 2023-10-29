@@ -19,7 +19,7 @@ import {
 } from 'shared-types';
 import { useAccountsStore, useCategoriesStore, useCurrenciesStore } from '@/stores';
 import { createTransaction, editTransaction, deleteTransaction } from '@/api/transactions';
-import { type VerbosePaymentType, VERBOSE_PAYMENT_TYPES } from '@/common/const';
+import { type VerbosePaymentType, VERBOSE_PAYMENT_TYPES, OUT_OF_WALLET_ACCOUNT_MOCK } from '@/common/const';
 import InputField from '@/components/fields/input-field.vue';
 import SelectField from '@/components/fields/select-field.vue';
 import CategorySelectField from '@/components/fields/category-select-field.vue';
@@ -40,14 +40,11 @@ import {
   getTxTypeFromFormType,
 } from './helpers';
 
-const OUT_OF_WALLET_ACCOUNT = {
-  name: 'Out of wallet',
-  id: null,
-} as AccountModel;
-
 defineOptions({
   name: 'record-form',
 });
+
+const OUT_OF_WALLET_ACCOUNT = OUT_OF_WALLET_ACCOUNT_MOCK as AccountModel;
 
 const props = withDefaults(defineProps<{
   transaction?: TransactionModel;
