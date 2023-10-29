@@ -18,7 +18,7 @@ jobs:
       - id: docker-build
         uses: ./.github/actions/docker-build
         with:
-          vps-host: ${{ secrets.VPS_HOST }}
+          vps-host: ${{ secrets.API_HOST_PROD }}
           vue-app-api-ver: ${{ secrets.VUE_APP_API_VER }}
           docker-hub-username: ${{ secrets.DOCKER_HUB_USERNAME }}
           docker-hub-access-token: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
