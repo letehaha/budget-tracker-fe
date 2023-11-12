@@ -34,7 +34,7 @@ import FormRow from './form-row.vue';
 import AccountField from './account-field.vue';
 import { FORM_TYPES } from './types';
 import {
-  getDestinationAccountId,
+  getDestinationAccount,
   getDestinationAmount,
   getFormTypeFromTransaction,
   getTxTypeFromFormType,
@@ -44,7 +44,9 @@ defineOptions({
   name: 'record-form',
 });
 
-const OUT_OF_WALLET_ACCOUNT = OUT_OF_WALLET_ACCOUNT_MOCK as AccountModel;
+const isOutOfWalletAccount = (
+  account: typeof OUT_OF_WALLET_ACCOUNT_MOCK,
+) => account._isOutOfWallet;
 
 const props = withDefaults(defineProps<{
   transaction?: TransactionModel;
@@ -92,7 +94,10 @@ const isRecordExternal = computed(() => {
 // If record is external, the account field will be disabled, so we need to preselect
 // the account
 watch(() => isRecordExternal.value, (value) => {
-  if (value) {
+  if (
+    value
+    && props.transaction.transferNature !== TRANSACTION_TRANSFER_NATURE.transfer_out_wallet
+  ) {
     nextTick(() => {
       if (accountsRecord.value[props.transaction.accountId]) {
         form.value.account = accountsRecord.value[props.transaction.accountId];
@@ -113,7 +118,7 @@ const isAmountFieldDisabled = computed(() => {
   }
 
   // Means it's "Out of wallet"
-  if (form.value.account?.id === OUT_OF_WALLET_ACCOUNT.id) return true;
+  if (form.value.account?.id === OUT_OF_WALLET_ACCOUNT_MOCK.id) return true;
 
   return false;
 });
@@ -124,7 +129,7 @@ const isTargetAmountFieldDisabled = computed(() => {
   }
 
   // Means it's "Out of wallet"
-  if (form.value.toAccount?.id === OUT_OF_WALLET_ACCOUNT.id) return true;
+  if (form.value.toAccount?.id === OUT_OF_WALLET_ACCOUNT_MOCK.id) return true;
 
   return false;
 });
@@ -163,7 +168,7 @@ const targetCurrency = computed(
 );
 
 const transferSourceAccounts = computed(() => [
-  OUT_OF_WALLET_ACCOUNT,
+  OUT_OF_WALLET_ACCOUNT_MOCK,
   ...systemAccounts.value,
 ]);
 
@@ -183,13 +188,13 @@ watch(() => props.transaction, (value) => {
 
     if (value.transferNature === TRANSACTION_TRANSFER_NATURE.transfer_out_wallet) {
       if (value.transactionType === TRANSACTION_TYPES.income) {
-        initialFormValues.account = OUT_OF_WALLET_ACCOUNT;
+        initialFormValues.account = OUT_OF_WALLET_ACCOUNT_MOCK;
         initialFormValues.targetAmount = value.amount;
         initialFormValues.toAccount = accountsRecord.value[value.accountId];
       } else if (value.transactionType === TRANSACTION_TYPES.expense) {
         initialFormValues.amount = value.amount;
         initialFormValues.account = accountsRecord.value[value.accountId];
-        initialFormValues.toAccount = OUT_OF_WALLET_ACCOUNT;
+        initialFormValues.toAccount = OUT_OF_WALLET_ACCOUNT_MOCK;
       }
     } else {
       initialFormValues.amount = value.amount;
@@ -229,7 +234,7 @@ watch(currentTxType, (value, prevValue) => {
         form.value.account = null;
 
         if (transferNature === TRANSACTION_TRANSFER_NATURE.transfer_out_wallet) {
-          form.value.account = OUT_OF_WALLET_ACCOUNT;
+          form.value.account = OUT_OF_WALLET_ACCOUNT_MOCK;
         }
       }
     } else if (prevValue === FORM_TYPES.transfer) {
@@ -284,16 +289,16 @@ const submit = async () => {
       if ([
         creationParams.accountId,
         creationParams.destinationAccountId,
-      ].includes(OUT_OF_WALLET_ACCOUNT.id)) {
+      ].includes(OUT_OF_WALLET_ACCOUNT_MOCK.id)) {
         creationParams.transferNature = TRANSACTION_TRANSFER_NATURE.transfer_out_wallet;
 
-        if (creationParams.accountId === OUT_OF_WALLET_ACCOUNT.id) {
+        if (creationParams.accountId === OUT_OF_WALLET_ACCOUNT_MOCK.id) {
           creationParams.transactionType = TRANSACTION_TYPES.income;
           creationParams.amount = creationParams.destinationAmount;
           creationParams.accountId = creationParams.destinationAccountId;
           delete creationParams.destinationAmount;
           delete creationParams.destinationAccountId;
-        } else if (creationParams.destinationAccountId === OUT_OF_WALLET_ACCOUNT.id) {
+        } else if (creationParams.destinationAccountId === OUT_OF_WALLET_ACCOUNT_MOCK.id) {
           creationParams.transactionType = TRANSACTION_TYPES.expense;
           delete creationParams.destinationAmount;
           delete creationParams.destinationAccountId;
@@ -327,20 +332,25 @@ const submit = async () => {
       }
 
       if (isTransferTx.value) {
-        editionParams.destinationAccountId = getDestinationAccountId({
+        const destinationAccount = getDestinationAccount({
           isRecordExternal: isRecordExternal.value,
-          accountId: form.value.account.id,
-          toAccountId: form.value.toAccount.id,
+          account: form.value.account,
+          toAccount: form.value.toAccount,
           sourceTransaction: props.transaction,
         });
-        editionParams.destinationAmount = getDestinationAmount({
-          sourceTransaction: props.transaction,
-          isRecordExternal: isRecordExternal.value,
-          fromAmount: Number(form.value.amount),
-          toAmount: Number(form.value.targetAmount),
-          isCurrenciesDifferent: isCurrenciesDifferent.value,
-        });
-        editionParams.transferNature = TRANSACTION_TRANSFER_NATURE.common_transfer;
+        if (isOutOfWalletAccount(destinationAccount)) {
+          editionParams.transferNature = TRANSACTION_TRANSFER_NATURE.transfer_out_wallet;
+        } else {
+          editionParams.destinationAccountId = destinationAccount.id;
+          editionParams.destinationAmount = getDestinationAmount({
+            sourceTransaction: props.transaction,
+            isRecordExternal: isRecordExternal.value,
+            fromAmount: Number(form.value.amount),
+            toAmount: Number(form.value.targetAmount),
+            isCurrenciesDifferent: isCurrenciesDifferent.value,
+          });
+          editionParams.transferNature = TRANSACTION_TRANSFER_NATURE.common_transfer;
+        }
       } else {
         editionParams.categoryId = category.id;
       }

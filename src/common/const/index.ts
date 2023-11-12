@@ -1,4 +1,4 @@
-import { PAYMENT_TYPES } from 'shared-types';
+import { AccountModel, PAYMENT_TYPES } from 'shared-types';
 
 export * from './vue-query';
 
@@ -22,7 +22,10 @@ export const VERBOSE_PAYMENT_TYPES: VerbosePaymentType[] = [
 ];
 
 export const OUT_OF_WALLET_ACCOUNT_NAME = 'Out of wallet';
+export type OutOfWalletAccountModel = AccountModel & { _isOutOfWallet?: boolean };
+
 export const OUT_OF_WALLET_ACCOUNT_MOCK = {
+  _isOutOfWallet: true,
   name: OUT_OF_WALLET_ACCOUNT_NAME,
   id: null,
-};
+} as OutOfWalletAccountModel;

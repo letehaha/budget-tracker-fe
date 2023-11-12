@@ -1,17 +1,24 @@
-import { TRANSACTION_TYPES, TRANSACTION_TRANSFER_NATURE, TransactionModel } from 'shared-types';
+import {
+  TRANSACTION_TYPES, TRANSACTION_TRANSFER_NATURE, TransactionModel, AccountModel,
+} from 'shared-types';
 import { FORM_TYPES } from './types';
 
-export const getDestinationAccountId = ({
+export const getDestinationAccount = ({
   isRecordExternal,
   sourceTransaction,
-  accountId,
-  toAccountId,
+  account,
+  toAccount,
+}: {
+  isRecordExternal: boolean;
+  sourceTransaction: TransactionModel;
+  account: AccountModel;
+  toAccount: AccountModel;
 }) => {
   if (isRecordExternal) {
     const isIncome = sourceTransaction.transactionType === TRANSACTION_TYPES.income;
-    return isIncome ? accountId : toAccountId;
+    return isIncome ? account : toAccount;
   }
-  return toAccountId;
+  return toAccount;
 };
 
 export const getDestinationAmount = ({
