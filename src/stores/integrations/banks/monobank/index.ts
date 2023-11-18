@@ -144,7 +144,7 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
 
     try {
       await pairMonoAccount({ token });
-      queryClient.invalidateQueries(VUE_QUERY_CACHE_KEYS.allAccounts);
+      queryClient.invalidateQueries({ queryKey: VUE_QUERY_CACHE_KEYS.allAccounts });
     } catch (e) {
       throw new UnexpectedError();
     }

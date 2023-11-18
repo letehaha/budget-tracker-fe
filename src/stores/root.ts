@@ -73,7 +73,7 @@ export const useRootStore = defineStore('root', () => {
           monobankStore.loadTransactionsForEnabledAccounts(),
         ]);
 
-        queryClient.invalidateQueries([VUE_QUERY_TX_CHANGE_QUERY]);
+        queryClient.invalidateQueries({ queryKey: [VUE_QUERY_TX_CHANGE_QUERY] });
       }
     } catch (e) {
       isFinancialDataSyncingError.value = e as Error;

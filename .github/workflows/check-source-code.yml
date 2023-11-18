@@ -69,6 +69,11 @@ jobs:
     needs: prepare-dependencies
     runs-on: ubuntu-latest
     strategy:
+      # when one test fails, DO NOT cancel the other
+      # containers, because this will kill Cypress processes
+      # leaving Cypress Cloud hanging ...
+      # https://github.com/cypress-io/github-action/issues/48
+      fail-fast: false
       matrix:
         # Run tests in parallel
         containers: [1, 2, 3]
@@ -80,7 +85,7 @@ jobs:
           token: ${{ secrets.REPOSITORIES_ACCESS_TOKEN }}
       - uses: ./.github/actions/prepare-local-env
       - name: Run Cypress e2e tests
-        uses: cypress-io/github-action@v4
+        uses: cypress-io/github-action@v6
         with:
           start: npm run dev
           wait-on: http://budget-tracker.com:8100
@@ -93,7 +98,8 @@ jobs:
           group: Cypress tests
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-          # pass GitHub token to detect new build vs re-run build
+          # Recommended: pass the GitHub token lets this action correctly
+          # determine the unique run id necessary to re-run the checks
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BASE_URL: http://budget-tracker.com:8100
           PORT: 8100

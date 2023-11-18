@@ -29,7 +29,7 @@ import { VUE_QUERY_CACHE_KEYS } from '@/common/const';
 
 const limit = 30;
 
-const fetchTransactions = ({ pageParam = 0 }) => {
+const fetchTransactions = ({ pageParam }: { pageParam: number }) => {
   const from = pageParam * limit;
   return loadTransactions({ limit, from });
 };
@@ -42,6 +42,7 @@ const {
 } = useInfiniteQuery({
   queryKey: VUE_QUERY_CACHE_KEYS.recordsPageRecordsList,
   queryFn: fetchTransactions,
+  initialPageParam: 0,
   getNextPageParam: (lastPage, pages) => {
     // No more pages to load
     if (lastPage.length < limit) return undefined;
