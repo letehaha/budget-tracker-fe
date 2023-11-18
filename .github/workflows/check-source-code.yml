@@ -68,10 +68,25 @@ jobs:
     name: Integration testing
     needs: prepare-dependencies
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        # Run tests in parallel
-        containers: [1, 2, 3]
+    # Disabled for now because when running in parallel, GitHub setups different
+    # machines with different chrome-browsers installed. That causes Cypress errors
+    # When trying to run in the cypress Docker container, there's no access to "sudo"
+    # to patch hosts file
+    # strategy:
+    #   # when one test fails, DO NOT cancel the other
+    #   # containers, because this will kill Cypress processes
+    #   # leaving Cypress Cloud hanging ...
+    #   # https://github.com/cypress-io/github-action/issues/48
+    #   fail-fast: false
+    #   matrix:
+    #     # Run tests in parallel
+    #     containers: [1, 2, 3]
+    # container:
+    #   # Using Docker container because of the issue with parallelization:
+    #   # https://github.com/cypress-io/github-action/blob/master/README.md#parallel
+    #   # see browsers tags here: https://hub.docker.com/r/cypress/browsers/tags
+    #   image: cypress/browsers:node-20.9.0-chrome-118.0.5993.88-1-ff-118.0.2-edge-118.0.2088.46-1
+    #   options: --user 1001
     steps:
       - name: Checkout repository and submodules
         uses: actions/checkout@v2
@@ -80,7 +95,7 @@ jobs:
           token: ${{ secrets.REPOSITORIES_ACCESS_TOKEN }}
       - uses: ./.github/actions/prepare-local-env
       - name: Run Cypress e2e tests
-        uses: cypress-io/github-action@v4
+        uses: cypress-io/github-action@v6
         with:
           start: npm run dev
           wait-on: http://budget-tracker.com:8100
@@ -89,11 +104,12 @@ jobs:
           browser: chrome
           quiet: true
           record: true
-          parallel: true
+          # parallel: true
           group: Cypress tests
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-          # pass GitHub token to detect new build vs re-run build
+          # Recommended: pass the GitHub token lets this action correctly
+          # determine the unique run id necessary to re-run the checks
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BASE_URL: http://budget-tracker.com:8100
           PORT: 8100
