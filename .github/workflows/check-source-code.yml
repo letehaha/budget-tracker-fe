@@ -40,6 +40,13 @@ jobs:
             echo "No access to secrets"
             exit 1
           fi
+      - name: Another test
+        run: |
+          if [[ -z "${{ secrets.REPOSITORIES_ACCESS_TOKEN }}" ]]; then
+            echo "Secret REPOSITORIES_ACCESS_TOKEN is empty or not set"
+          else
+            echo "Secret REPOSITORIES_ACCESS_TOKEN is available"
+          fi
       - id: prepare-env
         uses: ./.github/actions/prepare-local-env
       - name: Install dependencies
