@@ -3,7 +3,8 @@ name: Lint, Test and Build
 on:
   push:
     branches: [main]
-  pull_request:
+  pull_request_target:
+    types: [opened, reopened, synchronize]
     branches: [main]
 
 jobs:
@@ -11,11 +12,32 @@ jobs:
     name: Prepare local deps
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository and submodules
-        uses: actions/checkout@v2
+      - name: Get User Permission
+        id: checkAccess
+        uses: actions-cool/check-user-permission@v2
         with:
-          submodules: recursive
-          token: ${{ secrets.REPOSITORIES_ACCESS_TOKEN }}
+          require: write
+          username: ${{ github.triggering_actor }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Check User Permission
+        if: steps.checkAccess.outputs.require-result == 'false'
+        run: |
+          echo "${{ github.triggering_actor }} does not have permissions on this repo."
+          echo "Current permission level is ${{ steps.checkAccess.outputs.user-permission }}"
+          echo "Job originally triggered by ${{ github.actor }}"
+          exit 1
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{  github.event.pull_request.head.sha }} # This is dangerous without the first access check
+      - name: Another test
+        run: |
+          if [[ -z "${{ secrets.REPOSITORIES_ACCESS_TOKEN }}" ]]; then
+            echo "Secret REPOSITORIES_ACCESS_TOKEN is empty or not set"
+          else
+            echo "Secret REPOSITORIES_ACCESS_TOKEN is available"
+          fi
       - id: prepare-env
         uses: ./.github/actions/prepare-local-env
       - name: Install dependencies

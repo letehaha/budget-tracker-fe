@@ -12,6 +12,8 @@ import './registerServiceWorker';
 
 identifyCurrentTheme();
 
+console.log(1);
+
 const app = createApp(App);
 
 app.directive('click-outside', clickOutside);
