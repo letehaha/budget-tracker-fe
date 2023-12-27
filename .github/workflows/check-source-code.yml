@@ -32,14 +32,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           ref: ${{  github.event.pull_request.head.sha }} # This is dangerous without the first access check
-      - name: Test
-        run: |
-          if [[ "x${{ secrets.TEST_SECRET }}" == "xtest" ]]; then
-            echo "Access to secrets"
-          else
-            echo "No access to secrets"
-            exit 1
-          fi
       - name: Another test
         run: |
           if [[ -z "${{ secrets.REPOSITORIES_ACCESS_TOKEN }}" ]]; then
