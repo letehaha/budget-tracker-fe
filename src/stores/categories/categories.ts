@@ -4,6 +4,7 @@ import { CategoryModel } from 'shared-types';
 import { loadSystemCategories } from '@/api';
 import { type FormattedCategory } from '@/common/types';
 import { useNotificationCenter } from '@/components/notification-center';
+import * as errors from '@/js/errors';
 import { buildCategiesObjectGraph } from './helpers';
 
 export const useCategoriesStore = defineStore('categories', () => {
@@ -17,7 +18,9 @@ export const useCategoriesStore = defineStore('categories', () => {
 
       if (result?.length) categories.value = result;
     } catch (err) {
-      notificationStore.addErrorNotification('Cannot load categories');
+      if (!(err instanceof errors.AuthError)) {
+        notificationStore.addErrorNotification('Cannot load categories');
+      }
     }
   };
 
