@@ -64,10 +64,10 @@ jobs:
       - name: Build source code
         run: npm run build
 
-  # integration-tests:
-  #   name: Integration testing
-  #   needs: prepare-dependencies
-  #   runs-on: ubuntu-latest
+  integration-tests:
+    name: Integration testing
+    needs: prepare-dependencies
+    runs-on: ubuntu-latest
     # Disabled for now because when running in parallel, GitHub setups different
     # machines with different chrome-browsers installed. That causes Cypress errors
     # When trying to run in the cypress Docker container, there's no access to "sudo"
@@ -87,35 +87,35 @@ jobs:
     #   # see browsers tags here: https://hub.docker.com/r/cypress/browsers/tags
     #   image: cypress/browsers:node-20.9.0-chrome-118.0.5993.88-1-ff-118.0.2-edge-118.0.2088.46-1
     #   options: --user 1001
-    # steps:
-    #   - name: Checkout repository and submodules
-    #     uses: actions/checkout@v2
-    #     with:
-    #       submodules: recursive
-    #       token: ${{ secrets.REPOSITORIES_ACCESS_TOKEN }}
-    #   - uses: ./.github/actions/prepare-local-env
-    #   - name: Run Cypress e2e tests
-    #     uses: cypress-io/github-action@v6
-    #     with:
-    #       start: npm run dev
-    #       wait-on: http://budget-tracker.com:8100
-    #       install: false
-    #       config-file: cypress.config.ts
-    #       browser: chrome
-    #       quiet: true
-    #       record: true
-    #       # parallel: true
-    #       group: Cypress tests
-    #     env:
-    #       CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-    #       # Recommended: pass the GitHub token lets this action correctly
-    #       # determine the unique run id necessary to re-run the checks
-    #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #       BASE_URL: http://budget-tracker.com:8100
-    #       PORT: 8100
-    #       HOST: budget-tracker.com
-    #       VITE_APP_API_HTTP: https://${{ secrets.API_HOST_PROD }}
-    #       VITE_APP_API_VER: ${{ secrets.VUE_APP_API_VER }}
+    steps:
+      - name: Checkout repository and submodules
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          token: ${{ secrets.REPOSITORIES_ACCESS_TOKEN }}
+      - uses: ./.github/actions/prepare-local-env
+      - name: Run Cypress e2e tests
+        uses: cypress-io/github-action@v6
+        with:
+          start: npm run dev
+          wait-on: http://budget-tracker.com:8100
+          install: false
+          config-file: cypress.config.ts
+          browser: chrome
+          quiet: true
+          record: true
+          # parallel: true
+          group: Cypress tests
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          # Recommended: pass the GitHub token lets this action correctly
+          # determine the unique run id necessary to re-run the checks
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BASE_URL: http://budget-tracker.com:8100
+          PORT: 8100
+          HOST: budget-tracker.com
+          VITE_APP_API_HTTP: https://${{ secrets.API_HOST_PROD }}
+          VITE_APP_API_VER: ${{ secrets.VUE_APP_API_VER }}
 
   docker-build:
     name: Build source code using Docker
