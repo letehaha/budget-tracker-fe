@@ -2,7 +2,7 @@
   <div class="transactions-list">
     <template
       v-for="item in transactions"
-      :key="item.id + `render-id-${renderId}`"
+      :key="`${item.id}-render-id-${renderId}`"
     >
       <TransactionRecrod :tx="item" />
     </template>
