@@ -65,7 +65,7 @@ const { isAppInitialized } = storeToRefs(useRootStore());
 
 const limit = 10;
 
-const fetchTransactions = ({ pageParam = 0 }) => {
+const fetchTransactions = ({ pageParam }: { pageParam: number }) => {
   const from = pageParam * limit;
   return loadTransactions({ limit, from, accountId: account.value.id });
 };
@@ -78,6 +78,7 @@ const {
 } = useInfiniteQuery({
   queryKey: [...VUE_QUERY_CACHE_KEYS.accountSpecificTransactions, account.value.id],
   queryFn: fetchTransactions,
+  initialPageParam: 0,
   getNextPageParam: (lastPage, pages) => {
     // No more pages to load
     if (lastPage.length < limit) return undefined;

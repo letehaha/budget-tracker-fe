@@ -1,7 +1,12 @@
 <template>
-  <template v-if="accounts.length || formAccount">
+  <template v-if="accounts.length || account">
     <template v-if="isTransferTransaction">
-      <form-row v-if="!isTransactionRecord || (isTransactionRecord && transactionType === 'expense')">
+      <form-row
+        v-if="
+          !isTransactionRecord
+            || (isTransactionRecord && transactionType === TRANSACTION_TYPES.expense)
+        "
+      >
         <select-field
           label="From account"
           placeholder="Select account"
@@ -9,20 +14,25 @@
           label-key="name"
           :disabled="fromAccountDisabled"
           is-value-preselected
-          :model-value="formAccount"
+          :model-value="account"
           @update:model-value="updateFormAccount"
         />
       </form-row>
 
-      <form-row v-if="!isTransactionRecord || (isTransactionRecord && transactionType === 'income')">
+      <form-row
+        v-if="
+          !isTransactionRecord
+            || (isTransactionRecord && transactionType === TRANSACTION_TYPES.income)
+        "
+      >
         <select-field
           label="To account"
           placeholder="Select account"
           :values="filteredAccounts"
           label-key="name"
           :disabled="toAccountDisabled"
-          :model-value="formToAccount"
-          @update:model-value="emit('update:form-to-account', $event)"
+          :model-value="toAccount"
+          @update:model-value="emit('update:to-account', $event)"
         />
       </form-row>
     </template>
@@ -35,7 +45,7 @@
           label-key="name"
           :disabled="fromAccountDisabled"
           is-value-preselected
-          :model-value="formAccount"
+          :model-value="account"
           @update:model-value="updateFormAccount"
         />
       </form-row>
@@ -43,11 +53,7 @@
   </template>
   <template v-else>
     <form-row>
-      <input-field
-        model-value="No account exists"
-        label="Account"
-        readonly
-      >
+      <input-field model-value="No account exists" label="Account" readonly>
         <template #label-right>
           <div
             class="account-field__create-account"
@@ -63,7 +69,7 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
-import { AccountModel } from 'shared-types';
+import { AccountModel, TRANSACTION_TYPES } from 'shared-types';
 
 import { ROUTES_NAMES } from '@/routes';
 
@@ -72,25 +78,32 @@ import InputField from '@/components/fields/input-field.vue';
 
 import FormRow from './form-row.vue';
 
-withDefaults(defineProps<{
-  formAccount?: AccountModel;
-  formToAccount?: AccountModel;
-  isTransferTransaction: boolean;
-  accounts: AccountModel[];
-  filteredAccounts: AccountModel[];
-  isTransactionRecord: boolean;
-  transactionType: string;
-  fromAccountDisabled?: boolean;
-  toAccountDisabled?: boolean;
-}>(), {
-  formAccount: null,
-  formToAccount: null,
-  isTransactionRecord: false,
-  fromAccountDisabled: false,
-  toAccountDisabled: false,
-});
+withDefaults(
+  defineProps<{
+    account?: AccountModel | null;
+    toAccount?: AccountModel | null;
+    isTransferTransaction: boolean;
+    accounts: AccountModel[];
+    filteredAccounts: AccountModel[];
+    isTransactionRecord: boolean;
+    transactionType: TRANSACTION_TYPES;
+    fromAccountDisabled?: boolean;
+    toAccountDisabled?: boolean;
+  }>(),
+  {
+    account: null,
+    toAccount: null,
+    isTransactionRecord: false,
+    fromAccountDisabled: false,
+    toAccountDisabled: false,
+  },
+);
 
-const emit = defineEmits(['close-modal', 'update:form-account', 'update:form-to-account']);
+const emit = defineEmits([
+  'close-modal',
+  'update:account',
+  'update:to-account',
+]);
 
 const router = useRouter();
 
@@ -101,7 +114,7 @@ const redirectToCreateAccountPage = async () => {
 };
 
 const updateFormAccount = (account: AccountModel) => {
-  emit('update:form-account', account);
+  emit('update:account', account);
 };
 </script>
 

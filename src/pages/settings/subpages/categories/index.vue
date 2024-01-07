@@ -283,8 +283,7 @@ const deleteCategory = async () => {
   }
 }
 .categories-page__category-info {
-  display: grid;
-  grid-template-columns: min-content 1fr;
+  display: flex;
   align-items: center;
   gap: 8px;
 }

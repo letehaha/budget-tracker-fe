@@ -10,12 +10,12 @@
     @click="transactionEmit"
   >
     <div class="transaction-record__info">
-      <template v-if="!transaction.isTransfer && category">
+      <template v-if="!isTransferTransaction && category">
         <CategoryCircle :category="category" />
       </template>
 
       <div>
-        <template v-if="transaction.isTransfer">
+        <template v-if="isTransferTransaction">
           <div class="transaction-record__category">
             {{ accountMovement }}
           </div>
@@ -47,7 +47,9 @@
 import { format } from 'date-fns';
 import { computed, reactive, ref } from 'vue';
 import { storeToRefs } from 'pinia';
-import { TRANSACTION_TYPES, TransactionModel } from 'shared-types';
+import {
+  TRANSACTION_TRANSFER_NATURE, TRANSACTION_TYPES, TransactionModel,
+} from 'shared-types';
 
 import { useCategoriesStore, useAccountsStore } from '@/stores';
 import { loadTransactionsByTransferId } from '@/api/transactions';
@@ -65,6 +67,11 @@ const setOppositeTransaction = async (transaction: TransactionModel) => {
   return transactions.find(item => item.id !== transaction.id);
 };
 
+const txNatureIsTransfer = (nature: TRANSACTION_TRANSFER_NATURE) => [
+  TRANSACTION_TRANSFER_NATURE.common_transfer,
+  TRANSACTION_TRANSFER_NATURE.transfer_out_wallet,
+].includes(nature);
+
 const props = defineProps<{
   tx: TransactionModel;
 }>();
@@ -79,9 +86,14 @@ const emit = defineEmits<{
 }>();
 
 const transaction = reactive(props.tx);
+
+const isTransferTransaction = computed(
+  () => txNatureIsTransfer(transaction.transferNature),
+);
+
 const oppositeTransferTransaction = ref<TransactionModel | null>(null);
 
-if (transaction.isTransfer) {
+if (transaction.transferNature === TRANSACTION_TRANSFER_NATURE.common_transfer) {
   (async () => {
     oppositeTransferTransaction.value = (
       await setOppositeTransaction(transaction)
@@ -100,6 +112,9 @@ const accountMovement = computed(() => {
     ? '=>'
     : '<=';
 
+  if (transaction.transferNature === TRANSACTION_TRANSFER_NATURE.transfer_out_wallet) {
+    return `${accountFrom.value?.name} ${separator} Out of wallet`;
+  }
   return `${accountFrom.value?.name} ${separator} ${accountTo.value?.name}`;
 });
 

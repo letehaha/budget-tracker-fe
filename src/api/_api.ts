@@ -1,4 +1,6 @@
 import { API_ERROR_CODES, API_RESPONSE_STATUS } from 'shared-types';
+import { useAuthStore } from '@/stores';
+import { router } from '@/routes';
 import { ApiBaseError } from '@/common/types';
 import {
   useNotificationCenter,
@@ -40,8 +42,6 @@ console.log('API_HTTP', API_HTTP);
 // eslint-disable-next-line no-console
 console.log('API_VER', API_VER);
 class ApiCaller {
-  logout: () => void;
-
   authToken: string | null;
 
   _baseURL: string;
@@ -55,9 +55,9 @@ class ApiCaller {
     this.authToken = token;
   }
 
-  get(
+  get<T = Record<string, unknown>>(
     endpoint: ApiCall['endpoint'],
-    query: Record<string, unknown> = {},
+    query: T = {} as T,
     options: ApiCall['options'] = {},
   ) {
     const validQuery: ApiCall['query'] = {};
@@ -183,15 +183,15 @@ class ApiCaller {
         });
 
         throw new errors.NetworkError('Failed to fetch data from the server.');
-      } else {
-        addNotification({
-          id: 'unexpected-api-error',
-          text: 'Unexpected error.',
-          type: NotificationType.error,
-        });
-
-        throw new errors.UnexpectedError('Unexpected error.', {});
       }
+
+      addNotification({
+        id: 'unexpected-api-error',
+        text: 'Unexpected error.',
+        type: NotificationType.error,
+      });
+
+      throw new errors.UnexpectedError('Unexpected error.', {});
     }
 
     const { status, response }: {
@@ -205,7 +205,8 @@ class ApiCaller {
 
     if (status === API_RESPONSE_STATUS.error) {
       if (response.code === API_ERROR_CODES.unauthorized) {
-        await this.logout();
+        useAuthStore().logout();
+        router.push('/');
 
         addNotification({
           id: 'authorization-error',
@@ -235,17 +236,6 @@ class ApiCaller {
 
     return undefined;
   }
-
-  setRequiredActions({ logout }) {
-    this.logout = logout;
-  }
 }
 
 export const api = new ApiCaller();
-
-export function initApiCaller(
-  { logout }:
-  { logout: () => void },
-): void {
-  api.setRequiredActions({ logout });
-}

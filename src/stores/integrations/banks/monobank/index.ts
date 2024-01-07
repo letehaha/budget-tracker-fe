@@ -1,5 +1,6 @@
 import { ref, computed } from 'vue';
 import { defineStore, storeToRefs } from 'pinia';
+import { useQueryClient } from '@tanstack/vue-query';
 import {
   ACCOUNT_TYPES, MonobankUserModel, endpointsTypes, API_ERROR_CODES,
 } from 'shared-types';
@@ -15,8 +16,10 @@ import {
 import { getHoursInMilliseconds } from '@/js/helpers';
 import { NetworkError, TooManyRequestsError, UnexpectedError } from '@/js/errors';
 import { useAccountsStore } from '@/stores/accounts';
+import { VUE_QUERY_CACHE_KEYS } from '@/common/const';
 
 export const useBanksMonobankStore = defineStore('banks-monobank', () => {
+  const queryClient = useQueryClient();
   const accountsStore = useAccountsStore();
   const user = ref<MonobankUserModel>();
   const isUserExist = ref(false);
@@ -141,7 +144,7 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
 
     try {
       await pairMonoAccount({ token });
-      await accountsStore.loadAccounts();
+      queryClient.invalidateQueries({ queryKey: VUE_QUERY_CACHE_KEYS.allAccounts });
     } catch (e) {
       throw new UnexpectedError();
     }

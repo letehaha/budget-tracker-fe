@@ -13,14 +13,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, onBeforeUnmount } from 'vue';
+import { defineComponent, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { AccountModel } from 'shared-types';
 
 import { ROUTES_NAMES } from '@/routes/constants';
 import { useAccountsStore } from '@/stores';
-import { eventBus, BUS_EVENTS } from '@/js/utils';
 import AccountCard from './account-card.vue';
 
 export default defineComponent({
@@ -29,14 +28,7 @@ export default defineComponent({
   },
   setup() {
     const router = useRouter();
-    const accountsStore = useAccountsStore();
-    const { enabledAccounts } = storeToRefs(accountsStore);
-
-    eventBus.on(BUS_EVENTS.transactionChange, accountsStore.loadAccounts);
-
-    onBeforeUnmount(() => {
-      eventBus.off(BUS_EVENTS.transactionChange, accountsStore.loadAccounts);
-    });
+    const { enabledAccounts } = storeToRefs(useAccountsStore());
 
     const allAccounts = computed(
       () => [...enabledAccounts.value].sort((a, b) => b.currentBalance - a.currentBalance),
