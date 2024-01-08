@@ -83,5 +83,29 @@ describe('transactions create/update/delete form', () => {
         categoryId: dataMocks.USER_CATEGORIES[0].id,
       });
     });
+
+    test.todo('basic transfer');
+    test.todo('transfer out of wallet');
+    test.todo('transfer with different currencies');
+    test.todo('transfer with different currencies out of wallet');
+  });
+
+  describe('transaction updation', () => {
+    test.todo('expense -> income');
+    test.todo('income -> expense');
+    test.todo('different amount, date, category');
+    test.todo('external transaction (check payload, check fields are disabled)');
+    test.todo('income -> transfer');
+    test.todo('expense -> transfer');
+    test.todo('transfer -> income');
+    test.todo('transfer -> expense');
+    test.todo('transfer -> external expense/income');
+  });
+
+  describe('transaction deletion', () => {
+    test.todo('delete expense');
+    test.todo('delete income');
+    test.todo('delete transfer');
+    test.todo('not able to delete external transaction');
   });
 });
