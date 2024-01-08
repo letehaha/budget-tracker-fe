@@ -45,3 +45,7 @@ export const addUserCurrencies = async (
 ) => (
   api.post('/user/currencies', { currencies })
 );
+
+export const loadUserBaseCurrency = (): Promise<UserCurrencyModel> => (
+  api.get('/user/currencies/base')
+);

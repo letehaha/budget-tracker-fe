@@ -5,6 +5,7 @@
       'category-select-field--active': isDropdownOpened,
     }"
     class="category-select-field"
+    data-test="category-select-field"
   >
     <FieldLabel
       :label="label"
@@ -16,13 +17,14 @@
         <div
           v-bind="$attrs"
           class="category-select-field__input"
+          title="Select category"
           @click="() => toggleDropdown()"
         >
           <template v-if="selectedValue">
             <CategoryCircle :category="selectedValue" />
           </template>
 
-          {{ selectedValue.name || placeholder }}
+          {{ selectedValue?.name || placeholder }}
           <div class="category-select-field__arrow" />
         </div>
         <div
@@ -32,6 +34,7 @@
           <div
             ref="DOMList"
             class="category-select-field__dropdown-values"
+            role="listbox"
           >
             <!-- Show top parent category at the top of list of child categories -->
             <div class="category-select-field__search-field">
@@ -58,6 +61,8 @@
                 :class="{
                   'category-select-field__dropdown-item--highlighed': selectedValue.id === topLevelCategory.id,
                 }"
+                role="option"
+                :aria-selected="selectedValue.id === topLevelCategory.id"
                 @click="selectItem(topLevelCategory, true)"
               >
                 <CategoryCircle :category="topLevelCategory" />
@@ -86,6 +91,8 @@
                 :class="{
                   'category-select-field__dropdown-item--highlighed': selectedValue.id === item.id,
                 }"
+                role="option"
+                :aria-selected="selectedValue.id === item.id"
                 @click="selectItem(item)"
               >
                 <CategoryCircle :category="item" />
