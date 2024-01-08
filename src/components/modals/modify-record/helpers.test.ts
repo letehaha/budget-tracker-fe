@@ -9,7 +9,7 @@ import { getDestinationAmount, getFormTypeFromTransaction, getTxTypeFromFormType
 import { FORM_TYPES } from './types';
 
 describe('components/modals/modify-record/helpers', () => {
-  describe.skip('getDestinationAmount', () => {
+  describe('getDestinationAmount', () => {
     test.each([
       [[10, 20, false, false, INCOME_TRANSACTION], 10],
       [[10, 20, false, true, INCOME_TRANSACTION], 10],
