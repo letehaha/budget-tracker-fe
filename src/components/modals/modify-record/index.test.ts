@@ -7,6 +7,60 @@ import * as apiMethods from '@/api';
 import { TRANSACTION_TYPES } from 'shared-types';
 import FormComponent from './index.vue';
 
+const mountComponent = () => mount(FormComponent, {
+  global: {
+    plugins: [
+      createTestingPinia({
+        initialState: {
+          user: { user: dataMocks.USER },
+          currencies: {
+            currencies: dataMocks.USER_CURRENCIES,
+            systemCurrencies: dataMocks.SYSTEM_CURRENCIES,
+            baseCurrency: dataMocks.USER_BASE_CURRENCY,
+          },
+          categories: {
+            categories: dataMocks.USER_CATEGORIES,
+          },
+        },
+      }),
+      VueQueryPlugin,
+      router,
+    ],
+    directives: {
+      'click-outside': () => {},
+    },
+  },
+});
+
+const fillAlmountField = async (wrapper: ReturnType<typeof mountComponent>, amount: number) => {
+  const amountField = wrapper.find<HTMLInputElement>('input[placeholder="Amount"]');
+  await amountField.setValue(amount);
+};
+
+const fillAccountField = async (wrapper: ReturnType<typeof mountComponent>, value: string) => {
+  const accountField = wrapper.find('[title="Select account"]');
+  await accountField.trigger('click');
+
+  const desiredAccountBtn = wrapper.findAll('button[role="option"]').find(item => item.text().includes(value));
+  await desiredAccountBtn.trigger('click');
+};
+
+const fillCategoryField = async (wrapper: ReturnType<typeof mountComponent>, value) => {
+  const categoryField = wrapper.find('[title="Select category"]');
+  await categoryField.trigger('click');
+
+  let desiredCategoryBtn = wrapper
+    .findAll('[data-test="category-select-field"] button[role="option"]')
+    .find(item => item.text().includes(value));
+  await desiredCategoryBtn.trigger('click');
+
+  // Since that's how category selector works, we need to select it one more time
+  desiredCategoryBtn = wrapper
+    .findAll('[data-test="category-select-field"] button[role="option"]')
+    .find(item => item.text().includes(value));
+  await desiredCategoryBtn.trigger('click');
+};
+
 describe('transactions create/update/delete form', () => {
   beforeAll(() => {
     // jsdom doesn't implement this method so we're adding our own
@@ -16,31 +70,6 @@ describe('transactions create/update/delete form', () => {
     vi.resetAllMocks();
   });
 
-  const mountComponent = () => mount(FormComponent, {
-    global: {
-      plugins: [
-        createTestingPinia({
-          initialState: {
-            user: { user: dataMocks.USER },
-            currencies: {
-              currencies: dataMocks.USER_CURRENCIES,
-              systemCurrencies: dataMocks.SYSTEM_CURRENCIES,
-              baseCurrency: dataMocks.USER_BASE_CURRENCY,
-            },
-            categories: {
-              categories: dataMocks.USER_CATEGORIES,
-            },
-          },
-        }),
-        VueQueryPlugin,
-        router,
-      ],
-      directives: {
-        'click-outside': () => {},
-      },
-    },
-  });
-
   describe('transaction creation', () => {
     test.each([
       ['income transaction', 'button[aria-label="Select income"]', TRANSACTION_TYPES.income],
@@ -48,39 +77,31 @@ describe('transactions create/update/delete form', () => {
     ])('%s', async (_, formTypeSelector, expected) => {
       vi.spyOn(apiMethods, 'loadAccounts').mockReturnValue(Promise.resolve(dataMocks.ACCOUNTS));
       const createTxSpy = vi.spyOn(apiMethods, 'createTransaction');
-      const AMOUNT = 10;
+      const expectedValue = {
+        amount: 10,
+        account: dataMocks.ACCOUNTS[0],
+        category: dataMocks.USER_CATEGORIES[0],
+      };
 
       const wrapper = mountComponent();
 
       await wrapper.find(formTypeSelector).trigger('click');
 
-      const amountField = wrapper.find<HTMLInputElement>('input[placeholder="Amount"]');
-      await amountField.setValue(AMOUNT);
-
-      const accountField = wrapper.find('[title="Select account"]');
-      await accountField.trigger('click');
-      const desiredAccountBtn = wrapper.find('button[role="option"]');
-      await desiredAccountBtn.trigger('click');
-
-      const categoryField = wrapper.find('[title="Select category"]');
-      await categoryField.trigger('click');
-      let desiredCategoryBtn = wrapper.find('[data-test="category-select-field"] button[role="option"]');
-      await desiredCategoryBtn.trigger('click');
-      // Since that's how category selector works, we need to select it one more time
-      desiredCategoryBtn = wrapper.find('[data-test="category-select-field"] button[role="option"]');
-      await desiredCategoryBtn.trigger('click');
+      await fillAlmountField(wrapper, expectedValue.amount);
+      await fillAccountField(wrapper, expectedValue.account.name);
+      await fillCategoryField(wrapper, expectedValue.category.name);
 
       const submitBtn = wrapper.find('[aria-label="Create transaction"]');
       await submitBtn.trigger('click');
 
       expect(createTxSpy).toHaveBeenCalledWith({
-        amount: String(AMOUNT),
+        amount: String(expectedValue.amount),
         note: null,
         time: expect.any(String),
         transactionType: expected,
         paymentType: expect.any(String),
-        accountId: dataMocks.ACCOUNTS[0].id,
-        categoryId: dataMocks.USER_CATEGORIES[0].id,
+        accountId: expectedValue.account.id,
+        categoryId: expectedValue.category.id,
       });
     });
 
