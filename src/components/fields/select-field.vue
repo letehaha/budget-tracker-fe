@@ -1,9 +1,11 @@
+<!-- eslint-disable vuejs-accessibility/aria-role -->
 <template>
   <div
     :class="{
       'select-field--disabled': disabled,
       'select-field--active': isDropdownOpened,
     }"
+    role="select"
     class="select-field"
   >
     <template v-if="label">
