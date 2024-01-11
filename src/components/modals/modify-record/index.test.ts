@@ -8,7 +8,8 @@ import * as apiMethods from '@/api';
 import { OUT_OF_WALLET_ACCOUNT_MOCK } from '@/common/const';
 import FormComponent from './index.vue';
 
-const mountComponent = () => mount(FormComponent, {
+const mountComponent = ({ props = {} } = {}) => mount(FormComponent, {
+  props,
   global: {
     plugins: [
       createTestingPinia({
@@ -21,6 +22,12 @@ const mountComponent = () => mount(FormComponent, {
           },
           categories: {
             categories: dataMocks.USER_CATEGORIES,
+          },
+          accounts: {
+            accountsRecord: dataMocks.ACCOUNTS.reduce((acc, curr) => {
+              acc[curr.id] = curr;
+              return acc;
+            }, {}),
           },
         },
       }),
@@ -78,8 +85,13 @@ const fillCategoryField = async (wrapper: ReturnType<typeof mountComponent>, val
   await desiredCategoryBtn.trigger('click');
 };
 
-const submitForm = async (wrapper: ReturnType<typeof mountComponent>) => {
+const submitCreation = async (wrapper: ReturnType<typeof mountComponent>) => {
   const submitBtn = wrapper.find('[aria-label="Create transaction"]');
+  await submitBtn.trigger('click');
+};
+
+const submitUpdation = async (wrapper: ReturnType<typeof mountComponent>) => {
+  const submitBtn = wrapper.find('[aria-label="Edit transaction"]');
   await submitBtn.trigger('click');
 };
 
@@ -128,7 +140,7 @@ describe('transactions create/update/delete form', () => {
       await fillAccountField(wrapper, commonAccountFieldLabel, expectedValue.account.name);
       await fillCategoryField(wrapper, expectedValue.category.name);
 
-      await submitForm(wrapper);
+      await submitCreation(wrapper);
 
       expect(createTxSpy).toHaveBeenCalledWith({
         amount: String(expectedValue.amount),
@@ -160,7 +172,7 @@ describe('transactions create/update/delete form', () => {
       await fillAccountField(wrapper, fromAccountFieldLabel, expectedValue.account.name);
       await fillAccountField(wrapper, toAccountFieldLabel, expectedValue.targetAccount.name);
 
-      await submitForm(wrapper);
+      await submitCreation(wrapper);
 
       expect(createTxSpy).toHaveBeenCalledWith({
         amount: String(expectedValue.amount),
@@ -193,7 +205,7 @@ describe('transactions create/update/delete form', () => {
 
       await fillAlmountField(wrapper, expectedValue.amount);
 
-      await submitForm(wrapper);
+      await submitCreation(wrapper);
 
       expect(
         wrapper.find('input[placeholder="Target amount"]').attributes().disabled,
@@ -212,15 +224,101 @@ describe('transactions create/update/delete form', () => {
   });
 
   describe('transaction updation', () => {
-    test.todo('expense -> income');
-    test.todo('income -> expense');
-    test.todo('different amount, date, category');
+    let editTxSpy = vi.spyOn(apiMethods, 'editTransaction');
+
+    beforeEach(() => {
+      editTxSpy = vi.spyOn(apiMethods, 'editTransaction');
+    });
+
+    test('expense -> income', async () => {
+      const wrapper = await mountComponent({
+        props: {
+          transaction: dataMocks.EXPENSE_TRANSACTION,
+        },
+      });
+
+      await wrapper.find(incomeFormTypeSelector).trigger('click');
+
+      await submitUpdation(wrapper);
+
+      expect(editTxSpy).toHaveBeenCalledWith({
+        accountId: dataMocks.EXPENSE_TRANSACTION.accountId,
+        amount: dataMocks.EXPENSE_TRANSACTION.amount,
+        categoryId: dataMocks.EXPENSE_TRANSACTION.categoryId,
+        note: null,
+        paymentType: expect.any(String),
+        time: expect.any(String),
+        transactionType: TRANSACTION_TYPES.income,
+        transferNature: TRANSACTION_TRANSFER_NATURE.not_transfer,
+        txId: dataMocks.EXPENSE_TRANSACTION.id,
+      });
+    });
+
+    test('income -> expense', async () => {
+      const wrapper = await mountComponent({
+        props: {
+          transaction: dataMocks.INCOME_TRANSACTION,
+        },
+      });
+
+      await wrapper.find(expenseFormTypeSelector).trigger('click');
+
+      await submitUpdation(wrapper);
+
+      expect(editTxSpy).toHaveBeenCalledWith({
+        accountId: dataMocks.INCOME_TRANSACTION.accountId,
+        amount: dataMocks.INCOME_TRANSACTION.amount,
+        categoryId: dataMocks.INCOME_TRANSACTION.categoryId,
+        note: null,
+        paymentType: expect.any(String),
+        time: expect.any(String),
+        transactionType: TRANSACTION_TYPES.expense,
+        transferNature: TRANSACTION_TRANSFER_NATURE.not_transfer,
+        txId: dataMocks.INCOME_TRANSACTION.id,
+      });
+    });
+
+    test('income -> expense + change amount and category', async () => {
+      const expectedValue = {
+        amount: 20,
+        category: dataMocks.USER_CATEGORIES[1],
+      };
+      const wrapper = await mountComponent({
+        props: {
+          transaction: {
+            ...dataMocks.INCOME_TRANSACTION,
+            categoryId: dataMocks.USER_CATEGORIES[0].id,
+          },
+        },
+      });
+
+      await wrapper.find(expenseFormTypeSelector).trigger('click');
+
+      await fillAlmountField(wrapper, expectedValue.amount);
+      await fillCategoryField(wrapper, expectedValue.category.name);
+
+      await submitUpdation(wrapper);
+
+      expect(editTxSpy).toHaveBeenCalledWith({
+        accountId: dataMocks.INCOME_TRANSACTION.accountId,
+        amount: expectedValue.amount,
+        categoryId: expectedValue.category.id,
+        note: null,
+        paymentType: expect.any(String),
+        time: expect.any(String),
+        transactionType: TRANSACTION_TYPES.expense,
+        transferNature: TRANSACTION_TRANSFER_NATURE.not_transfer,
+        txId: dataMocks.INCOME_TRANSACTION.id,
+      });
+    });
+
     test.todo('external transaction (check payload, check fields are disabled)');
     test.todo('income -> transfer');
     test.todo('expense -> transfer');
     test.todo('transfer -> income');
     test.todo('transfer -> expense');
     test.todo('transfer -> external expense/income');
+    test.todo('transfer data updation. check that opposite is correct');
   });
 
   describe('transaction deletion', () => {

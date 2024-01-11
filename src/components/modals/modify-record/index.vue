@@ -308,7 +308,7 @@ const submit = async () => {
       } else {
         editionParams = {
           ...editionParams,
-          amount,
+          amount: Number(amount),
           note,
           time,
           transactionType: getTxTypeFromFormType(formTxType),
