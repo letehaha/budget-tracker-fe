@@ -1,6 +1,7 @@
 import {
   TRANSACTION_TYPES, TRANSACTION_TRANSFER_NATURE, TransactionModel, PAYMENT_TYPES, ACCOUNT_TYPES,
 } from 'shared-types';
+import { ACCOUNTS } from './accounts';
 
 const SHARED_TX_BODY: TransactionModel = {
   id: 1274,
@@ -11,7 +12,7 @@ const SHARED_TX_BODY: TransactionModel = {
   userId: 40,
   transactionType: TRANSACTION_TYPES.income,
   paymentType: PAYMENT_TYPES.creditCard,
-  accountId: 127,
+  accountId: ACCOUNTS[0].id,
   categoryId: 3121,
   currencyId: 769,
   currencyCode: 'EUR',
@@ -45,4 +46,14 @@ export const OUT_OF_WALLET_TRANSACTION: TransactionModel = {
   ...SHARED_TX_BODY,
   transactionType: TRANSACTION_TYPES.expense,
   transferNature: TRANSACTION_TRANSFER_NATURE.transfer_out_wallet,
+};
+
+export const EXTERNAL_EXPENSE_TRANSACTION: TransactionModel = {
+  ...EXPENSE_TRANSACTION,
+  accountType: ACCOUNT_TYPES.monobank,
+};
+
+export const EXTERNAL_INCOME_TRANSACTION: TransactionModel = {
+  ...INCOME_TRANSACTION,
+  accountType: ACCOUNT_TYPES.monobank,
 };

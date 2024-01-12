@@ -40,8 +40,10 @@ const mountComponent = ({ props = {} } = {}) => mount(FormComponent, {
   },
 });
 
+const amountFieldSelector = 'input[placeholder="Amount"]';
+const targetAmountFieldSelector = 'input[placeholder="Target amount"]';
 const fillAlmountField = async (wrapper: ReturnType<typeof mountComponent>, amount: number) => {
-  const amountField = wrapper.find<HTMLInputElement>('input[placeholder="Amount"]');
+  const amountField = wrapper.find<HTMLInputElement>(amountFieldSelector);
   await amountField.setValue(amount);
 };
 
@@ -53,35 +55,38 @@ const fillTargetAlmountField = async (
   await amountField.setValue(amount);
 };
 
+const findSelectField = (
+  wrapper: ReturnType<typeof mountComponent>,
+  label: string,
+) => wrapper.findAll('[role="select"]').find(item => item.html().includes(label));
+
 const fillAccountField = async (
   wrapper: ReturnType<typeof mountComponent>,
   label: string,
   value: string,
 ) => {
-  const desiredSelectField = wrapper
-    .findAll('[role="select"]')
-    .find(item => item.html().includes(label));
+  const desiredSelectField = await findSelectField(wrapper, label);
 
-  const accountField = desiredSelectField.find('[title="Select account"]');
-  await accountField.trigger('click');
+  const triggerButton = desiredSelectField.find('button');
+  await triggerButton.trigger('click');
 
   const desiredAccountBtn = wrapper.findAll('button[role="option"]').find(item => item.text().includes(value));
   await desiredAccountBtn.trigger('click');
 };
 
-const fillCategoryField = async (wrapper: ReturnType<typeof mountComponent>, value) => {
+const fillCategoryField = async (wrapper: ReturnType<typeof mountComponent>, categoryName) => {
   const categoryField = wrapper.find('[title="Select category"]');
   await categoryField.trigger('click');
 
   let desiredCategoryBtn = wrapper
     .findAll('[data-test="category-select-field"] button[role="option"]')
-    .find(item => item.text().includes(value));
+    .find(item => item.text().includes(categoryName));
   await desiredCategoryBtn.trigger('click');
 
   // Since that's how category selector works, we need to select it one more time
   desiredCategoryBtn = wrapper
     .findAll('[data-test="category-select-field"] button[role="option"]')
-    .find(item => item.text().includes(value));
+    .find(item => item.text().includes(categoryName));
   await desiredCategoryBtn.trigger('click');
 };
 
@@ -312,11 +317,112 @@ describe('transactions create/update/delete form', () => {
       });
     });
 
-    test.todo('external transaction (check payload, check fields are disabled)');
-    test.todo('income -> transfer');
-    test.todo('expense -> transfer');
+    test.each([
+      [TRANSACTION_TYPES.expense, dataMocks.EXTERNAL_EXPENSE_TRANSACTION],
+      [TRANSACTION_TYPES.income, dataMocks.EXTERNAL_INCOME_TRANSACTION],
+    ])('external %s: modify fields', async (txType, mock) => {
+      const expectedValue = {
+        category: dataMocks.USER_CATEGORIES[1],
+      };
+      const wrapper = await mountComponent({
+        props: {
+          transaction: {
+            ...mock,
+            categoryId: dataMocks.USER_CATEGORIES[0].id,
+          },
+        },
+      });
+
+      const isExpense = txType === TRANSACTION_TYPES.expense;
+
+      expect(
+        await wrapper.find(isExpense ? expenseFormTypeSelector : incomeFormTypeSelector).attributes()['aria-selected'],
+      ).not.toBe(undefined);
+      expect(
+        await wrapper.find(isExpense ? incomeFormTypeSelector : expenseFormTypeSelector).attributes().disabled,
+      ).not.toBe(undefined);
+      expect(
+        await wrapper.find(amountFieldSelector).attributes().disabled,
+      ).not.toBe(undefined);
+      expect(
+        await wrapper.find('input[type="datetime-local"]').attributes().disabled,
+      ).not.toBe(undefined);
+
+      expect(
+        await findSelectField(wrapper, 'Account').attributes()['aria-disabled'],
+      ).not.toBe(undefined);
+      expect(
+        await findSelectField(wrapper, 'Payment Type').attributes()['aria-disabled'],
+      ).not.toBe(undefined);
+      expect(
+        await wrapper.find('textarea').attributes().disabled,
+      ).toBe(undefined);
+
+      await fillCategoryField(wrapper, expectedValue.category.name);
+      await submitUpdation(wrapper);
+
+      expect(editTxSpy).toHaveBeenCalledWith({
+        categoryId: expectedValue.category.id,
+        note: null,
+        transferNature: TRANSACTION_TRANSFER_NATURE.not_transfer,
+        txId: mock.id,
+        paymentType: expect.any(String),
+      });
+    });
+
+    test.each([
+      [TRANSACTION_TYPES.income, dataMocks.INCOME_TRANSACTION],
+      [TRANSACTION_TYPES.expense, dataMocks.EXPENSE_TRANSACTION],
+    ])('%s -> transfer', async (txType, mock) => {
+      const expectedValue = {
+        amount: 95,
+        account: dataMocks.ACCOUNTS[1],
+        targetAccount: dataMocks.ACCOUNTS[2],
+        targetAmount: 120,
+      };
+      const wrapper = await mountComponent({
+        props: {
+          transaction: mock,
+        },
+      });
+
+      await wrapper.find(transferFormTypeSelector).trigger('click');
+
+      const initialValue = await wrapper.find<HTMLInputElement>(
+        txType === TRANSACTION_TYPES.income
+          ? amountFieldSelector
+          : targetAmountFieldSelector,
+      ).element.value;
+      expect(initialValue).toBe('');
+
+      await wrapper.find(amountFieldSelector).setValue(expectedValue.amount);
+      await fillAccountField(wrapper, fromAccountFieldLabel, expectedValue.account.name);
+
+      await wrapper.find(targetAmountFieldSelector).setValue(expectedValue.targetAmount);
+      await fillAccountField(wrapper, toAccountFieldLabel, expectedValue.targetAccount.name);
+
+      await submitUpdation(wrapper);
+
+      expect(editTxSpy).toHaveBeenCalledWith({
+        accountId: expectedValue.account.id,
+        amount: expectedValue.amount,
+
+        destinationAccountId: expectedValue.targetAccount.id,
+        destinationAmount: expectedValue.targetAmount,
+
+        note: null,
+        paymentType: expect.any(String),
+        time: expect.any(String),
+        transactionType: TRANSACTION_TYPES.expense,
+        transferNature: TRANSACTION_TRANSFER_NATURE.common_transfer,
+        txId: dataMocks.INCOME_TRANSACTION.id,
+      });
+    });
+
     test.todo('transfer -> income');
     test.todo('transfer -> expense');
+    test.todo('external expense -> transfer');
+    test.todo('external income -> transfer');
     test.todo('transfer -> external expense/income');
     test.todo('transfer data updation. check that opposite is correct');
   });
