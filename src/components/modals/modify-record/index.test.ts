@@ -100,6 +100,10 @@ const submitUpdation = async (wrapper: ReturnType<typeof mountComponent>) => {
   const submitBtn = wrapper.find('[aria-label="Edit transaction"]');
   await submitBtn.trigger('click');
 };
+const submitDeletion = async (wrapper: ReturnType<typeof mountComponent>) => {
+  const submitBtn = await wrapper.find('[aria-label="Delete transaction"]');
+  await submitBtn.trigger('click');
+};
 
 const incomeFormTypeSelector = 'button[aria-label="Select income"]';
 const expenseFormTypeSelector = 'button[aria-label="Select expense"]';
@@ -692,9 +696,41 @@ describe('transactions create/update/delete form', () => {
   });
 
   describe('transaction deletion', () => {
-    test.todo('delete expense');
-    test.todo('delete income');
-    test.todo('delete transfer');
-    test.todo('not able to delete external transaction');
+    let deleteTxSpy = vi.spyOn(apiMethods, 'deleteTransaction');
+
+    beforeEach(() => {
+      deleteTxSpy = vi.spyOn(apiMethods, 'deleteTransaction');
+    });
+
+    test.each([
+      ['delete expense', dataMocks.EXPENSE_TRANSACTION],
+      ['delete income', dataMocks.INCOME_TRANSACTION],
+      ['delete transfer', dataMocks.COMMON_TRANSFER_TRANSACTION],
+    ])('%s', async (descr, mock) => {
+      const wrapper = await mountComponent({
+        props: {
+          transaction: mock,
+        },
+      });
+      await submitDeletion(wrapper);
+      expect(deleteTxSpy).toHaveBeenCalledWith(mock.id);
+    });
+
+    test.each([
+      ['cannot delete external expense', dataMocks.EXTERNAL_EXPENSE_TRANSACTION],
+      ['cannot delete external income', dataMocks.EXTERNAL_INCOME_TRANSACTION],
+      ['cannot delete external expense transfer', dataMocks.buildExternalTransferTransaction(TRANSACTION_TYPES.expense)],
+      ['cannot delete external income transfer', dataMocks.buildExternalTransferTransaction(TRANSACTION_TYPES.income)],
+    ])('%s', async (descr, mock) => {
+      const wrapper = await mountComponent({
+        props: {
+          transaction: mock,
+        },
+      });
+      expect(
+        await wrapper.find('[aria-label="Delete transaction"]').exists(),
+      ).toBe(false);
+      expect(deleteTxSpy).not.toHaveBeenCalled();
+    });
   });
 });

@@ -498,6 +498,7 @@ onMounted(() => {
         v-if="transaction && transaction.accountType === ACCOUNT_TYPES.system"
         class="modify-record__action"
         :disabled="isLoading"
+        aria-label="Delete transaction"
         @click="deleteTransactionHandler"
       >
         Delete
