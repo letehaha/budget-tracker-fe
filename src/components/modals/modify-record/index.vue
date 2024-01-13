@@ -453,6 +453,7 @@ onMounted(() => {
 
       <template v-if="isTransferTx">
         <form-row>
+          <!-- TODO: for transfer tx disable this field if both accounts have same currency -->
           <input-field
             v-model="form.targetAmount"
             :disabled="isTargetAmountFieldDisabled"

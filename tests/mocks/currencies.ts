@@ -1,72 +1,7 @@
-export const USER_CURRENCIES = [
-  {
-    id: 44,
-    userId: 40,
-    currencyId: 769,
-    exchangeRate: null,
-    liveRateUpdate: false,
-    isDefaultCurrency: false,
-    currency: {
-      id: 769,
-      currency: 'Euro',
-      digits: 2,
-      number: 978,
-      code: 'EUR',
-      isDisabled: false,
-    },
-  },
-  {
-    id: 43,
-    userId: 40,
-    currencyId: 867,
-    exchangeRate: 1,
-    liveRateUpdate: false,
-    isDefaultCurrency: true,
-    currency: {
-      id: 867,
-      currency: 'Hryvnia',
-      digits: 2,
-      number: 980,
-      code: 'UAH',
-      isDisabled: false,
-    },
-  },
-  {
-    id: 45,
-    userId: 40,
-    currencyId: 869,
-    exchangeRate: null,
-    liveRateUpdate: false,
-    isDefaultCurrency: false,
-    currency: {
-      id: 869,
-      currency: 'US Dollar',
-      digits: 2,
-      number: 840,
-      code: 'USD',
-      isDisabled: false,
-    },
-  },
-];
+import { CurrencyModel, UserCurrencyModel } from 'shared-types';
+import { USER } from './user';
 
-export const USER_BASE_CURRENCY = {
-  id: 43,
-  userId: 40,
-  currencyId: 867,
-  exchangeRate: 1,
-  liveRateUpdate: false,
-  isDefaultCurrency: true,
-  currency: {
-    id: 867,
-    currency: 'Hryvnia',
-    digits: 2,
-    number: 980,
-    code: 'UAH',
-    isDisabled: false,
-  },
-};
-
-export const SYSTEM_CURRENCIES = [
+export const SYSTEM_CURRENCIES: CurrencyModel[] = [
   {
     id: 721,
     currency: 'UAE Dirham',
@@ -1322,5 +1257,37 @@ export const SYSTEM_CURRENCIES = [
     number: 932,
     code: 'ZWL',
     isDisabled: false,
+  },
+];
+export const USER_BASE_CURRENCY_CODE = 'UAH';
+export const USER_BASE_CURRENCY: UserCurrencyModel = {
+  id: 1,
+  userId: USER.id,
+  currencyId: SYSTEM_CURRENCIES.find(item => item.code === USER_BASE_CURRENCY_CODE).id,
+  exchangeRate: 1,
+  liveRateUpdate: false,
+  isDefaultCurrency: true,
+  currency: SYSTEM_CURRENCIES.find(item => item.code === USER_BASE_CURRENCY_CODE),
+};
+
+export const USER_CURRENCIES: UserCurrencyModel[] = [
+  USER_BASE_CURRENCY,
+  {
+    id: 2,
+    userId: USER.id,
+    currencyId: SYSTEM_CURRENCIES.find(item => item.code === 'EUR').id,
+    exchangeRate: null,
+    liveRateUpdate: false,
+    isDefaultCurrency: false,
+    currency: SYSTEM_CURRENCIES.find(item => item.code === 'EUR'),
+  },
+  {
+    id: 3,
+    userId: USER.id,
+    currencyId: SYSTEM_CURRENCIES.find(item => item.code === 'USD').id,
+    exchangeRate: null,
+    liveRateUpdate: false,
+    isDefaultCurrency: false,
+    currency: SYSTEM_CURRENCIES.find(item => item.code === 'USD'),
   },
 ];

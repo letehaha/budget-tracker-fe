@@ -1,23 +1,28 @@
 import {
   TRANSACTION_TYPES, TRANSACTION_TRANSFER_NATURE, TransactionModel, PAYMENT_TYPES, ACCOUNT_TYPES,
 } from 'shared-types';
-import { ACCOUNTS } from './accounts';
+import { USER } from './user';
+import { USER_CATEGORIES } from './categories';
+import { getUahAccount, getUah2Account } from './accounts';
+import { USER_BASE_CURRENCY, USER_CURRENCIES } from './currencies';
 
+const SHARED_TX_ACCOUNT = getUahAccount();
 const SHARED_TX_BODY: TransactionModel = {
-  id: 1274,
+  id: 1,
   amount: 9,
   refAmount: 322.65,
   note: null,
   time: new Date(),
-  userId: 40,
+  userId: USER.id,
   transactionType: TRANSACTION_TYPES.income,
   paymentType: PAYMENT_TYPES.creditCard,
-  accountId: ACCOUNTS[0].id,
-  categoryId: 3121,
-  currencyId: 769,
-  currencyCode: 'EUR',
+  accountId: SHARED_TX_ACCOUNT.id,
+  categoryId: USER_CATEGORIES[0].id,
+  currencyId: SHARED_TX_ACCOUNT.currencyId,
+  currencyCode: USER_CURRENCIES
+    .find(item => item.currencyId === SHARED_TX_ACCOUNT.currencyId).currency.code,
   accountType: ACCOUNT_TYPES.system,
-  refCurrencyCode: 'UAH',
+  refCurrencyCode: USER_BASE_CURRENCY.currency.code,
   transferNature: TRANSACTION_TRANSFER_NATURE.not_transfer,
   transferId: null,
   originalId: null,
@@ -40,7 +45,14 @@ export const EXPENSE_TRANSACTION: TransactionModel = {
 export const COMMON_TRANSFER_TRANSACTION: TransactionModel = {
   ...SHARED_TX_BODY,
   transactionType: TRANSACTION_TYPES.expense,
+  transferId: 'dsfsdfsdfsdf',
   transferNature: TRANSACTION_TRANSFER_NATURE.common_transfer,
+};
+export const COMMON_TRANSFER_TRANSACTION_OPPOSITE: TransactionModel = {
+  ...COMMON_TRANSFER_TRANSACTION,
+  transactionType: TRANSACTION_TYPES.income,
+  amount: 20,
+  accountId: getUah2Account().id,
 };
 export const OUT_OF_WALLET_TRANSACTION: TransactionModel = {
   ...SHARED_TX_BODY,
