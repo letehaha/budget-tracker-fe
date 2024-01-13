@@ -27,12 +27,12 @@
 import { loadTransactions } from '@/api/transactions';
 import { VUE_QUERY_CACHE_KEYS } from '@/common/const';
 import { useInfiniteQuery } from '@tanstack/vue-query';
-import { TransactionModel } from 'shared-types';
+import { TRANSACTION_TYPES, TransactionModel } from 'shared-types';
 import { EVENTS as MODAL_EVENTS } from '@/components/modal-center/ui-modal.vue';
 import TransactionRecrod from '@/components/transactions-list/transaction-record.vue';
 
 const props = defineProps<{
-  transactionType: string;
+  transactionType: TRANSACTION_TYPES;
   resolveTransaction:(item: TransactionModel) => void;
 }>();
 
@@ -53,6 +53,7 @@ const {
 } = useInfiniteQuery({
   queryKey: [VUE_QUERY_CACHE_KEYS.recordsPageTransactionList, props.transactionType],
   queryFn: fetchTransactions,
+  initialPageParam: 0,
   getNextPageParam: (lastPage, pages) => {
     // No more pages to load
     if (lastPage.length < limit) return undefined;
