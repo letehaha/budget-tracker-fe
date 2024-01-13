@@ -26,6 +26,10 @@ export default ({ mode }) => {
           find: 'shared-types',
           replacement: path.resolve(__dirname, 'backend/shared-types'),
         },
+        {
+          find: '@tests',
+          replacement: path.resolve(__dirname, 'tests'),
+        },
       ],
     },
     test: {

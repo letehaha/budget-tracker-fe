@@ -1,10 +1,10 @@
 import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
-import { api } from '@/api/_api';
 import {
   getAllCurrencies,
   loadUserCurrencies,
   setBaseUserCurrency,
+  loadUserBaseCurrency,
 } from '@/api/currencies';
 import { CurrencyModel, UserCurrencyModel } from 'shared-types';
 
@@ -31,9 +31,12 @@ export const useCurrenciesStore = defineStore('currencies', () => {
   );
 
   const loadCurrencies = async () => {
-    currencies.value = await loadUserCurrencies();
+    const [userCurrencies, systemOnes] = await Promise.all(
+      [loadUserCurrencies(), getAllCurrencies()],
+    );
 
-    systemCurrencies.value = await getAllCurrencies();
+    currencies.value = userCurrencies;
+    systemCurrencies.value = systemOnes;
   };
 
   const getCurrency = (currencyId: number) => (
@@ -41,7 +44,7 @@ export const useCurrenciesStore = defineStore('currencies', () => {
   );
 
   const loadBaseCurrency = async () => {
-    const result: UserCurrencyModel = await api.get('/user/currencies/base');
+    const result = await loadUserBaseCurrency();
 
     if (result) {
       baseCurrency.value = result;
