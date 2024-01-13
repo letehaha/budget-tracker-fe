@@ -51,6 +51,8 @@ export const getFormTypeFromTransaction = (tx: TransactionModel): FORM_TYPES => 
 };
 
 export const getTxTypeFromFormType = (formType: FORM_TYPES): TRANSACTION_TYPES => {
+  // When user creates a brand-new "transfer" transaction, it's always should be
+  // considered as "expense"
   if (formType === FORM_TYPES.transfer) return TRANSACTION_TYPES.expense;
 
   return formType === FORM_TYPES.expense

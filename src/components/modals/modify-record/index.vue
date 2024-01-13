@@ -9,17 +9,15 @@ import {
 import { storeToRefs } from 'pinia';
 import { useQueryClient } from '@tanstack/vue-query';
 import {
-  type AccountModel,
   TRANSACTION_TYPES,
   PAYMENT_TYPES,
   type TransactionModel,
   ACCOUNT_TYPES,
-  type CategoryModel,
   TRANSACTION_TRANSFER_NATURE,
 } from 'shared-types';
 import { useAccountsStore, useCategoriesStore, useCurrenciesStore } from '@/stores';
-import { createTransaction, editTransaction, deleteTransaction } from '@/api/transactions';
-import { type VerbosePaymentType, VERBOSE_PAYMENT_TYPES, OUT_OF_WALLET_ACCOUNT_MOCK } from '@/common/const';
+import { createTransaction, editTransaction, deleteTransaction } from '@/api';
+import { VERBOSE_PAYMENT_TYPES, OUT_OF_WALLET_ACCOUNT_MOCK, VUE_QUERY_TX_CHANGE_QUERY } from '@/common/const';
 import InputField from '@/components/fields/input-field.vue';
 import SelectField from '@/components/fields/select-field.vue';
 import { MODAL_TYPES, useModalCenter } from '@/components/modal-center';
@@ -28,12 +26,12 @@ import TextareaField from '@/components/fields/textarea-field.vue';
 import DateField from '@/components/fields/date-field.vue';
 import UiButton from '@/components/common/ui-button.vue';
 import { EVENTS as MODAL_EVENTS } from '@/components/modal-center/ui-modal.vue';
-import { VUE_QUERY_TX_CHANGE_QUERY } from '@/common/const';
+import TransactionRecrod from '@/components/transactions-list/transaction-record.vue';
 import FormHeader from './form-header.vue';
 import TypeSelector from './type-selector.vue';
 import FormRow from './form-row.vue';
 import AccountField from './account-field.vue';
-import { FORM_TYPES } from './types';
+import { FORM_TYPES, UI_FORM_STRUCT } from './types';
 import {
   getDestinationAccount,
   getDestinationAmount,
@@ -67,18 +65,7 @@ const queryClient = useQueryClient();
 
 const isFormCreation = computed(() => !props.transaction);
 
-const form = ref<{
-  amount: number;
-  account?: AccountModel;
-  transactionRecordItem: TransactionModel;
-  toAccount?: AccountModel;
-  category: CategoryModel;
-  time: string;
-  paymentType: VerbosePaymentType;
-  note?: string;
-  type: FORM_TYPES;
-  targetAmount?: number;
-}>({
+const form = ref<UI_FORM_STRUCT>({
   amount: null,
   account: null,
   transactionRecordItem: null,
@@ -372,7 +359,7 @@ async function handleEditTransaction() {
   } else {
     editionParams = {
       ...editionParams,
-      amount,
+      amount: Number(amount),
       note,
       time,
       transactionType: getTxTypeFromFormType(formTxType),
@@ -545,6 +532,7 @@ onMounted(() => {
         "
       >
         <form-row>
+          <!-- TODO: for transfer tx disable this field if both accounts have same currency -->
           <input-field
             v-model="form.targetAmount"
             :disabled="isTargetAmountFieldDisabled"
@@ -573,12 +561,13 @@ onMounted(() => {
       </template>
       <template v-if="transactionItem && isTransferTx">
         <form-row class="modify-record__transaction">
+          <!-- TODO: show warning if amount doesn't match -->
           <TransactionRecrod class="modify-record__transaction-button" :tx="transactionItem" />
           <ui-button
             class="modify-record__action modify-record__action-transaction"
             @click="deleteTransactionRecordHandler"
           >
-            Delete
+            Cancel
           </ui-button>
         </form-row>
       </template>
@@ -612,6 +601,7 @@ onMounted(() => {
         v-if="transaction && transaction.accountType === ACCOUNT_TYPES.system"
         class="modify-record__action"
         :disabled="isLoading"
+        aria-label="Delete transaction"
         @click="deleteTransactionHandler"
       >
         Delete
@@ -621,10 +611,11 @@ onMounted(() => {
           modify-record__action
           modify-record__action--submit
         "
+        :aria-label="isFormCreation ? 'Create transaction' : 'Edit transaction'"
         :disabled="isLoading"
         @click="submit"
       >
-        {{ isLoading ? 'Loading...' : transaction ? 'Edit' : 'Submit' }}
+        {{ isLoading ? 'Loading...' : isFormCreation ? 'Submit' : 'Edit' }}
       </ui-button>
     </div>
   </div>

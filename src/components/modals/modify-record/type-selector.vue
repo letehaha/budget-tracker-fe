@@ -8,6 +8,8 @@
         'type-selector__item--disabled': isExpenseDisabled,
         'type-selector__item--active': selectedTransactionType === FORM_TYPES.expense,
       }"
+      aria-label="Select expense"
+      :aria-selected="selectedTransactionType === FORM_TYPES.expense"
       @click="selectTransactionType(FORM_TYPES.expense)"
     >
       Expense
@@ -20,6 +22,8 @@
         'type-selector__item--disabled': isIncomeDisabled,
         'type-selector__item--active': selectedTransactionType === FORM_TYPES.income,
       }"
+      aria-label="Select income"
+      :aria-selected="selectedTransactionType === FORM_TYPES.income"
       @click="selectTransactionType(FORM_TYPES.income)"
     >
       Income
@@ -30,6 +34,8 @@
       :class="{
         'type-selector__item--active': selectedTransactionType === FORM_TYPES.transfer,
       }"
+      aria-label="Select transfer"
+      :aria-selected="selectedTransactionType === FORM_TYPES.transfer"
       @click="selectTransactionType(FORM_TYPES.transfer)"
     >
       Transfer

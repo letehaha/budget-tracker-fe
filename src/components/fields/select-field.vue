@@ -1,9 +1,12 @@
+<!-- eslint-disable vuejs-accessibility/aria-role -->
 <template>
   <div
     :class="{
       'select-field--disabled': disabled,
       'select-field--active': isDropdownOpened,
     }"
+    role="select"
+    :aria-disabled="disabled"
     class="select-field"
   >
     <template v-if="label">
@@ -14,15 +17,18 @@
       v-click-outside="closeDropdown"
       class="select-field__wrapper"
     >
-      <div
+      <button
         v-bind="$attrs"
-        class="select-field__input"
+        ref="buttonRef"
+        type="button"
+        :disabled="disabled"
+        class="button-style-reset select-field__input"
         :title="modelValue ? getLabelFromValue(modelValue) : placeholder"
         @click="toggleDropdown"
       >
         {{ modelValue ? getLabelFromValue(modelValue) : placeholder }}
         <div class="select-field__arrow" />
-      </div>
+      </button>
 
       <dropdown
         :is-visible="isDropdownOpened"
@@ -56,7 +62,9 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from 'vue';
+import {
+  ref, computed, watch, onBeforeUnmount,
+} from 'vue';
 
 import Dropdown from '@/components/common/dropdown.vue';
 import FieldError from './components/field-error.vue';
@@ -93,6 +101,7 @@ const emit = defineEmits<{
 
 const isDropdownOpened = ref(false);
 const filterQuery = ref('');
+const buttonRef = ref<HTMLButtonElement>(null);
 
 const getLabelFromValue = (value: ModelValue) => {
   const { labelKey } = props;
@@ -122,7 +131,28 @@ const toggleDropdown = () => {
     emit('update:isDropdownOpen', isDropdownOpened.value);
   }
 };
-const closeDropdown = () => { isDropdownOpened.value = false; };
+const closeDropdown = () => {
+  if (isDropdownOpened.value) {
+    isDropdownOpened.value = false;
+    buttonRef.value.focus();
+  }
+};
+const handleEscPress = (event: KeyboardEvent) => {
+  if (event.key === 'Escape') {
+    closeDropdown();
+  }
+};
+
+watch(isDropdownOpened, (value) => {
+  if (value) {
+    document.addEventListener('keydown', handleEscPress);
+  } else {
+    document.removeEventListener('keydown', handleEscPress);
+  }
+});
+onBeforeUnmount(() => {
+  document.removeEventListener('keydown', handleEscPress);
+});
 
 const selectItem = ({ index }: { index: number }) => {
   const { disabled } = props;
