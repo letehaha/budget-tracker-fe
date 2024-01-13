@@ -69,3 +69,14 @@ export const EXTERNAL_INCOME_TRANSACTION: TransactionModel = {
   ...INCOME_TRANSACTION,
   accountType: ACCOUNT_TYPES.monobank,
 };
+
+export const buildExternalTransferTransaction = (type: TRANSACTION_TYPES): TransactionModel => ({
+  ...COMMON_TRANSFER_TRANSACTION,
+  transactionType: type,
+  accountType: ACCOUNT_TYPES.monobank,
+});
+
+export const buildExtendedCommonTx = (data: Partial<TransactionModel> = {}): TransactionModel => ({
+  ...SHARED_TX_BODY,
+  ...data,
+});

@@ -4,7 +4,7 @@ import { USER } from './user';
 export const USER_CATEGORIES: CategoryModel[] = [
   {
     id: 3121,
-    name: 'Food & Drinks',
+    name: 'Food and Drinks',
     imageUrl: null,
     color: '#e74c3c',
     type: CATEGORY_TYPES.custom,

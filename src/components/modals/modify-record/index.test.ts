@@ -75,8 +75,9 @@ const fillAccountField = async (
 };
 
 const fillCategoryField = async (wrapper: ReturnType<typeof mountComponent>, categoryName) => {
-  const categoryField = wrapper.find('[title="Select category"]');
-  await categoryField.trigger('click');
+  const categoryFieldTrigger = await findSelectField(wrapper, 'Category')
+    .find('button[aria-label="Select category"]');
+  await categoryFieldTrigger.trigger('click');
 
   let desiredCategoryBtn = wrapper
     .findAll('[data-test="category-select-field"] button[role="option"]')
@@ -595,7 +596,99 @@ describe('transactions create/update/delete form', () => {
       });
     });
 
-    test.todo('transfer -> external expense/income');
+    test.each([
+      [TRANSACTION_TYPES.expense],
+      [TRANSACTION_TYPES.income],
+    ])('external %s transfer -> non-transfer external tx', async (txType) => {
+      const expectedValue = {
+        category: dataMocks.USER_CATEGORIES[2],
+      };
+      const isExpense = txType === TRANSACTION_TYPES.expense;
+      const transaction = dataMocks.buildExternalTransferTransaction(txType);
+      const wrapper = await mountComponent({
+        props: {
+          transaction,
+          oppositeTransaction: dataMocks.buildExtendedCommonTx({
+            transferId: transaction.transferId,
+            transferNature: transaction.transferNature,
+            transactionType: isExpense ? TRANSACTION_TYPES.income : TRANSACTION_TYPES.expense,
+          }),
+        },
+      });
+
+      // Check that by just opened all the fields have correct values and
+      // disability states
+      expect(
+        await wrapper.find(
+          isExpense
+            ? incomeFormTypeSelector
+            : expenseFormTypeSelector,
+        ).attributes().disabled,
+      ).not.toBe(undefined);
+
+      const initialValue = await wrapper.find<HTMLInputElement>(
+        isExpense ? targetAmountFieldSelector : amountFieldSelector,
+      ).element.value;
+      expect(initialValue).not.toBe('');
+
+      // Check that correct fields are disabled
+      expect(
+        await findSelectField(wrapper, isExpense ? fromAccountFieldLabel : toAccountFieldLabel).attributes()['aria-disabled'],
+      ).not.toBe(undefined);
+      expect(
+        await wrapper.find<HTMLInputElement>(
+          isExpense ? amountFieldSelector : targetAmountFieldSelector,
+        ).attributes().disabled,
+      ).not.toBe(undefined);
+      expect(
+        await wrapper.find('input[type="datetime-local"]').attributes().disabled,
+      ).not.toBe(undefined);
+      expect(
+        await findSelectField(wrapper, 'Payment Type').attributes()['aria-disabled'],
+      ).not.toBe(undefined);
+
+      // Switch from trasfer to desired type
+      await wrapper.find(
+        isExpense ? expenseFormTypeSelector : incomeFormTypeSelector,
+      ).trigger('click');
+
+      // After siwtching test that only correct fields exists and correct ones
+      // are disabled
+      expect(await wrapper.find(targetAmountFieldSelector).exists()).toBe(false);
+      expect(
+        await wrapper.find(amountFieldSelector).attributes().disabled,
+      ).not.toBe(undefined);
+      expect(
+        await findSelectField(wrapper, 'Payment Type').attributes()['aria-disabled'],
+      ).not.toBe(undefined);
+      expect(
+        await findSelectField(wrapper, commonAccountFieldLabel).attributes()['aria-disabled'],
+      ).not.toBe(undefined);
+      expect(
+        await wrapper.find('input[type="datetime-local"]').attributes().disabled,
+      ).not.toBe(undefined);
+
+      const categoryTrigger = await findSelectField(wrapper, 'Category')
+        .find('button[aria-label="Select category"]');
+
+      expect(
+        categoryTrigger.html().includes(
+          dataMocks.USER_CATEGORIES.find(item => item.id === transaction.categoryId).name,
+        ),
+      ).toBe(true);
+
+      await fillCategoryField(wrapper, expectedValue.category.name);
+
+      await submitUpdation(wrapper);
+
+      expect(editTxSpy).toHaveBeenCalledWith({
+        note: null,
+        categoryId: expectedValue.category.id,
+        paymentType: expect.any(String),
+        transferNature: TRANSACTION_TRANSFER_NATURE.not_transfer,
+        txId: dataMocks.INCOME_TRANSACTION.id,
+      });
+    });
   });
 
   describe('transaction deletion', () => {

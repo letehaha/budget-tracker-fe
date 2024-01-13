@@ -1,3 +1,4 @@
+<!-- eslint-disable vuejs-accessibility/aria-role -->
 <template>
   <div
     :class="{
@@ -6,6 +7,7 @@
     }"
     class="category-select-field"
     data-test="category-select-field"
+    role="select"
   >
     <FieldLabel
       :label="label"
@@ -14,10 +16,14 @@
       <div
         class="category-select-field__wrapper"
       >
-        <div
+        <button
           v-bind="$attrs"
-          class="category-select-field__input"
-          title="Select category"
+          ref="buttonRef"
+          class="button-style-reset category-select-field__input"
+          type="button"
+          :disabled="($attrs.disabled as boolean)"
+          aria-label="Select category"
+          :title="selectedValue?.name || 'Select category'"
           @click="() => toggleDropdown()"
         >
           <template v-if="selectedValue">
@@ -26,7 +32,7 @@
 
           {{ selectedValue?.name || placeholder }}
           <div class="category-select-field__arrow" />
-        </div>
+        </button>
         <div
           v-if="isDropdownOpened"
           class="category-select-field__dropdown"
@@ -117,7 +123,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, Ref, computed } from 'vue';
+import {
+  ref, Ref, computed, watch, onBeforeUnmount,
+} from 'vue';
 import { CategoryModel } from 'shared-types';
 import { type FormattedCategory } from '@/common/types';
 import ChevronRightIcon from '@/assets/icons/chevron-right.svg?component';
@@ -147,6 +155,7 @@ const emit = defineEmits<{
   'update:model-value': [value: FormattedCategory]
 }>();
 const selectedValue = ref(props.modelValue || props.values[0]);
+const buttonRef = ref<HTMLButtonElement>(null);
 
 const levelValues = ref(props.values);
 
@@ -176,6 +185,10 @@ const topLevelCategory = computed<FormattedCategory>(() => {
 
 const toggleDropdown = (state?: boolean) => {
   isDropdownOpened.value = state ?? !isDropdownOpened.value;
+
+  if (state === false) {
+    buttonRef.value.focus();
+  }
 };
 
 const filterCategories = (categories: FormattedCategory[], query: string): FormattedCategory[] => {
@@ -254,6 +267,23 @@ const backLevelUp = () => {
   levelValues.value = level;
   searchQuery.value = '';
 };
+
+const handleEscPress = (event: KeyboardEvent) => {
+  if (event.key === 'Escape') {
+    toggleDropdown(false);
+  }
+};
+
+watch(isDropdownOpened, (value) => {
+  if (value) {
+    document.addEventListener('keydown', handleEscPress);
+  } else {
+    document.removeEventListener('keydown', handleEscPress);
+  }
+});
+onBeforeUnmount(() => {
+  document.removeEventListener('keydown', handleEscPress);
+});
 </script>
 
 <style lang="scss">
