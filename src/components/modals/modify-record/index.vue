@@ -78,34 +78,23 @@ const form = ref<UI_FORM_STRUCT>({
   type: FORM_TYPES.expense,
 });
 
-const resolveTransaction = ref(null);
 const transactionItem = ref<TransactionModel | null>(null);
 const isTransactionLength = ref(false);
 
-const transactionPromise = new Promise(resolve => {
-  resolveTransaction.value = resolve;
-});
-
 const openTransactionModalList = async () => {
-  let typeOfTransaction;
-  if (props.transaction.transactionType === 'expense') {
-    typeOfTransaction = 'income';
-  } else {
-    typeOfTransaction = 'expense';
-  }
+  const typeOfTransaction = props.transaction.transactionType === TRANSACTION_TYPES.expense
+    ? TRANSACTION_TYPES.expense
+    : TRANSACTION_TYPES.income;
 
-  const modalOptions = {
-    oppositeTransaction: undefined,
-    transactionType: typeOfTransaction,
-    resolveTransaction,
-  };
-
-  await addModal({
+  addModal({
     type: MODAL_TYPES.recordList,
-    data: modalOptions,
+    data: {
+      transactionType: typeOfTransaction,
+      onSelect(transaction) {
+        transactionItem.value = transaction;
+      },
+    },
   });
-
-  transactionItem.value = (await transactionPromise) as TransactionModel;
 };
 
 const isRecordExternal = computed(() => {
@@ -548,7 +537,7 @@ onMounted(() => {
         </form-row>
       </template>
 
-      <template v-if="isTransferTx && !transactionItem">
+      <template v-if="isTransferTx && !transactionItem && !isFormCreation">
         <form-row>
           <ui-button
             class="modify-record__action modify-record__action-link"
@@ -559,9 +548,9 @@ onMounted(() => {
           </ui-button>
         </form-row>
       </template>
-      <template v-if="transactionItem && isTransferTx">
+
+      <template v-if="transactionItem && isTransferTx && !isFormCreation">
         <form-row class="modify-record__transaction">
-          <!-- TODO: show warning if amount doesn't match -->
           <TransactionRecrod class="modify-record__transaction-button" :tx="transactionItem" />
           <ui-button
             class="modify-record__action modify-record__action-transaction"

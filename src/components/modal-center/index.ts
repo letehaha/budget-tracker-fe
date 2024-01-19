@@ -1,4 +1,5 @@
 import { ref, Ref } from 'vue';
+import { RecordListModalProps } from '@/components/modals/modify-record/record-list.vue';
 
 export enum MODAL_TYPES {
   createRecord = 'createRecord',
@@ -7,12 +8,32 @@ export enum MODAL_TYPES {
   monobankSetToken = 'monobankSetToken',
 }
 
-export interface ModalDataProp {
+interface CommonModalDataProps {
   id?: number | string;
-  data?: Record<string, unknown>;
-  type: MODAL_TYPES;
   hideOnWidth?: number;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data: Record<string, any>;
 }
+interface CreateRecordModal extends CommonModalDataProps {
+  type: MODAL_TYPES.createRecord;
+}
+interface MonobankTxFormModal extends CommonModalDataProps {
+  type: MODAL_TYPES.monobankTxForm;
+}
+interface MonobankSetTokenModal extends CommonModalDataProps {
+  type: MODAL_TYPES.monobankSetToken;
+}
+interface RecordListModal extends CommonModalDataProps {
+  type: MODAL_TYPES.recordList;
+  data: RecordListModalProps;
+}
+
+export type ModalDataProp = (
+  RecordListModal
+  | CreateRecordModal
+  | MonobankTxFormModal
+  | MonobankSetTokenModal
+);
 
 let idCounter = 0;
 const activeModals = ref<ModalDataProp[]>([]);

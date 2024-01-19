@@ -31,10 +31,12 @@ import { TRANSACTION_TYPES, TransactionModel } from 'shared-types';
 import { EVENTS as MODAL_EVENTS } from '@/components/modal-center/ui-modal.vue';
 import TransactionRecrod from '@/components/transactions-list/transaction-record.vue';
 
-const props = defineProps<{
+export interface RecordListModalProps {
   transactionType: TRANSACTION_TYPES;
-  resolveTransaction:(item: TransactionModel) => void;
-}>();
+  onSelect:(item: TransactionModel) => void;
+}
+
+const props = defineProps<RecordListModalProps>();
 
 const emit = defineEmits([MODAL_EVENTS.closeModal]);
 
@@ -64,7 +66,7 @@ const {
 });
 
 const handlerRecordClick = (transaction) => {
-  props.resolveTransaction(transaction);
+  props.onSelect(transaction);
   emit(MODAL_EVENTS.closeModal);
 };
 </script>
