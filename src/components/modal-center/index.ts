@@ -12,7 +12,7 @@ interface CommonModalDataProps {
   id?: number | string;
   hideOnWidth?: number;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: Record<string, any>;
+  data?: Record<string, any>;
 }
 interface CreateRecordModal extends CommonModalDataProps {
   type: MODAL_TYPES.createRecord;
