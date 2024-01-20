@@ -1,66 +1,71 @@
 <script lang="ts" setup>
-import {
-  ref,
-  watch,
-  computed,
-  onMounted,
-  nextTick,
-} from 'vue';
-import { storeToRefs } from 'pinia';
-import { useQueryClient } from '@tanstack/vue-query';
+import { ref, watch, computed, onMounted, nextTick } from "vue";
+import { storeToRefs } from "pinia";
+import { useQueryClient } from "@tanstack/vue-query";
 import {
   TRANSACTION_TYPES,
   PAYMENT_TYPES,
   type TransactionModel,
   ACCOUNT_TYPES,
   TRANSACTION_TRANSFER_NATURE,
-} from 'shared-types';
-import { useAccountsStore, useCategoriesStore, useCurrenciesStore } from '@/stores';
-import { createTransaction, editTransaction, deleteTransaction } from '@/api';
-import { VERBOSE_PAYMENT_TYPES, OUT_OF_WALLET_ACCOUNT_MOCK, VUE_QUERY_TX_CHANGE_QUERY } from '@/common/const';
-import InputField from '@/components/fields/input-field.vue';
-import SelectField from '@/components/fields/select-field.vue';
-import { MODAL_TYPES, useModalCenter } from '@/components/modal-center';
-import CategorySelectField from '@/components/fields/category-select-field.vue';
-import TextareaField from '@/components/fields/textarea-field.vue';
-import DateField from '@/components/fields/date-field.vue';
-import UiButton from '@/components/common/ui-button.vue';
-import { EVENTS as MODAL_EVENTS } from '@/components/modal-center/ui-modal.vue';
-import TransactionRecrod from '@/components/transactions-list/transaction-record.vue';
-import FormHeader from './components/form-header.vue';
-import TypeSelector from './components/type-selector.vue';
-import FormRow from './components/form-row.vue';
-import AccountField from './components/account-field.vue';
-import { FORM_TYPES, UI_FORM_STRUCT } from './types';
+} from "shared-types";
+import {
+  useAccountsStore,
+  useCategoriesStore,
+  useCurrenciesStore,
+} from "@/stores";
+import { createTransaction, editTransaction, deleteTransaction } from "@/api";
+import {
+  VERBOSE_PAYMENT_TYPES,
+  OUT_OF_WALLET_ACCOUNT_MOCK,
+  VUE_QUERY_TX_CHANGE_QUERY,
+} from "@/common/const";
+import InputField from "@/components/fields/input-field.vue";
+import SelectField from "@/components/fields/select-field.vue";
+import { MODAL_TYPES, useModalCenter } from "@/components/modal-center";
+import CategorySelectField from "@/components/fields/category-select-field.vue";
+import TextareaField from "@/components/fields/textarea-field.vue";
+import DateField from "@/components/fields/date-field.vue";
+import UiButton from "@/components/common/ui-button.vue";
+import { EVENTS as MODAL_EVENTS } from "@/components/modal-center/ui-modal.vue";
+import TransactionRecrod from "@/components/transactions-list/transaction-record.vue";
+import FormHeader from "./components/form-header.vue";
+import TypeSelector from "./components/type-selector.vue";
+import FormRow from "./components/form-row.vue";
+import AccountField from "./components/account-field.vue";
+import { FORM_TYPES, UI_FORM_STRUCT } from "./types";
 import {
   getDestinationAccount,
   getDestinationAmount,
   getFormTypeFromTransaction,
   getTxTypeFromFormType,
-} from './helpers';
+} from "./helpers";
 
 defineOptions({
-  name: 'record-form',
+  name: "record-form",
 });
 
-const isOutOfWalletAccount = (
-  account: typeof OUT_OF_WALLET_ACCOUNT_MOCK,
-) => account._isOutOfWallet;
+const isOutOfWalletAccount = (account: typeof OUT_OF_WALLET_ACCOUNT_MOCK) =>
+  account._isOutOfWallet;
 
-const props = withDefaults(defineProps<{
-  transaction?: TransactionModel;
-  oppositeTransaction?: TransactionModel;
-}>(), {
-  transaction: undefined,
-  oppositeTransaction: undefined,
-});
+const props = withDefaults(
+  defineProps<{
+    transaction?: TransactionModel;
+    oppositeTransaction?: TransactionModel;
+  }>(),
+  {
+    transaction: undefined,
+    oppositeTransaction: undefined,
+  },
+);
 
 const emit = defineEmits([MODAL_EVENTS.closeModal]);
 
 const { addModal } = useModalCenter();
 const { currenciesMap } = storeToRefs(useCurrenciesStore());
 const { accountsRecord, systemAccounts } = storeToRefs(useAccountsStore());
-const { formattedCategories, categoriesMap } = storeToRefs(useCategoriesStore());
+const { formattedCategories, categoriesMap } =
+  storeToRefs(useCategoriesStore());
 const queryClient = useQueryClient();
 
 const isFormCreation = computed(() => !props.transaction);
@@ -73,7 +78,9 @@ const form = ref<UI_FORM_STRUCT>({
   targetAmount: null,
   category: formattedCategories.value[0],
   time: new Date().toISOString().substring(0, 19),
-  paymentType: VERBOSE_PAYMENT_TYPES.find(item => item.value === PAYMENT_TYPES.creditCard),
+  paymentType: VERBOSE_PAYMENT_TYPES.find(
+    (item) => item.value === PAYMENT_TYPES.creditCard,
+  ),
   note: null,
   type: FORM_TYPES.expense,
 });
@@ -82,9 +89,10 @@ const transactionItem = ref<TransactionModel | null>(null);
 const isTransactionLength = ref(false);
 
 const openTransactionModalList = async () => {
-  const typeOfTransaction = props.transaction.transactionType === TRANSACTION_TYPES.expense
-    ? TRANSACTION_TYPES.expense
-    : TRANSACTION_TYPES.income;
+  const typeOfTransaction =
+    props.transaction.transactionType === TRANSACTION_TYPES.expense
+      ? TRANSACTION_TYPES.expense
+      : TRANSACTION_TYPES.income;
 
   addModal({
     type: MODAL_TYPES.recordList,
@@ -103,34 +111,46 @@ const isRecordExternal = computed(() => {
 });
 // If record is external, the account field will be disabled, so we need to preselect
 // the account
-watch(() => isRecordExternal.value, (value) => {
-  if (
-    value
-    && props.transaction.transferNature !== TRANSACTION_TRANSFER_NATURE.transfer_out_wallet
-  ) {
-    nextTick(() => {
-      if (accountsRecord.value[props.transaction.accountId]) {
-        form.value.account = accountsRecord.value[props.transaction.accountId];
-      }
-    });
-  }
-}, { immediate: true });
+watch(
+  () => isRecordExternal.value,
+  (value) => {
+    if (
+      value &&
+      props.transaction.transferNature !==
+        TRANSACTION_TRANSFER_NATURE.transfer_out_wallet
+    ) {
+      nextTick(() => {
+        if (accountsRecord.value[props.transaction.accountId]) {
+          form.value.account =
+            accountsRecord.value[props.transaction.accountId];
+        }
+      });
+    }
+  },
+  { immediate: true },
+);
 
-watch(() => transactionItem.value, (value) => {
-  if (value !== null) {
-    isTransactionLength.value = true;
-  }
-});
+watch(
+  () => transactionItem.value,
+  (value) => {
+    if (value !== null) {
+      isTransactionLength.value = true;
+    }
+  },
+);
 
 const isLoading = ref(false);
 
 const currentTxType = computed(() => form.value.type);
-const isTransferTx = computed(() => currentTxType.value === FORM_TYPES.transfer);
+const isTransferTx = computed(
+  () => currentTxType.value === FORM_TYPES.transfer,
+);
 
 const isAmountFieldDisabled = computed(() => {
   if (isRecordExternal.value) {
     if (!isTransferTx.value) return true;
-    if (props.transaction.transactionType === TRANSACTION_TYPES.expense) return true;
+    if (props.transaction.transactionType === TRANSACTION_TYPES.expense)
+      return true;
   }
 
   // Means it's "Out of wallet"
@@ -141,7 +161,8 @@ const isAmountFieldDisabled = computed(() => {
 const isTargetAmountFieldDisabled = computed(() => {
   if (isRecordExternal.value) {
     if (!isTransferTx.value) return true;
-    if (props.transaction.transactionType === TRANSACTION_TYPES.income) return true;
+    if (props.transaction.transactionType === TRANSACTION_TYPES.income)
+      return true;
   }
 
   // Means it's "Out of wallet"
@@ -152,7 +173,8 @@ const isTargetAmountFieldDisabled = computed(() => {
 const fromAccountFieldDisabled = computed(() => {
   if (isRecordExternal.value) {
     if (!isTransferTx.value) return true;
-    if (props.transaction.transactionType === TRANSACTION_TYPES.expense) return true;
+    if (props.transaction.transactionType === TRANSACTION_TYPES.expense)
+      return true;
   }
 
   return false;
@@ -160,7 +182,8 @@ const fromAccountFieldDisabled = computed(() => {
 const toAccountFieldDisabled = computed(() => {
   if (isRecordExternal.value) {
     if (!isTransferTx.value) return true;
-    if (props.transaction.transactionType === TRANSACTION_TYPES.income) return true;
+    if (props.transaction.transactionType === TRANSACTION_TYPES.income)
+      return true;
   }
 
   return false;
@@ -188,59 +211,75 @@ const transferSourceAccounts = computed(() => [
   ...systemAccounts.value,
 ]);
 
-const transferDestinationAccounts = computed(() => (
-  transferSourceAccounts.value.filter((item) => item.id !== form.value.account?.id)
-));
+const transferDestinationAccounts = computed(() =>
+  transferSourceAccounts.value.filter(
+    (item) => item.id !== form.value.account?.id,
+  ),
+);
 
-watch(() => props.transaction, (value) => {
-  if (value) {
-    const initialFormValues = {
-      type: getFormTypeFromTransaction(value),
-      category: categoriesMap.value[value.categoryId],
-      time: new Date(value.time).toISOString().substring(0, 19),
-      paymentType: VERBOSE_PAYMENT_TYPES.find(item => item.value === value.paymentType),
-      note: value.note,
-      transactionRecordItem: value,
-    } as typeof form.value;
+watch(
+  () => props.transaction,
+  (value) => {
+    if (value) {
+      const initialFormValues = {
+        type: getFormTypeFromTransaction(value),
+        category: categoriesMap.value[value.categoryId],
+        time: new Date(value.time).toISOString().substring(0, 19),
+        paymentType: VERBOSE_PAYMENT_TYPES.find(
+          (item) => item.value === value.paymentType,
+        ),
+        note: value.note,
+        transactionRecordItem: value,
+      } as typeof form.value;
 
-    if (value.transferNature === TRANSACTION_TRANSFER_NATURE.transfer_out_wallet) {
-      if (value.transactionType === TRANSACTION_TYPES.income) {
-        initialFormValues.account = OUT_OF_WALLET_ACCOUNT_MOCK;
-        initialFormValues.targetAmount = value.amount;
-        initialFormValues.toAccount = accountsRecord.value[value.accountId];
-      } else if (value.transactionType === TRANSACTION_TYPES.expense) {
+      if (
+        value.transferNature === TRANSACTION_TRANSFER_NATURE.transfer_out_wallet
+      ) {
+        if (value.transactionType === TRANSACTION_TYPES.income) {
+          initialFormValues.account = OUT_OF_WALLET_ACCOUNT_MOCK;
+          initialFormValues.targetAmount = value.amount;
+          initialFormValues.toAccount = accountsRecord.value[value.accountId];
+        } else if (value.transactionType === TRANSACTION_TYPES.expense) {
+          initialFormValues.amount = value.amount;
+          initialFormValues.account = accountsRecord.value[value.accountId];
+          initialFormValues.toAccount = OUT_OF_WALLET_ACCOUNT_MOCK;
+        }
+      } else {
         initialFormValues.amount = value.amount;
         initialFormValues.account = accountsRecord.value[value.accountId];
-        initialFormValues.toAccount = OUT_OF_WALLET_ACCOUNT_MOCK;
       }
-    } else {
-      initialFormValues.amount = value.amount;
-      initialFormValues.account = accountsRecord.value[value.accountId];
+
+      form.value = initialFormValues;
     }
+  },
+  { immediate: true, deep: true },
+);
 
-    form.value = initialFormValues;
-  }
-}, { immediate: true, deep: true });
+watch(
+  () => props.oppositeTransaction,
+  (value) => {
+    if (value) {
+      form.value.toAccount = accountsRecord.value[value.accountId];
+      form.value.targetAmount = value.amount;
+    }
+  },
+  { immediate: true, deep: true },
+);
 
-watch(() => props.oppositeTransaction, (value) => {
-  if (value) {
-    form.value.toAccount = accountsRecord.value[value.accountId];
-    form.value.targetAmount = value.amount;
-  }
-}, { immediate: true, deep: true });
-
-watch(() => form.value.account, (value) => {
-  // If fromAccount is the same as toAccount, make toAccount empty
-  if (form.value.toAccount?.id === value?.id) {
-    form.value.toAccount = null;
-  }
-});
+watch(
+  () => form.value.account,
+  (value) => {
+    // If fromAccount is the same as toAccount, make toAccount empty
+    if (form.value.toAccount?.id === value?.id) {
+      form.value.toAccount = null;
+    }
+  },
+);
 
 watch(currentTxType, (value, prevValue) => {
   if (props.transaction) {
-    const {
-      amount, transactionType, accountId, transferNature,
-    } = props.transaction;
+    const { amount, transactionType, accountId, transferNature } =
+      props.transaction;
 
     if (value === FORM_TYPES.transfer) {
       if (transactionType === TRANSACTION_TYPES.income) {
@@ -250,7 +289,9 @@ watch(currentTxType, (value, prevValue) => {
         form.value.toAccount = accountsRecord.value[accountId];
         form.value.account = null;
 
-        if (transferNature === TRANSACTION_TRANSFER_NATURE.transfer_out_wallet) {
+        if (
+          transferNature === TRANSACTION_TRANSFER_NATURE.transfer_out_wallet
+        ) {
           form.value.account = OUT_OF_WALLET_ACCOUNT_MOCK;
         }
       }
@@ -299,11 +340,13 @@ async function handleCreateTransaction() {
 
   // Handle transfer_out_wallet
   // Always send amount+accountId and never destination data
-  if ([
-    creationParams.accountId,
-    creationParams.destinationAccountId,
-  ].includes(OUT_OF_WALLET_ACCOUNT_MOCK.id)) {
-    creationParams.transferNature = TRANSACTION_TRANSFER_NATURE.transfer_out_wallet;
+  if (
+    [creationParams.accountId, creationParams.destinationAccountId].includes(
+      OUT_OF_WALLET_ACCOUNT_MOCK.id,
+    )
+  ) {
+    creationParams.transferNature =
+      TRANSACTION_TRANSFER_NATURE.transfer_out_wallet;
 
     if (creationParams.accountId === OUT_OF_WALLET_ACCOUNT_MOCK.id) {
       creationParams.transactionType = TRANSACTION_TYPES.income;
@@ -311,7 +354,9 @@ async function handleCreateTransaction() {
       creationParams.accountId = creationParams.destinationAccountId;
       delete creationParams.destinationAmount;
       delete creationParams.destinationAccountId;
-    } else if (creationParams.destinationAccountId === OUT_OF_WALLET_ACCOUNT_MOCK.id) {
+    } else if (
+      creationParams.destinationAccountId === OUT_OF_WALLET_ACCOUNT_MOCK.id
+    ) {
       creationParams.transactionType = TRANSACTION_TYPES.expense;
       delete creationParams.destinationAmount;
       delete creationParams.destinationAccountId;
@@ -368,7 +413,8 @@ async function handleEditTransaction() {
 
     if (!transactionItem.value?.id) {
       if (isOutOfWalletAccount(destinationAccount)) {
-        editionParams.transferNature = TRANSACTION_TRANSFER_NATURE.transfer_out_wallet;
+        editionParams.transferNature =
+          TRANSACTION_TRANSFER_NATURE.transfer_out_wallet;
       } else {
         editionParams.destinationAccountId = destinationAccount.id;
         editionParams.destinationAmount = getDestinationAmount({
@@ -378,11 +424,13 @@ async function handleEditTransaction() {
           toAmount: Number(form.value.targetAmount),
           isCurrenciesDifferent: isCurrenciesDifferent.value,
         });
-        editionParams.transferNature = TRANSACTION_TRANSFER_NATURE.common_transfer;
+        editionParams.transferNature =
+          TRANSACTION_TRANSFER_NATURE.common_transfer;
       }
     } else {
       editionParams.destinationTransactionId = transactionItem.value.id;
-      editionParams.transferNature = TRANSACTION_TRANSFER_NATURE.common_transfer;
+      editionParams.transferNature =
+        TRANSACTION_TRANSFER_NATURE.common_transfer;
     }
   } else {
     editionParams.categoryId = category.id;
@@ -463,10 +511,7 @@ onMounted(() => {
     }"
   >
     <div class="modify-record__header">
-      <form-header
-        :is-form-creation="isFormCreation"
-        @close="closeModal"
-      />
+      <form-header :is-form-creation="isFormCreation" @close="closeModal" />
 
       <type-selector
         :is-form-creation="isFormCreation"
@@ -476,7 +521,9 @@ onMounted(() => {
       />
     </div>
     <div class="modify-record__form">
-      <form-row v-if="!transactionItem || transactionItem.transactionType !== 'expense'">
+      <form-row
+        v-if="!transactionItem || transactionItem.transactionType !== 'expense'"
+      >
         <input-field
           v-model="form.amount"
           label="Amount"
@@ -496,7 +543,9 @@ onMounted(() => {
         v-model:to-account="form.toAccount"
         :is-transfer-transaction="isTransferTx"
         :is-transaction-record="isTransactionLength"
-        :transaction-type="props.transaction?.transactionType || TRANSACTION_TYPES.expense"
+        :transaction-type="
+          props.transaction?.transactionType || TRANSACTION_TYPES.expense
+        "
         :accounts="isTransferTx ? transferSourceAccounts : systemAccounts"
         :from-account-disabled="fromAccountFieldDisabled"
         :to-account-disabled="toAccountFieldDisabled"
@@ -516,8 +565,9 @@ onMounted(() => {
       </template>
 
       <template
-        v-if="isTransferTx && !transactionItem
-          || (transactionItem && transactionItem.transactionType === 'expense')
+        v-if="
+          (isTransferTx && !transactionItem) ||
+          (transactionItem && transactionItem.transactionType === 'expense')
         "
       >
         <form-row>
@@ -551,7 +601,10 @@ onMounted(() => {
 
       <template v-if="transactionItem && isTransferTx && !isFormCreation">
         <form-row class="modify-record__transaction">
-          <TransactionRecrod class="modify-record__transaction-button" :tx="transactionItem" />
+          <TransactionRecrod
+            class="modify-record__transaction-button"
+            :tx="transactionItem"
+          />
           <ui-button
             class="modify-record__action modify-record__action-transaction"
             @click="deleteTransactionRecordHandler"
@@ -596,15 +649,12 @@ onMounted(() => {
         Delete
       </ui-button>
       <ui-button
-        class="
-          modify-record__action
-          modify-record__action--submit
-        "
+        class="modify-record__action modify-record__action--submit"
         :aria-label="isFormCreation ? 'Create transaction' : 'Edit transaction'"
         :disabled="isLoading"
         @click="submit"
       >
-        {{ isLoading ? 'Loading...' : isFormCreation ? 'Submit' : 'Edit' }}
+        {{ isLoading ? "Loading..." : isFormCreation ? "Submit" : "Edit" }}
       </ui-button>
     </div>
   </div>
@@ -626,7 +676,7 @@ $border-top-radius: 10px;
   border-top-right-radius: $border-top-radius;
   border-top-left-radius: $border-top-radius;
 
-  transition: .2s ease-out;
+  transition: 0.2s ease-out;
 
   .modify-record--income & {
     background-color: var(--app-income-color);

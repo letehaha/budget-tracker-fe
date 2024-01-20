@@ -1,13 +1,12 @@
-import { createPinia, Store } from 'pinia';
-import { cloneDeep } from 'lodash-es';
+import { createPinia, Store } from "pinia";
+import { cloneDeep } from "lodash-es";
 
 export const store = createPinia();
 
 const definedStores: Store[] = [];
 
-export const resetAllDefinedStores = (): void => (
-  definedStores.forEach(s => s.$reset())
-);
+export const resetAllDefinedStores = (): void =>
+  definedStores.forEach((s) => s.$reset());
 
 // Adds $reset method to clear the store to the initial state
 store.use(({ store: storage }) => {

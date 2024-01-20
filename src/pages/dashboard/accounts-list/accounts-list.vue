@@ -1,26 +1,20 @@
 <template>
   <div class="accounts-list">
-    <template
-      v-for="account in allAccounts"
-      :key="account.id"
-    >
-      <account-card
-        :account="account"
-        @click="redirectToAccount(account)"
-      />
+    <template v-for="account in allAccounts" :key="account.id">
+      <account-card :account="account" @click="redirectToAccount(account)" />
     </template>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from 'vue';
-import { useRouter } from 'vue-router';
-import { storeToRefs } from 'pinia';
-import { AccountModel } from 'shared-types';
+import { defineComponent, computed } from "vue";
+import { useRouter } from "vue-router";
+import { storeToRefs } from "pinia";
+import { AccountModel } from "shared-types";
 
-import { ROUTES_NAMES } from '@/routes/constants';
-import { useAccountsStore } from '@/stores';
-import AccountCard from './account-card.vue';
+import { ROUTES_NAMES } from "@/routes/constants";
+import { useAccountsStore } from "@/stores";
+import AccountCard from "./account-card.vue";
 
 export default defineComponent({
   components: {
@@ -30,8 +24,10 @@ export default defineComponent({
     const router = useRouter();
     const { enabledAccounts } = storeToRefs(useAccountsStore());
 
-    const allAccounts = computed(
-      () => [...enabledAccounts.value].sort((a, b) => b.currentBalance - a.currentBalance),
+    const allAccounts = computed(() =>
+      [...enabledAccounts.value].sort(
+        (a, b) => b.currentBalance - a.currentBalance,
+      ),
     );
 
     const redirectToAccount = (account: AccountModel) => {

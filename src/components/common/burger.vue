@@ -12,7 +12,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent } from "vue";
 /**
   Example of usage:
 
@@ -46,10 +46,10 @@ export default defineComponent({
     linesStyles: { type: Object, required: false, default: () => ({}) },
     burgerStyles: { type: Object, required: false, default: () => ({}) },
   },
-  emits: ['clicked'],
+  emits: ["clicked"],
   methods: {
     onClick() {
-      this.$emit('clicked');
+      this.$emit("clicked");
     },
   },
 });
@@ -74,12 +74,19 @@ export default defineComponent({
     overflow: hidden;
     background-color: #ffffff;
     border-radius: 1px;
-    transition: transform ease 0.25s, opacity ease 0.25s, visibility ease 0.25s;
+    transition:
+      transform ease 0.25s,
+      opacity ease 0.25s,
+      visibility ease 0.25s;
     opacity: 1;
     visibility: visible;
 
-    &:first-child { margin-top: -6px; }
-    &:last-child { margin-top: 6px; }
+    &:first-child {
+      margin-top: -6px;
+    }
+    &:last-child {
+      margin-top: 6px;
+    }
   }
 }
 

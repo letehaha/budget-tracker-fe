@@ -1,12 +1,10 @@
-export function writeToClipboard(
-  element: unknown,
-): Promise<unknown> {
+export function writeToClipboard(element: unknown): Promise<unknown> {
   return new Promise((resolve, reject) => {
     try {
-      let value = '';
-      if (typeof element === 'string') {
+      let value = "";
+      if (typeof element === "string") {
         value = element;
-      } else if (typeof element === 'number') {
+      } else if (typeof element === "number") {
         value = String(element);
       } else if (element instanceof HTMLElement && element.textContent) {
         value = element.textContent;

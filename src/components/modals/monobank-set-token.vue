@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="monobank-set-token"
-    data-cy="monobank-set-token-modal"
-  >
+  <div class="monobank-set-token" data-cy="monobank-set-token-modal">
     <ui-button
       type="button"
       class="button-style-reset monobank-set-token__close"
@@ -29,47 +26,40 @@
     </div>
     <div class="monobank-set-token__actions">
       <ui-button
-        class="
-          monobank-set-token__action
-          monobank-set-token__action--submit
-        "
+        class="monobank-set-token__action monobank-set-token__action--submit"
         type="submit"
         :disabled="isLoading"
         @click="submit"
       >
-        <template v-if="isUpdate">
-          Update token
-        </template>
-        <template v-else>
-          Pair account
-        </template>
+        <template v-if="isUpdate"> Update token </template>
+        <template v-else> Pair account </template>
       </ui-button>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from 'vue';
-import { API_ERROR_CODES } from 'shared-types';
-import { useBanksMonobankStore } from '@/stores';
-import { MONOBANK_API_TOKEN_LENGTH } from '@/common/const';
-import { ApiErrorResponseError } from '@/js/errors';
-import { useFormValidation } from '@/composable';
-import { required, minLength } from '@/js/helpers/validators';
-import InputField from '@/components/fields/input-field.vue';
-import Button from '@/components/common/ui-button.vue';
-import { EVENTS as MODAL_EVENTS } from '@/components/modal-center/ui-modal.vue';
+import { defineComponent, reactive, ref } from "vue";
+import { API_ERROR_CODES } from "shared-types";
+import { useBanksMonobankStore } from "@/stores";
+import { MONOBANK_API_TOKEN_LENGTH } from "@/common/const";
+import { ApiErrorResponseError } from "@/js/errors";
+import { useFormValidation } from "@/composable";
+import { required, minLength } from "@/js/helpers/validators";
+import InputField from "@/components/fields/input-field.vue";
+import Button from "@/components/common/ui-button.vue";
+import { EVENTS as MODAL_EVENTS } from "@/components/modal-center/ui-modal.vue";
 
 import {
   useNotificationCenter,
   NotificationType,
-} from '@/components/notification-center';
+} from "@/components/notification-center";
 
 export default defineComponent({
-  name: 'monobank-set-token',
+  name: "monobank-set-token",
   components: {
-    'input-field': InputField,
-    'ui-button': Button,
+    "input-field": InputField,
+    "ui-button": Button,
   },
   props: {
     isUpdate: { type: Boolean, default: false },
@@ -80,7 +70,7 @@ export default defineComponent({
     const { addNotification } = useNotificationCenter();
 
     const isLoading = ref(false);
-    const form = reactive({ token: '' });
+    const form = reactive({ token: "" });
     const { isFormValid, getFieldErrorMessage } = useFormValidation(
       { form },
       {
@@ -114,14 +104,14 @@ export default defineComponent({
         emit(MODAL_EVENTS.closeModal);
 
         addNotification({
-          text: 'Paired',
+          text: "Paired",
           type: NotificationType.success,
         });
       } catch (e) {
         if (e instanceof ApiErrorResponseError) {
           if (e.data.code === API_ERROR_CODES.monobankUserAlreadyConnected) {
             addNotification({
-              text: 'Account already connected',
+              text: "Account already connected",
               type: NotificationType.error,
             });
 
@@ -130,7 +120,7 @@ export default defineComponent({
         }
 
         addNotification({
-          text: 'Unexpected error',
+          text: "Unexpected error",
           type: NotificationType.error,
         });
       } finally {

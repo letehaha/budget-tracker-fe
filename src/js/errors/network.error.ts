@@ -1,4 +1,4 @@
-import { ApiBaseError } from '@/common/types';
+import { ApiBaseError } from "@/common/types";
 
 /**
  * Network error.

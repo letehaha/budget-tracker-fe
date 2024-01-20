@@ -9,10 +9,7 @@
           <p>Price</p>
           <p>Holdings</p>
         </div>
-        <template
-          v-for="balance in balances"
-          :key="balance.asset"
-        >
+        <template v-for="balance in balances" :key="balance.asset">
           <div class="crypto__balance">
             <p>{{ balance.asset }}</p>
             <p>{{ balance.total }}</p>
@@ -26,25 +23,20 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import { storeToRefs } from 'pinia';
-import { formatFiat } from '@/js/helpers';
-import { useCryptoBinanceStore } from '@/stores';
+import { computed } from "vue";
+import { storeToRefs } from "pinia";
+import { formatFiat } from "@/js/helpers";
+import { useCryptoBinanceStore } from "@/stores";
 
 const binanceStore = useCryptoBinanceStore();
-const {
-  existingBalances: balances,
-  totalUSDBalance: totalBalance,
-} = storeToRefs(binanceStore);
+const { existingBalances: balances, totalUSDBalance: totalBalance } =
+  storeToRefs(binanceStore);
 
 const fiatTotalBalance = computed(() => formatFiat(totalBalance.value));
 
-const getPrice = (
-  balance: {
-    price?: string | number;
-    total: string | number
-  },
-): number => (
-  balance.price ? +balance.price * +balance.total : +balance.total
-);
+const getPrice = (balance: {
+  price?: string | number;
+  total: string | number;
+}): number =>
+  balance.price ? +balance.price * +balance.total : +balance.total;
 </script>

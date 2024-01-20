@@ -1,16 +1,8 @@
 <template>
   <div class="login">
-    <ui-box
-      class="login__wrapper"
-      @keypress.enter="submit"
-    >
-      <h2 class="login__title">
-        Log in to account
-      </h2>
-      <form-wrapper
-        :error="formError"
-        class="login__fields"
-      >
+    <ui-box class="login__wrapper" @keypress.enter="submit">
+      <h2 class="login__title">Log in to account</h2>
+      <form-wrapper :error="formError" class="login__fields">
         <input-field
           v-model="form.username"
           name="username"
@@ -35,7 +27,7 @@
         :disabled="isFormLoading"
         @click="submit"
       >
-        {{ isFormLoading ? 'Loading...' : 'Log in' }}
+        {{ isFormLoading ? "Loading..." : "Log in" }}
       </ui-button>
       <div class="login__signup">
         Don’t have an account?
@@ -52,22 +44,20 @@
 </template>
 
 <script lang="ts">
-import {
-  defineComponent, ref, Ref, watch,
-} from 'vue';
-import { useRouter } from 'vue-router';
-import { API_ERROR_CODES } from 'shared-types';
+import { defineComponent, ref, Ref, watch } from "vue";
+import { useRouter } from "vue-router";
+import { API_ERROR_CODES } from "shared-types";
 
-import { ROUTES_NAMES } from '@/routes/constants';
-import { useAuthStore } from '@/stores';
-import { useFormValidation } from '@/composable';
-import { required, minLength } from '@/js/helpers/validators';
+import { ROUTES_NAMES } from "@/routes/constants";
+import { useAuthStore } from "@/stores";
+import { useFormValidation } from "@/composable";
+import { required, minLength } from "@/js/helpers/validators";
 
-import FormWrapper from '@/components/fields/form-wrapper.vue';
-import UiButton from '@/components/common/ui-button.vue';
-import UiBox from '@/components/box.vue';
-import InputField from '@/components/fields/input-field.vue';
-import { ApiErrorResponseError } from '@/js/errors';
+import FormWrapper from "@/components/fields/form-wrapper.vue";
+import UiButton from "@/components/common/ui-button.vue";
+import UiBox from "@/components/box.vue";
+import InputField from "@/components/fields/input-field.vue";
+import { ApiErrorResponseError } from "@/js/errors";
 
 export default defineComponent({
   components: {
@@ -81,16 +71,13 @@ export default defineComponent({
     const { login } = useAuthStore();
 
     const form = ref({
-      username: '',
-      password: '',
+      username: "",
+      password: "",
     });
     const isFormLoading = ref(false);
     const formError: Ref<string | null> = ref(null);
 
-    const {
-      isFormValid,
-      getFieldErrorMessage,
-    } = useFormValidation(
+    const { isFormValid, getFieldErrorMessage } = useFormValidation(
       { form },
       {
         form: {
@@ -104,12 +91,14 @@ export default defineComponent({
       undefined,
       {
         customValidationMessages: {
-          passwordMinLength: 'Minimal length is 6.',
+          passwordMinLength: "Minimal length is 6.",
         },
       },
     );
 
-    watch(form.value, () => { formError.value = null; });
+    watch(form.value, () => {
+      formError.value = null;
+    });
 
     const submit = async () => {
       if (!isFormValid()) return;
@@ -125,15 +114,15 @@ export default defineComponent({
       } catch (e) {
         if (e instanceof ApiErrorResponseError) {
           const errorCodes: Partial<{ [K in API_ERROR_CODES]: string }> = {
-            [API_ERROR_CODES.notFound]: 'Incorrect email or password.',
-            [API_ERROR_CODES.invalidCredentials]: 'Password is invalid.',
+            [API_ERROR_CODES.notFound]: "Incorrect email or password.",
+            [API_ERROR_CODES.invalidCredentials]: "Password is invalid.",
           };
 
-          formError.value = errorCodes[e.data.code] || 'Unexpected error.';
+          formError.value = errorCodes[e.data.code] || "Unexpected error.";
           return;
         }
 
-        formError.value = 'Unexpected error.';
+        formError.value = "Unexpected error.";
       } finally {
         isFormLoading.value = false;
       }
@@ -184,6 +173,6 @@ export default defineComponent({
 .login__signup-link {
   @include link-primary-color();
 
-  transition: color .2s ease-out;
+  transition: color 0.2s ease-out;
 }
 </style>

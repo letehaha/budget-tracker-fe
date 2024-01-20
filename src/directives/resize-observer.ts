@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
-import { debounce } from 'lodash-es';
-import { Directive, DirectiveBinding } from 'vue';
+import { debounce } from "lodash-es";
+import { Directive, DirectiveBinding } from "vue";
 
 interface ResizableElement extends HTMLElement {
   resizeObserver?: ResizeObserver;
@@ -13,10 +13,13 @@ interface BindingValue {
 }
 
 export const nodeResizeObserver: Directive = {
-  beforeMount(el: ResizableElement, binding: DirectiveBinding & { value: BindingValue }) {
+  beforeMount(
+    el: ResizableElement,
+    binding: DirectiveBinding & { value: BindingValue },
+  ) {
     const { callback, debounceTime = 300 } = binding.value as BindingValue;
 
-    if (!callback || typeof callback !== 'function') {
+    if (!callback || typeof callback !== "function") {
       throw new Error("v-node-resize-observer requires a 'callback' function.");
     }
 

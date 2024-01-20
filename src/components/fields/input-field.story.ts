@@ -1,4 +1,4 @@
-import InputField from './input-field.vue';
+import InputField from "./input-field.vue";
 
 interface Args {
   label?: string;
@@ -13,21 +13,21 @@ interface Args {
 
 interface Story {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (): any
+  (): any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  args?: Args // Optional since args is defined after function declaration
+  args?: Args; // Optional since args is defined after function declaration
 }
 
 // 👇 This default export determines where your story goes in the story list
 export default {
-  title: 'input-field',
+  title: "input-field",
   component: InputField,
 };
 
 // 👇 We create a “template” of how args map to rendering
 const Template = (args: Args) => ({
   components: {
-    'input-field': InputField,
+    "input-field": InputField,
   },
   setup() {
     return { args };
@@ -43,32 +43,32 @@ const Template = (args: Args) => ({
 
 export const Default = Template.bind({}) as Story;
 Default.args = {
-  placeholder: 'Placeholder',
+  placeholder: "Placeholder",
 };
 
 export const WithLabel = Template.bind({}) as Story;
 WithLabel.args = {
-  placeholder: 'Placeholder',
-  label: 'Field label',
+  placeholder: "Placeholder",
+  label: "Field label",
 };
 
 export const SubLabelSlot = Template.bind({}) as Story;
 SubLabelSlot.args = {
-  label: 'Field label',
-  subLabelSlot: 'Sublabel',
+  label: "Field label",
+  subLabelSlot: "Sublabel",
 };
 
 export const Invalid = Template.bind({}) as Story;
 Invalid.args = {
-  errorMessage: 'Error message',
+  errorMessage: "Error message",
 };
 
 export const WithValue = Template.bind({}) as Story;
 WithValue.args = {
-  modelValue: 'Test value',
+  modelValue: "Test value",
 };
 
 export const TypeNumber = Template.bind({}) as Story;
 TypeNumber.args = {
-  type: 'number',
+  type: "number",
 };

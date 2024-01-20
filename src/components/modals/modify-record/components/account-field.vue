@@ -3,8 +3,8 @@
     <template v-if="isTransferTransaction">
       <form-row
         v-if="
-          !isTransactionRecord
-            || (isTransactionRecord && transactionType === TRANSACTION_TYPES.expense)
+          !isTransactionRecord ||
+          (isTransactionRecord && transactionType === TRANSACTION_TYPES.expense)
         "
       >
         <select-field
@@ -21,8 +21,8 @@
 
       <form-row
         v-if="
-          !isTransactionRecord
-            || (isTransactionRecord && transactionType === TRANSACTION_TYPES.income)
+          !isTransactionRecord ||
+          (isTransactionRecord && transactionType === TRANSACTION_TYPES.income)
         "
       >
         <select-field
@@ -68,15 +68,15 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router';
-import { AccountModel, TRANSACTION_TYPES } from 'shared-types';
+import { useRouter } from "vue-router";
+import { AccountModel, TRANSACTION_TYPES } from "shared-types";
 
-import { ROUTES_NAMES } from '@/routes';
+import { ROUTES_NAMES } from "@/routes";
 
-import SelectField from '@/components/fields/select-field.vue';
-import InputField from '@/components/fields/input-field.vue';
+import SelectField from "@/components/fields/select-field.vue";
+import InputField from "@/components/fields/input-field.vue";
 
-import FormRow from './form-row.vue';
+import FormRow from "./form-row.vue";
 
 withDefaults(
   defineProps<{
@@ -100,9 +100,9 @@ withDefaults(
 );
 
 const emit = defineEmits([
-  'close-modal',
-  'update:account',
-  'update:to-account',
+  "close-modal",
+  "update:account",
+  "update:to-account",
 ]);
 
 const router = useRouter();
@@ -110,11 +110,11 @@ const router = useRouter();
 const redirectToCreateAccountPage = async () => {
   await router.push({ name: ROUTES_NAMES.createAccount });
 
-  emit('close-modal');
+  emit("close-modal");
 };
 
 const updateFormAccount = (account: AccountModel) => {
-  emit('update:account', account);
+  emit("update:account", account);
 };
 </script>
 

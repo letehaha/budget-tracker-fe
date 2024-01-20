@@ -4,10 +4,7 @@
 
     <div class="analytics__block">
       <div class="analytics__block-dropdown">
-        <button
-          type="button"
-          @click="isDropdownVisible = !isDropdownVisible"
-        >
+        <button type="button" @click="isDropdownVisible = !isDropdownVisible">
           {{ currentTimePeriod.label }}
         </button>
         <dropdown
@@ -28,55 +25,60 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, defineAsyncComponent } from 'vue';
-import { useQuery } from '@tanstack/vue-query';
-import { Chart as Highcharts } from 'highcharts-vue';
-import { subDays } from 'date-fns';
-import { useHighcharts } from '@/composable';
-import { loadBalanceTrendData } from '@/services';
-import { VUE_QUERY_CACHE_KEYS } from '@/common/const';
+import { ref, computed, defineAsyncComponent } from "vue";
+import { useQuery } from "@tanstack/vue-query";
+import { Chart as Highcharts } from "highcharts-vue";
+import { subDays } from "date-fns";
+import { useHighcharts } from "@/composable";
+import { loadBalanceTrendData } from "@/services";
+import { VUE_QUERY_CACHE_KEYS } from "@/common/const";
 
 defineOptions({
-  name: 'analytics-root',
+  name: "analytics-root",
 });
 
-const Dropdown = defineAsyncComponent(() => import('@/components/common/dropdown.vue'));
+const Dropdown = defineAsyncComponent(
+  () => import("@/components/common/dropdown.vue"),
+);
 
 const { buildAreaChartConfig } = useHighcharts();
 const currentChartWidth = ref(null);
 const timePeriods = [
-  { value: 7, label: '7 days' },
-  { value: 30, label: '30 days' },
-  { value: 90, label: '90 days' },
+  { value: 7, label: "7 days" },
+  { value: 30, label: "30 days" },
+  { value: 90, label: "90 days" },
 ];
 const isDropdownVisible = ref(false);
-const currentTimePeriod = ref<typeof timePeriods[0]>(timePeriods[0]);
+const currentTimePeriod = ref<(typeof timePeriods)[0]>(timePeriods[0]);
 
 const { data: balanceHistory } = useQuery({
   queryKey: [
     ...VUE_QUERY_CACHE_KEYS.analyticsBalanceHistoryTrend,
     currentTimePeriod,
   ],
-  queryFn: () => loadBalanceTrendData({
-    from: subDays(new Date(), currentTimePeriod.value.value),
-  }),
+  queryFn: () =>
+    loadBalanceTrendData({
+      from: subDays(new Date(), currentTimePeriod.value.value),
+    }),
   staleTime: Infinity,
   placeholderData: [],
 });
 
-const chartOptions = computed(() => buildAreaChartConfig({
-  chart: { height: 350 },
-  series: [
-    {
-      type: 'area',
-      showInLegend: false,
-      data: balanceHistory.value.map((point) => [
-        new Date(point.date).getTime(),
-        point.amount,
-      ]),
-    },
-  ],
-}));
+const chartOptions = computed(() =>
+  buildAreaChartConfig({
+    chart: { height: 350 },
+    series: [
+      {
+        type: "area",
+        showInLegend: false,
+        data: balanceHistory.value.map((point) => [
+          new Date(point.date).getTime(),
+          point.amount,
+        ]),
+      },
+    ],
+  }),
+);
 
 const onChartResize = (entries: ResizeObserverEntry[]) => {
   const entry = entries[0];

@@ -10,17 +10,24 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from 'vue';
-import { TransactionModel, ACCOUNT_TYPES, TRANSACTION_TYPES } from 'shared-types';
-import { MODAL_TYPES, useModalCenter } from '@/components/modal-center/index';
-import TransactionRecrod from './transaction-record.vue';
+import { ref, watch } from "vue";
+import {
+  TransactionModel,
+  ACCOUNT_TYPES,
+  TRANSACTION_TYPES,
+} from "shared-types";
+import { MODAL_TYPES, useModalCenter } from "@/components/modal-center/index";
+import TransactionRecrod from "./transaction-record.vue";
 
-const props = withDefaults(defineProps<{
-  transactions: TransactionModel[];
-  isTransactionRecord?: boolean;
-}>(), {
-  isTransactionRecord: false,
-});
+const props = withDefaults(
+  defineProps<{
+    transactions: TransactionModel[];
+    isTransactionRecord?: boolean;
+  }>(),
+  {
+    isTransactionRecord: false,
+  },
+);
 
 const { addModal } = useModalCenter();
 const oppositeTransferTransaction = ref<TransactionModel | null>(null);
@@ -29,10 +36,9 @@ const handlerRecordClick = (item) => {
   const baseTx = item;
   const oppositeTx = oppositeTransferTransaction.value;
 
-  const isExternalTransfer = (
-    baseTx.accountType !== ACCOUNT_TYPES.system
-    || (oppositeTx && oppositeTx.accountType !== ACCOUNT_TYPES.system)
-  );
+  const isExternalTransfer =
+    baseTx.accountType !== ACCOUNT_TYPES.system ||
+    (oppositeTx && oppositeTx.accountType !== ACCOUNT_TYPES.system);
 
   const modalOptions = {
     transaction: baseTx,

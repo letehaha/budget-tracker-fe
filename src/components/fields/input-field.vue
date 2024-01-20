@@ -33,7 +33,7 @@
           autocorrect="off"
           autocapitalize="off"
           spellcheck="false"
-        >
+        />
 
         <template v-if="isTrailIconExist">
           <div class="input-field__trailing-icon">
@@ -54,14 +54,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from 'vue';
-import { KEYBOARD_CODES } from '@/common/types';
+import { defineComponent, computed } from "vue";
+import { KEYBOARD_CODES } from "@/common/types";
 
-import FieldLabel from './components/field-label.vue';
-import FieldError from './components/field-error.vue';
+import FieldLabel from "./components/field-label.vue";
+import FieldError from "./components/field-error.vue";
 
 export const MODEL_EVENTS = {
-  input: 'update:modelValue',
+  input: "update:modelValue",
 };
 
 interface InputChangeEvent extends Event {
@@ -84,9 +84,8 @@ export default defineComponent({
     onlyPositive: Boolean,
   },
   emits: {
-    [MODEL_EVENTS.input]: (value: number | string) => (
-      typeof value === 'number' || typeof value === 'string'
-    ),
+    [MODEL_EVENTS.input]: (value: number | string) =>
+      typeof value === "number" || typeof value === "string",
   },
   setup(props, { attrs, emit, slots }) {
     const computedAttrs = {
@@ -102,7 +101,7 @@ export default defineComponent({
       onkeypress: (event: KeyboardEvent) => {
         if (props.disabled) return;
 
-        if (props.type === 'number') {
+        if (props.type === "number") {
           if (event.keyCode === KEYBOARD_CODES.keyE) {
             event.preventDefault();
           }

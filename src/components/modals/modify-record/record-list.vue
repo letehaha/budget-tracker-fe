@@ -1,10 +1,7 @@
 <template>
   <div class="record-list" data-cy="record-list-modal">
     <template v-if="isFetched && transactionsPages">
-      <div
-        v-for="item in transactionsPages?.pages?.flat()"
-        :key="item.id"
-      >
+      <div v-for="item in transactionsPages?.pages?.flat()" :key="item.id">
         <TransactionRecrod :tx="item" @record-click="handlerRecordClick" />
       </div>
     </template>
@@ -23,17 +20,17 @@
   </div>
 </template>
 
-<script setup lang=ts>
-import { loadTransactions } from '@/api/transactions';
-import { VUE_QUERY_CACHE_KEYS } from '@/common/const';
-import { useInfiniteQuery } from '@tanstack/vue-query';
-import { TRANSACTION_TYPES, TransactionModel } from 'shared-types';
-import { EVENTS as MODAL_EVENTS } from '@/components/modal-center/ui-modal.vue';
-import TransactionRecrod from '@/components/transactions-list/transaction-record.vue';
+<script setup lang="ts">
+import { loadTransactions } from "@/api/transactions";
+import { VUE_QUERY_CACHE_KEYS } from "@/common/const";
+import { useInfiniteQuery } from "@tanstack/vue-query";
+import { TRANSACTION_TYPES, TransactionModel } from "shared-types";
+import { EVENTS as MODAL_EVENTS } from "@/components/modal-center/ui-modal.vue";
+import TransactionRecrod from "@/components/transactions-list/transaction-record.vue";
 
 export interface RecordListModalProps {
   transactionType: TRANSACTION_TYPES;
-  onSelect:(item: TransactionModel) => void;
+  onSelect: (item: TransactionModel) => void;
 }
 
 const props = defineProps<RecordListModalProps>();
@@ -53,7 +50,10 @@ const {
   hasNextPage,
   isFetched,
 } = useInfiniteQuery({
-  queryKey: [VUE_QUERY_CACHE_KEYS.recordsPageTransactionList, props.transactionType],
+  queryKey: [
+    VUE_QUERY_CACHE_KEYS.recordsPageTransactionList,
+    props.transactionType,
+  ],
   queryFn: fetchTransactions,
   initialPageParam: 0,
   getNextPageParam: (lastPage, pages) => {
@@ -72,14 +72,14 @@ const handlerRecordClick = (transaction) => {
 </script>
 
 <style lang="scss" scoped>
-  .record-list {
-    max-width: 420px;
-    max-height: 100%;
-    padding: 20px;
-    overflow-x: hidden;
-    background-color: var(--app-surface-color);
-  }
-  .record-list__load-more {
+.record-list {
+  max-width: 420px;
+  max-height: 100%;
+  padding: 20px;
+  overflow-x: hidden;
+  background-color: var(--app-surface-color);
+}
+.record-list__load-more {
   background-color: transparent;
   border: none;
   cursor: pointer;

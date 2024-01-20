@@ -1,19 +1,9 @@
 <template>
-  <div
-    v-if="isVisible"
-    :class="`ui-dropdown--${position}`"
-    class="ui-dropdown"
-  >
+  <div v-if="isVisible" :class="`ui-dropdown--${position}`" class="ui-dropdown">
     <slot name="header" />
 
-    <div
-      class="ui-dropdown__values"
-      role="listbox"
-    >
-      <template
-        v-for="(item, index) in values"
-        :key="item"
-      >
+    <div class="ui-dropdown__values" role="listbox">
+      <template v-for="(item, index) in values" :key="item">
         <button
           type="button"
           role="option"
@@ -38,33 +28,35 @@
 type ValueEntity = Record<string, any>;
 
 const emit = defineEmits<{
-  select: [item: { item: ValueEntity, index: number }]
+  select: [item: { item: ValueEntity; index: number }];
 }>();
 
-const props = withDefaults(defineProps<{
-  isVisible?: boolean;
-  values: ValueEntity[];
-  selectedValue: ValueEntity | null;
-  labelKey?: string |((value: ValueEntity) => string);
-  position?: 'top' | 'bottom';
-}>(), {
-  isVisible: false,
-  position: 'bottom',
-  labelKey: 'label',
-});
+const props = withDefaults(
+  defineProps<{
+    isVisible?: boolean;
+    values: ValueEntity[];
+    selectedValue: ValueEntity | null;
+    labelKey?: string | ((value: ValueEntity) => string);
+    position?: "top" | "bottom";
+  }>(),
+  {
+    isVisible: false,
+    position: "bottom",
+    labelKey: "label",
+  },
+);
 
-const getLabelFromValue = (value: typeof props['selectedValue']) => {
+const getLabelFromValue = (value: (typeof props)["selectedValue"]) => {
   const { labelKey } = props;
 
   if (!value) return null;
-  if (typeof labelKey === 'function') return labelKey(value);
+  if (typeof labelKey === "function") return labelKey(value);
 
   return value[labelKey];
 };
 
-const isItemHighlighted = (item: typeof props['selectedValue']) => (
-  getLabelFromValue(item) === getLabelFromValue(props.selectedValue)
-);
+const isItemHighlighted = (item: (typeof props)["selectedValue"]) =>
+  getLabelFromValue(item) === getLabelFromValue(props.selectedValue);
 </script>
 
 <style lang="scss">

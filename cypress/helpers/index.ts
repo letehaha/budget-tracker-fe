@@ -1,10 +1,10 @@
 export const generateUnexpectedResponse = () => ({
   statusCode: 500,
   body: {
-    status: 'error',
+    status: "error",
     response: {
-      message: 'Unexpected error',
-      code: 'UNEXPECTED_ERROR',
+      message: "Unexpected error",
+      code: "UNEXPECTED_ERROR",
     },
   },
 });

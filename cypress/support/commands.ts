@@ -1,28 +1,29 @@
 /// <reference types="cypress" />
 
 Cypress.Commands.add(
-  'signInUser',
+  "signInUser",
   ({ username, password }: { username: string; password: string }) => {
-    cy.intercept(`${Cypress.env('baseApiUrl')}/**/auth/login*`).as('signIn');
-    cy.intercept(`${Cypress.env('baseApiUrl')}/**/currencies/base*`).as('loadBaseCurrency');
+    cy.intercept(`${Cypress.env("baseApiUrl")}/**/auth/login*`).as("signIn");
+    cy.intercept(`${Cypress.env("baseApiUrl")}/**/currencies/base*`).as(
+      "loadBaseCurrency",
+    );
 
-    cy.visit('/sign-in');
+    cy.visit("/sign-in");
 
-    cy.get('input[name=username]').type(username);
-    cy.get('input[type=password]').type(password);
-    cy.get('button[type=submit]').click();
+    cy.get("input[name=username]").type(username);
+    cy.get("input[type=password]").type(password);
+    cy.get("button[type=submit]").click();
 
-    cy.wait('@signIn');
+    cy.wait("@signIn");
     // User is really logged in only when we checked the base currency existing.
     // If we will call to visit other pages before that call, they will be marked
     // as unauthorized.
-    cy.wait('@loadBaseCurrency');
+    cy.wait("@loadBaseCurrency");
   },
 );
 
-Cypress.Commands.add(
-  'getNode',
-  (dataCy, options) => cy.get(`[data-cy="${dataCy}"]`, options),
+Cypress.Commands.add("getNode", (dataCy, options) =>
+  cy.get(`[data-cy="${dataCy}"]`, options),
 );
 
 // Cypress.Commands.add('logout', () => {

@@ -16,30 +16,35 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue';
+import { defineComponent, PropType } from "vue";
 
 enum EVENTS {
-  click = 'click',
+  click = "click",
 }
 
-export type SIZES = 'default' | 'small';
-export type BUTTON_THEMES = 'primary' | 'danger' | 'outline' | 'text' | 'light-dark';
-export type BUTTON_TYPES = 'button' | 'submit' | 'reset';
+export type SIZES = "default" | "small";
+export type BUTTON_THEMES =
+  | "primary"
+  | "danger"
+  | "outline"
+  | "text"
+  | "light-dark";
+export type BUTTON_TYPES = "button" | "submit" | "reset";
 
 export default defineComponent({
-  name: 'ui-button',
+  name: "ui-button",
   props: {
     type: {
       type: String as PropType<BUTTON_TYPES>,
-      default: (): BUTTON_TYPES => 'button',
+      default: (): BUTTON_TYPES => "button",
     },
     size: {
       type: String as PropType<SIZES>,
-      default: (): SIZES => 'default',
+      default: (): SIZES => "default",
     },
     theme: {
       type: String as PropType<BUTTON_THEMES>,
-      default: (): BUTTON_THEMES => 'primary',
+      default: (): BUTTON_THEMES => "primary",
     },
     disabled: { type: Boolean, default: false },
     isIcon: { type: Boolean, default: false },
@@ -66,7 +71,7 @@ $transition: box-shadow 0.2s ease-out;
   align-items: center;
   justify-content: center;
   padding: 12px 32px;
-  transition: .2s ease-out;
+  transition: 0.2s ease-out;
 
   &[disabled] {
     cursor: not-allowed;
@@ -127,7 +132,7 @@ $transition: box-shadow 0.2s ease-out;
     border-color: darken(#444, 5);
   }
   &[disabled] {
-    opacity: .5;
+    opacity: 0.5;
   }
 }
 .button--outline {

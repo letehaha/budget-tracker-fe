@@ -1,6 +1,6 @@
 export const USER = {
   id: 1,
-  username: 'letehaha1',
+  username: "letehaha1",
   email: null,
   firstName: null,
   lastName: null,

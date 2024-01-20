@@ -7,6 +7,6 @@
 </template>
 
 <script setup lang="ts">
-import CurrenciesList from './list.vue';
-import AddNewCurrency from './add-new-currency.vue';
+import CurrenciesList from "./list.vue";
+import AddNewCurrency from "./add-new-currency.vue";
 </script>

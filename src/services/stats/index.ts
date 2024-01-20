@@ -1,1 +1,1 @@
-export * from './balance-trend';
+export * from "./balance-trend";

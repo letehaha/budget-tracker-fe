@@ -1,1 +1,1 @@
-export * from './format-categories.helper';
+export * from "./format-categories.helper";

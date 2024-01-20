@@ -21,11 +21,11 @@
 </template>
 
 <script lang="ts" setup>
-import { useInfiniteQuery } from '@tanstack/vue-query';
-import { loadTransactions } from '@/api/transactions';
+import { useInfiniteQuery } from "@tanstack/vue-query";
+import { loadTransactions } from "@/api/transactions";
 
-import TransactionsList from '@/components/transactions-list/transactions-list.vue';
-import { VUE_QUERY_CACHE_KEYS } from '@/common/const';
+import TransactionsList from "@/components/transactions-list/transactions-list.vue";
+import { VUE_QUERY_CACHE_KEYS } from "@/common/const";
 
 const limit = 30;
 

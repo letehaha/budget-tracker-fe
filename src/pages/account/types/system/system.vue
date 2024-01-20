@@ -28,16 +28,10 @@
     </template>
 
     <div class="system-account__actions">
-      <ui-button
-        class="system-account__delete-action"
-        @click="deleteAccount"
-      >
+      <ui-button class="system-account__delete-action" @click="deleteAccount">
         Delete
       </ui-button>
-      <ui-button
-        class="system-account__delete-action"
-        @click="updateAccount"
-      >
+      <ui-button class="system-account__delete-action" @click="updateAccount">
         Save
       </ui-button>
     </div>
@@ -45,31 +39,32 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue';
-import { useRouter } from 'vue-router';
-import { AccountModel } from 'shared-types';
+import { reactive } from "vue";
+import { useRouter } from "vue-router";
+import { AccountModel } from "shared-types";
 
-import { ROUTES_NAMES } from '@/routes';
-import { useAccountsStore } from '@/stores';
-import { useFormValidation } from '@/composable';
+import { ROUTES_NAMES } from "@/routes";
+import { useAccountsStore } from "@/stores";
+import { useFormValidation } from "@/composable";
 import {
-  required, minLength, decimal, minValue,
-} from '@/js/helpers/validators';
+  required,
+  minLength,
+  decimal,
+  minValue,
+} from "@/js/helpers/validators";
 
-import { useNotificationCenter } from '@/components/notification-center';
+import { useNotificationCenter } from "@/components/notification-center";
 
-import UiButton from '@/components/common/ui-button.vue';
-import InputField from '@/components/fields/input-field.vue';
+import UiButton from "@/components/common/ui-button.vue";
+import InputField from "@/components/fields/input-field.vue";
 
 const props = defineProps<{
   account: AccountModel;
 }>();
 
 const router = useRouter();
-const {
-  addSuccessNotification,
-  addErrorNotification,
-} = useNotificationCenter();
+const { addSuccessNotification, addErrorNotification } =
+  useNotificationCenter();
 const accountsStore = useAccountsStore();
 
 const form = reactive<{
@@ -82,10 +77,7 @@ const form = reactive<{
   creditLimit: props.account.creditLimit,
 });
 
-const {
-  isFormValid,
-  getFieldErrorMessage,
-} = useFormValidation(
+const { isFormValid, getFieldErrorMessage } = useFormValidation(
   { form },
   {
     form: {
@@ -118,7 +110,7 @@ const deleteAccount = async () => {
 
     router.push({ name: ROUTES_NAMES.accounts });
   } catch (e) {
-    addErrorNotification('An error occured while trying to delete account');
+    addErrorNotification("An error occured while trying to delete account");
   }
 };
 
@@ -133,9 +125,9 @@ const updateAccount = async () => {
       currentBalance: form.currentBalance,
     });
 
-    addSuccessNotification('Account data changed successfully');
+    addSuccessNotification("Account data changed successfully");
   } catch (e) {
-    addErrorNotification('An error occured while trying to update account');
+    addErrorNotification("An error occured while trying to update account");
   }
 };
 </script>

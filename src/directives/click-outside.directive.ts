@@ -1,4 +1,4 @@
-import { Directive } from 'vue';
+import { Directive } from "vue";
 
 export const clickOutside: Directive = {
   beforeMount(el, binding): void {
@@ -10,9 +10,9 @@ export const clickOutside: Directive = {
         binding.value(event);
       }
     };
-    document.body.addEventListener('click', el.clickOutsideEvent);
+    document.body.addEventListener("click", el.clickOutsideEvent);
   },
   beforeUnmount(el): void {
-    document.body.removeEventListener('click', el.clickOutsideEvent);
+    document.body.removeEventListener("click", el.clickOutsideEvent);
   },
 };

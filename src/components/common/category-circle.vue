@@ -10,10 +10,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import { storeToRefs } from 'pinia';
-import { CategoryModel } from 'shared-types';
-import { useCategoriesStore } from '@/stores';
+import { computed } from "vue";
+import { storeToRefs } from "pinia";
+import { CategoryModel } from "shared-types";
+import { useCategoriesStore } from "@/stores";
 
 const props = defineProps<{
   category?: CategoryModel;

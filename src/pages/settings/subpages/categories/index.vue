@@ -8,12 +8,12 @@
           class="categories-page__categories-back"
           @click="goBack"
         >
-          {{ '<' }}
+          {{ "<" }}
           Back
         </button>
 
         <h3 class="categories-page__title">
-          {{ selectedCategory ? 'View Category' : 'All Categories' }}
+          {{ selectedCategory ? "View Category" : "All Categories" }}
         </h3>
 
         <button
@@ -42,10 +42,7 @@
 
       <div class="categories-page__list">
         <template v-if="currentLevel.length">
-          <template
-            v-for="cat in currentLevel"
-            :key="cat.id"
-          >
+          <template v-for="cat in currentLevel" :key="cat.id">
             <button
               class="categories-page__list-item"
               type="button"
@@ -64,26 +61,16 @@
           </template>
         </template>
         <template v-else>
-          <div>
-            No subcategories
-          </div>
+          <div>No subcategories</div>
         </template>
       </div>
 
       <div class="categories-page__add-subcategory">
-        <button
-          type="button"
-          @click="startCreating"
-        >
-          Add subcategory +
-        </button>
+        <button type="button" @click="startCreating">Add subcategory +</button>
       </div>
     </div>
     <template v-if="isFormVisible">
-      <form
-        class="categories-page__card"
-        @submit.prevent="applyChanges"
-      >
+      <form class="categories-page__card" @submit.prevent="applyChanges">
         <div class="categories-page__header">
           <button
             type="button"
@@ -94,13 +81,10 @@
           </button>
 
           <h3 class="categories-page__title">
-            {{ isEditing ? 'Edit Category' : 'Create Category' }}
+            {{ isEditing ? "Edit Category" : "Create Category" }}
           </h3>
 
-          <button
-            type="submit"
-            class="categories-page__category-edit"
-          >
+          <button type="submit" class="categories-page__category-edit">
             Save
           </button>
         </div>
@@ -114,11 +98,7 @@
         </div>
         <template v-if="isEditing">
           <div class="categories-page__form-actions">
-            <UiButton
-              @click="deleteCategory"
-            >
-              Delete
-            </UiButton>
+            <UiButton @click="deleteCategory"> Delete </UiButton>
           </div>
         </template>
       </form>
@@ -127,30 +107,35 @@
 </template>
 
 <script setup lang="ts">
-import { storeToRefs } from 'pinia';
-import { ref, reactive } from 'vue';
-import { API_ERROR_CODES } from 'shared-types';
-import { useCategoriesStore } from '@/stores';
-import { editCategory, createCategory, deleteCategory as apiDeleteCategory } from '@/api';
-import { useNotificationCenter } from '@/components/notification-center';
-import CategoryCircle from '@/components/common/category-circle.vue';
-import InputField from '@/components/fields/input-field.vue';
-import UiButton from '@/components/common/ui-button.vue';
-import { type FormattedCategory } from '@/common/types';
-import { ApiErrorResponseError } from '@/js/errors';
+import { storeToRefs } from "pinia";
+import { ref, reactive } from "vue";
+import { API_ERROR_CODES } from "shared-types";
+import { useCategoriesStore } from "@/stores";
+import {
+  editCategory,
+  createCategory,
+  deleteCategory as apiDeleteCategory,
+} from "@/api";
+import { useNotificationCenter } from "@/components/notification-center";
+import CategoryCircle from "@/components/common/category-circle.vue";
+import InputField from "@/components/fields/input-field.vue";
+import UiButton from "@/components/common/ui-button.vue";
+import { type FormattedCategory } from "@/common/types";
+import { ApiErrorResponseError } from "@/js/errors";
 
 defineOptions({
-  name: 'settings-categories',
+  name: "settings-categories",
 });
 const categoriesStore = useCategoriesStore();
 
-const { addErrorNotification, addSuccessNotification } = useNotificationCenter();
+const { addErrorNotification, addSuccessNotification } =
+  useNotificationCenter();
 const { formattedCategories } = storeToRefs(categoriesStore);
 const currentLevel = ref<FormattedCategory[]>(formattedCategories.value);
 const selectedCategory = ref<FormattedCategory | null>(null);
 
 const form = reactive({
-  name: '',
+  name: "",
 });
 const isFormVisible = ref(false);
 const isEditing = ref(false);
@@ -159,7 +144,7 @@ const closeForm = () => {
   isEditing.value = false;
   isCreating.value = false;
   isFormVisible.value = false;
-  form.name = '';
+  form.name = "";
 };
 const startEditing = () => {
   closeForm();
@@ -191,8 +176,8 @@ const applyChanges = async () => {
     } else if (isCreating.value) {
       let params: Parameters<typeof createCategory>[0] = {
         name: form.name,
-        imageUrl: '',
-        color: '',
+        imageUrl: "",
+        color: "",
       };
       if (selectedCategory.value) {
         params = {
@@ -204,11 +189,11 @@ const applyChanges = async () => {
       }
       await createCategory(params);
     }
-    addSuccessNotification('Successfully updated!');
+    addSuccessNotification("Successfully updated!");
     await categoriesStore.loadCategories();
     goBack();
   } catch (err) {
-    addErrorNotification('Unexpected error!');
+    addErrorNotification("Unexpected error!");
   }
 };
 const selectCategory = (category: FormattedCategory) => {
@@ -224,7 +209,7 @@ const deleteCategory = async () => {
     await apiDeleteCategory({ categoryId: selectedCategory.value.id });
 
     await categoriesStore.loadCategories();
-    addSuccessNotification('Successfully deleted!');
+    addSuccessNotification("Successfully deleted!");
     goBack();
   } catch (err) {
     if (err instanceof ApiErrorResponseError) {
@@ -233,7 +218,7 @@ const deleteCategory = async () => {
         return;
       }
     }
-    addErrorNotification('Unexpected error. Category is not deleted.');
+    addErrorNotification("Unexpected error. Category is not deleted.");
   }
 };
 </script>
@@ -275,7 +260,7 @@ const deleteCategory = async () => {
   cursor: pointer;
   margin-left: -16px;
   width: calc(100% + 32px);
-  transition: .2s ease-out;
+  transition: 0.2s ease-out;
   border-radius: 8px;
 
   &:hover {
@@ -289,7 +274,7 @@ const deleteCategory = async () => {
 }
 .categories-page__category-view {
   width: max-content;
-  opacity: .7;
+  opacity: 0.7;
   display: flex;
   gap: 8px;
 }
@@ -323,7 +308,7 @@ const deleteCategory = async () => {
   justify-content: space-between;
 
   span {
-    opacity: .7;
+    opacity: 0.7;
   }
 }
 .categories-page__fields {

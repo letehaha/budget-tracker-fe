@@ -1,4 +1,4 @@
-import './commands';
+import "./commands";
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace

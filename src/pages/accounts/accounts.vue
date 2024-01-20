@@ -33,10 +33,7 @@
 
     <template v-if="formattedAccounts.length">
       <div class="accounts__list">
-        <template
-          v-for="account in formattedAccounts"
-          :key="account.id"
-        >
+        <template v-for="account in formattedAccounts" :key="account.id">
           <router-link
             :to="{
               name: ROUTES_NAMES.account,
@@ -45,14 +42,11 @@
             class="accounts__item"
             :class="{ 'accounts__item--disabled': !account.isEnabled }"
           >
-            <div
-              v-if="!account.isEnabled"
-              class="accounts__state"
-            >
+            <div v-if="!account.isEnabled" class="accounts__state">
               Disabled
             </div>
             <div class="accounts__item-name">
-              {{ account.name || 'No name set...' }}
+              {{ account.name || "No name set..." }}
             </div>
             <div class="accounts__item-balance">
               {{ formatBalance(account) }}
@@ -63,29 +57,25 @@
     </template>
 
     <template v-else>
-      <p class="accounts__no-data">
-        System accounts do not exist.
-      </p>
+      <p class="accounts__no-data">System accounts do not exist.</p>
     </template>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { storeToRefs } from 'pinia';
-import { computed } from 'vue';
-import { AccountModel } from 'shared-types';
+import { storeToRefs } from "pinia";
+import { computed } from "vue";
+import { AccountModel } from "shared-types";
 
-import { ROUTES_NAMES } from '@/routes/constants';
-import { useFormatCurrency } from '@/composable';
-import { useBanksMonobankStore, useAccountsStore } from '@/stores';
-import { MODAL_TYPES, useModalCenter } from '@/components/modal-center/index';
+import { ROUTES_NAMES } from "@/routes/constants";
+import { useFormatCurrency } from "@/composable";
+import { useBanksMonobankStore, useAccountsStore } from "@/stores";
+import { MODAL_TYPES, useModalCenter } from "@/components/modal-center/index";
 
 const monobankStore = useBanksMonobankStore();
 const { accounts } = storeToRefs(useAccountsStore());
-const {
-  isMonoAccountPaired: isPaired,
-  isTokenPresent,
-} = storeToRefs(monobankStore);
+const { isMonoAccountPaired: isPaired, isTokenPresent } =
+  storeToRefs(monobankStore);
 
 const { formatAmountByCurrencyId } = useFormatCurrency();
 const { addModal } = useModalCenter();
@@ -94,8 +84,8 @@ const refreshMonoAccounts = () => {
   monobankStore.refreshAccounts();
 };
 
-const formattedAccounts = computed(
-  () => [...accounts.value].sort((a, b) => +b.isEnabled - +a.isEnabled),
+const formattedAccounts = computed(() =>
+  [...accounts.value].sort((a, b) => +b.isEnabled - +a.isEnabled),
 );
 
 const setMonobankToken = ({ isUpdate = false } = {}) => {
@@ -107,9 +97,11 @@ const setMonobankToken = ({ isUpdate = false } = {}) => {
   });
 };
 
-const formatBalance = (account: AccountModel) => (
-  formatAmountByCurrencyId(account.currentBalance - account.creditLimit, account.currencyId)
-);
+const formatBalance = (account: AccountModel) =>
+  formatAmountByCurrencyId(
+    account.currentBalance - account.creditLimit,
+    account.currencyId,
+  );
 </script>
 
 <style lang="scss" scoped>
@@ -136,7 +128,7 @@ const formatBalance = (account: AccountModel) => (
   color: var(--app-on-surface-color);
   border-radius: 6px;
   box-shadow: 0 0 24px 0px rgba(0, 0, 0, 0.05);
-  transition: box-shadow .2s ease-out;
+  transition: box-shadow 0.2s ease-out;
   cursor: pointer;
   position: relative;
 

@@ -6,7 +6,8 @@
       :disabled="isExpenseDisabled"
       :class="{
         'type-selector__item--disabled': isExpenseDisabled,
-        'type-selector__item--active': selectedTransactionType === FORM_TYPES.expense,
+        'type-selector__item--active':
+          selectedTransactionType === FORM_TYPES.expense,
       }"
       aria-label="Select expense"
       :aria-selected="selectedTransactionType === FORM_TYPES.expense"
@@ -20,7 +21,8 @@
       :disabled="isIncomeDisabled"
       :class="{
         'type-selector__item--disabled': isIncomeDisabled,
-        'type-selector__item--active': selectedTransactionType === FORM_TYPES.income,
+        'type-selector__item--active':
+          selectedTransactionType === FORM_TYPES.income,
       }"
       aria-label="Select income"
       :aria-selected="selectedTransactionType === FORM_TYPES.income"
@@ -32,7 +34,8 @@
       type="button"
       class="button-style-reset type-selector__item"
       :class="{
-        'type-selector__item--active': selectedTransactionType === FORM_TYPES.transfer,
+        'type-selector__item--active':
+          selectedTransactionType === FORM_TYPES.transfer,
       }"
       aria-label="Select transfer"
       :aria-selected="selectedTransactionType === FORM_TYPES.transfer"
@@ -44,9 +47,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import { ACCOUNT_TYPES, TRANSACTION_TYPES, type TransactionModel } from 'shared-types';
-import { FORM_TYPES } from '../types';
+import { computed } from "vue";
+import {
+  ACCOUNT_TYPES,
+  TRANSACTION_TYPES,
+  type TransactionModel,
+} from "shared-types";
+import { FORM_TYPES } from "../types";
 
 const props = defineProps<{
   selectedTransactionType: FORM_TYPES;
@@ -55,20 +62,22 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  'change-tx-type': [value: FORM_TYPES]
+  "change-tx-type": [value: FORM_TYPES];
 }>();
 
-const isExpenseDisabled = computed(() => (
-  props.transaction?.accountType !== ACCOUNT_TYPES.system
-  && props.transaction?.transactionType === TRANSACTION_TYPES.income
-));
-const isIncomeDisabled = computed(() => (
-  props.transaction?.accountType !== ACCOUNT_TYPES.system
-  && props.transaction?.transactionType === TRANSACTION_TYPES.expense
-));
+const isExpenseDisabled = computed(
+  () =>
+    props.transaction?.accountType !== ACCOUNT_TYPES.system &&
+    props.transaction?.transactionType === TRANSACTION_TYPES.income,
+);
+const isIncomeDisabled = computed(
+  () =>
+    props.transaction?.accountType !== ACCOUNT_TYPES.system &&
+    props.transaction?.transactionType === TRANSACTION_TYPES.expense,
+);
 
 const selectTransactionType = (type: FORM_TYPES) => {
-  emit('change-tx-type', type);
+  emit("change-tx-type", type);
 };
 </script>
 
@@ -77,7 +86,7 @@ const selectTransactionType = (type: FORM_TYPES) => {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
 
-  background-color: rgba(#000, .4);
+  background-color: rgba(#000, 0.4);
   border-radius: 10px;
   margin-top: 24px;
 }
@@ -88,7 +97,7 @@ const selectTransactionType = (type: FORM_TYPES) => {
   text-align: center;
   cursor: pointer;
 
-  transition: .1s ease-out;
+  transition: 0.1s ease-out;
   color: #fff;
 
   &[disabled="true"] {

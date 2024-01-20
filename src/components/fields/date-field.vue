@@ -17,19 +17,16 @@
         <input
           type="datetime-local"
           :value="modelValue"
-          :disabled="($attrs.disabled as boolean)"
+          :disabled="$attrs.disabled as boolean"
           :style="inputFieldStyles"
           :tabindex="tabindex"
           class="date-field__input"
           v-on="computedEvents"
-        >
+        />
       </div>
     </FieldLabel>
 
-    <div
-      v-if="isSubLabelExists"
-      class="date-fields__sublabel"
-    >
+    <div v-if="isSubLabelExists" class="date-fields__sublabel">
       <slot name="subLabel" />
     </div>
 
@@ -38,39 +35,42 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed } from "vue";
 
-import FieldLabel from './components/field-label.vue';
-import FieldError from './components/field-error.vue';
+import FieldLabel from "./components/field-label.vue";
+import FieldError from "./components/field-error.vue";
 
-const props = withDefaults(defineProps<{
-  label?: string;
-  modelValue?: string | number;
-  type?: string;
-  tabindex?: string;
-  errorMessage?: string;
-  inputFieldStyles?: Record<string, string>;
-}>(), {
-  label: undefined,
-  modelValue: undefined,
-  type: undefined,
-  tabindex: undefined,
-  errorMessage: undefined,
-  inputFieldStyles: undefined,
-});
+const props = withDefaults(
+  defineProps<{
+    label?: string;
+    modelValue?: string | number;
+    type?: string;
+    tabindex?: string;
+    errorMessage?: string;
+    inputFieldStyles?: Record<string, string>;
+  }>(),
+  {
+    label: undefined,
+    modelValue: undefined,
+    type: undefined,
+    tabindex: undefined,
+    errorMessage: undefined,
+    inputFieldStyles: undefined,
+  },
+);
 
 const slots = defineSlots<{
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   subLabel(): any;
 }>();
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(["update:modelValue"]);
 
 const computedEvents = {
   input: (event: InputEvent) => {
     const eventTarget = event.target as HTMLInputElement;
     if (props.modelValue === eventTarget.value) return;
-    emit('update:modelValue', eventTarget.value);
+    emit("update:modelValue", eventTarget.value);
   },
 };
 
@@ -106,15 +106,15 @@ const isSubLabelExists = computed(() => !!slots.subLabel);
   &::-webkit-calendar-picker-indicator {
     opacity: 1;
     display: block;
-    background: url('@/assets/icons/colored/calendar-black.svg') no-repeat;
+    background: url("@/assets/icons/colored/calendar-black.svg") no-repeat;
     width: 18px;
     height: 18px;
     margin-top: -2px;
 
     body.dark & {
-      background: url('@/assets/icons/colored/calendar-white.svg') no-repeat;
+      background: url("@/assets/icons/colored/calendar-white.svg") no-repeat;
     }
-}
+  }
 }
 .date-fields__sublabel {
   position: absolute;

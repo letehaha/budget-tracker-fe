@@ -11,11 +11,11 @@
       type="checkbox"
       :checked="value"
       :placeholder="String($attrs.placeholder || '')"
-      :tabindex="$attrs.readonly || $attrs.readonly === ''
-        ? -1
-        : Number($attrs.tabindex)"
+      :tabindex="
+        $attrs.readonly || $attrs.readonly === '' ? -1 : Number($attrs.tabindex)
+      "
       v-bind="$attrs"
-    >
+    />
     <div class="radio-check-field__custom" />
     <p class="radio-check-field__label">
       {{ label }}
@@ -24,14 +24,17 @@
 </template>
 
 <script setup lang="ts">
-withDefaults(defineProps<{
-  label?: string;
-  value: boolean;
-  readonly?: boolean;
-}>(), {
-  label: undefined,
-  readonly: false,
-});
+withDefaults(
+  defineProps<{
+    label?: string;
+    value: boolean;
+    readonly?: boolean;
+  }>(),
+  {
+    label: undefined,
+    readonly: false,
+  },
+);
 </script>
 
 <style lang="scss">
@@ -59,12 +62,14 @@ withDefaults(defineProps<{
   height: 20px;
   flex: none;
   margin-right: 16px;
-  transition: background-color 0.2s ease-out, border-color 0.2s ease-out;
+  transition:
+    background-color 0.2s ease-out,
+    border-color 0.2s ease-out;
   position: relative;
 
   &:after,
   &:before {
-    content: '';
+    content: "";
     position: absolute;
     height: 2px;
     background-color: green;

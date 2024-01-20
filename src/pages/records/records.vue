@@ -15,9 +15,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onBeforeUnmount, ref } from 'vue';
+import { defineComponent, onBeforeUnmount, ref } from "vue";
 
-import TransactionsList from './list.vue';
+import TransactionsList from "./list.vue";
 
 export default defineComponent({
   components: {
@@ -29,16 +29,16 @@ export default defineComponent({
     const onWindowScroll = () => {
       showScrollTopBtn.value = window.pageYOffset > 150;
     };
-    window.addEventListener('scroll', onWindowScroll);
+    window.addEventListener("scroll", onWindowScroll);
 
     onBeforeUnmount(() => {
-      window.removeEventListener('scroll', onWindowScroll);
+      window.removeEventListener("scroll", onWindowScroll);
     });
 
     const scrollTop = () => {
       window.scrollTo({
         top: 0,
-        behavior: 'smooth',
+        behavior: "smooth",
       });
     };
 
@@ -72,7 +72,7 @@ export default defineComponent({
   opacity: 0;
   visibility: hidden;
   transform: translateY(10px);
-  transition: .3s ease-out;
+  transition: 0.3s ease-out;
 
   width: 50px;
   height: 50px;
@@ -82,7 +82,6 @@ export default defineComponent({
   position: fixed;
   bottom: 30px;
   right: 30px;
-
 }
 .records__scroll-top--visible {
   opacity: 1;

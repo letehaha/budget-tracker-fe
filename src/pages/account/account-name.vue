@@ -1,8 +1,6 @@
 <template>
   <label class="account-name">
-    <h4 class="account-name__title">
-      Account name:
-    </h4>
+    <h4 class="account-name__title">Account name:</h4>
 
     <input-field
       v-model="form.name"
@@ -14,19 +12,17 @@
 </template>
 
 <script lang="ts">
-import { debounce } from 'lodash-es';
-import {
-  defineComponent, reactive, watchEffect, watch, PropType,
-} from 'vue';
-import { AccountModel } from 'shared-types';
+import { debounce } from "lodash-es";
+import { defineComponent, reactive, watchEffect, watch, PropType } from "vue";
+import { AccountModel } from "shared-types";
 
-import { useAccountsStore } from '@/stores';
+import { useAccountsStore } from "@/stores";
 
 import {
   useNotificationCenter,
   NotificationType,
-} from '@/components/notification-center';
-import InputField from '@/components/fields/input-field.vue';
+} from "@/components/notification-center";
+import InputField from "@/components/fields/input-field.vue";
 
 export default defineComponent({
   components: { InputField },
@@ -41,7 +37,7 @@ export default defineComponent({
     const accountsStore = useAccountsStore();
 
     const form = reactive({
-      name: '',
+      name: "",
     });
 
     const updateName = debounce(async ({ id, name }) => {
@@ -49,7 +45,7 @@ export default defineComponent({
         await accountsStore.editAccount({ id, name });
 
         addNotification({
-          text: 'Account name changed successfully',
+          text: "Account name changed successfully",
           type: NotificationType.success,
         });
       }

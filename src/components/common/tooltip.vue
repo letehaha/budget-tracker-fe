@@ -1,11 +1,10 @@
 <template>
-  <div
-    class="ui-tooltip"
-    :class="[`ui-tooltip--${position}`]"
-  >
+  <div class="ui-tooltip" :class="[`ui-tooltip--${position}`]">
     <slot />
 
-    <template v-if="content || $refs['tooltip-content'] || $refs['tooltip-message']">
+    <template
+      v-if="content || $refs['tooltip-content'] || $refs['tooltip-message']"
+    >
       <div class="ui-tooltip__content-wrapper">
         <slot name="tooltip-content">
           <div class="ui-tooltip__content">
@@ -21,16 +20,19 @@
 
 <script setup lang="ts">
 defineOptions({
-  name: 'ui-tooltip',
+  name: "ui-tooltip",
 });
 
-withDefaults(defineProps<{
-  content?: string;
-  position: 'bottom' | 'top';
-}>(), {
-  content: undefined,
-  position: 'bottom',
-});
+withDefaults(
+  defineProps<{
+    content?: string;
+    position: "bottom" | "top";
+  }>(),
+  {
+    content: undefined,
+    position: "bottom",
+  },
+);
 </script>
 
 <style lang="scss">
@@ -42,7 +44,7 @@ withDefaults(defineProps<{
 
   opacity: 0;
   visibility: hidden;
-  transition: .2s ease-out;
+  transition: 0.2s ease-out;
 
   .ui-tooltip:hover & {
     opacity: 1;
@@ -61,7 +63,7 @@ withDefaults(defineProps<{
   }
 }
 .ui-tooltip__content {
-  background-color: rgba(11, 11, 11, .98);
+  background-color: rgba(11, 11, 11, 0.98);
   color: #fff;
   padding: 8px;
   border-radius: 8px;

@@ -1,9 +1,9 @@
-import { ref, computed } from 'vue';
-import { defineStore } from 'pinia';
-import { UserModel } from 'shared-types';
-import { loadUserData } from '@/api';
+import { ref, computed } from "vue";
+import { defineStore } from "pinia";
+import { UserModel } from "shared-types";
+import { loadUserData } from "@/api";
 
-export const useUserStore = defineStore('user', () => {
+export const useUserStore = defineStore("user", () => {
   const user = ref<UserModel | null>(null);
   const isUserExists = computed(() => Boolean(user.value));
 

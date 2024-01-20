@@ -5,38 +5,30 @@
     </div>
     <div class="load-transactions__wrapper">
       <div class="load-transactions__fields">
-        <date-field
-          v-model="form.from"
-          label="From"
-        />
-        <date-field
-          v-model="form.to"
-          label="To"
-        />
+        <date-field v-model="form.from" label="From" />
+        <date-field v-model="form.to" label="To" />
       </div>
       <ui-button
         :disabled="!isPeriodSelected"
         @click="loadTransactionsForPeriod"
       >
-        {{ isPeriodSelected ? 'Load transactions' : 'Select period' }}
+        {{ isPeriodSelected ? "Load transactions" : "Select period" }}
       </ui-button>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import {
-  defineComponent, reactive, computed, PropType,
-} from 'vue';
-import { AccountModel } from 'shared-types';
-import { useBanksMonobankStore } from '@/stores';
+import { defineComponent, reactive, computed, PropType } from "vue";
+import { AccountModel } from "shared-types";
+import { useBanksMonobankStore } from "@/stores";
 
 import {
   useNotificationCenter,
   NotificationType,
-} from '@/components/notification-center';
-import UiButton from '@/components/common/ui-button.vue';
-import DateField from '@/components/fields/date-field.vue';
+} from "@/components/notification-center";
+import UiButton from "@/components/common/ui-button.vue";
+import DateField from "@/components/fields/date-field.vue";
 
 export default defineComponent({
   components: {
@@ -73,7 +65,7 @@ export default defineComponent({
           });
 
           addNotification({
-            text: 'Loaded successfully',
+            text: "Loaded successfully",
             type: NotificationType.success,
           });
 
@@ -82,7 +74,7 @@ export default defineComponent({
         }
       } catch (err) {
         addNotification({
-          text: 'Unexpected error',
+          text: "Unexpected error",
           type: NotificationType.error,
         });
       }

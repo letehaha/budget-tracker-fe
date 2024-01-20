@@ -1,10 +1,14 @@
 import {
-  TRANSACTION_TYPES, TRANSACTION_TRANSFER_NATURE, TransactionModel, PAYMENT_TYPES, ACCOUNT_TYPES,
-} from 'shared-types';
-import { USER } from './user';
-import { USER_CATEGORIES } from './categories';
-import { getUahAccount, getUah2Account } from './accounts';
-import { USER_BASE_CURRENCY, USER_CURRENCIES } from './currencies';
+  TRANSACTION_TYPES,
+  TRANSACTION_TRANSFER_NATURE,
+  TransactionModel,
+  PAYMENT_TYPES,
+  ACCOUNT_TYPES,
+} from "shared-types";
+import { USER } from "./user";
+import { USER_CATEGORIES } from "./categories";
+import { getUahAccount, getUah2Account } from "./accounts";
+import { USER_BASE_CURRENCY, USER_CURRENCIES } from "./currencies";
 
 const SHARED_TX_ACCOUNT = getUahAccount();
 const SHARED_TX_BODY: TransactionModel = {
@@ -19,8 +23,9 @@ const SHARED_TX_BODY: TransactionModel = {
   accountId: SHARED_TX_ACCOUNT.id,
   categoryId: USER_CATEGORIES[0].id,
   currencyId: SHARED_TX_ACCOUNT.currencyId,
-  currencyCode: USER_CURRENCIES
-    .find(item => item.currencyId === SHARED_TX_ACCOUNT.currencyId).currency.code,
+  currencyCode: USER_CURRENCIES.find(
+    (item) => item.currencyId === SHARED_TX_ACCOUNT.currencyId,
+  ).currency.code,
   accountType: ACCOUNT_TYPES.system,
   refCurrencyCode: USER_BASE_CURRENCY.currency.code,
   transferNature: TRANSACTION_TRANSFER_NATURE.not_transfer,
@@ -45,7 +50,7 @@ export const EXPENSE_TRANSACTION: TransactionModel = {
 export const COMMON_TRANSFER_TRANSACTION: TransactionModel = {
   ...SHARED_TX_BODY,
   transactionType: TRANSACTION_TYPES.expense,
-  transferId: 'dsfsdfsdfsdf',
+  transferId: "dsfsdfsdfsdf",
   transferNature: TRANSACTION_TRANSFER_NATURE.common_transfer,
 };
 export const COMMON_TRANSFER_TRANSACTION_OPPOSITE: TransactionModel = {
@@ -70,13 +75,17 @@ export const EXTERNAL_INCOME_TRANSACTION: TransactionModel = {
   accountType: ACCOUNT_TYPES.monobank,
 };
 
-export const buildExternalTransferTransaction = (type: TRANSACTION_TYPES): TransactionModel => ({
+export const buildExternalTransferTransaction = (
+  type: TRANSACTION_TYPES,
+): TransactionModel => ({
   ...COMMON_TRANSFER_TRANSACTION,
   transactionType: type,
   accountType: ACCOUNT_TYPES.monobank,
 });
 
-export const buildExtendedCommonTx = (data: Partial<TransactionModel> = {}): TransactionModel => ({
+export const buildExtendedCommonTx = (
+  data: Partial<TransactionModel> = {},
+): TransactionModel => ({
   ...SHARED_TX_BODY,
   ...data,
 });

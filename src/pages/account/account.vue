@@ -1,9 +1,7 @@
 <template>
   <div class="account-page">
     <div class="account-page__block">
-      <h3 class="account-page__block-title">
-        Account info
-      </h3>
+      <h3 class="account-page__block-title">Account info</h3>
       <template v-if="account.type === ACCOUNT_TYPES.monobank">
         <MonobankAccount :account="account" />
       </template>
@@ -13,9 +11,7 @@
     </div>
 
     <div class="account-page__block">
-      <h3 class="account-page__block-title">
-        Records
-      </h3>
+      <h3 class="account-page__block-title">Records</h3>
 
       <template v-if="isFetched">
         <TransactionsList
@@ -34,7 +30,7 @@
       </template>
       <template v-else>
         <p class="account-page__no-more-data">
-          {{ rawTransactionsList.length ? 'No more data to load' : 'No data' }}
+          {{ rawTransactionsList.length ? "No more data to load" : "No data" }}
         </p>
       </template>
     </div>
@@ -42,19 +38,19 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import { useRoute } from 'vue-router';
-import { storeToRefs } from 'pinia';
+import { computed } from "vue";
+import { useRoute } from "vue-router";
+import { storeToRefs } from "pinia";
 
-import { useInfiniteQuery } from '@tanstack/vue-query';
-import { useAccountsStore, useRootStore } from '@/stores';
-import { ACCOUNT_TYPES } from 'shared-types';
-import { loadTransactions } from '@/api';
-import { VUE_QUERY_CACHE_KEYS } from '@/common/const';
+import { useInfiniteQuery } from "@tanstack/vue-query";
+import { useAccountsStore, useRootStore } from "@/stores";
+import { ACCOUNT_TYPES } from "shared-types";
+import { loadTransactions } from "@/api";
+import { VUE_QUERY_CACHE_KEYS } from "@/common/const";
 
-import TransactionsList from '@/components/transactions-list/transactions-list.vue';
-import SystemAccount from './types/system/system.vue';
-import MonobankAccount from './types/monobank/monobank.vue';
+import TransactionsList from "@/components/transactions-list/transactions-list.vue";
+import SystemAccount from "./types/system/system.vue";
+import MonobankAccount from "./types/monobank/monobank.vue";
 
 const route = useRoute();
 const accountsStore = useAccountsStore();
@@ -76,7 +72,10 @@ const {
   hasNextPage,
   isFetched,
 } = useInfiniteQuery({
-  queryKey: [...VUE_QUERY_CACHE_KEYS.accountSpecificTransactions, account.value.id],
+  queryKey: [
+    ...VUE_QUERY_CACHE_KEYS.accountSpecificTransactions,
+    account.value.id,
+  ],
   queryFn: fetchTransactions,
   initialPageParam: 0,
   getNextPageParam: (lastPage, pages) => {
@@ -89,7 +88,9 @@ const {
   staleTime: Infinity,
 });
 
-const rawTransactionsList = computed(() => transactionsPages.value?.pages?.flat() || []);
+const rawTransactionsList = computed(
+  () => transactionsPages.value?.pages?.flat() || [],
+);
 </script>
 
 <style lang="scss">

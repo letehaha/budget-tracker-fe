@@ -1,9 +1,12 @@
-import { ref, computed } from 'vue';
-import { defineStore, storeToRefs } from 'pinia';
-import { useQueryClient } from '@tanstack/vue-query';
+import { ref, computed } from "vue";
+import { defineStore, storeToRefs } from "pinia";
+import { useQueryClient } from "@tanstack/vue-query";
 import {
-  ACCOUNT_TYPES, MonobankUserModel, endpointsTypes, API_ERROR_CODES,
-} from 'shared-types';
+  ACCOUNT_TYPES,
+  MonobankUserModel,
+  endpointsTypes,
+  API_ERROR_CODES,
+} from "shared-types";
 import {
   loadMonoUser,
   refreshMonoAccounts,
@@ -12,13 +15,17 @@ import {
   pairMonoAccount,
   updateMonoUser,
   loadTransactions,
-} from '@/api';
-import { getHoursInMilliseconds } from '@/js/helpers';
-import { NetworkError, TooManyRequestsError, UnexpectedError } from '@/js/errors';
-import { useAccountsStore } from '@/stores/accounts';
-import { VUE_QUERY_CACHE_KEYS } from '@/common/const';
+} from "@/api";
+import { getHoursInMilliseconds } from "@/js/helpers";
+import {
+  NetworkError,
+  TooManyRequestsError,
+  UnexpectedError,
+} from "@/js/errors";
+import { useAccountsStore } from "@/stores/accounts";
+import { VUE_QUERY_CACHE_KEYS } from "@/common/const";
 
-export const useBanksMonobankStore = defineStore('banks-monobank', () => {
+export const useBanksMonobankStore = defineStore("banks-monobank", () => {
   const queryClient = useQueryClient();
   const accountsStore = useAccountsStore();
   const user = ref<MonobankUserModel>();
@@ -40,7 +47,10 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
         isMonoAccountPaired.value = true;
       }
     } catch (e) {
-      if (e instanceof NetworkError && e?.data?.code === API_ERROR_CODES.monobankUserNotPaired) {
+      if (
+        e instanceof NetworkError &&
+        e?.data?.code === API_ERROR_CODES.monobankUserNotPaired
+      ) {
         isMonoAccountPaired.value = false;
       }
     }
@@ -65,7 +75,7 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
     }
 
     const latestAccountRefreshDate = new Date(
-      Number(localStorage.getItem('latest-account-refresh-date')),
+      Number(localStorage.getItem("latest-account-refresh-date")),
     ).getTime();
     const diff = new Date().getTime() - latestAccountRefreshDate;
 
@@ -74,7 +84,10 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
     try {
       await refreshMonoAccounts();
 
-      localStorage.setItem('latest-account-refresh-date', `${new Date().getTime()}`);
+      localStorage.setItem(
+        "latest-account-refresh-date",
+        `${new Date().getTime()}`,
+      );
     } catch (e) {
       if (e instanceof TooManyRequestsError) {
         throw e;
@@ -83,9 +96,11 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
     }
   };
 
-  const loadTransactionsForPeriod = async (
-    { accountId, from, to }: endpointsTypes.LoadMonoTransactionsQuery,
-  ) => {
+  const loadTransactionsForPeriod = async ({
+    accountId,
+    from,
+    to,
+  }: endpointsTypes.LoadMonoTransactionsQuery) => {
     if (!isMonoAccountPaired.value) {
       return undefined;
     }
@@ -99,7 +114,11 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
     }
   };
 
-  const loadTransactionsFromLatest = async ({ accountId }: { accountId: number }) => {
+  const loadTransactionsFromLatest = async ({
+    accountId,
+  }: {
+    accountId: number;
+  }) => {
     if (!isMonoAccountPaired.value) {
       return undefined;
     }
@@ -131,28 +150,34 @@ export const useBanksMonobankStore = defineStore('banks-monobank', () => {
     try {
       await Promise.allSettled(
         enabledAccounts.value
-          .filter(acc => acc.type === ACCOUNT_TYPES.monobank)
-          .map(acc => loadTransactionsFromLatest({ accountId: acc.id })),
+          .filter((acc) => acc.type === ACCOUNT_TYPES.monobank)
+          .map((acc) => loadTransactionsFromLatest({ accountId: acc.id })),
       );
     } catch (e) {
       throw new UnexpectedError();
     }
   };
 
-  const pairAccount = async ({ token }: { token: string; }) => {
+  const pairAccount = async ({ token }: { token: string }) => {
     if (isMonoAccountPaired.value) return;
 
     try {
       await pairMonoAccount({ token });
-      queryClient.invalidateQueries({ queryKey: VUE_QUERY_CACHE_KEYS.allAccounts });
+      queryClient.invalidateQueries({
+        queryKey: VUE_QUERY_CACHE_KEYS.allAccounts,
+      });
     } catch (e) {
       throw new UnexpectedError();
     }
   };
 
-  const updateUser = async (
-    { token, name }: { token: string, name?: string },
-  ) => {
+  const updateUser = async ({
+    token,
+    name,
+  }: {
+    token: string;
+    name?: string;
+  }) => {
     try {
       const response = await updateMonoUser({ apiToken: token, name });
 

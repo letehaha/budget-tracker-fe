@@ -1,11 +1,11 @@
-import { ref, Ref } from 'vue';
-import { RecordListModalProps } from '@/components/modals/modify-record/record-list.vue';
+import { ref, Ref } from "vue";
+import { RecordListModalProps } from "@/components/modals/modify-record/record-list.vue";
 
 export enum MODAL_TYPES {
-  createRecord = 'createRecord',
-  recordList = 'recordList',
-  monobankTxForm = 'monobankTxForm',
-  monobankSetToken = 'monobankSetToken',
+  createRecord = "createRecord",
+  recordList = "recordList",
+  monobankTxForm = "monobankTxForm",
+  monobankSetToken = "monobankSetToken",
 }
 
 interface CommonModalDataProps {
@@ -28,12 +28,11 @@ interface RecordListModal extends CommonModalDataProps {
   data: RecordListModalProps;
 }
 
-export type ModalDataProp = (
-  RecordListModal
+export type ModalDataProp =
+  | RecordListModal
   | CreateRecordModal
   | MonobankTxFormModal
-  | MonobankSetTokenModal
-);
+  | MonobankSetTokenModal;
 
 let idCounter = 0;
 const activeModals = ref<ModalDataProp[]>([]);
@@ -53,9 +52,7 @@ export const useModalCenter = (): {
   };
 
   const removeModal = (modal: ModalDataProp) => {
-    const index = activeModals.value.findIndex(
-      item => item.id === modal.id,
-    );
+    const index = activeModals.value.findIndex((item) => item.id === modal.id);
 
     activeModals.value.splice(index, 1);
   };

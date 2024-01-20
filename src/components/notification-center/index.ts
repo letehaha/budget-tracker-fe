@@ -1,6 +1,11 @@
-import { ref, Ref } from 'vue';
+import { ref, Ref } from "vue";
 
-export enum NotificationType { warning, error, success, info }
+export enum NotificationType {
+  warning,
+  error,
+  success,
+  info,
+}
 
 type NotificationID = number | string;
 interface Notification {
@@ -24,10 +29,12 @@ export const useNotificationCenter = (): {
   addInfoNotification: (message: string) => void;
 } => {
   const removeNotification = (id?: NotificationID) => {
-    notifications.value = notifications.value.filter(item => item.id !== id);
+    notifications.value = notifications.value.filter((item) => item.id !== id);
   };
 
-  const addNotification = (notification: Notification): NotificationID | void => {
+  const addNotification = (
+    notification: Notification,
+  ): NotificationID | void => {
     const id = notification.id ?? idCounter++;
 
     if (notificationIds[id]) {

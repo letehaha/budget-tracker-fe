@@ -2,9 +2,7 @@
   <div class="layout-header">
     <div class="layout-header__actions">
       <div class="layout-header__action">
-        <ui-button @click="openFormModal">
-          New Record
-        </ui-button>
+        <ui-button @click="openFormModal"> New Record </ui-button>
       </div>
     </div>
 
@@ -23,7 +21,11 @@
       </button>
 
       <ui-tooltip
-        :content="!isAllowedToSyncFinancialData ? 'You can sync data only once in 30 mins' : ''"
+        :content="
+          !isAllowedToSyncFinancialData
+            ? 'You can sync data only once in 30 mins'
+            : ''
+        "
         position="bottom"
         class="layout-header__sync-status-wrapper"
       >
@@ -38,7 +40,9 @@
         >
           <template v-if="isSyncing">
             <refresh-icon />
-            <span class="layout-header__sync-status-text">Synchronizing...</span>
+            <span class="layout-header__sync-status-text"
+              >Synchronizing...</span
+            >
           </template>
           <template v-else>
             <checkmark-in-circle-icon />
@@ -51,16 +55,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import { storeToRefs } from 'pinia';
-import { SunIcon, MoonIcon } from '@heroicons/vue/24/solid';
-import { useRootStore } from '@/stores';
-import { MODAL_TYPES, useModalCenter } from '@/components/modal-center/index';
-import UiButton from '@/components/common/ui-button.vue';
-import CheckmarkInCircleIcon from '@/assets/icons/checkmark-in-circle.svg?component';
-import RefreshIcon from '@/assets/icons/refresh.svg?component';
-import UiTooltip from '@/components/common/tooltip.vue';
-import { toggleTheme, currentTheme, Themes } from '@/common/utils';
+import { computed } from "vue";
+import { storeToRefs } from "pinia";
+import { SunIcon, MoonIcon } from "@heroicons/vue/24/solid";
+import { useRootStore } from "@/stores";
+import { MODAL_TYPES, useModalCenter } from "@/components/modal-center/index";
+import UiButton from "@/components/common/ui-button.vue";
+import CheckmarkInCircleIcon from "@/assets/icons/checkmark-in-circle.svg?component";
+import RefreshIcon from "@/assets/icons/refresh.svg?component";
+import UiTooltip from "@/components/common/tooltip.vue";
+import { toggleTheme, currentTheme, Themes } from "@/common/utils";
 
 const { addModal } = useModalCenter();
 const rootStore = useRootStore();
@@ -70,7 +74,9 @@ const {
   isAllowedToSyncFinancialData,
 } = storeToRefs(rootStore);
 
-const isSyncing = computed(() => !isAppInitialized.value || isFinancialDataSyncing.value);
+const isSyncing = computed(
+  () => !isAppInitialized.value || isFinancialDataSyncing.value,
+);
 
 const openFormModal = () => {
   addModal({ type: MODAL_TYPES.createRecord });
@@ -105,7 +111,7 @@ const syncFinancialDataHandler = () => {
 }
 .layout-header__sync-status-wrapper {
   .ui-tooltip__content-wrapper {
-    left: 30%
+    left: 30%;
   }
 }
 .layout-header__sync-status {
@@ -116,19 +122,19 @@ const syncFinancialDataHandler = () => {
   font-size: 12px;
 
   padding: 8px 12px;
-  transition: background-color .2s ease-out;
+  transition: background-color 0.2s ease-out;
   border-radius: 6px;
 
   &[disabled] {
     cursor: not-allowed;
-    opacity: .8;
+    opacity: 0.8;
   }
 
   &:not([disabled]):hover {
-    background-color: rgba(0, 0, 0, .05);
+    background-color: rgba(0, 0, 0, 0.05);
 
     body.dark & {
-      background-color: rgba(255, 255, 255, .05);
+      background-color: rgba(255, 255, 255, 0.05);
     }
   }
 

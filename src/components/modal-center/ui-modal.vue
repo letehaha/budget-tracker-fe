@@ -1,17 +1,8 @@
 <template>
-  <div
-    v-if="activeModals.length"
-    class="modal"
-  >
+  <div v-if="activeModals.length" class="modal">
     <transition-group name="fade">
-      <template
-        v-for="modal in activeModals"
-        :key="modal.id"
-      >
-        <div
-          class="modal__overlay"
-          @click.self="removeModal(modal)"
-        >
+      <template v-for="modal in activeModals" :key="modal.id">
+        <div class="modal__overlay" @click.self="removeModal(modal)">
           <component
             :is="MODAL_COMPONENTS[modal.type]"
             v-bind="modal.data"
@@ -25,24 +16,26 @@
 </template>
 
 <script lang="ts">
-import { debounce } from 'lodash-es';
+import { debounce } from "lodash-es";
 
-import {
-  defineAsyncComponent,
-  defineComponent,
-  onBeforeUnmount,
-} from 'vue';
+import { defineAsyncComponent, defineComponent, onBeforeUnmount } from "vue";
 
-import { MODAL_TYPES, useModalCenter } from './index';
+import { MODAL_TYPES, useModalCenter } from "./index";
 
 const MODAL_COMPONENTS = Object.freeze({
-  [MODAL_TYPES.createRecord]: defineAsyncComponent(() => import('@/components/modals/modify-record/index.vue')),
-  [MODAL_TYPES.recordList]: defineAsyncComponent(() => import('@/components/modals/modify-record/record-list.vue')),
-  [MODAL_TYPES.monobankSetToken]: defineAsyncComponent(() => import('@/components/modals/monobank-set-token.vue')),
+  [MODAL_TYPES.createRecord]: defineAsyncComponent(
+    () => import("@/components/modals/modify-record/index.vue"),
+  ),
+  [MODAL_TYPES.recordList]: defineAsyncComponent(
+    () => import("@/components/modals/modify-record/record-list.vue"),
+  ),
+  [MODAL_TYPES.monobankSetToken]: defineAsyncComponent(
+    () => import("@/components/modals/monobank-set-token.vue"),
+  ),
 });
 
 export enum EVENTS {
-  closeModal = 'close'
+  closeModal = "close",
 }
 
 export default defineComponent({
@@ -57,11 +50,11 @@ export default defineComponent({
       }
     }, 1000);
 
-    window.addEventListener('resize', windowResize);
+    window.addEventListener("resize", windowResize);
 
     onBeforeUnmount(() => {
       windowResize.cancel();
-      window.removeEventListener('resize', windowResize);
+      window.removeEventListener("resize", windowResize);
     });
 
     return {

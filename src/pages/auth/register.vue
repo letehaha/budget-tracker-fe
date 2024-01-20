@@ -1,9 +1,7 @@
 <template>
   <div class="register">
     <div class="register__wrapper">
-      <h1 class="register__title">
-        Create an account
-      </h1>
+      <h1 class="register__title">Create an account</h1>
       <div class="register__fields">
         <input-field
           v-model="form.username"
@@ -24,12 +22,7 @@
           type="password"
         />
       </div>
-      <ui-button
-        class="register__submit"
-        @click="submit"
-      >
-        Sign up
-      </ui-button>
+      <ui-button class="register__submit" @click="submit"> Sign up </ui-button>
       <div class="register__signup">
         Already have an account?
 
@@ -45,16 +38,16 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { API_ERROR_CODES } from 'shared-types';
+import { defineComponent, reactive, ref } from "vue";
+import { useRouter } from "vue-router";
+import { API_ERROR_CODES } from "shared-types";
 
-import { ROUTES_NAMES } from '@/routes/constants';
-import { useAuthStore } from '@/stores';
-import UiButton from '@/components/common/ui-button.vue';
-import InputField from '@/components/fields/input-field.vue';
-import { useNotificationCenter } from '@/components/notification-center';
-import { ApiErrorResponseError } from '@/js/errors';
+import { ROUTES_NAMES } from "@/routes/constants";
+import { useAuthStore } from "@/stores";
+import UiButton from "@/components/common/ui-button.vue";
+import InputField from "@/components/fields/input-field.vue";
+import { useNotificationCenter } from "@/components/notification-center";
+import { ApiErrorResponseError } from "@/js/errors";
 
 export default defineComponent({
   components: {
@@ -66,9 +59,9 @@ export default defineComponent({
     const autoStore = useAuthStore();
     const { addErrorNotification } = useNotificationCenter();
     const form = reactive({
-      username: '',
-      password: '',
-      verifyPassowrd: '',
+      username: "",
+      password: "",
+      verifyPassowrd: "",
     });
 
     const isFormLoading = ref(false);
@@ -85,12 +78,12 @@ export default defineComponent({
       } catch (e) {
         if (e instanceof ApiErrorResponseError) {
           if (e.data.code === API_ERROR_CODES.userExists) {
-            addErrorNotification('User with that username already exists!');
+            addErrorNotification("User with that username already exists!");
             return;
           }
         }
 
-        addErrorNotification('Unexpected error');
+        addErrorNotification("Unexpected error");
       } finally {
         isFormLoading.value = false;
       }
@@ -139,7 +132,7 @@ export default defineComponent({
   font-weight: 400;
 }
 .register__signup-link {
-  transition: .2s ease-out;
+  transition: 0.2s ease-out;
   color: var(--primary-500);
 
   &:hover {
