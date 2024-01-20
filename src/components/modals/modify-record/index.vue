@@ -27,10 +27,10 @@ import DateField from '@/components/fields/date-field.vue';
 import UiButton from '@/components/common/ui-button.vue';
 import { EVENTS as MODAL_EVENTS } from '@/components/modal-center/ui-modal.vue';
 import TransactionRecrod from '@/components/transactions-list/transaction-record.vue';
-import FormHeader from './form-header.vue';
-import TypeSelector from './type-selector.vue';
-import FormRow from './form-row.vue';
-import AccountField from './account-field.vue';
+import FormHeader from './components/form-header.vue';
+import TypeSelector from './components/type-selector.vue';
+import FormRow from './components/form-row.vue';
+import AccountField from './components/account-field.vue';
 import { FORM_TYPES, UI_FORM_STRUCT } from './types';
 import {
   getDestinationAccount,

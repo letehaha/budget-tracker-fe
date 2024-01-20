@@ -2,7 +2,7 @@ import { mount } from '@vue/test-utils';
 import { INCOME_TRANSACTION, EXPENSE_TRANSACTION } from '@tests/mocks';
 import { ACCOUNT_TYPES } from 'shared-types';
 import TypeSelectorVue from './type-selector.vue';
-import { getFormTypeFromTransaction } from './helpers';
+import { getFormTypeFromTransaction } from '../helpers';
 
 describe('Record TypeSelector component', () => {
   describe('editing form', () => {

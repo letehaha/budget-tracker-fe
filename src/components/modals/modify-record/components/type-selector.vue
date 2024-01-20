@@ -46,7 +46,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { ACCOUNT_TYPES, TRANSACTION_TYPES, type TransactionModel } from 'shared-types';
-import { FORM_TYPES } from './types';
+import { FORM_TYPES } from '../types';
 
 const props = defineProps<{
   selectedTransactionType: FORM_TYPES;
