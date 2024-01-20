@@ -4,6 +4,7 @@ import {
   TransactionModel,
   AccountModel,
 } from "shared-types";
+import { OUT_OF_WALLET_ACCOUNT_MOCK } from "@/common/const";
 import { FORM_TYPES } from "./types";
 
 export const getDestinationAccount = ({
@@ -68,3 +69,7 @@ export const getTxTypeFromFormType = (
     ? TRANSACTION_TYPES.expense
     : TRANSACTION_TYPES.income;
 };
+
+export const isOutOfWalletAccount = (
+  account: typeof OUT_OF_WALLET_ACCOUNT_MOCK,
+) => account._isOutOfWallet;

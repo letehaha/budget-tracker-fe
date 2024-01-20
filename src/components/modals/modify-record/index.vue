@@ -34,19 +34,13 @@ import TypeSelector from "./components/type-selector.vue";
 import FormRow from "./components/form-row.vue";
 import AccountField from "./components/account-field.vue";
 import { FORM_TYPES, UI_FORM_STRUCT } from "./types";
-import {
-  getDestinationAccount,
-  getDestinationAmount,
-  getFormTypeFromTransaction,
-  getTxTypeFromFormType,
-} from "./helpers";
+import { getFormTypeFromTransaction } from "./helpers";
+import { useTransferFormLogic } from "./composables";
+import { prepareTxCreationParams, prepareTxUpdationParams } from "./utils";
 
 defineOptions({
   name: "record-form",
 });
-
-const isOutOfWalletAccount = (account: typeof OUT_OF_WALLET_ACCOUNT_MOCK) =>
-  account._isOutOfWallet;
 
 const props = withDefaults(
   defineProps<{
@@ -146,6 +140,19 @@ const isTransferTx = computed(
   () => currentTxType.value === FORM_TYPES.transfer,
 );
 
+const {
+  isTargetFieldVisible,
+  isTargetAmountFieldDisabled,
+  targetCurrency,
+  fromAccountFieldDisabled,
+  toAccountFieldDisabled,
+} = useTransferFormLogic({
+  form,
+  isTransferTx,
+  isRecordExternal,
+  transaction: props.transaction,
+});
+
 const isAmountFieldDisabled = computed(() => {
   if (isRecordExternal.value) {
     if (!isTransferTx.value) return true;
@@ -155,36 +162,6 @@ const isAmountFieldDisabled = computed(() => {
 
   // Means it's "Out of wallet"
   if (form.value.account?.id === OUT_OF_WALLET_ACCOUNT_MOCK.id) return true;
-
-  return false;
-});
-const isTargetAmountFieldDisabled = computed(() => {
-  if (isRecordExternal.value) {
-    if (!isTransferTx.value) return true;
-    if (props.transaction.transactionType === TRANSACTION_TYPES.income)
-      return true;
-  }
-
-  // Means it's "Out of wallet"
-  if (form.value.toAccount?.id === OUT_OF_WALLET_ACCOUNT_MOCK.id) return true;
-
-  return false;
-});
-const fromAccountFieldDisabled = computed(() => {
-  if (isRecordExternal.value) {
-    if (!isTransferTx.value) return true;
-    if (props.transaction.transactionType === TRANSACTION_TYPES.expense)
-      return true;
-  }
-
-  return false;
-});
-const toAccountFieldDisabled = computed(() => {
-  if (isRecordExternal.value) {
-    if (!isTransferTx.value) return true;
-    if (props.transaction.transactionType === TRANSACTION_TYPES.income)
-      return true;
-  }
 
   return false;
 });
@@ -201,10 +178,6 @@ const currencyCode = computed(() => {
   }
   return undefined;
 });
-
-const targetCurrency = computed(
-  () => currenciesMap.value[form.value.toAccount?.currencyId],
-);
 
 const transferSourceAccounts = computed(() => [
   OUT_OF_WALLET_ACCOUNT_MOCK,
@@ -307,146 +280,29 @@ watch(currentTxType, (value, prevValue) => {
   }
 });
 
-async function handleCreateTransaction() {
-  const {
-    amount,
-    note,
-    time,
-    type: formTxType,
-    paymentType,
-    account: { id: accountId },
-    toAccount,
-    category,
-  } = form.value;
-
-  const creationParams: Parameters<typeof createTransaction>[0] = {
-    amount,
-    note,
-    time: new Date(time).toUTCString(),
-    transactionType: getTxTypeFromFormType(formTxType),
-    paymentType: paymentType.value,
-    accountId,
-  };
-
-  if (isTransferTx.value) {
-    creationParams.destinationAccountId = toAccount.id;
-    creationParams.destinationAmount = isCurrenciesDifferent.value
-      ? form.value.targetAmount
-      : amount;
-    creationParams.transferNature = TRANSACTION_TRANSFER_NATURE.common_transfer;
-  } else {
-    creationParams.categoryId = category.id;
-  }
-
-  // Handle transfer_out_wallet
-  // Always send amount+accountId and never destination data
-  if (
-    [creationParams.accountId, creationParams.destinationAccountId].includes(
-      OUT_OF_WALLET_ACCOUNT_MOCK.id,
-    )
-  ) {
-    creationParams.transferNature =
-      TRANSACTION_TRANSFER_NATURE.transfer_out_wallet;
-
-    if (creationParams.accountId === OUT_OF_WALLET_ACCOUNT_MOCK.id) {
-      creationParams.transactionType = TRANSACTION_TYPES.income;
-      creationParams.amount = creationParams.destinationAmount;
-      creationParams.accountId = creationParams.destinationAccountId;
-      delete creationParams.destinationAmount;
-      delete creationParams.destinationAccountId;
-    } else if (
-      creationParams.destinationAccountId === OUT_OF_WALLET_ACCOUNT_MOCK.id
-    ) {
-      creationParams.transactionType = TRANSACTION_TYPES.expense;
-      delete creationParams.destinationAmount;
-      delete creationParams.destinationAccountId;
-    }
-  }
-
-  await createTransaction(creationParams);
-}
-
-async function handleEditTransaction() {
-  const {
-    amount,
-    note,
-    time,
-    type: formTxType,
-    paymentType,
-    account,
-    category,
-  } = form.value;
-
-  const accountId = account?.id || null;
-
-  let editionParams: Parameters<typeof editTransaction>[0] = {
-    txId: props.transaction.id,
-  };
-
-  if (isRecordExternal.value) {
-    editionParams = {
-      ...editionParams,
-      note,
-      paymentType: paymentType.value,
-      transferNature: TRANSACTION_TRANSFER_NATURE.not_transfer,
-    };
-  } else {
-    editionParams = {
-      ...editionParams,
-      amount: Number(amount),
-      note,
-      time,
-      transactionType: getTxTypeFromFormType(formTxType),
-      paymentType: paymentType.value,
-      accountId,
-      transferNature: TRANSACTION_TRANSFER_NATURE.not_transfer,
-    };
-  }
-
-  if (isTransferTx.value) {
-    const destinationAccount = getDestinationAccount({
-      isRecordExternal: isRecordExternal.value,
-      account: form.value.account,
-      toAccount: form.value.toAccount,
-      sourceTransaction: props.transaction,
-    });
-
-    if (!transactionItem.value?.id) {
-      if (isOutOfWalletAccount(destinationAccount)) {
-        editionParams.transferNature =
-          TRANSACTION_TRANSFER_NATURE.transfer_out_wallet;
-      } else {
-        editionParams.destinationAccountId = destinationAccount.id;
-        editionParams.destinationAmount = getDestinationAmount({
-          sourceTransaction: props.transaction,
-          isRecordExternal: isRecordExternal.value,
-          fromAmount: Number(form.value.amount),
-          toAmount: Number(form.value.targetAmount),
-          isCurrenciesDifferent: isCurrenciesDifferent.value,
-        });
-        editionParams.transferNature =
-          TRANSACTION_TRANSFER_NATURE.common_transfer;
-      }
-    } else {
-      editionParams.destinationTransactionId = transactionItem.value.id;
-      editionParams.transferNature =
-        TRANSACTION_TRANSFER_NATURE.common_transfer;
-    }
-  } else {
-    editionParams.categoryId = category.id;
-  }
-
-  await editTransaction(editionParams);
-}
-
 const submit = async () => {
   isLoading.value = true;
 
   try {
     if (isFormCreation.value) {
-      await handleCreateTransaction();
+      await createTransaction(
+        prepareTxCreationParams({
+          form: form.value,
+          isTransferTx: isTransferTx.value,
+          isCurrenciesDifferent: isCurrenciesDifferent.value,
+        }),
+      );
     } else {
-      await handleEditTransaction();
+      await editTransaction(
+        prepareTxUpdationParams({
+          form: form.value,
+          transaction: props.transaction,
+          linkedTransaction: transactionItem.value,
+          isTransferTx: isTransferTx.value,
+          isRecordExternal: isRecordExternal.value,
+          isCurrenciesDifferent: isCurrenciesDifferent.value,
+        }),
+      );
     }
 
     emit(MODAL_EVENTS.closeModal);
@@ -522,7 +378,10 @@ onMounted(() => {
     </div>
     <div class="modify-record__form">
       <form-row
-        v-if="!transactionItem || transactionItem.transactionType !== 'expense'"
+        v-if="
+          !transactionItem ||
+          transactionItem.transactionType !== TRANSACTION_TYPES.income
+        "
       >
         <input-field
           v-model="form.amount"
@@ -564,14 +423,8 @@ onMounted(() => {
         </form-row>
       </template>
 
-      <template
-        v-if="
-          (isTransferTx && !transactionItem) ||
-          (transactionItem && transactionItem.transactionType === 'expense')
-        "
-      >
+      <template v-if="isTargetFieldVisible">
         <form-row>
-          <!-- TODO: for transfer tx disable this field if both accounts have same currency -->
           <input-field
             v-model="form.targetAmount"
             :disabled="isTargetAmountFieldDisabled"
@@ -701,7 +554,6 @@ $border-top-radius: 10px;
 .modify-record__action--submit {
   margin-left: auto;
 }
-
 .modify-record__transaction {
   display: flex;
 }
