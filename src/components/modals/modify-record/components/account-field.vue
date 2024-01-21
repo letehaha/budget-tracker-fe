@@ -1,12 +1,7 @@
 <template>
   <template v-if="accounts.length || account">
-    <template v-if="isTransferTransaction">
-      <form-row
-        v-if="
-          !isTransactionRecord ||
-          (isTransactionRecord && transactionType === TRANSACTION_TYPES.expense)
-        "
-      >
+    <template v-if="isTransferTransaction && !isTransactionLinking">
+      <form-row>
         <select-field
           label="From account"
           placeholder="Select account"
@@ -19,12 +14,7 @@
         />
       </form-row>
 
-      <form-row
-        v-if="
-          !isTransactionRecord ||
-          (isTransactionRecord && transactionType === TRANSACTION_TYPES.income)
-        "
-      >
+      <form-row>
         <select-field
           label="To account"
           placeholder="Select account"
@@ -85,7 +75,7 @@ withDefaults(
     isTransferTransaction: boolean;
     accounts: AccountModel[];
     filteredAccounts: AccountModel[];
-    isTransactionRecord: boolean;
+    isTransactionLinking: boolean;
     transactionType: TRANSACTION_TYPES;
     fromAccountDisabled?: boolean;
     toAccountDisabled?: boolean;
@@ -93,7 +83,7 @@ withDefaults(
   {
     account: null,
     toAccount: null,
-    isTransactionRecord: false,
+    isTransactionLinking: false,
     fromAccountDisabled: false,
     toAccountDisabled: false,
   },

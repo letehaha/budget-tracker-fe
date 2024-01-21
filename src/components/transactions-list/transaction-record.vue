@@ -59,8 +59,6 @@ import { useCategoriesStore, useAccountsStore } from "@/stores";
 import { loadTransactionsByTransferId } from "@/api/transactions";
 
 import { formatUIAmount } from "@/js/helpers";
-
-// import { MODAL_TYPES, useModalCenter } from '@/components/modal-center/index';
 import CategoryCircle from "@/components/common/category-circle.vue";
 
 const setOppositeTransaction = async (transaction: TransactionModel) => {
@@ -83,11 +81,10 @@ const props = defineProps<{
 
 const { categoriesMap } = storeToRefs(useCategoriesStore());
 const accountsStore = useAccountsStore();
-// const { addModal } = useModalCenter();
 const { accountsRecord } = storeToRefs(accountsStore);
 
 const emit = defineEmits<{
-  "record-click": [value: TransactionModel];
+  "record-click": [[value: TransactionModel, oppositeTx: TransactionModel]];
 }>();
 
 const transaction = reactive(props.tx);
@@ -129,7 +126,7 @@ const accountMovement = computed(() => {
 const formateDate = (date) => format(new Date(date), "d MMMM y");
 
 const transactionEmit = () => {
-  emit("record-click", transaction);
+  emit("record-click", [transaction, oppositeTransferTransaction.value]);
 };
 
 const formattedAmount = computed(() => {

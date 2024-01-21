@@ -1,5 +1,6 @@
 import { ref, Ref } from "vue";
 import { RecordListModalProps } from "@/components/modals/modify-record/record-list.vue";
+import { CreateRecordModalProps } from "@/components/modals/modify-record/index.vue";
 
 export enum MODAL_TYPES {
   createRecord = "createRecord",
@@ -16,6 +17,7 @@ interface CommonModalDataProps {
 }
 interface CreateRecordModal extends CommonModalDataProps {
   type: MODAL_TYPES.createRecord;
+  data?: CreateRecordModalProps;
 }
 interface MonobankTxFormModal extends CommonModalDataProps {
   type: MODAL_TYPES.monobankTxForm;

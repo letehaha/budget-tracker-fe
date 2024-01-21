@@ -1,8 +1,8 @@
 import {
-  INCOME_TRANSACTION,
-  EXPENSE_TRANSACTION,
-  COMMON_TRANSFER_TRANSACTION,
-  OUT_OF_WALLET_TRANSACTION,
+  buildSystemIncomeTransaction,
+  buildSystemExpenseTransaction,
+  buildSystemTransferExpenseTransaction,
+  buildOutOfWalletTransaction,
 } from "@tests/mocks";
 import { TRANSACTION_TYPES } from "shared-types";
 import {
@@ -15,13 +15,13 @@ import { FORM_TYPES } from "./types";
 describe("components/modals/modify-record/helpers", () => {
   describe("getDestinationAmount", () => {
     test.each([
-      [[10, 20, false, false, INCOME_TRANSACTION], 10],
-      [[10, 20, false, true, INCOME_TRANSACTION], 10],
-      [[10, 20, true, false, INCOME_TRANSACTION], 20],
+      [[10, 20, false, false, buildSystemIncomeTransaction()], 10],
+      [[10, 20, false, true, buildSystemIncomeTransaction()], 10],
+      [[10, 20, true, false, buildSystemIncomeTransaction()], 20],
 
-      [[10, 20, false, false, EXPENSE_TRANSACTION], 10],
-      [[10, 20, false, true, EXPENSE_TRANSACTION], 20],
-      [[10, 20, true, false, EXPENSE_TRANSACTION], 20],
+      [[10, 20, false, false, buildSystemExpenseTransaction()], 10],
+      [[10, 20, false, true, buildSystemExpenseTransaction()], 20],
+      [[10, 20, true, false, buildSystemExpenseTransaction()], 20],
     ])("%s to be %s", (args, expected) => {
       expect(
         getDestinationAmount({
@@ -37,10 +37,10 @@ describe("components/modals/modify-record/helpers", () => {
 
   describe("getFormTypeFromTransaction", () => {
     test.each([
-      [INCOME_TRANSACTION, FORM_TYPES.income],
-      [EXPENSE_TRANSACTION, FORM_TYPES.expense],
-      [COMMON_TRANSFER_TRANSACTION, FORM_TYPES.transfer],
-      [OUT_OF_WALLET_TRANSACTION, FORM_TYPES.transfer],
+      [buildSystemIncomeTransaction(), FORM_TYPES.income],
+      [buildSystemExpenseTransaction(), FORM_TYPES.expense],
+      [buildSystemTransferExpenseTransaction(), FORM_TYPES.transfer],
+      [buildOutOfWalletTransaction(), FORM_TYPES.transfer],
     ])("%s to be %s", (value, expected) => {
       expect(getFormTypeFromTransaction(value)).toBe(expected);
     });

@@ -1,5 +1,7 @@
 import { TRANSACTION_TRANSFER_NATURE, TRANSACTION_TYPES } from "shared-types";
+import { nextTick } from "vue";
 import { mount } from "@vue/test-utils";
+import { faker } from "@faker-js/faker";
 import { router } from "@/routes";
 import { createTestingPinia } from "@pinia/testing";
 import { VueQueryPlugin } from "@tanstack/vue-query";
@@ -105,6 +107,20 @@ const fillCategoryField = async (
     .find((item) => item.text().includes(categoryName));
   await desiredCategoryBtn.trigger("click");
 };
+
+const getTransactionsLinkingButton = (
+  wrapper: ReturnType<typeof mountComponent>,
+) =>
+  wrapper
+    .findAll("button")
+    .find((btn) => btn.text().includes("Link existing transaction"));
+
+const getTransactionsUnlinkingButton = (
+  wrapper: ReturnType<typeof mountComponent>,
+) =>
+  wrapper
+    .findAll("button")
+    .find((btn) => btn.text().includes("Unlink transactions"));
 
 const submitCreation = async (wrapper: ReturnType<typeof mountComponent>) => {
   const submitBtn = wrapper.find('[aria-label="Create transaction"]');
@@ -282,51 +298,26 @@ describe("transactions create/update/delete form", () => {
       editTxSpy = vi.spyOn(apiMethods, "editTransaction");
     });
 
-    test("expense -> income", async () => {
-      const wrapper = await mountComponent({
-        props: {
-          transaction: dataMocks.EXPENSE_TRANSACTION,
-        },
-      });
+    test.each([
+      ["expense -> income", dataMocks.buildSystemExpenseTransaction()],
+      ["income -> expense", dataMocks.buildSystemIncomeTransaction()],
+    ])("%s", async (descr, transaction) => {
+      const wrapper = await mountComponent({ props: { transaction } });
 
       await wrapper.find(incomeFormTypeSelector).trigger("click");
 
       await submitUpdation(wrapper);
 
       expect(editTxSpy).toHaveBeenCalledWith({
-        accountId: dataMocks.EXPENSE_TRANSACTION.accountId,
-        amount: dataMocks.EXPENSE_TRANSACTION.amount,
-        categoryId: dataMocks.EXPENSE_TRANSACTION.categoryId,
+        accountId: transaction.accountId,
+        amount: transaction.amount,
+        categoryId: transaction.categoryId,
         note: null,
-        paymentType: expect.any(String),
-        time: expect.any(String),
+        paymentType: transaction.paymentType,
+        time: transaction.time.toISOString().substring(0, 19),
         transactionType: TRANSACTION_TYPES.income,
         transferNature: TRANSACTION_TRANSFER_NATURE.not_transfer,
-        txId: dataMocks.EXPENSE_TRANSACTION.id,
-      });
-    });
-
-    test("income -> expense", async () => {
-      const wrapper = await mountComponent({
-        props: {
-          transaction: dataMocks.INCOME_TRANSACTION,
-        },
-      });
-
-      await wrapper.find(expenseFormTypeSelector).trigger("click");
-
-      await submitUpdation(wrapper);
-
-      expect(editTxSpy).toHaveBeenCalledWith({
-        accountId: dataMocks.INCOME_TRANSACTION.accountId,
-        amount: dataMocks.INCOME_TRANSACTION.amount,
-        categoryId: dataMocks.INCOME_TRANSACTION.categoryId,
-        note: null,
-        paymentType: expect.any(String),
-        time: expect.any(String),
-        transactionType: TRANSACTION_TYPES.expense,
-        transferNature: TRANSACTION_TRANSFER_NATURE.not_transfer,
-        txId: dataMocks.INCOME_TRANSACTION.id,
+        txId: transaction.id,
       });
     });
 
@@ -335,13 +326,11 @@ describe("transactions create/update/delete form", () => {
         amount: 20,
         category: dataMocks.USER_CATEGORIES[1],
       };
+      const transaction = dataMocks.buildSystemIncomeTransaction({
+        categoryId: dataMocks.USER_CATEGORIES[0].id,
+      });
       const wrapper = await mountComponent({
-        props: {
-          transaction: {
-            ...dataMocks.INCOME_TRANSACTION,
-            categoryId: dataMocks.USER_CATEGORIES[0].id,
-          },
-        },
+        props: { transaction },
       });
 
       await wrapper.find(expenseFormTypeSelector).trigger("click");
@@ -352,21 +341,21 @@ describe("transactions create/update/delete form", () => {
       await submitUpdation(wrapper);
 
       expect(editTxSpy).toHaveBeenCalledWith({
-        accountId: dataMocks.INCOME_TRANSACTION.accountId,
+        accountId: transaction.accountId,
         amount: expectedValue.amount,
         categoryId: expectedValue.category.id,
         note: null,
-        paymentType: expect.any(String),
-        time: expect.any(String),
+        paymentType: transaction.paymentType,
+        time: transaction.time.toISOString().substring(0, 19),
         transactionType: TRANSACTION_TYPES.expense,
         transferNature: TRANSACTION_TRANSFER_NATURE.not_transfer,
-        txId: dataMocks.INCOME_TRANSACTION.id,
+        txId: transaction.id,
       });
     });
 
     test.each([
-      [TRANSACTION_TYPES.expense, dataMocks.EXTERNAL_EXPENSE_TRANSACTION],
-      [TRANSACTION_TYPES.income, dataMocks.EXTERNAL_INCOME_TRANSACTION],
+      [TRANSACTION_TYPES.expense, dataMocks.buildExternalExpenseTransaction()],
+      [TRANSACTION_TYPES.income, dataMocks.buildExternalIncomeTransaction()],
     ])("external %s: modify fields", async (txType, mock) => {
       const expectedValue = {
         category: dataMocks.USER_CATEGORIES[1],
@@ -425,21 +414,17 @@ describe("transactions create/update/delete form", () => {
     });
 
     test.each([
-      [TRANSACTION_TYPES.income, dataMocks.INCOME_TRANSACTION],
-      [TRANSACTION_TYPES.expense, dataMocks.EXPENSE_TRANSACTION],
-    ])("%s -> transfer with same currency", async (txType, mock) => {
+      [TRANSACTION_TYPES.income, dataMocks.buildSystemIncomeTransaction()],
+      [TRANSACTION_TYPES.expense, dataMocks.buildSystemExpenseTransaction()],
+    ])("%s -> transfer with same currency", async (txType, transaction) => {
       const expectedValue = {
         amount: 95,
         account: dataMocks.getUahAccount(),
         targetAccount: dataMocks.getUah2Account(),
         targetAmount: 120,
       };
-      const wrapper = await mountComponent({
-        props: {
-          transaction: mock,
-        },
-      });
 
+      const wrapper = await mountComponent({ props: { transaction } });
       await wrapper.find(transferFormTypeSelector).trigger("click");
 
       const initialValue = await wrapper.find<HTMLInputElement>(
@@ -477,69 +462,68 @@ describe("transactions create/update/delete form", () => {
         destinationAmount: expectedValue.amount,
 
         note: null,
-        paymentType: expect.any(String),
-        time: expect.any(String),
+        paymentType: transaction.paymentType,
+        time: transaction.time.toISOString().substring(0, 19),
         transactionType: TRANSACTION_TYPES.expense,
         transferNature: TRANSACTION_TRANSFER_NATURE.common_transfer,
-        txId: dataMocks.INCOME_TRANSACTION.id,
+        txId: transaction.id,
       });
     });
 
     test.each([
-      [TRANSACTION_TYPES.income, dataMocks.INCOME_TRANSACTION],
-      [TRANSACTION_TYPES.expense, dataMocks.EXPENSE_TRANSACTION],
-    ])("%s -> transfer with different currency", async (txType, mock) => {
-      const expectedValue = {
-        amount: 95,
-        account: dataMocks.getUahAccount(),
-        targetAccount: dataMocks.getEurAccount(),
-        targetAmount: 120,
-      };
-      const wrapper = await mountComponent({
-        props: {
-          transaction: mock,
-        },
-      });
+      [TRANSACTION_TYPES.income, dataMocks.buildSystemIncomeTransaction()],
+      [TRANSACTION_TYPES.expense, dataMocks.buildSystemExpenseTransaction()],
+    ])(
+      "%s -> transfer with different currency",
+      async (txType, transaction) => {
+        const expectedValue = {
+          amount: 95,
+          account: dataMocks.getUahAccount(),
+          targetAccount: dataMocks.getEurAccount(),
+          targetAmount: 120,
+        };
+        const wrapper = await mountComponent({ props: { transaction } });
 
-      await wrapper.find(transferFormTypeSelector).trigger("click");
+        await wrapper.find(transferFormTypeSelector).trigger("click");
 
-      const initialValue = await wrapper.find<HTMLInputElement>(
-        txType === TRANSACTION_TYPES.income
-          ? amountFieldSelector
-          : targetAmountFieldSelector,
-      ).element.value;
-      expect(initialValue).toBe("");
+        const initialValue = await wrapper.find<HTMLInputElement>(
+          txType === TRANSACTION_TYPES.income
+            ? amountFieldSelector
+            : targetAmountFieldSelector,
+        ).element.value;
+        expect(initialValue).toBe("");
 
-      await wrapper.find(amountFieldSelector).setValue(expectedValue.amount);
-      await fillAccountField(
-        wrapper,
-        fromAccountFieldLabel,
-        expectedValue.account.name,
-      );
-      await fillTargetAlmountField(wrapper, expectedValue.targetAmount);
-      await fillAccountField(
-        wrapper,
-        toAccountFieldLabel,
-        expectedValue.targetAccount.name,
-      );
+        await wrapper.find(amountFieldSelector).setValue(expectedValue.amount);
+        await fillAccountField(
+          wrapper,
+          fromAccountFieldLabel,
+          expectedValue.account.name,
+        );
+        await fillTargetAlmountField(wrapper, expectedValue.targetAmount);
+        await fillAccountField(
+          wrapper,
+          toAccountFieldLabel,
+          expectedValue.targetAccount.name,
+        );
 
-      await submitUpdation(wrapper);
+        await submitUpdation(wrapper);
 
-      expect(editTxSpy).toHaveBeenCalledWith({
-        accountId: expectedValue.account.id,
-        amount: expectedValue.amount,
+        expect(editTxSpy).toHaveBeenCalledWith({
+          accountId: expectedValue.account.id,
+          amount: expectedValue.amount,
 
-        destinationAccountId: expectedValue.targetAccount.id,
-        destinationAmount: expectedValue.targetAmount,
+          destinationAccountId: expectedValue.targetAccount.id,
+          destinationAmount: expectedValue.targetAmount,
 
-        note: null,
-        paymentType: expect.any(String),
-        time: expect.any(String),
-        transactionType: TRANSACTION_TYPES.expense,
-        transferNature: TRANSACTION_TRANSFER_NATURE.common_transfer,
-        txId: dataMocks.INCOME_TRANSACTION.id,
-      });
-    });
+          note: null,
+          paymentType: transaction.paymentType,
+          time: transaction.time.toISOString().substring(0, 19),
+          transactionType: TRANSACTION_TYPES.expense,
+          transferNature: TRANSACTION_TRANSFER_NATURE.common_transfer,
+          txId: transaction.id,
+        });
+      },
+    );
 
     test.each([[TRANSACTION_TYPES.income], [TRANSACTION_TYPES.expense]])(
       "transfer -> %s",
@@ -548,11 +532,12 @@ describe("transactions create/update/delete form", () => {
           amount: -50,
           account: dataMocks.getEurAccount(),
         };
+        const transaction = dataMocks.buildSystemTransferExpenseTransaction();
+        const oppositeTransaction =
+          dataMocks.buildSystemTransferOppositeTransaction();
+
         const wrapper = await mountComponent({
-          props: {
-            transaction: dataMocks.COMMON_TRANSFER_TRANSACTION,
-            oppositeTransaction: dataMocks.COMMON_TRANSFER_TRANSACTION_OPPOSITE,
-          },
+          props: { transaction, oppositeTransaction },
         });
 
         await wrapper
@@ -569,16 +554,14 @@ describe("transactions create/update/delete form", () => {
             .find("button")
             .attributes().title,
         ).toBe(
-          dataMocks.ACCOUNTS.find(
-            (item) =>
-              item.id === dataMocks.COMMON_TRANSFER_TRANSACTION.accountId,
-          ).name,
+          dataMocks.ACCOUNTS.find((item) => item.id === transaction.accountId)
+            .name,
         );
 
         expect(
           await wrapper.find<HTMLInputElement>(amountFieldSelector).element
             .value,
-        ).toBe(String(dataMocks.COMMON_TRANSFER_TRANSACTION.amount));
+        ).toBe(String(transaction.amount));
 
         await fillAmountField(wrapper, expectedValue.amount);
         await fillAccountField(
@@ -592,13 +575,13 @@ describe("transactions create/update/delete form", () => {
         expect(editTxSpy).toHaveBeenCalledWith({
           accountId: expectedValue.account.id,
           amount: expectedValue.amount,
-          categoryId: dataMocks.COMMON_TRANSFER_TRANSACTION.categoryId,
+          categoryId: transaction.categoryId,
           note: null,
-          paymentType: expect.any(String),
-          time: expect.any(String),
+          paymentType: transaction.paymentType,
+          time: transaction.time.toISOString().substring(0, 19),
           transactionType: txType,
           // txId should be exactly of non-opposite tx
-          txId: dataMocks.COMMON_TRANSFER_TRANSACTION.id,
+          txId: transaction.id,
           transferNature: TRANSACTION_TRANSFER_NATURE.not_transfer,
         });
       },
@@ -612,13 +595,10 @@ describe("transactions create/update/delete form", () => {
           account: dataMocks.getEurAccount(),
         };
         const isExpense = txType === TRANSACTION_TYPES.expense;
-        const wrapper = await mountComponent({
-          props: {
-            transaction: isExpense
-              ? dataMocks.EXTERNAL_EXPENSE_TRANSACTION
-              : dataMocks.EXTERNAL_INCOME_TRANSACTION,
-          },
-        });
+        const transaction = isExpense
+          ? dataMocks.buildExternalExpenseTransaction()
+          : dataMocks.buildExternalIncomeTransaction();
+        const wrapper = await mountComponent({ props: { transaction } });
 
         await wrapper.find(transferFormTypeSelector).trigger("click");
 
@@ -674,7 +654,7 @@ describe("transactions create/update/delete form", () => {
           note: null,
           paymentType: expect.any(String),
           transferNature: TRANSACTION_TRANSFER_NATURE.common_transfer,
-          txId: dataMocks.INCOME_TRANSACTION.id,
+          txId: transaction.id,
         });
       },
     );
@@ -788,14 +768,10 @@ describe("transactions create/update/delete form", () => {
           categoryId: expectedValue.category.id,
           paymentType: expect.any(String),
           transferNature: TRANSACTION_TRANSFER_NATURE.not_transfer,
-          txId: dataMocks.INCOME_TRANSACTION.id,
+          txId: transaction.id,
         });
       },
     );
-
-    test.todo("expense/income common linking");
-    test.todo("expense/income external linking");
-    test.todo('transfer form doesn"t have linking when editing');
   });
 
   describe("transaction deletion", () => {
@@ -806,15 +782,11 @@ describe("transactions create/update/delete form", () => {
     });
 
     test.each([
-      ["delete expense", dataMocks.EXPENSE_TRANSACTION],
-      ["delete income", dataMocks.INCOME_TRANSACTION],
-      ["delete transfer", dataMocks.COMMON_TRANSFER_TRANSACTION],
+      ["delete expense", dataMocks.buildSystemExpenseTransaction()],
+      ["delete income", dataMocks.buildSystemIncomeTransaction()],
+      ["delete transfer", dataMocks.buildSystemTransferExpenseTransaction()],
     ])("%s", async (descr, mock) => {
-      const wrapper = await mountComponent({
-        props: {
-          transaction: mock,
-        },
-      });
+      const wrapper = await mountComponent({ props: { transaction: mock } });
       await submitDeletion(wrapper);
       expect(deleteTxSpy).toHaveBeenCalledWith(mock.id);
     });
@@ -822,9 +794,12 @@ describe("transactions create/update/delete form", () => {
     test.each([
       [
         "cannot delete external expense",
-        dataMocks.EXTERNAL_EXPENSE_TRANSACTION,
+        dataMocks.buildExternalExpenseTransaction(),
       ],
-      ["cannot delete external income", dataMocks.EXTERNAL_INCOME_TRANSACTION],
+      [
+        "cannot delete external income",
+        dataMocks.buildExternalIncomeTransaction(),
+      ],
       [
         "cannot delete external expense transfer",
         dataMocks.buildExternalTransferTransaction(TRANSACTION_TYPES.expense),
@@ -834,15 +809,190 @@ describe("transactions create/update/delete form", () => {
         dataMocks.buildExternalTransferTransaction(TRANSACTION_TYPES.income),
       ],
     ])("%s", async (descr, mock) => {
-      const wrapper = await mountComponent({
-        props: {
-          transaction: mock,
-        },
-      });
+      const wrapper = await mountComponent({ props: { transaction: mock } });
       expect(
         await wrapper.find('[aria-label="Delete transaction"]').exists(),
       ).toBe(false);
       expect(deleteTxSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("transactions linking", () => {
+    let linkTxSpy = vi.spyOn(apiMethods, "linkTransactions");
+
+    beforeEach(() => {
+      linkTxSpy = vi.spyOn(apiMethods, "linkTransactions");
+    });
+
+    test.each([[TRANSACTION_TYPES.expense], [TRANSACTION_TYPES.income]])(
+      "link %s system transaction",
+      async (txType) => {
+        const transaction =
+          txType === TRANSACTION_TYPES.expense
+            ? dataMocks.buildSystemExpenseTransaction()
+            : dataMocks.buildSystemIncomeTransaction();
+
+        const oppositeTransaction =
+          txType === TRANSACTION_TYPES.expense
+            ? dataMocks.buildSystemIncomeTransaction({
+                accountId: dataMocks.getUah2Account().id,
+              })
+            : dataMocks.buildSystemExpenseTransaction({
+                accountId: dataMocks.getUah2Account().id,
+              });
+
+        const wrapper = await mountComponent({ props: { transaction } });
+
+        await wrapper.find(transferFormTypeSelector).trigger("click");
+        await getTransactionsLinkingButton(wrapper).trigger("click");
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (wrapper.vm as any).linkedTransaction = oppositeTransaction;
+
+        await nextTick();
+
+        const txRecordBtn = await wrapper
+          .findAll("button")
+          .find((btn) =>
+            btn
+              .html()
+              .includes(
+                dataMocks.USER_CATEGORIES.find(
+                  (c) => c.id === oppositeTransaction.categoryId,
+                ).name,
+              ),
+          );
+
+        expect(txRecordBtn.exists()).toBe(true);
+
+        const amountField = wrapper.find<HTMLInputElement>(amountFieldSelector);
+        expect(amountField.element.value).toBe(String(transaction.amount));
+        expect(amountField.attributes().disabled).not.toBe(undefined);
+
+        expect(
+          await findSelectField(wrapper, commonAccountFieldLabel)
+            .find("button")
+            .attributes().title,
+        ).toBe(
+          dataMocks.ACCOUNTS.find((item) => item.id === transaction.accountId)
+            .name,
+        );
+
+        await submitUpdation(wrapper);
+
+        expect(linkTxSpy).toHaveBeenCalledWith({
+          ids: [[transaction.id, oppositeTransaction.id]],
+        });
+      },
+    );
+
+    test.each([[TRANSACTION_TYPES.expense], [TRANSACTION_TYPES.income]])(
+      "link %s external transaction with a system one",
+      async (txType) => {
+        const transaction =
+          txType === TRANSACTION_TYPES.expense
+            ? dataMocks.buildExternalExpenseTransaction()
+            : dataMocks.buildExternalIncomeTransaction();
+
+        const oppositeTransaction =
+          txType === TRANSACTION_TYPES.expense
+            ? dataMocks.buildSystemIncomeTransaction({
+                accountId: dataMocks.getUah2Account().id,
+              })
+            : dataMocks.buildSystemExpenseTransaction({
+                accountId: dataMocks.getUah2Account().id,
+              });
+
+        const wrapper = await mountComponent({ props: { transaction } });
+
+        await wrapper.find(transferFormTypeSelector).trigger("click");
+        await getTransactionsLinkingButton(wrapper).trigger("click");
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (wrapper.vm as any).linkedTransaction = oppositeTransaction;
+
+        await nextTick();
+
+        const txRecordBtn = await wrapper
+          .findAll("button")
+          .find((btn) =>
+            btn
+              .html()
+              .includes(
+                dataMocks.USER_CATEGORIES.find(
+                  (c) => c.id === oppositeTransaction.categoryId,
+                ).name,
+              ),
+          );
+
+        expect(txRecordBtn.exists()).toBe(true);
+
+        const amountField = wrapper.find<HTMLInputElement>(amountFieldSelector);
+        expect(amountField.element.value).toBe(String(transaction.amount));
+        expect(amountField.attributes().disabled).not.toBe(undefined);
+
+        expect(
+          await findSelectField(wrapper, commonAccountFieldLabel)
+            .find("button")
+            .attributes().title,
+        ).toBe(
+          dataMocks.ACCOUNTS.find((item) => item.id === transaction.accountId)
+            .name,
+        );
+
+        await submitUpdation(wrapper);
+
+        expect(linkTxSpy).toHaveBeenCalledWith({
+          ids: [[transaction.id, oppositeTransaction.id]],
+        });
+      },
+    );
+
+    test("form doesn't have unlinking option while still creating transfer tx", async () => {
+      const wrapper = await mountComponent({
+        props: {
+          transaction: dataMocks.buildSystemExpenseTransaction(),
+        },
+      });
+
+      await wrapper.find(transferFormTypeSelector).trigger("click");
+      const unlinkButton = await getTransactionsUnlinkingButton(wrapper);
+      expect(unlinkButton).toBe(undefined);
+    });
+  });
+
+  describe("transactions unlinking", () => {
+    let unlinkTxSpy = vi.spyOn(apiMethods, "unlinkTransactions");
+    const transaction = dataMocks.buildSystemExpenseTransaction();
+    const oppositeTransaction = {
+      ...dataMocks.buildSystemIncomeTransaction(),
+      id: faker.number.int({ min: transaction.id, max: 100000 }),
+      accountId: dataMocks.getUah2Account().id,
+    };
+
+    beforeEach(() => {
+      unlinkTxSpy = vi.spyOn(apiMethods, "unlinkTransactions");
+    });
+
+    test("unlink transaction", async () => {
+      const wrapper = await mountComponent({
+        props: { transaction, oppositeTransaction },
+      });
+
+      await wrapper.find(transferFormTypeSelector).trigger("click");
+      await getTransactionsUnlinkingButton(wrapper).trigger("click");
+
+      expect(unlinkTxSpy).toHaveBeenCalledWith({
+        transferIds: [transaction.transferId],
+      });
+    });
+    test("form doesn't have linking option when editing", async () => {
+      const wrapper = await mountComponent({
+        props: { transaction, oppositeTransaction },
+      });
+
+      const linkButton = await getTransactionsLinkingButton(wrapper);
+      expect(linkButton).toBe(undefined);
     });
   });
 });

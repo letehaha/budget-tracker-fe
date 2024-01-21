@@ -10,27 +10,33 @@ export const useTransferFormLogic = ({
   isTransferTx,
   isRecordExternal,
   transaction,
+  linkedTransaction,
 }: {
   form: Ref<UI_FORM_STRUCT>;
   isTransferTx: Ref<boolean>;
   isRecordExternal: Ref<boolean>;
   transaction: TransactionModel;
+  linkedTransaction: Ref<TransactionModel>;
 }) => {
   const { currenciesMap } = storeToRefs(useCurrenciesStore());
 
   const toAccount = computed(() => form.value.toAccount);
 
-  const isTargetFieldVisible = computed(() => isTransferTx.value);
+  const isTargetFieldVisible = computed(() => {
+    if (isTransferTx.value && linkedTransaction.value) {
+      return false;
+    }
+    return isTransferTx.value;
+  });
 
   const isTargetAmountFieldDisabled = computed(() => {
     if (isRecordExternal.value) {
       if (!isTransferTx.value) return true;
       if (transaction.transactionType === TRANSACTION_TYPES.income) return true;
     }
-
     // Means it's "Out of wallet"
     if (toAccount.value?.id === OUT_OF_WALLET_ACCOUNT_MOCK.id) return true;
-
+    if (isTransferTx.value && linkedTransaction.value) return true;
     return false;
   });
 
@@ -44,7 +50,7 @@ export const useTransferFormLogic = ({
       if (transaction.transactionType === TRANSACTION_TYPES.expense)
         return true;
     }
-
+    if (isTransferTx.value && linkedTransaction.value) return true;
     return false;
   });
   const toAccountFieldDisabled = computed(() => {
@@ -52,7 +58,7 @@ export const useTransferFormLogic = ({
       if (!isTransferTx.value) return true;
       if (transaction.transactionType === TRANSACTION_TYPES.income) return true;
     }
-
+    if (isTransferTx.value && linkedTransaction.value) return true;
     return false;
   });
 

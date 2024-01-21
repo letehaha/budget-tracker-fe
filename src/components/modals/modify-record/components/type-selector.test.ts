@@ -1,5 +1,8 @@
 import { mount } from "@vue/test-utils";
-import { INCOME_TRANSACTION, EXPENSE_TRANSACTION } from "@tests/mocks";
+import {
+  buildSystemIncomeTransaction,
+  buildSystemExpenseTransaction,
+} from "@tests/mocks";
 import { ACCOUNT_TYPES } from "shared-types";
 import TypeSelectorVue from "./type-selector.vue";
 import { getFormTypeFromTransaction } from "../helpers";
@@ -8,11 +11,17 @@ describe("Record TypeSelector component", () => {
   describe("editing form", () => {
     test.each([
       [
-        { ...EXPENSE_TRANSACTION, accountType: ACCOUNT_TYPES.monobank },
+        {
+          ...buildSystemExpenseTransaction(),
+          accountType: ACCOUNT_TYPES.monobank,
+        },
         "Income",
       ],
       [
-        { ...INCOME_TRANSACTION, accountType: ACCOUNT_TYPES.monobank },
+        {
+          ...buildSystemIncomeTransaction(),
+          accountType: ACCOUNT_TYPES.monobank,
+        },
         "Expense",
       ],
     ])(
@@ -41,24 +50,24 @@ describe("Record TypeSelector component", () => {
       },
     );
 
-    test.each([[EXPENSE_TRANSACTION], [INCOME_TRANSACTION]])(
-      "nothing is disabled when editing system transaction",
-      (transaction) => {
-        const wrapper = mount(TypeSelectorVue, {
-          props: {
-            selectedTransactionType: getFormTypeFromTransaction(transaction),
-            isFormCreation: false,
-            transaction,
-          },
-        });
+    test.each([
+      [buildSystemExpenseTransaction()],
+      [buildSystemIncomeTransaction()],
+    ])("nothing is disabled when editing system transaction", (transaction) => {
+      const wrapper = mount(TypeSelectorVue, {
+        props: {
+          selectedTransactionType: getFormTypeFromTransaction(transaction),
+          isFormCreation: false,
+          transaction,
+        },
+      });
 
-        const buttons = wrapper.findAll("button");
-        const disabledButtons = buttons.filter(
-          (item) => item.attributes().disabled !== undefined,
-        );
+      const buttons = wrapper.findAll("button");
+      const disabledButtons = buttons.filter(
+        (item) => item.attributes().disabled !== undefined,
+      );
 
-        expect(disabledButtons.length).toBe(0);
-      },
-    );
+      expect(disabledButtons.length).toBe(0);
+    });
   });
 });

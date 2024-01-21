@@ -15,6 +15,7 @@ import {
   TransactionModel,
   ACCOUNT_TYPES,
   TRANSACTION_TYPES,
+  TRANSACTION_TRANSFER_NATURE,
 } from "shared-types";
 import { MODAL_TYPES, useModalCenter } from "@/components/modal-center/index";
 import TransactionRecrod from "./transaction-record.vue";
@@ -30,17 +31,19 @@ const props = withDefaults(
 );
 
 const { addModal } = useModalCenter();
-const oppositeTransferTransaction = ref<TransactionModel | null>(null);
 
-const handlerRecordClick = (item) => {
-  const baseTx = item;
-  const oppositeTx = oppositeTransferTransaction.value;
-
+const handlerRecordClick = ([baseTx, oppositeTx]: [
+  baseTx: TransactionModel,
+  oppositeTx: TransactionModel,
+]) => {
   const isExternalTransfer =
     baseTx.accountType !== ACCOUNT_TYPES.system ||
     (oppositeTx && oppositeTx.accountType !== ACCOUNT_TYPES.system);
 
-  const modalOptions = {
+  const modalOptions: {
+    transaction: TransactionModel;
+    oppositeTransaction?: TransactionModel;
+  } = {
     transaction: baseTx,
     oppositeTransaction: undefined,
   };
@@ -50,7 +53,10 @@ const handlerRecordClick = (item) => {
 
     modalOptions.transaction = isBaseExternal ? baseTx : oppositeTx;
     modalOptions.oppositeTransaction = isBaseExternal ? oppositeTx : baseTx;
-  } else if (!isExternalTransfer && baseTx.isTransfer) {
+  } else if (
+    !isExternalTransfer &&
+    baseTx.transferNature === TRANSACTION_TRANSFER_NATURE.common_transfer
+  ) {
     const isValid = baseTx.transactionType === TRANSACTION_TYPES.expense;
 
     modalOptions.transaction = isValid ? baseTx : oppositeTx;

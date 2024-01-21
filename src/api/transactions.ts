@@ -82,3 +82,11 @@ export const editTransaction = async ({
 export const deleteTransaction = async (txId: number): Promise<void> => {
   await api.delete(`/transactions/${txId}`);
 };
+
+export const linkTransactions = async (
+  payload: endpointsTypes.LinkTransactionsBody,
+): Promise<void> => api.put("/transactions/link", payload);
+
+export const unlinkTransactions = async (
+  payload: endpointsTypes.UnlinkTransferTransactionsBody,
+): Promise<void> => api.put("/transactions/unlink", payload);

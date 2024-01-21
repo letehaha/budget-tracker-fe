@@ -14,7 +14,13 @@ import {
   useCategoriesStore,
   useCurrenciesStore,
 } from "@/stores";
-import { createTransaction, editTransaction, deleteTransaction } from "@/api";
+import {
+  createTransaction,
+  editTransaction,
+  deleteTransaction,
+  linkTransactions,
+  unlinkTransactions as apiUnlinkTransactions,
+} from "@/api";
 import {
   VERBOSE_PAYMENT_TYPES,
   OUT_OF_WALLET_ACCOUNT_MOCK,
@@ -42,16 +48,15 @@ defineOptions({
   name: "record-form",
 });
 
-const props = withDefaults(
-  defineProps<{
-    transaction?: TransactionModel;
-    oppositeTransaction?: TransactionModel;
-  }>(),
-  {
-    transaction: undefined,
-    oppositeTransaction: undefined,
-  },
-);
+export interface CreateRecordModalProps {
+  transaction?: TransactionModel;
+  oppositeTransaction?: TransactionModel;
+}
+
+const props = withDefaults(defineProps<CreateRecordModalProps>(), {
+  transaction: undefined,
+  oppositeTransaction: undefined,
+});
 
 const emit = defineEmits([MODAL_EVENTS.closeModal]);
 
@@ -80,18 +85,15 @@ const form = ref<UI_FORM_STRUCT>({
 });
 
 const linkedTransaction = ref<TransactionModel | null>(null);
-const isTransactionLength = ref(false);
 
 const openTransactionModalList = async () => {
-  const typeOfTransaction =
-    props.transaction.transactionType === TRANSACTION_TYPES.expense
-      ? TRANSACTION_TYPES.expense
-      : TRANSACTION_TYPES.income;
-
   addModal({
     type: MODAL_TYPES.recordList,
     data: {
-      transactionType: typeOfTransaction,
+      transactionType:
+        props.transaction.transactionType === TRANSACTION_TYPES.expense
+          ? TRANSACTION_TYPES.income
+          : TRANSACTION_TYPES.expense,
       onSelect(transaction) {
         linkedTransaction.value = transaction;
       },
@@ -124,12 +126,6 @@ watch(
   { immediate: true },
 );
 
-watch(linkedTransaction, (value) => {
-  if (value !== null) {
-    isTransactionLength.value = true;
-  }
-});
-
 const isLoading = ref(false);
 
 const currentTxType = computed(() => form.value.type);
@@ -148,6 +144,7 @@ const {
   isTransferTx,
   isRecordExternal,
   transaction: props.transaction,
+  linkedTransaction,
 });
 
 const isAmountFieldDisabled = computed(() => {
@@ -157,10 +154,9 @@ const isAmountFieldDisabled = computed(() => {
       return true;
     }
   }
-
   // Means it's "Out of wallet"
   if (form.value.account?.id === OUT_OF_WALLET_ACCOUNT_MOCK.id) return true;
-
+  if (isTransferTx.value && linkedTransaction.value) return true;
   return false;
 });
 
@@ -247,36 +243,42 @@ watch(
   },
 );
 
-watch(currentTxType, (value, prevValue) => {
-  if (props.transaction) {
-    const { amount, transactionType, accountId, transferNature } =
-      props.transaction;
+watch(
+  () => [currentTxType.value, linkedTransaction.value],
+  ([txType, isLinked], [prevTxType]) => {
+    if (props.transaction) {
+      const { amount, transactionType, accountId, transferNature } =
+        props.transaction;
 
-    if (value === FORM_TYPES.transfer) {
-      if (transactionType === TRANSACTION_TYPES.income) {
-        form.value.targetAmount = amount;
-        form.value.amount = null;
+      if (isLinked) {
+        form.value.amount = amount;
+        form.value.account = accountsRecord.value[accountId];
+      } else if (txType === FORM_TYPES.transfer) {
+        if (transactionType === TRANSACTION_TYPES.income) {
+          form.value.targetAmount = amount;
+          form.value.amount = null;
 
-        form.value.toAccount = accountsRecord.value[accountId];
-        form.value.account = null;
+          form.value.toAccount = accountsRecord.value[accountId];
+          form.value.account = null;
 
-        if (
-          transferNature === TRANSACTION_TRANSFER_NATURE.transfer_out_wallet
-        ) {
-          form.value.account = OUT_OF_WALLET_ACCOUNT_MOCK;
+          if (
+            transferNature === TRANSACTION_TRANSFER_NATURE.transfer_out_wallet
+          ) {
+            form.value.account = OUT_OF_WALLET_ACCOUNT_MOCK;
+          }
+        }
+      } else if (prevTxType === FORM_TYPES.transfer) {
+        if (transactionType === TRANSACTION_TYPES.income) {
+          form.value.amount = amount;
+          form.value.targetAmount = null;
+
+          form.value.account = accountsRecord.value[accountId];
+          form.value.toAccount = null;
         }
       }
-    } else if (prevValue === FORM_TYPES.transfer) {
-      if (transactionType === TRANSACTION_TYPES.income) {
-        form.value.amount = amount;
-        form.value.targetAmount = null;
-
-        form.value.account = accountsRecord.value[accountId];
-        form.value.toAccount = null;
-      }
     }
-  }
-});
+  },
+);
 
 const submit = async () => {
   isLoading.value = true;
@@ -290,6 +292,10 @@ const submit = async () => {
           isCurrenciesDifferent: isCurrenciesDifferent.value,
         }),
       );
+    } else if (linkedTransaction.value) {
+      await linkTransactions({
+        ids: [[props.transaction.id, linkedTransaction.value.id]],
+      });
     } else {
       await editTransaction(
         prepareTxUpdationParams({
@@ -309,6 +315,25 @@ const submit = async () => {
   } catch (e) {
     // eslint-disable-next-line no-console
     console.error(e);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+const unlinkTransactions = async () => {
+  try {
+    isLoading.value = true;
+
+    await apiUnlinkTransactions({
+      transferIds: [props.transaction.transferId],
+    });
+
+    emit(MODAL_EVENTS.closeModal);
+    // Reload all cached data in the app
+    queryClient.invalidateQueries({ queryKey: [VUE_QUERY_TX_CHANGE_QUERY] });
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error(err);
   } finally {
     isLoading.value = false;
   }
@@ -337,7 +362,6 @@ const deleteTransactionHandler = async () => {
 
 const deleteTransactionRecordHandler = () => {
   linkedTransaction.value = null;
-  isTransactionLength.value = false;
 };
 
 const closeModal = () => {
@@ -375,12 +399,7 @@ onMounted(() => {
       />
     </div>
     <div class="modify-record__form">
-      <form-row
-        v-if="
-          !linkedTransaction ||
-          linkedTransaction.transactionType !== TRANSACTION_TYPES.income
-        "
-      >
+      <form-row>
         <input-field
           v-model="form.amount"
           label="Amount"
@@ -399,7 +418,7 @@ onMounted(() => {
         v-model:account="form.account"
         v-model:to-account="form.toAccount"
         :is-transfer-transaction="isTransferTx"
-        :is-transaction-record="isTransactionLength"
+        :is-transaction-linking="!!linkedTransaction"
         :transaction-type="
           props.transaction?.transactionType || TRANSACTION_TYPES.expense
         "
@@ -438,7 +457,14 @@ onMounted(() => {
         </form-row>
       </template>
 
-      <template v-if="isTransferTx && !linkedTransaction && !isFormCreation">
+      <template
+        v-if="
+          isTransferTx &&
+          !linkedTransaction &&
+          !isFormCreation &&
+          !Boolean(oppositeTransaction)
+        "
+      >
         <form-row>
           <ui-button
             class="modify-record__action modify-record__action-link"
@@ -446,6 +472,18 @@ onMounted(() => {
             @click="openTransactionModalList"
           >
             Link existing transaction
+          </ui-button>
+        </form-row>
+      </template>
+
+      <template v-if="isTransferTx && oppositeTransaction">
+        <form-row>
+          <ui-button
+            class="modify-record__action modify-record__action-link"
+            :disabled="isLoading"
+            @click="unlinkTransactions"
+          >
+            Unlink transactions
           </ui-button>
         </form-row>
       </template>
@@ -458,6 +496,7 @@ onMounted(() => {
           />
           <ui-button
             class="modify-record__action modify-record__action-transaction"
+            aria-label="Cancel linking"
             @click="deleteTransactionRecordHandler"
           >
             Cancel
