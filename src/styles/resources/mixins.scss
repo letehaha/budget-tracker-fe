@@ -1,10 +1,12 @@
-@mixin placeholder ($color) {
-  &::-webkit-input-placeholder { /* Edge */
+@mixin placeholder($color) {
+  &::-webkit-input-placeholder {
+    /* Edge */
     color: $color;
     opacity: 0.4 !important;
   }
 
-  &:-ms-input-placeholder { /* Internet Explorer 10-11 */
+  &:-ms-input-placeholder {
+    /* Internet Explorer 10-11 */
     color: $color;
     opacity: 0.4 !important;
   }
@@ -14,12 +16,14 @@
     opacity: 0.4 !important;
   }
 }
-@mixin placeholder-custom ($color) {
-  &::-webkit-input-placeholder { /* Edge */
+@mixin placeholder-custom($color) {
+  &::-webkit-input-placeholder {
+    /* Edge */
     color: $color;
   }
 
-  &:-ms-input-placeholder { /* Internet Explorer 10-11 */
+  &:-ms-input-placeholder {
+    /* Internet Explorer 10-11 */
     color: $color;
   }
 
@@ -49,13 +53,12 @@
   }
 }
 @mixin respond-to-retina() {
-  @media
-  only screen and (-webkit-min-device-pixel-ratio: 2),
-  only screen and (   min--moz-device-pixel-ratio: 2),
-  only screen and (     -o-min-device-pixel-ratio: 2/1),
-  only screen and (        min-device-pixel-ratio: 2),
-  only screen and (                min-resolution: 192dpi),
-  only screen and (                min-resolution: 2dppx) {
+  @media only screen and (-webkit-min-device-pixel-ratio: 2),
+    only screen and (min--moz-device-pixel-ratio: 2),
+    only screen and (-o-min-device-pixel-ratio: 2/1),
+    only screen and (min-device-pixel-ratio: 2),
+    only screen and (min-resolution: 192dpi),
+    only screen and (min-resolution: 2dppx) {
     @content;
   }
 }

@@ -1,14 +1,15 @@
-import { AccountModel, CategoryModel } from 'shared-types';
-import type { VerbosePaymentType } from '@/common/const';
+import { AccountModel, CategoryModel, TransactionModel } from "shared-types";
+import type { VerbosePaymentType } from "@/common/const";
 
 export enum FORM_TYPES {
-  income = 'income',
-  expense = 'expense',
-  transfer = 'transfer',
+  income = "income",
+  expense = "expense",
+  transfer = "transfer",
 }
 
 export interface UI_FORM_STRUCT {
   amount: number;
+  transactionRecordItem: TransactionModel;
   account: AccountModel;
   toAccount?: AccountModel;
   category: CategoryModel;

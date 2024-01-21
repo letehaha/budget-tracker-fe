@@ -1,86 +1,89 @@
-import { TEST_USERS } from '@/cypress/fixtures/users';
-import { GENERIC_CURRENCY } from '@/cypress/fixtures/currencies';
+import { TEST_USERS } from "@/cypress/fixtures/users";
+import { GENERIC_CURRENCY } from "@/cypress/fixtures/currencies";
 
-describe('Welcome page', () => {
+describe("Welcome page", () => {
   // TODO:
   // it.todo('test signup');
   // it.todo('test that after setting base currency with no mock redirect works')
 
-  it('should redirect to welcome page if base currency isn\'t set', () => {
+  it("should redirect to welcome page if base currency isn't set", () => {
     cy.signInUser(TEST_USERS.noData);
 
     cy.location().should((location) => {
-      expect(location.pathname).to.eq('/welcome');
+      expect(location.pathname).to.eq("/welcome");
     });
 
-    cy.visit('/');
+    cy.visit("/");
 
     cy.location().should((location) => {
-      expect(location.pathname).to.eq('/welcome');
+      expect(location.pathname).to.eq("/welcome");
     });
 
-    cy.visit('/settings');
+    cy.visit("/settings");
 
     cy.location().should((location) => {
-      expect(location.pathname).to.eq('/welcome');
+      expect(location.pathname).to.eq("/welcome");
     });
   });
 
-  it('should not be accesible if base currency is already set', () => {
+  it("should not be accesible if base currency is already set", () => {
     cy.signInUser(TEST_USERS.noDataWithBaseCurrency);
 
     cy.location().should((location) => {
-      expect(location.pathname).to.eq('/dashboard');
+      expect(location.pathname).to.eq("/dashboard");
     });
 
-    cy.visit('/welcome');
+    cy.visit("/welcome");
 
     cy.location().should((location) => {
-      expect(location.pathname).to.eq('/dashboard');
+      expect(location.pathname).to.eq("/dashboard");
     });
   });
 
-  it('should redirect to dashboard once base currency is set', () => {
-    cy.intercept('POST', `${Cypress.env('baseApiUrl')}/**/user/currencies/base*`, {
-      statusCode: 200,
-      body: {
-        response: GENERIC_CURRENCY,
-        status: 'success',
+  it("should redirect to dashboard once base currency is set", () => {
+    cy.intercept(
+      "POST",
+      `${Cypress.env("baseApiUrl")}/**/user/currencies/base*`,
+      {
+        statusCode: 200,
+        body: {
+          response: GENERIC_CURRENCY,
+          status: "success",
+        },
       },
-    });
+    );
 
     cy.signInUser(TEST_USERS.noData);
 
     cy.location().should((location) => {
-      expect(location.pathname).to.eq('/welcome');
+      expect(location.pathname).to.eq("/welcome");
     });
 
-    cy
-      .get('.select-field__wrapper')
+    cy.get(".select-field__wrapper")
       .click()
       .get('[role="listbox"]')
       .children()
       .last()
       .click();
 
-    cy.get('button[type="button"]').contains('Confirm Currency').click();
+    cy.get('button[type="button"]').contains("Confirm Currency").click();
 
     cy.location().should((location) => {
-      expect(location.pathname).to.eq('/dashboard');
+      expect(location.pathname).to.eq("/dashboard");
     });
   });
 
-  it('should be possible to sign out from welcome page', () => {
+  it("should be possible to sign out from welcome page", () => {
     cy.signInUser(TEST_USERS.noData);
 
     cy.location().should((location) => {
-      expect(location.pathname).to.eq('/welcome');
+      expect(location.pathname).to.eq("/welcome");
     });
 
-    cy.get('button[type="button"]').contains('Logout').click();
+    cy.get('button[type="button"]').contains("Logout").click();
 
     cy.location().should((location) => {
-      expect(location.pathname).to.eq('/sign-in');
+      expect(location.pathname).to.eq("/sign-in");
     });
   });
 });

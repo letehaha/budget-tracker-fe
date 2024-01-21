@@ -1,3 +1,3 @@
 export enum EVENTS {
-  input = 'update:modelValue',
+  input = "update:modelValue",
 }

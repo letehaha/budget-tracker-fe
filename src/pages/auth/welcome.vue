@@ -1,20 +1,14 @@
 <template>
   <div class="welcome">
     <div class="welcome__header">
-      <ui-button
-        theme="primary"
-        class="sidebar__logout"
-        @click="logOutHandler"
-      >
+      <ui-button theme="primary" class="sidebar__logout" @click="logOutHandler">
         Logout
       </ui-button>
     </div>
 
     <div class="welcome__content">
       <div class="welcome__form">
-        <h1 class="welcome__title">
-          Select Base Currency
-        </h1>
+        <h1 class="welcome__title">Select Base Currency</h1>
 
         <form-wrapper :error="formError">
           <div class="welcome__currency-selector">
@@ -24,7 +18,7 @@
               placeholder="Loading..."
               label="Base Currency"
               with-search-field
-              :label-key="item => `${item.code} - ${item.currency}`"
+              :label-key="(item) => `${item.code} - ${item.currency}`"
             />
           </div>
           <p class="welcome__disclaimer">
@@ -46,19 +40,19 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch } from 'vue';
-import { useRouter } from 'vue-router';
-import { storeToRefs } from 'pinia';
+import { defineComponent, ref, watch } from "vue";
+import { useRouter } from "vue-router";
+import { storeToRefs } from "pinia";
 
-import { ROUTES_NAMES } from '@/routes/constants';
-import { useCurrenciesStore, useAuthStore } from '@/stores';
-import { getAllCurrencies } from '@/api/currencies';
-import { useNotificationCenter } from '@/components/notification-center';
+import { ROUTES_NAMES } from "@/routes/constants";
+import { useCurrenciesStore, useAuthStore } from "@/stores";
+import { getAllCurrencies } from "@/api/currencies";
+import { useNotificationCenter } from "@/components/notification-center";
 
-import FormWrapper from '@/components/fields/form-wrapper.vue';
-import SelectField from '@/components/fields/select-field.vue';
-import UiButton from '@/components/common/ui-button.vue';
-import { CurrencyModel } from 'shared-types';
+import FormWrapper from "@/components/fields/form-wrapper.vue";
+import SelectField from "@/components/fields/select-field.vue";
+import UiButton from "@/components/common/ui-button.vue";
+import { CurrencyModel } from "shared-types";
 
 export default defineComponent({
   components: {
@@ -86,7 +80,9 @@ export default defineComponent({
       router.push({ name: ROUTES_NAMES.home });
     };
 
-    watch(selectedCurrency, () => { formError.value = null; });
+    watch(selectedCurrency, () => {
+      formError.value = null;
+    });
 
     const loadCurrencies = async () => {
       try {
@@ -98,7 +94,7 @@ export default defineComponent({
           selectedCurrency.value = currencies.value[0];
         }
       } catch (e) {
-        addErrorNotification('Unexpected error. Cannot load currencies.');
+        addErrorNotification("Unexpected error. Cannot load currencies.");
       } finally {
         isCurrenciesLoading.value = false;
       }
@@ -115,7 +111,8 @@ export default defineComponent({
 
         forwardToDashboard();
       } catch {
-        formError.value = 'Unexpected error. Cannot set base currency. Please try later or contact support.';
+        formError.value =
+          "Unexpected error. Cannot set base currency. Please try later or contact support.";
       } finally {
         isSubmitting.value = false;
       }

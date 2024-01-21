@@ -4,17 +4,16 @@
   $hue: hue($color);
   $saturation: saturation($color);
   $lightness: lightness($color);
-  $tetrad: [
-    hsl($hue, $saturation, $lightness),
+  $tetrad:
+    [ hsl($hue, $saturation, $lightness),
     hsl($hue + 90 % 360, $saturation, $lightness),
     hsl($hue + 180 % 360, $saturation, $lightness),
-    hsl($hue + 270 % 360, $saturation, $lightness)
-  ];
+    hsl($hue + 270 % 360, $saturation, $lightness)];
 
   @return $tetrad;
 }
 
-@function multiply ($fore, $back) {
+@function multiply($fore, $back) {
   $red: red($back) * math.div(red($fore), 255);
   $green: green($back) * math.div(green($fore), 255);
   $blue: blue($back) * math.div(blue($fore), 255);
@@ -39,7 +38,7 @@
     A100: lighten(saturate(mix($dark, $color, 15%), 80%), 45.6%),
     A200: lighten(saturate(mix($dark, $color, 15%), 80%), 35.6%),
     A400: lighten(saturate(mix($dark, $color, 15%), 100%), 25.6%),
-    A700: lighten(saturate(mix($dark, $color, 15%), 100%), 20.5%)
+    A700: lighten(saturate(mix($dark, $color, 15%), 100%), 20.5%),
   );
 
   @return $palette;

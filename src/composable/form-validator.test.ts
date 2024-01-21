@@ -1,12 +1,12 @@
-import { ref, computed } from 'vue';
-import { email } from '@/js/helpers/validators';
-import { useFormValidation } from './form-validator';
+import { ref, computed } from "vue";
+import { email } from "@/js/helpers/validators";
+import { useFormValidation } from "./form-validator";
 
-describe('useFormValidation', () => {
-  const validEmail = 'test@example.com';
-  const invalidEmail = 'foo';
-  describe('isFormValid', () => {
-    it('returns true for the whole form when form is ref and is valid', () => {
+describe("useFormValidation", () => {
+  const validEmail = "test@example.com";
+  const invalidEmail = "foo";
+  describe("isFormValid", () => {
+    it("returns true for the whole form when form is ref and is valid", () => {
       const form = ref({
         email: validEmail,
       });
@@ -17,7 +17,7 @@ describe('useFormValidation', () => {
 
       expect(isFormValid()).toBe(true);
     });
-    it('returns true for the whole form when form is a raw object and is valid', () => {
+    it("returns true for the whole form when form is a raw object and is valid", () => {
       const form = {
         email: validEmail,
       };
@@ -28,7 +28,7 @@ describe('useFormValidation', () => {
 
       expect(isFormValid()).toBe(true);
     });
-    it('returns false if form is invalid', () => {
+    it("returns false if form is invalid", () => {
       const form = {
         email: invalidEmail,
       };
@@ -39,7 +39,7 @@ describe('useFormValidation', () => {
 
       expect(isFormValid()).toBe(false);
     });
-    it('returns true for the part of form if it is valid', () => {
+    it("returns true for the part of form if it is valid", () => {
       const form = {
         subform: {
           email: validEmail,
@@ -50,9 +50,9 @@ describe('useFormValidation', () => {
         { form: { subform: { email: { email } } } },
       );
 
-      expect(isFormValid('form.subform')).toBe(true);
+      expect(isFormValid("form.subform")).toBe(true);
     });
-    it('returns false for the part of form if it is invalid', () => {
+    it("returns false for the part of form if it is invalid", () => {
       const form = {
         subform: {
           email: invalidEmail,
@@ -63,19 +63,19 @@ describe('useFormValidation', () => {
         { form: { subform: { email: { email } } } },
       );
 
-      expect(isFormValid('form.subform')).toBe(false);
+      expect(isFormValid("form.subform")).toBe(false);
     });
-    it('returns true if there is no validation rules', () => {
+    it("returns true if there is no validation rules", () => {
       const form = {
         email: invalidEmail,
       };
       const { isFormValid } = useFormValidation({ form }, {});
 
-      expect(isFormValid('form')).toBe(true);
+      expect(isFormValid("form")).toBe(true);
     });
   });
-  describe('getFieldErrorMessage', () => {
-    it('returns nothing in case field is not invalid', () => {
+  describe("getFieldErrorMessage", () => {
+    it("returns nothing in case field is not invalid", () => {
       const form = ref({
         email: validEmail,
       });
@@ -84,11 +84,11 @@ describe('useFormValidation', () => {
         { form: { email: { email } } },
       );
 
-      touchField('form.email');
+      touchField("form.email");
 
-      expect(getFieldErrorMessage('form.email')).toBe('');
+      expect(getFieldErrorMessage("form.email")).toBe("");
     });
-    it('returns nothing in case form part is not invalid', () => {
+    it("returns nothing in case form part is not invalid", () => {
       const form = ref({
         email: validEmail,
       });
@@ -97,11 +97,11 @@ describe('useFormValidation', () => {
         { form: { email: { email } } },
       );
 
-      touchField('form.email');
+      touchField("form.email");
 
-      expect(getFieldErrorMessage('form')).toBe('');
+      expect(getFieldErrorMessage("form")).toBe("");
     });
-    it('returns nothing in case field is not dirty', () => {
+    it("returns nothing in case field is not dirty", () => {
       const form = ref({
         email: invalidEmail,
       });
@@ -110,9 +110,9 @@ describe('useFormValidation', () => {
         { form: { email: { email } } },
       );
 
-      expect(getFieldErrorMessage('form.email')).toBe('');
+      expect(getFieldErrorMessage("form.email")).toBe("");
     });
-    it('returns correct error message', () => {
+    it("returns correct error message", () => {
       const form = ref({
         email: invalidEmail,
       });
@@ -121,30 +121,32 @@ describe('useFormValidation', () => {
         { form: { email: { email } } },
       );
 
-      touchField('form.email');
+      touchField("form.email");
 
-      expect(getFieldErrorMessage('form.email')).not.toBe('');
+      expect(getFieldErrorMessage("form.email")).not.toBe("");
     });
-    it('uses default `email` error message if message for custom rule doesn\'t exist', () => {
+    it("uses default `email` error message if message for custom rule doesn't exist", () => {
       const form = ref({
         email: invalidEmail,
       });
-      const randomRule = 'randomRule';
+      const randomRule = "randomRule";
       const { getFieldErrorMessage, touchField } = useFormValidation(
         { form },
         { form: { email: { [randomRule]: email } } },
       );
 
-      touchField('form.email');
+      touchField("form.email");
 
-      expect(getFieldErrorMessage('form.email')).toBe('Value is not a valid email address');
+      expect(getFieldErrorMessage("form.email")).toBe(
+        "Value is not a valid email address",
+      );
     });
-    it('returns custom error message if it is passed and form is invalid', () => {
+    it("returns custom error message if it is passed and form is invalid", () => {
       const form = ref({
         email: invalidEmail,
       });
-      const randomRule = 'randomRule';
-      const randomRuleMessage = 'This random field is invalid';
+      const randomRule = "randomRule";
+      const randomRuleMessage = "This random field is invalid";
       const customValidationMessages = {
         [randomRule]: randomRuleMessage,
       };
@@ -155,16 +157,16 @@ describe('useFormValidation', () => {
         { customValidationMessages },
       );
 
-      touchField('form.email');
+      touchField("form.email");
 
-      expect(getFieldErrorMessage('form.email')).toBe(randomRuleMessage);
+      expect(getFieldErrorMessage("form.email")).toBe(randomRuleMessage);
     });
-    it('returns custom error message which has Ref format', () => {
+    it("returns custom error message which has Ref format", () => {
       const form = ref({
         email: invalidEmail,
       });
-      const randomRule = 'randomRule';
-      const randomRuleMessage = 'This random field is invalid';
+      const randomRule = "randomRule";
+      const randomRuleMessage = "This random field is invalid";
       const customValidationMessages = {
         [randomRule]: ref(randomRuleMessage),
       };
@@ -175,16 +177,16 @@ describe('useFormValidation', () => {
         { customValidationMessages },
       );
 
-      touchField('form.email');
+      touchField("form.email");
 
-      expect(getFieldErrorMessage('form.email')).toBe(randomRuleMessage);
+      expect(getFieldErrorMessage("form.email")).toBe(randomRuleMessage);
     });
-    it('returns custom error message which has ComputedRef format', () => {
+    it("returns custom error message which has ComputedRef format", () => {
       const form = ref({
         email: invalidEmail,
       });
-      const randomRule = 'randomRule';
-      const randomRuleMessage = 'This random field is invalid';
+      const randomRule = "randomRule";
+      const randomRuleMessage = "This random field is invalid";
       const customValidationMessages = {
         [randomRule]: computed(() => randomRuleMessage),
       };
@@ -195,9 +197,9 @@ describe('useFormValidation', () => {
         { customValidationMessages },
       );
 
-      touchField('form.email');
+      touchField("form.email");
 
-      expect(getFieldErrorMessage('form.email')).toBe(randomRuleMessage);
+      expect(getFieldErrorMessage("form.email")).toBe(randomRuleMessage);
     });
   });
 });

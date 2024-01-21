@@ -7,7 +7,7 @@ export function toLocalNumber(
   } = {},
 ): string {
   if (value !== undefined && value !== null) {
-    return Number(value).toLocaleString(options.locale ?? 'en-US', {
+    return Number(value).toLocaleString(options.locale ?? "en-US", {
       ...options,
       maximumFractionDigits: options.maximumFractionDigits ?? 5,
       minimumFractionDigits: options.minimumFractionDigits ?? 2,
@@ -21,18 +21,15 @@ export function toLocalFiatCurrency(
   options: Intl.NumberFormatOptions = {},
 ): string {
   if (value !== undefined && value !== null) {
-    return toLocalNumber(
-      value,
-      {
-        ...options,
-        minimumFractionDigits: options.minimumFractionDigits ?? 2,
-        maximumFractionDigits: options.maximumFractionDigits ?? 2,
-        currency: options.currency ?? 'USD',
-        currencyDisplay: options.currencyDisplay ?? 'symbol',
-        useGrouping: options.useGrouping ?? true,
-        style: 'currency',
-      },
-    );
+    return toLocalNumber(value, {
+      ...options,
+      minimumFractionDigits: options.minimumFractionDigits ?? 2,
+      maximumFractionDigits: options.maximumFractionDigits ?? 2,
+      currency: options.currency ?? "USD",
+      currencyDisplay: options.currencyDisplay ?? "symbol",
+      useGrouping: options.useGrouping ?? true,
+      style: "currency",
+    });
   }
   return String(value);
 }
@@ -58,7 +55,10 @@ export function toLocalFiatCurrency(
  */
 export function formatLargeNumber(
   value: number | string,
-  options: Pick<Intl.NumberFormatOptions, 'maximumFractionDigits' | 'minimumFractionDigits' | 'currency'> & {
+  options: Pick<
+    Intl.NumberFormatOptions,
+    "maximumFractionDigits" | "minimumFractionDigits" | "currency"
+  > & {
     millionSuffix?: string;
     thousandSuffix?: string;
     billionSuffix?: string;
@@ -71,9 +71,9 @@ export function formatLargeNumber(
   } = {},
 ) {
   const suffixes = {
-    millionSuffix: options.millionSuffix ?? 'M',
-    thousandSuffix: options.thousandSuffix ?? 'k',
-    billionSuffix: options.billionSuffix ?? 'B',
+    millionSuffix: options.millionSuffix ?? "M",
+    thousandSuffix: options.thousandSuffix ?? "k",
+    billionSuffix: options.billionSuffix ?? "B",
   };
 
   const thresholds = {
@@ -87,7 +87,7 @@ export function formatLargeNumber(
   // Truncating floating numbers
   if (Number.isNaN(localNumber)) localNumber = 0;
   let delimiter = 1;
-  let suffix = '';
+  let suffix = "";
   if (options.lamports) {
     localNumber /= 1_000_000_000;
   }
@@ -116,8 +116,10 @@ export function formatLargeNumber(
 
 export function formatUIAmount(
   value: number,
-  { currency }: {
-    currency?: Intl.NumberFormatOptions['currency'],
+  {
+    currency,
+  }: {
+    currency?: Intl.NumberFormatOptions["currency"];
   } = {},
 ): string {
   if (value === Infinity || Number.isNaN(value)) return String(value);

@@ -1,17 +1,17 @@
-import { ref, shallowRef } from 'vue';
-import { defineStore, storeToRefs } from 'pinia';
-import { useQueryClient } from '@tanstack/vue-query';
+import { ref, shallowRef } from "vue";
+import { defineStore, storeToRefs } from "pinia";
+import { useQueryClient } from "@tanstack/vue-query";
 
-import { getHoursInMilliseconds } from '@/js/helpers';
-import { VUE_QUERY_TX_CHANGE_QUERY } from '@/common/const';
+import { getHoursInMilliseconds } from "@/js/helpers";
+import { VUE_QUERY_TX_CHANGE_QUERY } from "@/common/const";
 
-import { useUserStore } from '@/stores/user';
-import { useAuthStore } from '@/stores/auth';
-import { useCurrenciesStore } from '@/stores/currencies';
-import { useBanksMonobankStore } from '@/stores/integrations/banks/monobank';
-import { useCategoriesStore } from '@/stores/categories/categories';
+import { useUserStore } from "@/stores/user";
+import { useAuthStore } from "@/stores/auth";
+import { useCurrenciesStore } from "@/stores/currencies";
+import { useBanksMonobankStore } from "@/stores/integrations/banks/monobank";
+import { useCategoriesStore } from "@/stores/categories/categories";
 
-export const useRootStore = defineStore('root', () => {
+export const useRootStore = defineStore("root", () => {
   const authStore = useAuthStore();
   const currenciesStore = useCurrenciesStore();
   const monobankStore = useBanksMonobankStore();
@@ -32,7 +32,7 @@ export const useRootStore = defineStore('root', () => {
 
   const checkSyncFinancialDataPossibility = () => {
     const latestAccountRefreshDate = new Date(
-      Number(localStorage.getItem('latest-account-refresh-date')),
+      Number(localStorage.getItem("latest-account-refresh-date")),
     ).getTime();
     const diff = new Date().getTime() - latestAccountRefreshDate;
 
@@ -53,7 +53,9 @@ export const useRootStore = defineStore('root', () => {
       await Promise.all([
         ...(categories.value.length ? [] : [categoriesStore.loadCategories()]),
         currenciesStore.loadCurrencies(),
-        ...(isBaseCurrencyExists.value ? [] : [currenciesStore.loadBaseCurrency()]),
+        ...(isBaseCurrencyExists.value
+          ? []
+          : [currenciesStore.loadBaseCurrency()]),
         monobankStore.loadUserData(),
       ]);
 
@@ -73,7 +75,9 @@ export const useRootStore = defineStore('root', () => {
           monobankStore.loadTransactionsForEnabledAccounts(),
         ]);
 
-        queryClient.invalidateQueries({ queryKey: [VUE_QUERY_TX_CHANGE_QUERY] });
+        queryClient.invalidateQueries({
+          queryKey: [VUE_QUERY_TX_CHANGE_QUERY],
+        });
       }
     } catch (e) {
       isFinancialDataSyncingError.value = e as Error;

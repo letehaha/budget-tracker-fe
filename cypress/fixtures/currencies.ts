@@ -7,10 +7,10 @@ export const GENERIC_CURRENCY = {
   isDefaultCurrency: true,
   currency: {
     id: 154,
-    currency: 'US Dollar',
+    currency: "US Dollar",
     digits: 2,
     number: 840,
-    code: 'USD',
+    code: "USD",
     isDisabled: false,
-  }
+  },
 };

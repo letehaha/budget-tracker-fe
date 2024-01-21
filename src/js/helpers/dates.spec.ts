@@ -1,7 +1,7 @@
-import { getHoursInMilliseconds } from './dates';
+import { getHoursInMilliseconds } from "./dates";
 
-describe('js/helpers/dates', () => {
-  describe('getHoursInMilliseconds', () => {
+describe("js/helpers/dates", () => {
+  describe("getHoursInMilliseconds", () => {
     test.each([
       [10, 36_000_000],
       [1.5, 5_400_000],
@@ -11,7 +11,7 @@ describe('js/helpers/dates', () => {
       [Infinity, Infinity],
       [-Infinity, -Infinity],
       [NaN, NaN],
-    ])('%s hours is %s millliseconds', (value, expected) => {
+    ])("%s hours is %s millliseconds", (value, expected) => {
       expect(getHoursInMilliseconds(value)).toBe(expected);
     });
   });

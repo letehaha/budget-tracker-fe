@@ -8,9 +8,7 @@
         :error-message="getFieldErrorMessage('form.name')"
       />
 
-      <ui-button @click="updateAccount">
-        Save
-      </ui-button>
+      <ui-button @click="updateAccount"> Save </ui-button>
     </div>
 
     <template v-if="account.type === ACCOUNT_TYPES.monobank">
@@ -23,56 +21,44 @@
     <label class="mono-account__visibility">
       Make this account visible on the Dashboard:
 
-      <input
-        v-model="form.isEnabled"
-        type="checkbox"
-      >
+      <input v-model="form.isEnabled" type="checkbox" />
     </label>
 
-    <LoadTransactions
-      class="mono-account__load-tx"
-      :account="account"
-    />
+    <LoadTransactions class="mono-account__load-tx" :account="account" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { debounce } from 'lodash-es';
-import { reactive, watchEffect, watch } from 'vue';
-import { ACCOUNT_TYPES, AccountModel } from 'shared-types';
-import { useAccountsStore } from '@/stores';
-import { useFormValidation } from '@/composable';
-import { required, minLength } from '@/js/helpers/validators';
+import { debounce } from "lodash-es";
+import { reactive, watchEffect, watch } from "vue";
+import { ACCOUNT_TYPES, AccountModel } from "shared-types";
+import { useAccountsStore } from "@/stores";
+import { useFormValidation } from "@/composable";
+import { required, minLength } from "@/js/helpers/validators";
 
 import {
   useNotificationCenter,
   NotificationType,
-} from '@/components/notification-center';
-import UiButton from '@/components/common/ui-button.vue';
-import InputField from '@/components/fields/input-field.vue';
+} from "@/components/notification-center";
+import UiButton from "@/components/common/ui-button.vue";
+import InputField from "@/components/fields/input-field.vue";
 
-import LoadLatestTransactions from './load-latest-transactions.vue';
-import LoadTransactions from './load-transactions.vue';
+import LoadLatestTransactions from "./load-latest-transactions.vue";
+import LoadTransactions from "./load-transactions.vue";
 
 const props = defineProps<{
   account: AccountModel;
 }>();
 
-const {
-  addNotification,
-  addSuccessNotification,
-  addErrorNotification,
-} = useNotificationCenter();
+const { addNotification, addSuccessNotification, addErrorNotification } =
+  useNotificationCenter();
 const accountsStore = useAccountsStore();
 
 const editingForm = reactive<{ name: string }>({
   name: props.account.name,
 });
 
-const {
-  isFormValid,
-  getFieldErrorMessage,
-} = useFormValidation(
+const { isFormValid, getFieldErrorMessage } = useFormValidation(
   { form: editingForm },
   {
     form: {
@@ -93,9 +79,9 @@ const updateAccount = async () => {
       name: editingForm.name,
     });
 
-    addSuccessNotification('Account data changed successfully');
+    addSuccessNotification("Account data changed successfully");
   } catch (e) {
-    addErrorNotification('An error occured while trying to update account');
+    addErrorNotification("An error occured while trying to update account");
   }
 };
 
@@ -104,30 +90,30 @@ const form = reactive({
   period: null,
 });
 
-const updateVisibility = async (
-  { id, isEnabled }:
-  { id: number; isEnabled: boolean },
-) => {
+const updateVisibility = async ({
+  id,
+  isEnabled,
+}: {
+  id: number;
+  isEnabled: boolean;
+}) => {
   try {
     await accountsStore.editAccount({ id, isEnabled });
 
     addNotification({
-      text: 'Updated successfully',
+      text: "Updated successfully",
       type: NotificationType.success,
     });
   } catch (err) {
     addNotification({
-      text: 'Unexpected error',
+      text: "Unexpected error",
       type: NotificationType.error,
     });
     form.isEnabled = !form.isEnabled;
   }
 };
 
-const debouncedUpdateMonoAccHandler = debounce(
-  updateVisibility,
-  1000,
-);
+const debouncedUpdateMonoAccHandler = debounce(updateVisibility, 1000);
 
 watchEffect(() => {
   if (props.account) {

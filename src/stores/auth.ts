@@ -1,13 +1,13 @@
-import { ref, Ref, watch } from 'vue';
-import { defineStore } from 'pinia';
-import { useQueryClient } from '@tanstack/vue-query';
-import { API_ERROR_CODES } from 'shared-types';
-import { authLogin, authRegister, api } from '@/api';
-import { useCategoriesStore, useCurrenciesStore, useUserStore } from '@/stores';
-import { ApiErrorResponseError, UnexpectedError } from '@/js/errors';
-import { resetAllDefinedStores } from './setup';
+import { ref, Ref, watch } from "vue";
+import { defineStore } from "pinia";
+import { useQueryClient } from "@tanstack/vue-query";
+import { API_ERROR_CODES } from "shared-types";
+import { authLogin, authRegister, api } from "@/api";
+import { useCategoriesStore, useCurrenciesStore, useUserStore } from "@/stores";
+import { ApiErrorResponseError, UnexpectedError } from "@/js/errors";
+import { resetAllDefinedStores } from "./setup";
 
-export const useAuthStore = defineStore('auth', () => {
+export const useAuthStore = defineStore("auth", () => {
   const userStore = useUserStore();
   const categoriesStore = useCategoriesStore();
   const currenciesStore = useCurrenciesStore();
@@ -16,10 +16,13 @@ export const useAuthStore = defineStore('auth', () => {
   const isLoggedIn = ref(false);
   const userToken: Ref<string | null> = ref(null);
 
-  const login = async (
-    { password, username }:
-    { password: string; username: string },
-  ) => {
+  const login = async ({
+    password,
+    username,
+  }: {
+    password: string;
+    username: string;
+  }) => {
     try {
       const result = await authLogin({
         password,
@@ -37,7 +40,7 @@ export const useAuthStore = defineStore('auth', () => {
 
         isLoggedIn.value = true;
         userToken.value = result.token;
-        localStorage.setItem('user-token', result.token);
+        localStorage.setItem("user-token", result.token);
       }
     } catch (e) {
       if (e instanceof ApiErrorResponseError) {
@@ -64,17 +67,20 @@ export const useAuthStore = defineStore('auth', () => {
     isLoggedIn.value = true;
   };
 
-  const signup = async (
-    { password, username }:
-    { password: string; username: string },
-  ) => {
+  const signup = async ({
+    password,
+    username,
+  }: {
+    password: string;
+    username: string;
+  }) => {
     await authRegister({ password, username });
     await login({ password, username });
   };
 
   const logout = () => {
-    api.setToken('');
-    localStorage.setItem('user-token', '');
+    api.setToken("");
+    localStorage.setItem("user-token", "");
 
     resetAllDefinedStores();
   };

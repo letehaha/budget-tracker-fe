@@ -1,4 +1,4 @@
-import { ApiForbiddenError, ApiBaseError } from '@/common/types';
+import { ApiForbiddenError, ApiBaseError } from "@/common/types";
 
 /**
  * Forbidden error.

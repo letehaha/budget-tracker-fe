@@ -1,33 +1,34 @@
-import { API_ERROR_CODES, API_RESPONSE_STATUS } from 'shared-types';
-import { useAuthStore } from '@/stores';
-import { router } from '@/routes';
-import { ApiBaseError } from '@/common/types';
+import { API_ERROR_CODES, API_RESPONSE_STATUS } from "shared-types";
+import { useAuthStore } from "@/stores";
+import { router } from "@/routes";
+import { ApiBaseError } from "@/common/types";
 import {
   useNotificationCenter,
   NotificationType,
-} from '@/components/notification-center';
+} from "@/components/notification-center";
 
-import * as errors from '@/js/errors';
+import * as errors from "@/js/errors";
 
-type HTTP_METHOD = 'PATCH' | 'POST' | 'PUT' | 'GET' | 'DELETE'
+type HTTP_METHOD = "PATCH" | "POST" | "PUT" | "GET" | "DELETE";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ApiValidResponse = any
+type ApiValidResponse = any;
 
 interface ApiRequestConfig {
-  method: HTTP_METHOD,
+  method: HTTP_METHOD;
   headers: {
-    'Content-Type': string;
+    "Content-Type": string;
     Authorization: string;
-  },
-  body?: string,
+  };
+  body?: string;
 }
 
 interface ApiCall {
   endpoint: string;
   method: HTTP_METHOD;
   query?: Record<string, string>;
-  data?: Record<string | number, unknown>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data?: Record<string | number, any>;
   options?: {
     needRaw?: boolean;
     withoutSignature?: boolean;
@@ -38,9 +39,9 @@ const API_HTTP = import.meta.env.VITE_APP_API_HTTP;
 const API_VER = import.meta.env.VITE_APP_API_VER;
 
 // eslint-disable-next-line no-console
-console.log('API_HTTP', API_HTTP);
+console.log("API_HTTP", API_HTTP);
 // eslint-disable-next-line no-console
-console.log('API_VER', API_VER);
+console.log("API_VER", API_VER);
 class ApiCaller {
   authToken: string | null;
 
@@ -56,20 +57,20 @@ class ApiCaller {
   }
 
   get<T = Record<string, unknown>>(
-    endpoint: ApiCall['endpoint'],
+    endpoint: ApiCall["endpoint"],
     query: T = {} as T,
-    options: ApiCall['options'] = {},
+    options: ApiCall["options"] = {},
   ) {
-    const validQuery: ApiCall['query'] = {};
+    const validQuery: ApiCall["query"] = {};
 
     for (const key in query) {
       if (query[key]) {
-        validQuery[key] = query[key]?.toString() ?? '';
+        validQuery[key] = query[key]?.toString() ?? "";
       }
     }
 
     return this._call({
-      method: 'GET',
+      method: "GET",
       endpoint,
       options,
       query: validQuery,
@@ -77,12 +78,12 @@ class ApiCaller {
   }
 
   post(
-    endpoint: ApiCall['endpoint'],
-    data: ApiCall['data'] = undefined,
-    options: ApiCall['options'] = {},
+    endpoint: ApiCall["endpoint"],
+    data: ApiCall["data"] = undefined,
+    options: ApiCall["options"] = {},
   ) {
     return this._call({
-      method: 'POST',
+      method: "POST",
       endpoint,
       options,
       data,
@@ -90,12 +91,12 @@ class ApiCaller {
   }
 
   patch(
-    endpoint: ApiCall['endpoint'],
-    data: ApiCall['data'] = undefined,
-    options: ApiCall['options'] = {},
+    endpoint: ApiCall["endpoint"],
+    data: ApiCall["data"] = undefined,
+    options: ApiCall["options"] = {},
   ) {
     return this._call({
-      method: 'PATCH',
+      method: "PATCH",
       endpoint,
       options,
       data,
@@ -103,12 +104,12 @@ class ApiCaller {
   }
 
   put(
-    endpoint: ApiCall['endpoint'],
-    data: ApiCall['data'] = undefined,
-    options: ApiCall['options'] = {},
+    endpoint: ApiCall["endpoint"],
+    data: ApiCall["data"] = undefined,
+    options: ApiCall["options"] = {},
   ) {
     return this._call({
-      method: 'PUT',
+      method: "PUT",
       endpoint,
       options,
       data,
@@ -116,12 +117,12 @@ class ApiCaller {
   }
 
   delete(
-    endpoint: ApiCall['endpoint'],
-    data: ApiCall['data'] = undefined,
-    options: ApiCall['options'] = {},
+    endpoint: ApiCall["endpoint"],
+    data: ApiCall["data"] = undefined,
+    options: ApiCall["options"] = {},
   ) {
     return this._call({
-      method: 'DELETE',
+      method: "DELETE",
       endpoint,
       options,
       data,
@@ -155,8 +156,8 @@ class ApiCaller {
     const config: ApiRequestConfig = {
       method: opts.method,
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: this.authToken || '',
+        "Content-Type": "application/json",
+        Authorization: this.authToken || "",
       },
     };
 
@@ -175,28 +176,31 @@ class ApiCaller {
     try {
       result = await fetch(url, config);
     } catch (e) {
-      if (e instanceof TypeError && e.toString().includes('Failed to fetch')) {
+      if (e instanceof TypeError && e.toString().includes("Failed to fetch")) {
         addNotification({
-          id: 'api-fetching-error',
-          text: 'Failed to fetch data from the server.',
+          id: "api-fetching-error",
+          text: "Failed to fetch data from the server.",
           type: NotificationType.error,
         });
 
-        throw new errors.NetworkError('Failed to fetch data from the server.');
+        throw new errors.NetworkError("Failed to fetch data from the server.");
       }
 
       addNotification({
-        id: 'unexpected-api-error',
-        text: 'Unexpected error.',
+        id: "unexpected-api-error",
+        text: "Unexpected error.",
         type: NotificationType.error,
       });
 
-      throw new errors.UnexpectedError('Unexpected error.', {});
+      throw new errors.UnexpectedError("Unexpected error.", {});
     }
 
-    const { status, response }: {
-      status: API_RESPONSE_STATUS,
-      response: ApiBaseError | ApiValidResponse,
+    const {
+      status,
+      response,
+    }: {
+      status: API_RESPONSE_STATUS;
+      response: ApiBaseError | ApiValidResponse;
     } = await result.json();
 
     if (status === API_RESPONSE_STATUS.success) {
@@ -206,32 +210,26 @@ class ApiCaller {
     if (status === API_RESPONSE_STATUS.error) {
       if (response.code === API_ERROR_CODES.unauthorized) {
         useAuthStore().logout();
-        router.push('/');
+        router.push("/");
 
         addNotification({
-          id: 'authorization-error',
-          text: 'Unauthorized. Please, login first.',
+          id: "authorization-error",
+          text: "Unauthorized. Please, login first.",
           type: NotificationType.error,
         });
 
-        throw new errors.AuthError(
-          response.statusText,
-          response,
-        );
+        throw new errors.AuthError(response.statusText, response);
       }
 
       if (response.code === API_ERROR_CODES.unexpected) {
         addNotification({
-          id: 'unexpected-error',
-          text: 'Unexpected error.',
+          id: "unexpected-error",
+          text: "Unexpected error.",
           type: NotificationType.error,
         });
       }
 
-      throw new errors.ApiErrorResponseError(
-        response.statusText,
-        response,
-      );
+      throw new errors.ApiErrorResponseError(response.statusText, response);
     }
 
     return undefined;

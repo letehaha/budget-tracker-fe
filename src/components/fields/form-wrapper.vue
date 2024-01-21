@@ -2,10 +2,7 @@
   <div class="form-wrapper">
     <template v-if="Array.isArray(error)">
       <div class="form-wrapper__error-list">
-        <template
-          v-for="item in error"
-          :key="item"
-        >
+        <template v-for="item in error" :key="item">
           <p class="form-wrapper__error">
             {{ item }}
           </p>

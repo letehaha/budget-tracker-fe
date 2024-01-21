@@ -9,19 +9,14 @@
     data-test="category-select-field"
     role="select"
   >
-    <FieldLabel
-      :label="label"
-      only-template
-    >
-      <div
-        class="category-select-field__wrapper"
-      >
+    <FieldLabel :label="label" only-template>
+      <div class="category-select-field__wrapper">
         <button
           v-bind="$attrs"
           ref="buttonRef"
           class="button-style-reset category-select-field__input"
           type="button"
-          :disabled="($attrs.disabled as boolean)"
+          :disabled="$attrs.disabled as boolean"
           aria-label="Select category"
           :title="selectedValue?.name || 'Select category'"
           @click="() => toggleDropdown()"
@@ -33,10 +28,7 @@
           {{ selectedValue?.name || placeholder }}
           <div class="category-select-field__arrow" />
         </button>
-        <div
-          v-if="isDropdownOpened"
-          class="category-select-field__dropdown"
-        >
+        <div v-if="isDropdownOpened" class="category-select-field__dropdown">
           <div
             ref="DOMList"
             class="category-select-field__dropdown-values"
@@ -65,7 +57,8 @@
                 type="button"
                 class="category-select-field__dropdown-item"
                 :class="{
-                  'category-select-field__dropdown-item--highlighed': selectedValue.id === topLevelCategory.id,
+                  'category-select-field__dropdown-item--highlighed':
+                    selectedValue.id === topLevelCategory.id,
                 }"
                 role="option"
                 :aria-selected="selectedValue.id === topLevelCategory.id"
@@ -87,15 +80,13 @@
             </template>
 
             <!-- Show list of categories -->
-            <template
-              v-for="item in filteredItems"
-              :key="item.id"
-            >
+            <template v-for="item in filteredItems" :key="item.id">
               <button
                 class="category-select-field__dropdown-item"
                 type="button"
                 :class="{
-                  'category-select-field__dropdown-item--highlighed': selectedValue.id === item.id,
+                  'category-select-field__dropdown-item--highlighed':
+                    selectedValue.id === item.id,
                 }"
                 role="option"
                 :aria-selected="selectedValue.id === item.id"
@@ -105,7 +96,9 @@
 
                 <span>{{ item.name }}</span>
 
-                <template v-if="item.subCategories.length && !searchQuery.length">
+                <template
+                  v-if="item.subCategories.length && !searchQuery.length"
+                >
                   <div class="category-select-field__dropdown-child-amount">
                     <span>({{ item.subCategories.length }})</span>
                     <ChevronRightIcon />
@@ -123,36 +116,37 @@
 </template>
 
 <script setup lang="ts">
-import {
-  ref, Ref, computed, watch, onBeforeUnmount,
-} from 'vue';
-import { CategoryModel } from 'shared-types';
-import { type FormattedCategory } from '@/common/types';
-import ChevronRightIcon from '@/assets/icons/chevron-right.svg?component';
-import ChevronLeftIcon from '@/assets/icons/chevron-left.svg?component';
+import { ref, Ref, computed, watch, onBeforeUnmount } from "vue";
+import { CategoryModel } from "shared-types";
+import { type FormattedCategory } from "@/common/types";
+import ChevronRightIcon from "@/assets/icons/chevron-right.svg?component";
+import ChevronLeftIcon from "@/assets/icons/chevron-left.svg?component";
 
-import InputField from '@/components/fields/input-field.vue';
-import CategoryCircle from '@/components/common/category-circle.vue';
-import FieldError from './components/field-error.vue';
-import FieldLabel from './components/field-label.vue';
+import InputField from "@/components/fields/input-field.vue";
+import CategoryCircle from "@/components/common/category-circle.vue";
+import FieldError from "./components/field-error.vue";
+import FieldLabel from "./components/field-label.vue";
 
-const props = withDefaults(defineProps<{
-  label?: string;
-  modelValue: CategoryModel | null;
-  labelKey?: string |((value: FormattedCategory) => string);
-  values: FormattedCategory[];
-  placeholder?: string;
-  errorMessage?: string;
-}>(), {
-  label: undefined,
-  modelValue: undefined,
-  placeholder: undefined,
-  errorMessage: undefined,
-  labelKey: 'label',
-});
+const props = withDefaults(
+  defineProps<{
+    label?: string;
+    modelValue: CategoryModel | null;
+    labelKey?: string | ((value: FormattedCategory) => string);
+    values: FormattedCategory[];
+    placeholder?: string;
+    errorMessage?: string;
+  }>(),
+  {
+    label: undefined,
+    modelValue: undefined,
+    placeholder: undefined,
+    errorMessage: undefined,
+    labelKey: "label",
+  },
+);
 
 const emit = defineEmits<{
-  'update:model-value': [value: FormattedCategory]
+  "update:model-value": [value: FormattedCategory];
 }>();
 const selectedValue = ref(props.modelValue || props.values[0]);
 const buttonRef = ref<HTMLButtonElement>(null);
@@ -162,16 +156,16 @@ const levelValues = ref(props.values);
 const rootCategories = ref(props.values);
 
 const DOMList = ref<HTMLDivElement | null>(null);
-const searchQuery = ref<string>('');
+const searchQuery = ref<string>("");
 
 const isDropdownOpened = ref(false);
 const previousLevelsIndices: Ref<number[]> = ref([]);
 
 const topLevelCategory = computed<FormattedCategory>(() => {
   /**
-    * If we are in a category's subcategories list, finds the subcategories
-    * parent category to show it in the UI
-  */
+   * If we are in a category's subcategories list, finds the subcategories
+   * parent category to show it in the UI
+   */
   let category;
   for (let i = 0; i < previousLevelsIndices.value.length; i++) {
     if (i === 0) {
@@ -191,7 +185,10 @@ const toggleDropdown = (state?: boolean) => {
   }
 };
 
-const filterCategories = (categories: FormattedCategory[], query: string): FormattedCategory[] => {
+const filterCategories = (
+  categories: FormattedCategory[],
+  query: string,
+): FormattedCategory[] => {
   let result: FormattedCategory[] = [];
   const lowerCaseQuery = query.toLowerCase();
 
@@ -201,7 +198,10 @@ const filterCategories = (categories: FormattedCategory[], query: string): Forma
     }
 
     if (category.subCategories?.length > 0 && searchQuery.value.length) {
-      const filteredSubCategories = filterCategories(category.subCategories, query);
+      const filteredSubCategories = filterCategories(
+        category.subCategories,
+        query,
+      );
       result = [...result, ...filteredSubCategories];
     }
   }
@@ -223,38 +223,42 @@ const definePreviousLevelsIndices = (selectedItem: FormattedCategory) => {
   // push to `previousLevelsIndices` index of selecteItem so we will have
   // history of parent categories with which we can move through the history
   // of previous categories
-  previousLevelsIndices.value.push(levelValues.value.findIndex(
-    item => item.id === selectedItem.id,
-  ));
+  previousLevelsIndices.value.push(
+    levelValues.value.findIndex((item) => item.id === selectedItem.id),
+  );
 };
 
 const selectItem = (item: FormattedCategory, ignorePreselect = false) => {
   /**
-    * If item has child categories, it goes level deeper. `ignorePreselect`
-    * will disable diving level deeper and will select category even if it
-    * has child categories
-  */
-  if (item.subCategories.length && !ignorePreselect && !searchQuery.value.length) {
+   * If item has child categories, it goes level deeper. `ignorePreselect`
+   * will disable diving level deeper and will select category even if it
+   * has child categories
+   */
+  if (
+    item.subCategories.length &&
+    !ignorePreselect &&
+    !searchQuery.value.length
+  ) {
     definePreviousLevelsIndices(item);
     levelValues.value = item.subCategories;
 
-    DOMList.value?.scrollTo({ top: 0, behavior: 'smooth' });
+    DOMList.value?.scrollTo({ top: 0, behavior: "smooth" });
   } else {
     selectedValue.value = item;
-    emit('update:model-value', item);
+    emit("update:model-value", item);
     toggleDropdown(false);
   }
-  searchQuery.value = '';
+  searchQuery.value = "";
 };
 
 const backLevelUp = () => {
   /**
-    * Uses `previousLevelsIndices` to navigate through the history and make
-    * previous level as the current one.
-    *
-    * At the end clears `previousLevelsIndices` by removing the last element
-    * in the history.
-  */
+   * Uses `previousLevelsIndices` to navigate through the history and make
+   * previous level as the current one.
+   *
+   * At the end clears `previousLevelsIndices` by removing the last element
+   * in the history.
+   */
   let level: FormattedCategory[] = [];
   for (let i = 0; i < previousLevelsIndices.value.length; i++) {
     if (i === 0) {
@@ -265,24 +269,24 @@ const backLevelUp = () => {
   }
   previousLevelsIndices.value.length -= 1;
   levelValues.value = level;
-  searchQuery.value = '';
+  searchQuery.value = "";
 };
 
 const handleEscPress = (event: KeyboardEvent) => {
-  if (event.key === 'Escape') {
+  if (event.key === "Escape") {
     toggleDropdown(false);
   }
 };
 
 watch(isDropdownOpened, (value) => {
   if (value) {
-    document.addEventListener('keydown', handleEscPress);
+    document.addEventListener("keydown", handleEscPress);
   } else {
-    document.removeEventListener('keydown', handleEscPress);
+    document.removeEventListener("keydown", handleEscPress);
   }
 });
 onBeforeUnmount(() => {
-  document.removeEventListener('keydown', handleEscPress);
+  document.removeEventListener("keydown", handleEscPress);
 });
 </script>
 
@@ -397,7 +401,7 @@ onBeforeUnmount(() => {
   }
 
   svg {
-    transition: .3s ease-out;
+    transition: 0.3s ease-out;
 
     width: 12px;
   }
@@ -411,7 +415,7 @@ onBeforeUnmount(() => {
 
   &:after,
   &:before {
-    content: '';
+    content: "";
     position: absolute;
     width: 8px;
     height: 2px;
@@ -429,8 +433,12 @@ onBeforeUnmount(() => {
   }
 
   .category-select-field--active & {
-    &:before { transform: rotate(45deg); }
-    &:after { transform: rotate(-45deg); }
+    &:before {
+      transform: rotate(45deg);
+    }
+    &:after {
+      transform: rotate(-45deg);
+    }
   }
 }
 </style>

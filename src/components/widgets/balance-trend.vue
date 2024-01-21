@@ -1,11 +1,10 @@
 <template>
-  <WidgetWrapper
-    class="balance-trend-widget"
-    title="Balance trend"
-  >
+  <WidgetWrapper class="balance-trend-widget" title="Balance trend">
     <div class="balance-trend-widget__details">
       <div class="balance-trend-widget__details-titles">
-        <div class="balance-trend-widget__details-title balance-trend-widget__details-title--today">
+        <div
+          class="balance-trend-widget__details-title balance-trend-widget__details-title--today"
+        >
           Today
         </div>
         <div class="balance-trend-widget__details-title">
@@ -37,21 +36,26 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, watch } from 'vue';
-import { useQuery } from '@tanstack/vue-query';
-import { Chart as Highcharts } from 'highcharts-vue';
+import { ref, computed, watch } from "vue";
+import { useQuery } from "@tanstack/vue-query";
+import { Chart as Highcharts } from "highcharts-vue";
 import {
-  getDaysInMonth, addDays, startOfMonth, endOfMonth, startOfDay, subMonths,
-} from 'date-fns';
-import { storeToRefs } from 'pinia';
-import { getTotalBalance } from '@/api';
-import { VUE_QUERY_CACHE_KEYS } from '@/common/const';
-import { calculatePercentageDifference, formatLargeNumber } from '@/js/helpers';
-import { useFormatCurrency, useHighcharts } from '@/composable';
-import { loadBalanceTrendData } from '@/services';
+  getDaysInMonth,
+  addDays,
+  startOfMonth,
+  endOfMonth,
+  startOfDay,
+  subMonths,
+} from "date-fns";
+import { storeToRefs } from "pinia";
+import { getTotalBalance } from "@/api";
+import { VUE_QUERY_CACHE_KEYS } from "@/common/const";
+import { calculatePercentageDifference, formatLargeNumber } from "@/js/helpers";
+import { useFormatCurrency, useHighcharts } from "@/composable";
+import { loadBalanceTrendData } from "@/services";
 
-import { useCurrenciesStore } from '@/stores';
-import WidgetWrapper from './components/widget-wrapper.vue';
+import { useCurrenciesStore } from "@/stores";
+import WidgetWrapper from "./components/widget-wrapper.vue";
 
 // Calculate it manually so shart will always have first and last ticks (dates)
 function generateDateSteps(datesToShow = 5, date = new Date()) {
@@ -69,17 +73,20 @@ function generateDateSteps(datesToShow = 5, date = new Date()) {
 }
 
 defineOptions({
-  name: 'balance-trend-widget',
+  name: "balance-trend-widget",
 });
 
-const props = withDefaults(defineProps<{
-  selectedPeriod?: { from: Date; to: Date };
-}>(), {
-  selectedPeriod: () => ({
-    from: startOfMonth(new Date()),
-    to: new Date(),
-  }),
-});
+const props = withDefaults(
+  defineProps<{
+    selectedPeriod?: { from: Date; to: Date };
+  }>(),
+  {
+    selectedPeriod: () => ({
+      from: startOfMonth(new Date()),
+      to: new Date(),
+    }),
+  },
+);
 
 const periodFrom = ref(new Date().getTime());
 const currentChartWidth = ref(0);
@@ -87,9 +94,12 @@ const { formatBaseCurrency } = useFormatCurrency();
 const { baseCurrency } = storeToRefs(useCurrenciesStore());
 const { buildAreaChartConfig } = useHighcharts();
 
-watch(() => props.selectedPeriod.from, () => {
-  periodFrom.value = props.selectedPeriod.from.getTime();
-});
+watch(
+  () => props.selectedPeriod.from,
+  () => {
+    periodFrom.value = props.selectedPeriod.from.getTime();
+  },
+);
 
 const { data: balanceHistory } = useQuery({
   queryKey: [...VUE_QUERY_CACHE_KEYS.widgetBalanceTrend, periodFrom],
@@ -104,9 +114,10 @@ const { data: todayBalance } = useQuery({
 });
 const { data: previousBalance } = useQuery({
   queryKey: [...VUE_QUERY_CACHE_KEYS.widgetBalancePreviousBalance, periodFrom],
-  queryFn: () => getTotalBalance({
-    date: endOfMonth(subMonths(props.selectedPeriod.to, 1)),
-  }),
+  queryFn: () =>
+    getTotalBalance({
+      date: endOfMonth(subMonths(props.selectedPeriod.to, 1)),
+    }),
   placeholderData: 0,
   staleTime: Infinity,
 });
@@ -138,7 +149,7 @@ const chartOptions = computed(() => {
     },
     series: [
       {
-        type: 'area',
+        type: "area",
         showInLegend: false,
         data: [
           ...(balanceHistory.value || []).map((point) => [
@@ -147,7 +158,10 @@ const chartOptions = computed(() => {
           ]),
           // fill remaining days with `null` so chart will be rendered for all
           // days in the month
-          ...Array(getDaysInMonth(props.selectedPeriod.to) - props.selectedPeriod.to.getDate())
+          ...Array(
+            getDaysInMonth(props.selectedPeriod.to) -
+              props.selectedPeriod.to.getDate(),
+          )
             .fill([])
             .map((_, i) => [
               addDays(props.selectedPeriod.to, i + 1).getTime(),
@@ -163,10 +177,9 @@ const chartOptions = computed(() => {
 const balancesDiff = computed<number>(() => {
   if (!todayBalance.value || !previousBalance.value) return 0;
 
-  const percentage = Number(calculatePercentageDifference(
-    todayBalance.value,
-    previousBalance.value,
-  )).toFixed(2);
+  const percentage = Number(
+    calculatePercentageDifference(todayBalance.value, previousBalance.value),
+  ).toFixed(2);
   return Number(percentage);
 });
 
@@ -200,9 +213,9 @@ const onChartResize = (entries: ResizeObserverEntry[]) => {
   font-weight: 700;
 }
 .balance-trend-widget__diff--positive {
-  color: var(--app-success)
+  color: var(--app-success);
 }
 .balance-trend-widget__diff--negative {
-  color: var(--app-error)
+  color: var(--app-error);
 }
 </style>

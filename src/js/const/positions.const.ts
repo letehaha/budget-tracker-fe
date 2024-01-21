@@ -1,4 +1,4 @@
 export const POSITIONS = Object.freeze({
-  bottom: 'bottom',
-  top: 'top',
+  bottom: "bottom",
+  top: "top",
 });

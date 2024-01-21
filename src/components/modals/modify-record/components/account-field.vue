@@ -1,6 +1,6 @@
 <template>
   <template v-if="accounts.length || account">
-    <template v-if="isTransferTransaction">
+    <template v-if="isTransferTransaction && !isTransactionLinking">
       <form-row>
         <select-field
           label="From account"
@@ -43,11 +43,7 @@
   </template>
   <template v-else>
     <form-row>
-      <input-field
-        model-value="No account exists"
-        label="Account"
-        readonly
-      >
+      <input-field model-value="No account exists" label="Account" readonly>
         <template #label-right>
           <div
             class="account-field__create-account"
@@ -62,43 +58,53 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router';
-import { AccountModel } from 'shared-types';
+import { useRouter } from "vue-router";
+import { AccountModel, TRANSACTION_TYPES } from "shared-types";
 
-import { ROUTES_NAMES } from '@/routes';
+import { ROUTES_NAMES } from "@/routes";
 
-import SelectField from '@/components/fields/select-field.vue';
-import InputField from '@/components/fields/input-field.vue';
+import SelectField from "@/components/fields/select-field.vue";
+import InputField from "@/components/fields/input-field.vue";
 
-import FormRow from './form-row.vue';
+import FormRow from "./form-row.vue";
 
-withDefaults(defineProps<{
-  account?: AccountModel | null;
-  toAccount?: AccountModel | null;
-  isTransferTransaction: boolean;
-  accounts: AccountModel[];
-  filteredAccounts: AccountModel[];
-  fromAccountDisabled?: boolean;
-  toAccountDisabled?: boolean;
-}>(), {
-  account: null,
-  toAccount: null,
-  fromAccountDisabled: false,
-  toAccountDisabled: false,
-});
+withDefaults(
+  defineProps<{
+    account?: AccountModel | null;
+    toAccount?: AccountModel | null;
+    isTransferTransaction: boolean;
+    accounts: AccountModel[];
+    filteredAccounts: AccountModel[];
+    isTransactionLinking: boolean;
+    transactionType: TRANSACTION_TYPES;
+    fromAccountDisabled?: boolean;
+    toAccountDisabled?: boolean;
+  }>(),
+  {
+    account: null,
+    toAccount: null,
+    isTransactionLinking: false,
+    fromAccountDisabled: false,
+    toAccountDisabled: false,
+  },
+);
 
-const emit = defineEmits(['close-modal', 'update:account', 'update:to-account']);
+const emit = defineEmits([
+  "close-modal",
+  "update:account",
+  "update:to-account",
+]);
 
 const router = useRouter();
 
 const redirectToCreateAccountPage = async () => {
   await router.push({ name: ROUTES_NAMES.createAccount });
 
-  emit('close-modal');
+  emit("close-modal");
 };
 
 const updateFormAccount = (account: AccountModel) => {
-  emit('update:account', account);
+  emit("update:account", account);
 };
 </script>
 

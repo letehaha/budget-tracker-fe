@@ -4,17 +4,18 @@
     name="notifications-center"
     tag="div"
   >
-    <template
-      v-for="item in notifications"
-      :key="item.id"
-    >
+    <template v-for="item in notifications" :key="item.id">
       <div
         class="notifications-center__item"
         :class="{
-          'notifications-center__item--warning': item.type === NotificationType.warning,
-          'notifications-center__item--error': item.type === NotificationType.error,
-          'notifications-center__item--info': item.type === NotificationType.info,
-          'notifications-center__item--success': item.type === NotificationType.success,
+          'notifications-center__item--warning':
+            item.type === NotificationType.warning,
+          'notifications-center__item--error':
+            item.type === NotificationType.error,
+          'notifications-center__item--info':
+            item.type === NotificationType.info,
+          'notifications-center__item--success':
+            item.type === NotificationType.success,
         }"
       >
         <template v-if="item.type === NotificationType.warning">
@@ -42,12 +43,12 @@
 </template>
 
 <script setup lang="ts">
-import WarningIcon from '@/assets/icons/warning.svg?component';
-import ErrorIcon from '@/assets/icons/error.svg?component';
-import SuccessIcon from '@/assets/icons/success.svg?component';
-import XmarkIcon from '@/assets/icons/xmark.svg?component';
+import WarningIcon from "@/assets/icons/warning.svg?component";
+import ErrorIcon from "@/assets/icons/error.svg?component";
+import SuccessIcon from "@/assets/icons/success.svg?component";
+import XmarkIcon from "@/assets/icons/xmark.svg?component";
 
-import { useNotificationCenter, NotificationType } from './index';
+import { useNotificationCenter, NotificationType } from "./index";
 
 const { notifications, removeNotification } = useNotificationCenter();
 </script>
@@ -111,7 +112,7 @@ const { notifications, removeNotification } = useNotificationCenter();
   svg {
     width: 14px;
 
-    transition: .2s ease-out;
+    transition: 0.2s ease-out;
   }
 }
 

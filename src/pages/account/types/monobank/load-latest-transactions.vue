@@ -3,23 +3,21 @@
     :disabled="isRefreshDisabled"
     @click="loadLatestTransactionsHandler"
   >
-    {{ isRefreshDisabled ? 'Loading...' : 'Load latest transactions' }}
+    {{ isRefreshDisabled ? "Loading..." : "Load latest transactions" }}
   </ui-button>
 </template>
 
 <script lang="ts">
-import {
-  defineComponent, computed, ref, watchEffect, PropType,
-} from 'vue';
-import { API_ERROR_CODES, AccountModel } from 'shared-types';
-import { useBanksMonobankStore } from '@/stores';
-import { useLocalStorage } from '@/composable';
+import { defineComponent, computed, ref, watchEffect, PropType } from "vue";
+import { API_ERROR_CODES, AccountModel } from "shared-types";
+import { useBanksMonobankStore } from "@/stores";
+import { useLocalStorage } from "@/composable";
 
 import {
   useNotificationCenter,
   NotificationType,
-} from '@/components/notification-center';
-import UiButton from '@/components/common/ui-button.vue';
+} from "@/components/notification-center";
+import UiButton from "@/components/common/ui-button.vue";
 
 export default defineComponent({
   components: {
@@ -38,7 +36,9 @@ export default defineComponent({
 
     const isRefreshDisabled = ref(false);
 
-    const accountLSKey = computed(() => `monobank-${props.account.externalId}-txs-loading-end`);
+    const accountLSKey = computed(
+      () => `monobank-${props.account.externalId}-txs-loading-end`,
+    );
 
     const setLoadingTimer = (wait: number) => {
       isRefreshDisabled.value = true;
@@ -76,7 +76,7 @@ export default defineComponent({
         addNotification({
           text: isUserNeedToWait
             ? `Loading started. Estimated loading time is ${response.minutesToFinish} minute(s).`
-            : 'Loaded successfully',
+            : "Loaded successfully",
           type: NotificationType.success,
         });
       } catch (e) {

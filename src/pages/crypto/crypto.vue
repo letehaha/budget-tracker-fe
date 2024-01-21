@@ -1,12 +1,8 @@
 <template>
   <div class="crypto">
-    <h1 class="crypto__title">
-      Crypto
-    </h1>
+    <h1 class="crypto__title">Crypto</h1>
 
-    <template v-if="isDataLoading">
-      LOADING...
-    </template>
+    <template v-if="isDataLoading"> LOADING... </template>
 
     <template v-else>
       <template v-if="isAPIKeysDefined">
@@ -21,17 +17,13 @@
 </template>
 
 <script lang="ts">
-import {
-  defineComponent,
-  ref,
-  onBeforeMount,
-} from 'vue';
-import { API_ERROR_CODES } from 'shared-types';
-import { formatFiat } from '@/js/helpers';
-import { ApiErrorResponseError } from '@/js/errors';
-import { useCryptoBinanceStore } from '@/stores';
-import GeneralList from './components/general-list.vue';
-import APIKeysForm from './components/api-keys-form.vue';
+import { defineComponent, ref, onBeforeMount } from "vue";
+import { API_ERROR_CODES } from "shared-types";
+import { formatFiat } from "@/js/helpers";
+import { ApiErrorResponseError } from "@/js/errors";
+import { useCryptoBinanceStore } from "@/stores";
+import GeneralList from "./components/general-list.vue";
+import APIKeysForm from "./components/api-keys-form.vue";
 
 export default defineComponent({
   components: {

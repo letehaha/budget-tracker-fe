@@ -3,11 +3,8 @@
     <accounts-list class="dashboard-page__accounts" />
 
     <div class="dashboard-page__period-selector">
-      <button
-        type="button"
-        @click="selectPrevPeriod"
-      >
-        {{ '<' }}
+      <button type="button" @click="selectPrevPeriod">
+        {{ "<" }}
       </button>
       <div class="dashboard-page__period">
         {{ periodSelectorText }}
@@ -17,7 +14,7 @@
         :disabled="isCurrentPeriodSameMonth"
         @click="selectNextPeriod"
       >
-        {{ '>' }}
+        {{ ">" }}
       </button>
     </div>
     <div class="dashboard-page__info">
@@ -38,18 +35,30 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, defineAsyncComponent, ref } from 'vue';
+import { computed, defineAsyncComponent, ref } from "vue";
 import {
-  subDays, isSameMonth, addMonths, startOfMonth, endOfMonth, subMonths, format,
-} from 'date-fns';
-import AccountsList from './accounts-list/accounts-list.vue';
+  subDays,
+  isSameMonth,
+  addMonths,
+  startOfMonth,
+  endOfMonth,
+  subMonths,
+  format,
+} from "date-fns";
+import AccountsList from "./accounts-list/accounts-list.vue";
 
-const BalanceTrendWidget = defineAsyncComponent(() => import('@/components/widgets/balance-trend.vue'));
-const LatestRecordsWidget = defineAsyncComponent(() => import('@/components/widgets/latest-records.vue'));
-const SpendingCategoriesWidget = defineAsyncComponent(() => import('@/components/widgets/expenses-structure.vue'));
+const BalanceTrendWidget = defineAsyncComponent(
+  () => import("@/components/widgets/balance-trend.vue"),
+);
+const LatestRecordsWidget = defineAsyncComponent(
+  () => import("@/components/widgets/latest-records.vue"),
+);
+const SpendingCategoriesWidget = defineAsyncComponent(
+  () => import("@/components/widgets/expenses-structure.vue"),
+);
 
 defineOptions({
-  name: 'page-dashboard',
+  name: "page-dashboard",
 });
 
 const currentDayInMonth = new Date().getDate();
@@ -59,12 +68,14 @@ const currentPeriod = ref({
   to: new Date(),
 });
 
-const isCurrentPeriodSameMonth = computed(() => isSameMonth(new Date(), currentPeriod.value.to));
+const isCurrentPeriodSameMonth = computed(() =>
+  isSameMonth(new Date(), currentPeriod.value.to),
+);
 const periodSelectorText = computed(() => {
-  if (isCurrentPeriodSameMonth.value) return 'Current Month';
+  if (isCurrentPeriodSameMonth.value) return "Current Month";
 
-  const from = format(currentPeriod.value.from, 'dd MMM');
-  const to = format(currentPeriod.value.to, 'dd MMM');
+  const from = format(currentPeriod.value.from, "dd MMM");
+  const to = format(currentPeriod.value.to, "dd MMM");
 
   return `${from} - ${to}`;
 });
@@ -91,16 +102,16 @@ const selectNextPeriod = () => {
 .dashboard-page__info {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr)) 420px;
-  grid-template-areas: 'balance-trend spending-categories latest-records';
+  grid-template-areas: "balance-trend spending-categories latest-records";
   grid-gap: 24px;
 
   @include below(1200) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-areas: 'balance-trend spending-categories' 'latest-records latest-records';
+    grid-template-areas: "balance-trend spending-categories" "latest-records latest-records";
   }
   @include below(900) {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-areas: 'balance-trend' 'spending-categories' 'latest-records';
+    grid-template-areas: "balance-trend" "spending-categories" "latest-records";
   }
 }
 .dashboard-page__charts {
@@ -130,7 +141,7 @@ const selectNextPeriod = () => {
     padding: 8px;
 
     &[disabled] {
-      opacity: .4;
+      opacity: 0.4;
     }
   }
 }

@@ -1,16 +1,14 @@
-import {
-  Ref, ComputedRef, ToRefs, isRef,
-} from 'vue';
+import { Ref, ComputedRef, ToRefs, isRef } from "vue";
 import useVuelidate, {
   GlobalConfig,
   ValidationArgs,
   ExtractState,
-} from '@vuelidate/core';
-import { get as safeGet } from 'lodash-es';
+} from "@vuelidate/core";
+import { get as safeGet } from "lodash-es";
 
 const GENERIC_VALIDATION_MESSAGES = Object.freeze({
-  email: 'Email field is required',
-  required: 'Field is required',
+  email: "Email field is required",
+  required: "Field is required",
 });
 
 /**
@@ -51,18 +49,18 @@ const GENERIC_VALIDATION_MESSAGES = Object.freeze({
 
 export const useFormValidation = <
   Vargs extends ValidationArgs,
-  T extends ExtractState<Vargs>
+  T extends ExtractState<Vargs>,
 >(
-    form: T | Ref<T> | ToRefs<T>,
-    rules: Ref<Vargs> | Vargs,
-    vuelidateOptions?: GlobalConfig,
-    validationOptions?: {
-      customValidationMessages: Record<
-        string,
-        string | Ref<string> | ComputedRef<string>
-      >;
-    },
-  ): {
+  form: T | Ref<T> | ToRefs<T>,
+  rules: Ref<Vargs> | Vargs,
+  vuelidateOptions?: GlobalConfig,
+  validationOptions?: {
+    customValidationMessages: Record<
+      string,
+      string | Ref<string> | ComputedRef<string>
+    >;
+  },
+): {
   isFormValid: (formPart?: string) => boolean;
   touchField: (fieldPath: string) => void;
   getFieldErrorMessage: (fieldPath: string) => string;
@@ -109,10 +107,10 @@ export const useFormValidation = <
     }
   };
 
-  const _extractVuelidateField = (fieldPath = '') => {
+  const _extractVuelidateField = (fieldPath = "") => {
     const resultFieldPath = fieldPath.trim().replace(
       /(\w+)(\[\d+\])/, // path like "array[12]"
-      '$1.$each$2', // replace with "array.$each[12]"
+      "$1.$each$2", // replace with "array.$each[12]"
     ); // all the others path should be treated unmodified
 
     return safeGet(instance.value, resultFieldPath);
@@ -143,7 +141,7 @@ export const useFormValidation = <
     }
 
     if (!instance.value.$invalid) {
-      return '';
+      return "";
     }
 
     const field = _extractVuelidateField(fieldPath);
@@ -158,7 +156,7 @@ export const useFormValidation = <
 
     // makes dirty only after $touch call
     if (!field.$dirty) {
-      return '';
+      return "";
     }
 
     for (const rule of Object.keys(fieldRules)) {
@@ -169,10 +167,15 @@ export const useFormValidation = <
           ? customMessage.value
           : customMessage;
 
-        return customErrorMessage || GENERIC_VALIDATION_MESSAGES[rule] || field[rule].$message || '';
+        return (
+          customErrorMessage ||
+          GENERIC_VALIDATION_MESSAGES[rule] ||
+          field[rule].$message ||
+          ""
+        );
       }
     }
-    return '';
+    return "";
   };
 
   const resetValidation = () => {

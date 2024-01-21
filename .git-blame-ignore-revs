@@ -5,3 +5,6 @@
 
 # eslint warnings cleanup
 597ed124c0170a2deb9c840a0fe884f74199aba2
+
+# prettier format of the whole project
+e29b83e463be79f1b8a548b8608c4aad9812be78

@@ -1,7 +1,7 @@
 <template>
   <div class="account">
     <div class="account__name">
-      {{ account.name || 'No name set...' }}
+      {{ account.name || "No name set..." }}
     </div>
     <div class="account__balance-info">
       <div class="account__balance">
@@ -16,11 +16,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue';
-import { storeToRefs } from 'pinia';
-import { AccountModel } from 'shared-types';
-import { useCurrenciesStore } from '@/stores';
-import { formatUIAmount, toLocalFiatCurrency } from '@/js/helpers';
+import { defineComponent, PropType } from "vue";
+import { storeToRefs } from "pinia";
+import { AccountModel } from "shared-types";
+import { useCurrenciesStore } from "@/stores";
+import { formatUIAmount, toLocalFiatCurrency } from "@/js/helpers";
 
 export default defineComponent({
   props: {
@@ -50,7 +50,7 @@ export default defineComponent({
   background-color: var(--app-surface-color);
   border-radius: 6px;
   box-shadow: 0 0 24px 0px rgba(0, 0, 0, 0.05);
-  transition: box-shadow .2s ease-out;
+  transition: box-shadow 0.2s ease-out;
   cursor: pointer;
   color: var(--app-on-surface-color);
 

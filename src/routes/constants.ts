@@ -1,6 +1,6 @@
 export const ROUTER_LAYOUTS = Object.freeze({
-  auth: 'auth',
-  dashboard: 'dashboard',
+  auth: "auth",
+  dashboard: "dashboard",
 });
 
 export const ROUTES_NAMES = Object.freeze({

@@ -13,15 +13,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, watch } from 'vue';
-import { storeToRefs } from 'pinia';
-import { useRouter } from 'vue-router';
+import { defineComponent, watch } from "vue";
+import { storeToRefs } from "pinia";
+import { useRouter } from "vue-router";
 
-import { ROUTES_NAMES } from '@/routes/constants';
-import { useRootStore, useCurrenciesStore } from '@/stores';
+import { ROUTES_NAMES } from "@/routes/constants";
+import { useRootStore, useCurrenciesStore } from "@/stores";
 
-import UiHeader from '@/components/ui-header.vue';
-import UiSidebar from '@/components/ui-sidebar.vue';
+import UiHeader from "@/components/ui-header.vue";
+import UiSidebar from "@/components/ui-sidebar.vue";
 
 export default defineComponent({
   components: {
@@ -36,14 +36,11 @@ export default defineComponent({
     const { isAppInitialized } = storeToRefs(rootStore);
     const { isBaseCurrencyExists } = storeToRefs(userCurrenciesStore);
 
-    watch(
-      isAppInitialized,
-      (value) => {
-        if (value && !isBaseCurrencyExists.value) {
-          router.push({ name: ROUTES_NAMES.welcome });
-        }
-      },
-    );
+    watch(isAppInitialized, (value) => {
+      if (value && !isBaseCurrencyExists.value) {
+        router.push({ name: ROUTES_NAMES.welcome });
+      }
+    });
 
     return {
       isAppInitialized,

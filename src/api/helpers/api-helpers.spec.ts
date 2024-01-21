@@ -1,10 +1,7 @@
-import {
-  toSystemAmount,
-  fromSystemAmount,
-} from './index';
+import { toSystemAmount, fromSystemAmount } from "./index";
 
-describe('js/helpers/formatters', () => {
-  describe('toSystemAmount', () => {
+describe("js/helpers/formatters", () => {
+  describe("toSystemAmount", () => {
     test.each([
       [10, 1_000],
       [1, 100],
@@ -13,12 +10,12 @@ describe('js/helpers/formatters', () => {
       [0.0125, 1],
       [NaN, NaN],
       [Infinity, Infinity],
-    ])('%s to be %s', (value, expected) => {
+    ])("%s to be %s", (value, expected) => {
       expect(toSystemAmount(value)).toBe(expected);
     });
   });
 
-  describe('fromSystemAmount', () => {
+  describe("fromSystemAmount", () => {
     test.each([
       [1000, 10],
       [100, 1],
@@ -27,7 +24,7 @@ describe('js/helpers/formatters', () => {
       [1.25, 0.0125],
       [NaN, NaN],
       [Infinity, Infinity],
-    ])('%s to be %s', (value, expected) => {
+    ])("%s to be %s", (value, expected) => {
       expect(fromSystemAmount(value)).toBe(expected);
     });
   });

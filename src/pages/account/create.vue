@@ -1,9 +1,6 @@
 <template>
   <div class="account-create">
-    <form
-      class="account-create__form"
-      @submit.prevent="submit"
-    >
+    <form class="account-create__form" @submit.prevent="submit">
       <input-field
         v-model="form.name"
         label="Account name"
@@ -39,32 +36,32 @@
         class="account-create__form-submit"
         :disabled="isLoading"
       >
-        {{ isLoading ? 'Creating...' : 'Create' }}
+        {{ isLoading ? "Creating..." : "Create" }}
       </ui-button>
     </form>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { storeToRefs } from 'pinia';
-import { ACCOUNT_TYPES, CurrencyModel } from 'shared-types';
+import { defineComponent, reactive, ref } from "vue";
+import { useRouter } from "vue-router";
+import { storeToRefs } from "pinia";
+import { ACCOUNT_TYPES, CurrencyModel } from "shared-types";
 
-import { ROUTES_NAMES } from '@/routes/constants';
-import { useAccountsStore, useCurrenciesStore } from '@/stores';
+import { ROUTES_NAMES } from "@/routes/constants";
+import { useAccountsStore, useCurrenciesStore } from "@/stores";
 
 import {
   useNotificationCenter,
   NotificationType,
-} from '@/components/notification-center';
+} from "@/components/notification-center";
 
-import InputField from '@/components/fields/input-field.vue';
-import SelectField from '@/components/fields/select-field.vue';
-import UiButton from '@/components/common/ui-button.vue';
+import InputField from "@/components/fields/input-field.vue";
+import SelectField from "@/components/fields/select-field.vue";
+import UiButton from "@/components/common/ui-button.vue";
 
 export default defineComponent({
-  name: 'create-account',
+  name: "create-account",
   components: {
     UiButton,
     InputField,
@@ -84,7 +81,7 @@ export default defineComponent({
       initialBalance: number;
       creditLimit: number;
     }>({
-      name: '',
+      name: "",
       currency: systemCurrenciesAssociatedWithUser.value[0],
       initialBalance: 0,
       creditLimit: 0,
@@ -104,14 +101,14 @@ export default defineComponent({
         });
 
         addNotification({
-          text: 'Created successfully.',
+          text: "Created successfully.",
           type: NotificationType.success,
         });
 
         router.push({ name: ROUTES_NAMES.accounts });
       } catch (e) {
         addNotification({
-          text: 'Unexpected error.',
+          text: "Unexpected error.",
           type: NotificationType.error,
         });
       } finally {

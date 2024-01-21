@@ -14,7 +14,7 @@
       v-bind="attrs"
       class="tick-field__input"
       type="checkbox"
-    >
+    />
     <div class="tick-field__custom" />
     <p class="tick-field__label">
       {{ label }}
@@ -23,10 +23,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent } from "vue";
 
 const MODEL_EVENTS = {
-  input: 'update:modelValue',
+  input: "update:modelValue",
 };
 
 export default defineComponent({
@@ -38,7 +38,7 @@ export default defineComponent({
     attrs() {
       return {
         ...this.$attrs,
-        onInput: event => {
+        onInput: (event) => {
           this.$emit(MODEL_EVENTS.input, event.target.checked);
         },
       };
@@ -75,13 +75,15 @@ export default defineComponent({
   height: 20px;
   flex: none;
   margin-right: 16px;
-  transition: background-color 0.2s ease-out, border-color 0.2s ease-out;
+  transition:
+    background-color 0.2s ease-out,
+    border-color 0.2s ease-out;
   position: relative;
   margin-top: 4px;
 
   &:after,
   &:before {
-    content: '';
+    content: "";
     position: absolute;
     height: 2px;
     background-color: #ffffff;

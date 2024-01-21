@@ -21,16 +21,13 @@
             class="tick-field__input"
             type="checkbox"
             @change="toggleChange"
-          >
+          />
         </label>
       </div>
     </div>
     <div class="edit-currency__actions">
       <ui-tooltip :content="!isFormDirty ? 'Nothing to save' : ''">
-        <ui-button
-          :disabled="!isFormDirty"
-          @click="onSaveHandler"
-        >
+        <ui-button :disabled="!isFormDirty" @click="onSaveHandler">
           Save
         </ui-button>
       </ui-tooltip>
@@ -49,23 +46,21 @@
 </template>
 
 <script setup lang="ts">
+import { reactive, computed, onMounted, ref, watch } from "vue";
+import { API_ERROR_CODES } from "shared-types";
+import { useCurrenciesStore } from "@/stores";
 import {
-  reactive,
-  computed,
-  onMounted,
-  ref,
-  watch,
-} from 'vue';
-import { API_ERROR_CODES } from 'shared-types';
-import { useCurrenciesStore } from '@/stores';
-import { editUserCurrenciesExchangeRates, deleteCustomRate } from '@/api/currencies';
-import UiButton from '@/components/common/ui-button.vue';
-import InputField from '@/components/fields/input-field.vue';
-import UiTooltip from '@/components/common/tooltip.vue';
-import { useNotificationCenter } from '@/components/notification-center';
-import { CurrencyWithExchangeRate } from './types';
+  editUserCurrenciesExchangeRates,
+  deleteCustomRate,
+} from "@/api/currencies";
+import UiButton from "@/components/common/ui-button.vue";
+import InputField from "@/components/fields/input-field.vue";
+import UiTooltip from "@/components/common/tooltip.vue";
+import { useNotificationCenter } from "@/components/notification-center";
+import { CurrencyWithExchangeRate } from "./types";
 
-const DISABLED_DELETE_TEXT = 'You cannot delete this currency because it is still connected to account(s).';
+const DISABLED_DELETE_TEXT =
+  "You cannot delete this currency because it is still connected to account(s).";
 const calculateRatio = (value) => {
   const exp = 10 ** 6;
   const num = 1 / value;
@@ -85,7 +80,8 @@ const emit = defineEmits<{
 }>();
 
 const currenciesStore = useCurrenciesStore();
-const { addSuccessNotification, addErrorNotification } = useNotificationCenter();
+const { addSuccessNotification, addErrorNotification } =
+  useNotificationCenter();
 
 const form = reactive({
   baseRate: props.currency.rate,
@@ -95,15 +91,15 @@ const isBaseEditing = ref(false);
 const isQuoteEditing = ref(false);
 const isChecked = ref<boolean>(false);
 
-const isRateChanged = computed(() => (
-  +props.currency.rate !== +form.baseRate
-  || +props.currency.quoteRate !== +form.quoteRate
-));
+const isRateChanged = computed(
+  () =>
+    +props.currency.rate !== +form.baseRate ||
+    +props.currency.quoteRate !== +form.quoteRate,
+);
 
-const isFormDirty = computed(() => (
-  isRateChanged.value
-  || (props.currency.custom && !isChecked.value)
-));
+const isFormDirty = computed(
+  () => isRateChanged.value || (props.currency.custom && !isChecked.value),
+);
 
 const onBaseFocus = () => {
   isBaseEditing.value = true;
@@ -117,23 +113,29 @@ const toggleChange = (event) => {
   isChecked.value = !event.target.checked;
 };
 
-watch(() => form.baseRate, value => {
-  if (isBaseEditing.value) {
-    form.quoteRate = calculateRatio(value);
-  }
-});
-watch(() => form.quoteRate, value => {
-  if (isQuoteEditing.value) {
-    form.baseRate = calculateRatio(value);
-  }
-});
+watch(
+  () => form.baseRate,
+  (value) => {
+    if (isBaseEditing.value) {
+      form.quoteRate = calculateRatio(value);
+    }
+  },
+);
+watch(
+  () => form.quoteRate,
+  (value) => {
+    if (isQuoteEditing.value) {
+      form.baseRate = calculateRatio(value);
+    }
+  },
+);
 
 onMounted(() => {
   isChecked.value = props.currency.custom;
 });
 
 const onDeleteHandler = () => {
-  emit('delete');
+  emit("delete");
 };
 
 const deleteExchangeRates = async () => {
@@ -149,15 +151,15 @@ const deleteExchangeRates = async () => {
       },
     ]);
 
-    emit('submit');
+    emit("submit");
 
-    addSuccessNotification('Successfully updated.');
+    addSuccessNotification("Successfully updated.");
   } catch (e) {
     if (e.data.code === API_ERROR_CODES.validationError) {
       addErrorNotification(e.data.message);
       return;
     }
-    addErrorNotification('Unexpected error');
+    addErrorNotification("Unexpected error");
   }
 };
 
@@ -177,15 +179,15 @@ const updateExchangeRates = async () => {
     ]);
     await currenciesStore.loadCurrencies();
 
-    emit('submit');
+    emit("submit");
 
-    addSuccessNotification('Successfully updated.');
+    addSuccessNotification("Successfully updated.");
   } catch (e) {
     if (e.data.code === API_ERROR_CODES.validationError) {
       addErrorNotification(e.data.message);
       return;
     }
-    addErrorNotification('Unexpected error. Currency is not updated.');
+    addErrorNotification("Unexpected error. Currency is not updated.");
   }
 };
 

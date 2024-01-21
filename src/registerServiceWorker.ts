@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
-import { register } from 'register-service-worker';
+import { register } from "register-service-worker";
 
-if (import.meta.env.NODE_ENV === 'production') {
+if (import.meta.env.NODE_ENV === "production") {
   register(`${import.meta.env.BASE_URL}service-worker.js`, {
     ready() {
       console.log(`
@@ -10,22 +10,24 @@ if (import.meta.env.NODE_ENV === 'production') {
       `);
     },
     registered() {
-      console.log('Service worker has been registered.');
+      console.log("Service worker has been registered.");
     },
     cached() {
-      console.log('Content has been cached for offline use.');
+      console.log("Content has been cached for offline use.");
     },
     updatefound() {
-      console.log('New content is downloading.');
+      console.log("New content is downloading.");
     },
     updated() {
-      console.log('New content is available; please refresh.');
+      console.log("New content is available; please refresh.");
     },
     offline() {
-      console.log('No internet connection found. App is running in offline mode.');
+      console.log(
+        "No internet connection found. App is running in offline mode.",
+      );
     },
     error(error) {
-      console.error('Error during service worker registration:', error);
+      console.error("Error during service worker registration:", error);
     },
   });
 }

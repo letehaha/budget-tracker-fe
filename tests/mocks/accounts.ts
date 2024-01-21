@@ -1,11 +1,11 @@
-import { AccountModel, ACCOUNT_TYPES } from 'shared-types';
-import { USER } from './user';
-import { USER_CURRENCIES } from './currencies';
+import { AccountModel, ACCOUNT_TYPES } from "shared-types";
+import { USER } from "./user";
+import { USER_CURRENCIES } from "./currencies";
 
-export const eurAccountName = 'Account EUR';
-export const usdAccountName = 'Account USD';
-export const uahAccountName = 'Account UAH';
-export const uah2AccountName = 'Account UAH (2)';
+export const eurAccountName = "Account EUR";
+export const usdAccountName = "Account USD";
+export const uahAccountName = "Account UAH";
+export const uah2AccountName = "Account UAH (2)";
 
 export const ACCOUNTS: AccountModel[] = [
   {
@@ -19,7 +19,8 @@ export const ACCOUNTS: AccountModel[] = [
     refCreditLimit: 0,
     type: ACCOUNT_TYPES.system,
     accountTypeId: 1,
-    currencyId: USER_CURRENCIES.find(item => item.currency.code === 'EUR').currencyId,
+    currencyId: USER_CURRENCIES.find((item) => item.currency.code === "EUR")
+      .currencyId,
     userId: USER.id,
     externalId: null,
     externalData: null,
@@ -36,7 +37,8 @@ export const ACCOUNTS: AccountModel[] = [
     refCreditLimit: 0,
     type: ACCOUNT_TYPES.system,
     accountTypeId: 1,
-    currencyId: USER_CURRENCIES.find(item => item.currency.code === 'USD').currencyId,
+    currencyId: USER_CURRENCIES.find((item) => item.currency.code === "USD")
+      .currencyId,
     userId: USER.id,
     externalId: null,
     externalData: null,
@@ -53,7 +55,8 @@ export const ACCOUNTS: AccountModel[] = [
     refCreditLimit: 0,
     type: ACCOUNT_TYPES.system,
     accountTypeId: 1,
-    currencyId: USER_CURRENCIES.find(item => item.currency.code === 'UAH').currencyId,
+    currencyId: USER_CURRENCIES.find((item) => item.currency.code === "UAH")
+      .currencyId,
     userId: USER.id,
     externalId: null,
     externalData: null,
@@ -70,7 +73,8 @@ export const ACCOUNTS: AccountModel[] = [
     refCreditLimit: 0,
     type: ACCOUNT_TYPES.system,
     accountTypeId: 1,
-    currencyId: USER_CURRENCIES.find(item => item.currency.code === 'UAH').currencyId,
+    currencyId: USER_CURRENCIES.find((item) => item.currency.code === "UAH")
+      .currencyId,
     userId: USER.id,
     externalId: null,
     externalData: null,
@@ -78,7 +82,11 @@ export const ACCOUNTS: AccountModel[] = [
   },
 ];
 
-export const getEurAccount = () => ACCOUNTS.find(item => item.name === eurAccountName);
-export const getUsdAccount = () => ACCOUNTS.find(item => item.name === usdAccountName);
-export const getUahAccount = () => ACCOUNTS.find(item => item.name === uahAccountName);
-export const getUah2Account = () => ACCOUNTS.find(item => item.name === uah2AccountName);
+export const getEurAccount = () =>
+  ACCOUNTS.find((item) => item.name === eurAccountName);
+export const getUsdAccount = () =>
+  ACCOUNTS.find((item) => item.name === usdAccountName);
+export const getUahAccount = () =>
+  ACCOUNTS.find((item) => item.name === uahAccountName);
+export const getUah2Account = () =>
+  ACCOUNTS.find((item) => item.name === uah2AccountName);

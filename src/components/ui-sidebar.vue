@@ -1,58 +1,44 @@
 <template>
   <div class="sidebar">
-    <div class="sidebar__logo">
-      BudgetTracker
-    </div>
+    <div class="sidebar__logo">BudgetTracker</div>
     <nav class="sidebar__navigation">
       <router-link
         :to="{ name: ROUTES_NAMES.home }"
         class="sidebar__navigation-link"
       >
-        <span>
-          Dashboard
-        </span>
+        <span> Dashboard </span>
       </router-link>
       <router-link
         :to="{ name: ROUTES_NAMES.accounts }"
         class="sidebar__navigation-link"
       >
-        <span>
-          Accounts
-        </span>
+        <span> Accounts </span>
       </router-link>
       <router-link
         :to="{ name: ROUTES_NAMES.records }"
         class="sidebar__navigation-link"
       >
-        <span>
-          Records
-        </span>
+        <span> Records </span>
       </router-link>
       <template v-if="isDevEnv">
         <router-link
           :to="{ name: ROUTES_NAMES.analytics }"
           class="sidebar__navigation-link"
         >
-          <span>
-            Analytics
-          </span>
+          <span> Analytics </span>
         </router-link>
       </template>
       <router-link
         :to="{ name: ROUTES_NAMES.crypto }"
         class="sidebar__navigation-link"
       >
-        <span>
-          Crypto
-        </span>
+        <span> Crypto </span>
       </router-link>
       <router-link
         :to="{ name: ROUTES_NAMES.settings }"
         class="sidebar__navigation-link"
       >
-        <span>
-          Settings
-        </span>
+        <span> Settings </span>
       </router-link>
     </nav>
 
@@ -67,12 +53,12 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router';
+import { useRouter } from "vue-router";
 
-import { useAuthStore } from '@/stores';
-import { isDevEnv } from '@/common/const';
-import { ROUTES_NAMES } from '@/routes';
-import UiButton from '@/components/common/ui-button.vue';
+import { useAuthStore } from "@/stores";
+import { isDevEnv } from "@/common/const";
+import { ROUTES_NAMES } from "@/routes";
+import UiButton from "@/components/common/ui-button.vue";
 
 const router = useRouter();
 const { logout } = useAuthStore();
@@ -114,10 +100,10 @@ const logOutHandler = () => {
   color: var(--sidebar-btn-text);
   border-radius: 4px;
   padding: 12px 16px;
-  transition: opacity .15s ease-out;
+  transition: opacity 0.15s ease-out;
 
   span {
-    opacity: .7;
+    opacity: 0.7;
   }
 
   &:hover {

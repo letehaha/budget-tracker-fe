@@ -6,8 +6,7 @@
       'text-field--disabled': disabled,
       'text-field--readonly': readonly,
       'text-field--dirty': hasValue,
-    }
-    "
+    }"
   >
     <FieldLabel :label="label">
       <template #label-right>
@@ -33,10 +32,7 @@
       />
     </FieldLabel>
 
-    <span
-      v-if="maxlength"
-      class="text-field__length"
-    >
+    <span v-if="maxlength" class="text-field__length">
       {{ `${currentLength}/${maxlength}` }}
     </span>
 
@@ -45,13 +41,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent } from "vue";
 
-import FieldLabel from './components/field-label.vue';
-import FieldError from './components/field-error.vue';
+import FieldLabel from "./components/field-label.vue";
+import FieldError from "./components/field-error.vue";
 
 const MODEL_EVENTS = Object.freeze({
-  input: 'update:modelValue',
+  input: "update:modelValue",
 });
 
 export default defineComponent({
@@ -64,7 +60,7 @@ export default defineComponent({
     modelValue: { type: [String, Number], default: undefined },
     errorMessage: { type: String, default: undefined },
     // proxies
-    autocomplete: { type: String, default: 'off' },
+    autocomplete: { type: String, default: "off" },
     autofocus: { type: Boolean, default: false },
     disabled: { type: Boolean, default: false },
     name: { type: String, default: undefined },
@@ -78,7 +74,7 @@ export default defineComponent({
     cols: { type: [String, Number], default: undefined },
   },
   data: () => ({
-    currentLength: '0',
+    currentLength: "0",
   }),
   computed: {
     hasValue() {
@@ -118,7 +114,9 @@ export default defineComponent({
   background-color: var(--app-surface-color);
   border: 1px solid var(--app-on-surface-color);
   border-radius: 4px;
-  transition: all 0s, border-color 0.2s ease-out;
+  transition:
+    all 0s,
+    border-color 0.2s ease-out;
   resize: none;
   color: var(--app-on-surface-color);
 

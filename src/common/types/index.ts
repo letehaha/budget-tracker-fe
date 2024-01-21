@@ -1,6 +1,6 @@
-import { API_ERROR_CODES, CategoryModel } from 'shared-types';
+import { API_ERROR_CODES, CategoryModel } from "shared-types";
 
-export * from './binance-response';
+export * from "./binance-response";
 
 export enum API_STATUS_CODES {
   badRequest = 400,
@@ -10,7 +10,7 @@ export enum API_STATUS_CODES {
   timeout = 408,
   conflict = 409,
   tooManyRequests = 429,
-  internalError = 500
+  internalError = 500,
 }
 
 export interface ApiBaseError {

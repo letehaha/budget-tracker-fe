@@ -6,18 +6,29 @@
         v-for="item in options"
         :key="item.name"
         class="ui-tabs__header-item"
-        v-bind="isTabsLink ? {
-          to: item.to,
-        } : {
-          type: 'button',
-          class: [
-            'button-style-reset',
-            { 'ui-tabs__header-item--active': activeTab?.name === item.name },
-          ],
-        }"
-        v-on="isTabsLink ? {} : {
-          click: () => selectTab(item),
-        }"
+        v-bind="
+          isTabsLink
+            ? {
+                to: item.to,
+              }
+            : {
+                type: 'button',
+                class: [
+                  'button-style-reset',
+                  {
+                    'ui-tabs__header-item--active':
+                      activeTab?.name === item.name,
+                  },
+                ],
+              }
+        "
+        v-on="
+          isTabsLink
+            ? {}
+            : {
+                click: () => selectTab(item),
+              }
+        "
       >
         <span class="ui-tabs__header-item-text">
           {{ item.label }}
@@ -29,10 +40,8 @@
 </template>
 
 <script setup lang="ts">
-import {
-  ref, computed, watch, CSSProperties,
-} from 'vue';
-import { RouteLocationRaw, useRouter } from 'vue-router';
+import { ref, computed, watch, CSSProperties } from "vue";
+import { RouteLocationRaw, useRouter } from "vue-router";
 
 export interface Tab {
   name: string;
@@ -45,28 +54,31 @@ export interface Tab {
 const router = useRouter();
 
 const emit = defineEmits<{
-  change: [value: Tab]
+  change: [value: Tab];
 }>();
 
 defineOptions({
-  name: 'ui-labs',
+  name: "ui-labs",
 });
 
-const props = withDefaults(defineProps<{
-  options: Tab[];
-  initialTab?: Tab | null;
-  tabsAlignment?: CSSProperties['justifyContent'];
-}>(), {
-  tabsAlignment: 'space-between',
-  initialTab: null,
-});
+const props = withDefaults(
+  defineProps<{
+    options: Tab[];
+    initialTab?: Tab | null;
+    tabsAlignment?: CSSProperties["justifyContent"];
+  }>(),
+  {
+    tabsAlignment: "space-between",
+    initialTab: null,
+  },
+);
 
-const isTabsLink = computed(() => !!props.options.find(item => item.to));
+const isTabsLink = computed(() => !!props.options.find((item) => item.to));
 
 const activeTab = ref<Tab | null>(null);
 
 const setInitialTab = () => {
-  let initialTab = props.options.find(item => item.initial);
+  let initialTab = props.options.find((item) => item.initial);
   if (!initialTab && props.initialTab) initialTab = props.initialTab;
   if (!initialTab && props.options[0]) initialTab = props.options[0];
 
@@ -80,13 +92,16 @@ const setInitialTab = () => {
 };
 setInitialTab();
 
-watch(() => props.initialTab, value => {
-  activeTab.value = value;
-});
+watch(
+  () => props.initialTab,
+  (value) => {
+    activeTab.value = value;
+  },
+);
 
 const selectTab = (item: Tab) => {
   activeTab.value = item;
-  emit('change', item);
+  emit("change", item);
 };
 </script>
 

@@ -23,12 +23,15 @@
 </template>
 
 <script setup lang="ts">
-withDefaults(defineProps<{
-  title?: string;
-  higher?: boolean;
-}>(), {
-  title: undefined,
-});
+withDefaults(
+  defineProps<{
+    title?: string;
+    higher?: boolean;
+  }>(),
+  {
+    title: undefined,
+  },
+);
 </script>
 
 <style lang="scss">

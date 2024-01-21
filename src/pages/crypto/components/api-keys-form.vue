@@ -11,22 +11,19 @@
       label="Secret Key"
       :error-message="getFieldErrorMessage('form.secret')"
     />
-    <ui-button
-      :disabled="isFormLoading"
-      @click="submit"
-    >
-      {{ isFormLoading ? 'Loading...' : 'Submit' }}
+    <ui-button :disabled="isFormLoading" @click="submit">
+      {{ isFormLoading ? "Loading..." : "Submit" }}
     </ui-button>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
-import { useCryptoBinanceStore } from '@/stores';
-import { useFormValidation } from '@/composable';
-import { required } from '@/js/helpers/validators';
-import InputField from '@/components/fields/input-field.vue';
-import UiButton from '@/components/common/ui-button.vue';
+import { defineComponent, ref } from "vue";
+import { useCryptoBinanceStore } from "@/stores";
+import { useFormValidation } from "@/composable";
+import { required } from "@/js/helpers/validators";
+import InputField from "@/components/fields/input-field.vue";
+import UiButton from "@/components/common/ui-button.vue";
 
 export default defineComponent({
   components: { InputField, UiButton },
@@ -35,23 +32,20 @@ export default defineComponent({
 
     const isFormLoading = ref(false);
     const form = ref({
-      public: '',
-      secret: '',
+      public: "",
+      secret: "",
     });
 
-    const {
-      isFormValid,
-      getFieldErrorMessage,
-      resetValidation,
-    } = useFormValidation(
-      { form },
-      {
-        form: {
-          public: { required },
-          secret: { required },
+    const { isFormValid, getFieldErrorMessage, resetValidation } =
+      useFormValidation(
+        { form },
+        {
+          form: {
+            public: { required },
+            secret: { required },
+          },
         },
-      },
-    );
+      );
 
     const submit = async (): Promise<undefined> => {
       if (!isFormValid()) return undefined;
@@ -65,8 +59,8 @@ export default defineComponent({
         });
 
         form.value = {
-          public: '',
-          secret: '',
+          public: "",
+          secret: "",
         };
       } catch (e) {
         // eslint-disable-next-line no-console

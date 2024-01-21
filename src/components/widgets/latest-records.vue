@@ -1,9 +1,5 @@
 <template>
-  <WidgetWrapper
-    class="latest-records-widget"
-    title="Latest records"
-    higher
-  >
+  <WidgetWrapper class="latest-records-widget" title="Latest records" higher>
     <template #action>
       <router-link
         class="latest-records-widget__show-all"
@@ -20,15 +16,15 @@
 </template>
 
 <script lang="ts" setup>
-import { storeToRefs } from 'pinia';
-import { useQuery } from '@tanstack/vue-query';
-import { ROUTES_NAMES } from '@/routes/constants';
-import { useRootStore } from '@/stores';
-import { VUE_QUERY_CACHE_KEYS } from '@/common/const';
-import { loadTransactions as apiLoadTransactions } from '@/api/transactions';
+import { storeToRefs } from "pinia";
+import { useQuery } from "@tanstack/vue-query";
+import { ROUTES_NAMES } from "@/routes/constants";
+import { useRootStore } from "@/stores";
+import { VUE_QUERY_CACHE_KEYS } from "@/common/const";
+import { loadTransactions as apiLoadTransactions } from "@/api/transactions";
 
-import TransactionsList from '@/components/transactions-list/transactions-list.vue';
-import WidgetWrapper from './components/widget-wrapper.vue';
+import TransactionsList from "@/components/transactions-list/transactions-list.vue";
+import WidgetWrapper from "./components/widget-wrapper.vue";
 
 const { isAppInitialized } = storeToRefs(useRootStore());
 
