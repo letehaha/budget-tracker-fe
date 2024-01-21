@@ -18,17 +18,9 @@ export const useTransferFormLogic = ({
 }) => {
   const { currenciesMap } = storeToRefs(useCurrenciesStore());
 
-  const account = computed(() => form.value.account);
   const toAccount = computed(() => form.value.toAccount);
-  const isTargetFieldVisible = computed(() => {
-    // If user selected source as out of wallet
-    if (account.value?.name === OUT_OF_WALLET_ACCOUNT_MOCK.name) return true;
 
-    // if (!toAccount.value) return false;
-    // if (account.value?.currencyId !== toAccount.value?.currencyId) return false;
-
-    return isTransferTx.value;
-  });
+  const isTargetFieldVisible = computed(() => isTransferTx.value);
 
   const isTargetAmountFieldDisabled = computed(() => {
     if (isRecordExternal.value) {

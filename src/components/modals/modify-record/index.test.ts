@@ -201,9 +201,6 @@ describe("transactions create/update/delete form", () => {
 
       await wrapper.find(transferFormTypeSelector).trigger("click");
 
-      await fillAmountField(wrapper, expectedValue.amount);
-      await fillTargetAlmountField(wrapper, expectedValue.targetAmount);
-
       await fillAccountField(
         wrapper,
         fromAccountFieldLabel,
@@ -214,6 +211,9 @@ describe("transactions create/update/delete form", () => {
         toAccountFieldLabel,
         expectedValue.targetAccount.name,
       );
+
+      await fillAmountField(wrapper, expectedValue.amount);
+      await fillTargetAlmountField(wrapper, expectedValue.targetAmount);
 
       await submitCreation(wrapper);
 
@@ -460,12 +460,12 @@ describe("transactions create/update/delete form", () => {
       // reflects target amount field, and vice verse for expense
       // We still emulate like we set another value, but with the same currency
       // form should send targetAmount same as amount
-      await fillTargetAlmountField(wrapper, expectedValue.targetAmount);
       await fillAccountField(
         wrapper,
         toAccountFieldLabel,
         expectedValue.targetAccount.name,
       );
+      await fillTargetAlmountField(wrapper, expectedValue.targetAmount);
 
       await submitUpdation(wrapper);
 

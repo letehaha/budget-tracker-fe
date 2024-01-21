@@ -27,7 +27,8 @@ interface ApiCall {
   endpoint: string;
   method: HTTP_METHOD;
   query?: Record<string, string>;
-  data?: Record<string | number, unknown>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data?: Record<string | number, any>;
   options?: {
     needRaw?: boolean;
     withoutSignature?: boolean;

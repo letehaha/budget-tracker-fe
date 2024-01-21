@@ -23,20 +23,17 @@
   </div>
 </template>
 
-<script lang="ts" setup>
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ValueEntity = Record<string, any>;
-
+<script lang="ts" setup generic="T extends Record<string, any>">
 const emit = defineEmits<{
-  select: [item: { item: ValueEntity; index: number }];
+  select: [item: { item: T; index: number }];
 }>();
 
 const props = withDefaults(
   defineProps<{
     isVisible?: boolean;
-    values: ValueEntity[];
-    selectedValue: ValueEntity | null;
-    labelKey?: string | ((value: ValueEntity) => string);
+    values: T[];
+    selectedValue: T | null;
+    labelKey?: keyof T | ((value: T) => string) | "label";
     position?: "top" | "bottom";
   }>(),
   {
@@ -46,7 +43,7 @@ const props = withDefaults(
   },
 );
 
-const getLabelFromValue = (value: (typeof props)["selectedValue"]) => {
+const getLabelFromValue = (value: T) => {
   const { labelKey } = props;
 
   if (!value) return null;
@@ -55,7 +52,7 @@ const getLabelFromValue = (value: (typeof props)["selectedValue"]) => {
   return value[labelKey];
 };
 
-const isItemHighlighted = (item: (typeof props)["selectedValue"]) =>
+const isItemHighlighted = (item: T) =>
   getLabelFromValue(item) === getLabelFromValue(props.selectedValue);
 </script>
 

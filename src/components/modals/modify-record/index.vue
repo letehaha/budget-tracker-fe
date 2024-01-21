@@ -79,7 +79,7 @@ const form = ref<UI_FORM_STRUCT>({
   type: FORM_TYPES.expense,
 });
 
-const transactionItem = ref<TransactionModel | null>(null);
+const linkedTransaction = ref<TransactionModel | null>(null);
 const isTransactionLength = ref(false);
 
 const openTransactionModalList = async () => {
@@ -93,7 +93,7 @@ const openTransactionModalList = async () => {
     data: {
       transactionType: typeOfTransaction,
       onSelect(transaction) {
-        transactionItem.value = transaction;
+        linkedTransaction.value = transaction;
       },
     },
   });
@@ -124,14 +124,11 @@ watch(
   { immediate: true },
 );
 
-watch(
-  () => transactionItem.value,
-  (value) => {
-    if (value !== null) {
-      isTransactionLength.value = true;
-    }
-  },
-);
+watch(linkedTransaction, (value) => {
+  if (value !== null) {
+    isTransactionLength.value = true;
+  }
+});
 
 const isLoading = ref(false);
 
@@ -156,8 +153,9 @@ const {
 const isAmountFieldDisabled = computed(() => {
   if (isRecordExternal.value) {
     if (!isTransferTx.value) return true;
-    if (props.transaction.transactionType === TRANSACTION_TYPES.expense)
+    if (props.transaction.transactionType === TRANSACTION_TYPES.expense) {
       return true;
+    }
   }
 
   // Means it's "Out of wallet"
@@ -297,7 +295,7 @@ const submit = async () => {
         prepareTxUpdationParams({
           form: form.value,
           transaction: props.transaction,
-          linkedTransaction: transactionItem.value,
+          linkedTransaction: linkedTransaction.value,
           isTransferTx: isTransferTx.value,
           isRecordExternal: isRecordExternal.value,
           isCurrenciesDifferent: isCurrenciesDifferent.value,
@@ -338,7 +336,7 @@ const deleteTransactionHandler = async () => {
 };
 
 const deleteTransactionRecordHandler = () => {
-  transactionItem.value = null;
+  linkedTransaction.value = null;
   isTransactionLength.value = false;
 };
 
@@ -379,8 +377,8 @@ onMounted(() => {
     <div class="modify-record__form">
       <form-row
         v-if="
-          !transactionItem ||
-          transactionItem.transactionType !== TRANSACTION_TYPES.income
+          !linkedTransaction ||
+          linkedTransaction.transactionType !== TRANSACTION_TYPES.income
         "
       >
         <input-field
@@ -440,7 +438,7 @@ onMounted(() => {
         </form-row>
       </template>
 
-      <template v-if="isTransferTx && !transactionItem && !isFormCreation">
+      <template v-if="isTransferTx && !linkedTransaction && !isFormCreation">
         <form-row>
           <ui-button
             class="modify-record__action modify-record__action-link"
@@ -452,11 +450,11 @@ onMounted(() => {
         </form-row>
       </template>
 
-      <template v-if="transactionItem && isTransferTx && !isFormCreation">
+      <template v-if="linkedTransaction && isTransferTx && !isFormCreation">
         <form-row class="modify-record__transaction">
           <TransactionRecrod
             class="modify-record__transaction-button"
-            :tx="transactionItem"
+            :tx="linkedTransaction"
           />
           <ui-button
             class="modify-record__action modify-record__action-transaction"

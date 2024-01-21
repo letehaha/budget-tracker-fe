@@ -20,18 +20,18 @@
         type="button"
         :disabled="disabled"
         class="button-style-reset select-field__input"
-        :title="modelValue ? getLabelFromValue(modelValue) : placeholder"
+        :title="modelValue ? getLabelFromValue(modelValue as T) : placeholder"
         @click="toggleDropdown"
       >
-        {{ modelValue ? getLabelFromValue(modelValue) : placeholder }}
+        {{ modelValue ? getLabelFromValue(modelValue as T) : placeholder }}
         <div class="select-field__arrow" />
       </button>
 
       <dropdown
         :is-visible="isDropdownOpened"
         :values="dropdownValues"
-        :label-key="labelKey"
-        :selected-value="modelValue"
+        :label-key="String(labelKey)"
+        :selected-value="(modelValue as T)"
         @select="selectItem"
       >
         <template #header>
@@ -55,7 +55,7 @@
   </div>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup generic="T extends Record<string, any>">
 import { ref, computed, watch, onBeforeUnmount } from "vue";
 
 import Dropdown from "@/components/common/dropdown.vue";
@@ -63,15 +63,12 @@ import FieldError from "./components/field-error.vue";
 import FieldLabel from "./components/field-label.vue";
 import InputField from "./input-field.vue";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ModelValue = Record<string, any>;
-
 const props = withDefaults(
   defineProps<{
     label?: string;
-    modelValue: ModelValue | null;
-    values: ModelValue[];
-    labelKey?: string | ((value: ModelValue) => string);
+    modelValue: T | null;
+    values: T[];
+    labelKey?: keyof T | ((value: T) => string) | "label";
     placeholder?: string;
     withSearchField?: boolean;
     disabled?: boolean;
@@ -90,7 +87,7 @@ const props = withDefaults(
 );
 
 const emit = defineEmits<{
-  "update:model-value": [value: ModelValue];
+  "update:model-value": [value: T];
   "update:isDropdownOpen": [value: boolean];
 }>();
 
@@ -98,31 +95,28 @@ const isDropdownOpened = ref(false);
 const filterQuery = ref("");
 const buttonRef = ref<HTMLButtonElement>(null);
 
-const getLabelFromValue = (value: ModelValue) => {
+const getLabelFromValue = (value: T): string => {
   const { labelKey } = props;
 
   if (typeof labelKey === "function") return labelKey(value);
 
   return value[labelKey];
 };
+const dropdownValues = computed(() =>
+  props.values.reduce((acc: T[], curr) => {
+    if (props.withSearchField && filterQuery.value) {
+      const query = filterQuery.value.toLocaleLowerCase();
+      const value = String(getLabelFromValue(curr)).toLocaleLowerCase();
 
-const dropdownValues = computed(
-  () =>
-    props.values.reduce((acc: ModelValue[], curr) => {
-      if (props.withSearchField && filterQuery.value) {
-        const query = filterQuery.value.toLocaleLowerCase();
-        const value = String(getLabelFromValue(curr)).toLocaleLowerCase();
-
-        if (value.includes(query)) {
-          acc.push(curr);
-        }
-      } else {
+      if (value.includes(query)) {
         acc.push(curr);
       }
-      return acc;
-    }, [] as ModelValue[]) as ModelValue[],
+    } else {
+      acc.push(curr);
+    }
+    return acc;
+  }, []),
 );
-
 const toggleDropdown = () => {
   if (!props.disabled) {
     isDropdownOpened.value = !isDropdownOpened.value;

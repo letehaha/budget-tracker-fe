@@ -74,9 +74,9 @@ const handlerRecordClick = (transaction) => {
 <style lang="scss" scoped>
 .record-list {
   max-width: 420px;
+  width: 100%;
   max-height: 100%;
-  padding: 20px;
-  overflow-x: hidden;
+  padding: 16px;
   background-color: var(--app-surface-color);
 }
 .record-list__load-more {
