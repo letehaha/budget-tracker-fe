@@ -1,4 +1,8 @@
-import { TRANSACTION_TRANSFER_NATURE, TRANSACTION_TYPES } from "shared-types";
+import {
+  TRANSACTION_TRANSFER_NATURE,
+  TRANSACTION_TYPES,
+  // TransactionModel,
+} from "shared-types";
 import { createTransaction } from "@/api";
 import { OUT_OF_WALLET_ACCOUNT_MOCK } from "@/common/const";
 import { UI_FORM_STRUCT } from "../types";
@@ -8,8 +12,10 @@ export const prepareTxCreationParams = ({
   form,
   isTransferTx,
   isCurrenciesDifferent,
+  // linkedTransaction,
 }: {
   form: UI_FORM_STRUCT;
+  // linkedTransaction: TransactionModel;
   isTransferTx: boolean;
   isCurrenciesDifferent: boolean;
 }) => {
@@ -33,6 +39,13 @@ export const prepareTxCreationParams = ({
     accountId,
   };
 
+  // if (linkedTransaction) {
+  //   creationParams.destinationTransactionId = linkedTransaction.id;
+  //   creationParams.transferNature = TRANSACTION_TRANSFER_NATURE.common_transfer;
+  //   // TODO: also take care about the case when user is filling a form for
+  //   // "target amount" and "target account" and linking exactly to them
+  // } else {
+  // // everything that is below...
   if (isTransferTx) {
     creationParams.destinationAccountId = toAccount.id;
     creationParams.destinationAmount = isCurrenciesDifferent

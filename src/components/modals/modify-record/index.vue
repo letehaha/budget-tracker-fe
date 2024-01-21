@@ -87,13 +87,22 @@ const form = ref<UI_FORM_STRUCT>({
 const linkedTransaction = ref<TransactionModel | null>(null);
 
 const openTransactionModalList = async () => {
+  const type =
+    props.transaction?.transactionType === TRANSACTION_TYPES.expense
+      ? TRANSACTION_TYPES.income
+      : TRANSACTION_TYPES.expense;
+
+  // if (isFormCreation.value) {
+  //   type =
+  //     form.value.type === FORM_TYPES.expense
+  //       ? TRANSACTION_TYPES.expense
+  //       : TRANSACTION_TYPES.income;
+  // }
+
   addModal({
     type: MODAL_TYPES.recordList,
     data: {
-      transactionType:
-        props.transaction.transactionType === TRANSACTION_TYPES.expense
-          ? TRANSACTION_TYPES.income
-          : TRANSACTION_TYPES.expense,
+      transactionType: type,
       onSelect(transaction) {
         linkedTransaction.value = transaction;
       },
@@ -286,10 +295,12 @@ const submit = async () => {
   try {
     if (isFormCreation.value) {
       await createTransaction(
+        // TODO: unit tests for "prepareTxCreationParams" and "prepareTxUpdationParams"
         prepareTxCreationParams({
           form: form.value,
           isTransferTx: isTransferTx.value,
           isCurrenciesDifferent: isCurrenciesDifferent.value,
+          // linkedTransaction: linkedTransaction.value,
         }),
       );
     } else if (linkedTransaction.value) {
