@@ -6,13 +6,14 @@
       </template>
     </div>
     <template v-if="hasNextPage">
-      <button
-        class="transactions-list__load-more"
+      <UiButton
         type="button"
+        variant="secondary"
+        class="mt-8"
         @click="() => fetchNextPage()"
       >
         Load more
-      </button>
+      </UiButton>
     </template>
     <template v-else>
       <p>No more data to load</p>
@@ -24,8 +25,10 @@
 import { useInfiniteQuery } from "@tanstack/vue-query";
 import { loadTransactions } from "@/api/transactions";
 
-import TransactionsList from "@/components/transactions-list/transactions-list.vue";
 import { VUE_QUERY_CACHE_KEYS } from "@/common/const";
+
+import TransactionsList from "@/components/transactions-list/transactions-list.vue";
+import UiButton from "@/components/lib/ui/button/Button.vue";
 
 const limit = 30;
 

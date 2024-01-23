@@ -1,28 +1,30 @@
 <template>
-  <div
-    class="widget-wrapper"
+  <Card
+    class="max-h-[350px]"
     :class="{
-      'widget-wrapper--higher': higher,
+      'max-h-[724px]': higher,
     }"
   >
-    <div class="widget-wrapper__header">
+    <CardHeader>
       <slot name="header">
-        <div class="widget-wrapper__header-content">
-          <h3 class="widget-wrapper__title">
+        <div class="flex items-center justify-between">
+          <h3>
             {{ title }}
           </h3>
           <slot name="action" />
         </div>
       </slot>
-    </div>
+    </CardHeader>
 
-    <div class="widget-wrapper__content">
+    <CardContent class="widget-wrapper__content">
       <slot />
-    </div>
-  </div>
+    </CardContent>
+  </Card>
 </template>
 
 <script setup lang="ts">
+import { Card, CardContent, CardHeader } from "@/components/lib/ui/card";
+
 withDefaults(
   defineProps<{
     title?: string;
@@ -33,24 +35,3 @@ withDefaults(
   },
 );
 </script>
-
-<style lang="scss">
-.widget-wrapper {
-  max-height: 350px;
-  background-color: var(--app-surface-color);
-  padding: 24px;
-  border-radius: 12px;
-}
-.widget-wrapper--higher {
-  // 24px is a gap between widgets
-  max-height: 724px;
-}
-.widget-wrapper__header {
-  margin-bottom: 12px;
-}
-.widget-wrapper__header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-</style>

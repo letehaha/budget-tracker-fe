@@ -56,6 +56,7 @@ watch(isAppInitialized, (value) => {
 
 <style lang="scss" scoped>
 .page {
-  min-height: 100vh;
+  height: 100dvh;
+  background-color: var(--background);
 }
 </style>

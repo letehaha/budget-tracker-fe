@@ -3,20 +3,24 @@
     <accounts-list class="dashboard-page__accounts" />
 
     <div class="dashboard-page__period-selector">
-      <button type="button" @click="selectPrevPeriod">
-        {{ "<" }}
-      </button>
+      <ui-button size="icon" variant="ghost" @click="selectPrevPeriod">
+        <ChevronLeft :size="20" />
+      </ui-button>
+
       <div class="dashboard-page__period">
         {{ periodSelectorText }}
       </div>
-      <button
-        type="button"
+
+      <ui-button
+        size="icon"
+        variant="ghost"
         :disabled="isCurrentPeriodSameMonth"
         @click="selectNextPeriod"
       >
-        {{ ">" }}
-      </button>
+        <ChevronRight :size="20" />
+      </ui-button>
     </div>
+
     <div class="dashboard-page__info">
       <BalanceTrendWidget
         :selected-period="currentPeriod"
@@ -45,6 +49,8 @@ import {
   subMonths,
   format,
 } from "date-fns";
+import { ChevronLeft, ChevronRight } from "lucide-vue-next";
+import UiButton from "@/components/lib/ui/button/Button.vue";
 import AccountsList from "./accounts-list/accounts-list.vue";
 
 const BalanceTrendWidget = defineAsyncComponent(
@@ -131,22 +137,9 @@ const selectNextPeriod = () => {
   grid-area: spending-categories;
 }
 .dashboard-page__period-selector {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  margin: 24px 0;
-
-  button {
-    padding: 8px;
-
-    &[disabled] {
-      opacity: 0.4;
-    }
-  }
+  @apply flex items-center justify-center gap-1 my-6;
 }
 .dashboard-page__period {
-  width: 150px;
-  text-align: center;
+  @apply w-[150px] text-center;
 }
 </style>

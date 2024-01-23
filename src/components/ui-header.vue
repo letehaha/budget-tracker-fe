@@ -2,23 +2,21 @@
   <div class="layout-header">
     <div class="layout-header__actions">
       <div class="layout-header__action">
-        <ui-button @click="openFormModal"> New Record </ui-button>
+        <ui-button variant="default" size="lg" @click="openFormModal">
+          New Record
+        </ui-button>
       </div>
     </div>
 
-    <div class="layout-header__to-left">
-      <button
-        type="button"
-        class="layout-header__toggle-theme"
-        @click="toggleTheme"
-      >
+    <div class="flex items-center gap-2 ml-auto">
+      <ui-button variant="ghost" size="icon" @click="toggleTheme">
         <template v-if="currentTheme === Themes.dark">
-          <moon-icon />
+          <MoonStar :size="20" />
         </template>
         <template v-else>
-          <sun-icon />
+          <Sun :size="20" />
         </template>
-      </button>
+      </ui-button>
 
       <ui-tooltip
         :content="
@@ -29,26 +27,24 @@
         position="bottom"
         class="layout-header__sync-status-wrapper"
       >
-        <button
-          class="layout-header__sync-status"
-          type="button"
-          :class="{
-            'layout-header__sync-status--syncing': isSyncing,
-          }"
+        <ui-button
+          variant="ghost"
+          class="flex items-center gap-2"
+          size="sm"
           :disabled="!isAllowedToSyncFinancialData"
           @click="syncFinancialDataHandler"
         >
           <template v-if="isSyncing">
-            <refresh-icon />
+            <RefreshCcw />
             <span class="layout-header__sync-status-text"
               >Synchronizing...</span
             >
           </template>
           <template v-else>
-            <checkmark-in-circle-icon />
+            <CheckCircle :size="14" class="text-green-700" />
             <span class="layout-header__sync-status-text">Synchronized</span>
           </template>
-        </button>
+        </ui-button>
       </ui-tooltip>
     </div>
   </div>
@@ -57,14 +53,12 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { storeToRefs } from "pinia";
-import { SunIcon, MoonIcon } from "@heroicons/vue/24/solid";
 import { useRootStore } from "@/stores";
 import { MODAL_TYPES, useModalCenter } from "@/components/modal-center/index";
-import UiButton from "@/components/common/ui-button.vue";
-import CheckmarkInCircleIcon from "@/assets/icons/checkmark-in-circle.svg?component";
-import RefreshIcon from "@/assets/icons/refresh.svg?component";
 import UiTooltip from "@/components/common/tooltip.vue";
 import { toggleTheme, currentTheme, Themes } from "@/common/utils";
+import UiButton from "@/components/lib/ui/button/Button.vue";
+import { MoonStar, Sun, CheckCircle, RefreshCcw } from "lucide-vue-next";
 
 const { addModal } = useModalCenter();
 const rootStore = useRootStore();
@@ -99,8 +93,7 @@ const syncFinancialDataHandler = () => {
   max-height: var(--header-height);
 }
 .layout-header__actions {
-  display: flex;
-  align-items: center;
+  @apply flex items-center;
 }
 .layout-header__action {
   margin-right: 16px;
@@ -114,34 +107,6 @@ const syncFinancialDataHandler = () => {
     left: 30%;
   }
 }
-.layout-header__sync-status {
-  display: grid;
-  grid-template-columns: 14px 1fr;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-
-  padding: 8px 12px;
-  transition: background-color 0.2s ease-out;
-  border-radius: 6px;
-
-  &[disabled] {
-    cursor: not-allowed;
-    opacity: 0.8;
-  }
-
-  &:not([disabled]):hover {
-    background-color: rgba(0, 0, 0, 0.05);
-
-    body.dark & {
-      background-color: rgba(255, 255, 255, 0.05);
-    }
-  }
-
-  &:not(.layout-header__sync-status--syncing) svg {
-    color: var(--primary-700);
-  }
-}
 .layout-header__sync-status--syncing {
   svg {
     animation-name: keyframes-rotate;
@@ -152,11 +117,5 @@ const syncFinancialDataHandler = () => {
 }
 .layout-header__sync-status-text {
   font-weight: 500;
-}
-.layout-header__toggle-theme {
-  width: 32px;
-  height: 32px;
-  border-radius: 4px;
-  padding: 4px;
 }
 </style>

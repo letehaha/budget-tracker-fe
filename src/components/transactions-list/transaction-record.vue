@@ -1,6 +1,6 @@
 <template>
   <button
-    class="button-style-reset transaction-record"
+    class="transaction-record"
     type="button"
     aria-haspopup="true"
     :class="{
@@ -11,34 +11,34 @@
     }"
     @click="transactionEmit"
   >
-    <div class="transaction-record__info">
+    <div class="flex items-center gap-2">
       <template v-if="!isTransferTransaction && category">
         <CategoryCircle :category="category" />
       </template>
 
-      <div>
+      <div class="text-left">
         <template v-if="isTransferTransaction">
-          <div class="transaction-record__category">
+          <span class="text-sm tracking-wider whitespace-nowrap">
             {{ accountMovement }}
-          </div>
+          </span>
         </template>
         <template v-else>
           <template v-if="category">
-            <div class="transaction-record__category">
+            <span class="text-sm tracking-wider whitespace-nowrap">
               {{ category.name }}
-            </div>
+            </span>
           </template>
         </template>
-        <div class="transaction-record__note">
+        <span class="text-sm tracking-wider line-clamp-2 opacity-40">
           {{ transaction.note }}
-        </div>
+        </span>
       </div>
     </div>
-    <div class="transaction-record__right">
-      <div class="transaction-record__amount">
+    <div class="flex-none">
+      <div class="text-right transaction-record__amount">
         {{ formattedAmount }}
       </div>
-      <div class="transaction-record__time">
+      <div class="text-sm">
         {{ formateDate(transaction.time) }}
       </div>
     </div>
@@ -144,45 +144,10 @@ const formattedAmount = computed(() => {
 
 <style lang="scss">
 .transaction-record {
-  padding: 10px;
-  border-radius: 6px;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  cursor: pointer;
-  width: 100%;
-}
-.transaction-record__info {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.transaction-record__category {
-  font-size: 14px;
-  white-space: nowrap;
-  letter-spacing: 0.5px;
-  color: var(--app-on-surface-color);
-}
-.transaction-record__time {
-  color: var(--app-on-surface-color);
-  font-size: 14px;
-}
-.transaction-record__note {
-  color: #666;
-  font-size: 14px;
-  letter-spacing: 0.5px;
-
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-.transaction-record__right {
-  flex: none;
+  @apply py-1 px-2;
+  @apply rounded-md flex justify-between items-center cursor-pointer w-full;
 }
 .transaction-record__amount {
-  text-align: right;
-
   .transaction-record--income & {
     color: #2ecc71;
   }
