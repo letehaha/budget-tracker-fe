@@ -1,14 +1,18 @@
 <template>
-  <ui-button
-    :disabled="isRefreshDisabled"
-    @click="loadLatestTransactionsHandler"
-  >
-    {{ isRefreshDisabled ? "Loading..." : "Load latest transactions" }}
-  </ui-button>
+  <div class="flex items-center justify-between">
+    <p>Load all latest transaction</p>
+    <Button
+      :disabled="isRefreshDisabled"
+      class="min-w-[100px]"
+      @click="loadLatestTransactionsHandler"
+    >
+      {{ isRefreshDisabled ? "Loading..." : "Load" }}
+    </Button>
+  </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, computed, ref, watchEffect, PropType } from "vue";
+<script lang="ts" setup>
+import { computed, ref, watchEffect } from "vue";
 import { API_ERROR_CODES, AccountModel } from "shared-types";
 import { useBanksMonobankStore } from "@/stores";
 import { useLocalStorage } from "@/composable";
@@ -17,95 +21,81 @@ import {
   useNotificationCenter,
   NotificationType,
 } from "@/components/notification-center";
-import UiButton from "@/components/common/ui-button.vue";
+import { Button } from "@/components/lib/ui/button";
 
-export default defineComponent({
-  components: {
-    UiButton,
-  },
-  props: {
-    account: {
-      type: Object as PropType<AccountModel>,
-      required: true,
-    },
-  },
-  setup(props) {
-    const { addNotification } = useNotificationCenter();
-    const { addLSItem, removeLSItem, getLSItem } = useLocalStorage();
-    const monobankStore = useBanksMonobankStore();
+const props = defineProps<{
+  account: AccountModel;
+}>();
 
-    const isRefreshDisabled = ref(false);
+const { addNotification } = useNotificationCenter();
+const { addLSItem, removeLSItem, getLSItem } = useLocalStorage();
+const monobankStore = useBanksMonobankStore();
 
-    const accountLSKey = computed(
-      () => `monobank-${props.account.externalId}-txs-loading-end`,
-    );
+const isRefreshDisabled = ref(false);
 
-    const setLoadingTimer = (wait: number) => {
-      isRefreshDisabled.value = true;
+const accountLSKey = computed(
+  () => `monobank-${props.account.externalId}-txs-loading-end`,
+);
 
-      addLSItem(accountLSKey.value, String(new Date().getTime() + wait));
+const setLoadingTimer = (wait: number) => {
+  isRefreshDisabled.value = true;
 
-      setTimeout(() => {
-        removeLSItem(accountLSKey.value);
+  addLSItem(accountLSKey.value, String(new Date().getTime() + wait));
 
-        isRefreshDisabled.value = false;
-      }, wait);
-    };
+  setTimeout(() => {
+    removeLSItem(accountLSKey.value);
 
-    const loadLatestTransactionsHandler = async () => {
-      try {
-        const response = await monobankStore.loadTransactionsFromLatest({
-          accountId: props.account.id,
-        });
+    isRefreshDisabled.value = false;
+  }, wait);
+};
 
-        if (!response) {
-          addNotification({
-            text: "You don't have any transactions loaded yet, so we cannot load latest.",
-            type: NotificationType.warning,
-          });
-
-          return;
-        }
-
-        const isUserNeedToWait = response.minutesToFinish >= 1;
-
-        if (isUserNeedToWait) {
-          setLoadingTimer(response.minutesToFinish * 60 * 1000);
-        }
-
-        addNotification({
-          text: isUserNeedToWait
-            ? `Loading started. Estimated loading time is ${response.minutesToFinish} minute(s).`
-            : "Loaded successfully",
-          type: NotificationType.success,
-        });
-      } catch (e) {
-        if (e?.data?.code === API_ERROR_CODES.forbidden) {
-          addNotification({
-            text: e.data.message,
-            type: NotificationType.error,
-          });
-        } else {
-          // eslint-disable-next-line no-console
-          console.error(e);
-        }
-      }
-    };
-
-    watchEffect(() => {
-      if (props.account) {
-        const curr = new Date().getTime();
-        const timestamp = Number(getLSItem(accountLSKey.value)) || curr;
-        if (curr < timestamp) {
-          setLoadingTimer(timestamp - curr);
-        }
-      }
+const loadLatestTransactionsHandler = async () => {
+  try {
+    const response = await monobankStore.loadTransactionsFromLatest({
+      accountId: props.account.id,
     });
 
-    return {
-      isRefreshDisabled,
-      loadLatestTransactionsHandler,
-    };
-  },
+    if (!response) {
+      addNotification({
+        text: "You don't have any transactions loaded yet, so we cannot load latest.",
+        type: NotificationType.warning,
+      });
+
+      return;
+    }
+
+    const isUserNeedToWait = response.minutesToFinish >= 1;
+
+    if (isUserNeedToWait) {
+      setLoadingTimer(response.minutesToFinish * 60 * 1000);
+    }
+
+    addNotification({
+      text: isUserNeedToWait
+        ? `Loading started. Estimated loading time is ${response.minutesToFinish} minute(s).`
+        : "Loaded successfully",
+      type: NotificationType.success,
+    });
+  } catch (e) {
+    if (e?.data?.code === API_ERROR_CODES.forbidden) {
+      addNotification({
+        text: e.data.message,
+        type: NotificationType.error,
+      });
+    } else {
+      // eslint-disable-next-line no-console
+      console.error(e);
+    }
+  }
+};
+
+watchEffect(() => {
+  if (props.account) {
+    const curr = new Date().getTime();
+    const timestamp = Number(getLSItem(accountLSKey.value)) || curr;
+    if (curr < timestamp) {
+      setLoadingTimer(timestamp - curr);
+    }
+  }
 });
 </script>

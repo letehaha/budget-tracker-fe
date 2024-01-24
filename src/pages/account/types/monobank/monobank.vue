@@ -1,47 +1,20 @@
-<template>
-  <div class="mono-account">
-    <div class="mono-account__form">
-      <input-field
-        v-model="editingForm.name"
-        label="Account name"
-        placeholder="Account name"
-        :error-message="getFieldErrorMessage('form.name')"
-      />
-
-      <ui-button @click="updateAccount"> Save </ui-button>
-    </div>
-
-    <template v-if="account.type === ACCOUNT_TYPES.monobank">
-      <LoadLatestTransactions
-        class="mono-account__load-latest-tx"
-        :account="account"
-      />
-    </template>
-
-    <label class="mono-account__visibility">
-      Make this account visible on the Dashboard:
-
-      <input v-model="form.isEnabled" type="checkbox" />
-    </label>
-
-    <LoadTransactions class="mono-account__load-tx" :account="account" />
-  </div>
-</template>
-
 <script setup lang="ts">
 import { debounce } from "lodash-es";
-import { reactive, watchEffect, watch } from "vue";
+import { reactive, watchEffect, watch, ref } from "vue";
+import { storeToRefs } from "pinia";
 import { ACCOUNT_TYPES, AccountModel } from "shared-types";
-import { useAccountsStore } from "@/stores";
-import { useFormValidation } from "@/composable";
-import { required, minLength } from "@/js/helpers/validators";
+import { ChevronDownIcon, ChevronUpIcon } from "lucide-vue-next";
+import * as Tabs from "@/components/lib/ui/tabs";
+import * as Collapsible from "@/components/lib/ui/collapsible";
+import { Switch } from "@/components/lib/ui/switch";
+import { Separator } from "@/components/lib/ui/separator";
+import { useAccountsStore, useCurrenciesStore } from "@/stores";
+import { toLocalNumber } from "@/js/helpers";
 
 import {
   useNotificationCenter,
   NotificationType,
 } from "@/components/notification-center";
-import UiButton from "@/components/common/ui-button.vue";
-import InputField from "@/components/fields/input-field.vue";
 
 import LoadLatestTransactions from "./load-latest-transactions.vue";
 import LoadTransactions from "./load-transactions.vue";
@@ -50,40 +23,9 @@ const props = defineProps<{
   account: AccountModel;
 }>();
 
-const { addNotification, addSuccessNotification, addErrorNotification } =
-  useNotificationCenter();
+const { addNotification } = useNotificationCenter();
 const accountsStore = useAccountsStore();
-
-const editingForm = reactive<{ name: string }>({
-  name: props.account.name,
-});
-
-const { isFormValid, getFieldErrorMessage } = useFormValidation(
-  { form: editingForm },
-  {
-    form: {
-      name: {
-        required,
-        minLength: minLength(2),
-      },
-    },
-  },
-);
-
-const updateAccount = async () => {
-  if (!isFormValid()) return;
-
-  try {
-    await accountsStore.editAccount({
-      id: props.account.id,
-      name: editingForm.name,
-    });
-
-    addSuccessNotification("Account data changed successfully");
-  } catch (e) {
-    addErrorNotification("An error occured while trying to update account");
-  }
-};
+const { currenciesMap, baseCurrency } = storeToRefs(useCurrenciesStore());
 
 const form = reactive({
   isEnabled: false,
@@ -113,6 +55,8 @@ const updateVisibility = async ({
   }
 };
 
+const isOpen = ref(false);
+
 const debouncedUpdateMonoAccHandler = debounce(updateVisibility, 1000);
 
 watchEffect(() => {
@@ -135,22 +79,100 @@ watch(
 );
 </script>
 
-<style lang="scss">
-.mono-account__form {
-  display: grid;
-  grid-template-columns: 1fr max-content;
-  align-items: flex-end;
-  gap: 16px;
-}
-.mono-account__visibility {
-  color: var(--app-on-surface-color);
-  margin: 24px 0;
-  display: block;
-}
-.mono-account__load-latest-tx {
-  margin-top: 32px;
-}
-.mono-account__load-tx {
-  margin-top: 48px;
-}
-</style>
+<template>
+  <Tabs.Tabs default-value="details">
+    <Tabs.TabsList class="justify-start w-full mt-4">
+      <Tabs.TabsTrigger value="details"> Details </Tabs.TabsTrigger>
+      <Tabs.TabsTrigger value="settings"> Settings </Tabs.TabsTrigger>
+    </Tabs.TabsList>
+
+    <Tabs.TabsContent value="details" class="grid gap-4 pt-6">
+      <div class="flex items-center justify-between gap-2">
+        <span> Credit Limit: </span>
+
+        {{ toLocalNumber(account.creditLimit) }}
+        {{ baseCurrency.currency.code }}
+      </div>
+      <Separator />
+      <div class="flex items-center justify-between gap-2">
+        <span> Account Type: </span>
+
+        {{ account.type }}
+      </div>
+      <Separator />
+
+      <Collapsible.Collapsible v-model:open="isOpen">
+        <Collapsible.CollapsibleTrigger class="w-full">
+          <div class="flex items-center justify-between gap-2">
+            <span> Currency: </span>
+
+            <div class="flex gap-2">
+              {{ currenciesMap[account.currencyId].currency.code }}
+
+              <span v-if="currenciesMap[account.currencyId].isDefaultCurrency">
+                (main)
+              </span>
+
+              <template v-if="isOpen">
+                <ChevronUpIcon />
+              </template>
+              <template v-else>
+                <ChevronDownIcon />
+              </template>
+            </div>
+          </div>
+        </Collapsible.CollapsibleTrigger>
+
+        <Collapsible.CollapsibleContent>
+          <div class="grid gap-2 pt-4 pl-4">
+            <Separator />
+
+            <div class="flex items-center justify-between gap-2">
+              <span> Exchange Rate: </span>
+
+              {{ currenciesMap[account.currencyId].exchangeRate }}
+            </div>
+
+            <Separator />
+
+            <div class="flex items-center justify-between gap-2">
+              <span> Exchange Rate Live Update: </span>
+
+              {{
+                currenciesMap[account.currencyId].liveRateUpdate
+                  ? "Enabled"
+                  : "Disabled"
+              }}
+            </div>
+          </div>
+        </Collapsible.CollapsibleContent>
+      </Collapsible.Collapsible>
+
+      <Separator />
+
+      <div class="flex items-center justify-between gap-2">
+        <span> Live update enabled? </span>
+
+        {{ currenciesMap[account.currencyId].liveRateUpdate }}
+      </div>
+    </Tabs.TabsContent>
+
+    <Tabs.TabsContent value="settings" class="grid gap-4 pt-6">
+      <div class="flex items-center justify-between gap-2">
+        <span> Make this account visible on the Dashboard: </span>
+
+        <Switch v-model:checked="form.isEnabled" />
+      </div>
+
+      <Separator />
+
+      <template v-if="account.type === ACCOUNT_TYPES.monobank">
+        <LoadLatestTransactions :account="account" />
+      </template>
+
+      <Separator />
+
+      <LoadTransactions :account="account" />
+    </Tabs.TabsContent>
+  </Tabs.Tabs>
+</template>

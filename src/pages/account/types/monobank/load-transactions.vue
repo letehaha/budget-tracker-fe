@@ -1,108 +1,91 @@
-<template>
-  <div class="load-transactions">
-    <div class="load-transactions__title">
-      Load transactions for selected period
-    </div>
-    <div class="load-transactions__wrapper">
-      <div class="load-transactions__fields">
-        <date-field v-model="form.from" label="From" />
-        <date-field v-model="form.to" label="To" />
-      </div>
-      <ui-button
-        :disabled="!isPeriodSelected"
-        @click="loadTransactionsForPeriod"
-      >
-        {{ isPeriodSelected ? "Load transactions" : "Select period" }}
-      </ui-button>
-    </div>
-  </div>
-</template>
-
-<script lang="ts">
-import { defineComponent, reactive, computed, PropType } from "vue";
+<script lang="ts" setup>
+import { ref } from "vue";
 import { AccountModel } from "shared-types";
+import { format, subDays } from "date-fns";
+import { CalendarIcon } from "lucide-vue-next";
 import { useBanksMonobankStore } from "@/stores";
-
 import {
   useNotificationCenter,
   NotificationType,
 } from "@/components/notification-center";
-import UiButton from "@/components/common/ui-button.vue";
-import DateField from "@/components/fields/date-field.vue";
+import { Button } from "@/components/lib/ui/button";
+import * as Popover from "@/components/lib/ui/popover";
+import { Calendar } from "@/components/lib/ui/calendar";
 
-export default defineComponent({
-  components: {
-    DateField,
-    UiButton,
-  },
-  props: {
-    account: {
-      type: Object as PropType<AccountModel>,
-      required: true,
-    },
-  },
-  setup(props) {
-    const { addNotification } = useNotificationCenter();
-    const monobankStore = useBanksMonobankStore();
+const props = defineProps<{
+  account: AccountModel;
+}>();
+const { addNotification } = useNotificationCenter();
+const monobankStore = useBanksMonobankStore();
 
-    const form = reactive({
-      from: null,
-      to: null,
+const INITIAL_FORM_VALUE = {
+  start: subDays(new Date(), 1),
+  end: subDays(new Date(), 1),
+};
+
+const selectorVisible = ref(false);
+const dateRange = ref(INITIAL_FORM_VALUE);
+
+const loadTransactionsForPeriod = async () => {
+  try {
+    const { start, end } = dateRange.value;
+
+    await monobankStore.loadTransactionsForPeriod({
+      accountId: props.account.id,
+      from: start.getTime(),
+      to: end.getTime(),
     });
 
-    const isPeriodSelected = computed(() => form.from && form.to);
+    addNotification({
+      text: "Loaded successfully",
+      type: NotificationType.success,
+    });
 
-    const loadTransactionsForPeriod = async () => {
-      try {
-        if (isPeriodSelected.value) {
-          const from = new Date(form.from).getTime();
-          const to = new Date(form.to).getTime();
-
-          await monobankStore.loadTransactionsForPeriod({
-            accountId: props.account.id,
-            from,
-            to,
-          });
-
-          addNotification({
-            text: "Loaded successfully",
-            type: NotificationType.success,
-          });
-
-          form.from = null;
-          form.to = null;
-        }
-      } catch (err) {
-        addNotification({
-          text: "Unexpected error",
-          type: NotificationType.error,
-        });
-      }
-    };
-
-    return {
-      form,
-      isPeriodSelected,
-      loadTransactionsForPeriod,
-    };
-  },
-});
+    dateRange.value = INITIAL_FORM_VALUE;
+    selectorVisible.value = false;
+  } catch (err) {
+    addNotification({
+      text: "Unexpected error",
+      type: NotificationType.error,
+    });
+  }
+};
 </script>
 
-<style lang="scss" scoped>
-.load-transactions__title {
-  font-size: 24px;
-  color: var(--app-on-surface-color);
-  margin-bottom: 16px;
-}
-.load-transactions__wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-.load-transactions__fields {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-}
-</style>
+<template>
+  <div class="flex items-center justify-between">
+    <p>Load transactions for selected period</p>
+
+    <Popover.Popover
+      :open="selectorVisible"
+      @update:open="selectorVisible = $event"
+    >
+      <Popover.PopoverTrigger>
+        <Button class="min-w-[100px]"> Select period </Button>
+      </Popover.PopoverTrigger>
+
+      <Popover.PopoverContent class="w-[600px] grid gap-3">
+        <div class="flex items-center justify-center gap-2">
+          <CalendarIcon />
+          <span>
+            {{ format(dateRange.start, "MMM dd, yyyy") }} -
+            {{ format(dateRange.end, "MMM dd, yyyy") }}
+          </span>
+        </div>
+
+        <Calendar
+          v-model.range="dateRange"
+          type="range"
+          :disabled-dates="[{ start: new Date(), end: null }]"
+          :columns="2"
+        />
+
+        <div class="flex justify-end">
+          <Button @click="loadTransactionsForPeriod">
+            Load transactions
+          </Button>
+        </div>
+      </Popover.PopoverContent>
+    </Popover.Popover>
+  </div>
+</template>
