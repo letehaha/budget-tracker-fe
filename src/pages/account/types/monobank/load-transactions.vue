@@ -61,7 +61,7 @@ const loadTransactionsForPeriod = async () => {
       @update:open="selectorVisible = $event"
     >
       <Popover.PopoverTrigger>
-        <Button class="min-w-[100px]"> Select period </Button>
+        <Button class="min-w-[100px]" size="sm"> Select period </Button>
       </Popover.PopoverTrigger>
 
       <Popover.PopoverContent class="w-[600px] grid gap-3">

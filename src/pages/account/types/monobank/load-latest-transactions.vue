@@ -4,6 +4,7 @@
     <Button
       :disabled="isRefreshDisabled"
       class="min-w-[100px]"
+      size="sm"
       @click="loadLatestTransactionsHandler"
     >
       {{ isRefreshDisabled ? "Loading..." : "Load" }}
