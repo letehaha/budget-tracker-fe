@@ -187,6 +187,10 @@ const isLeadingIconExist = computed(() => !!slots.iconLeading);
   position: absolute;
   top: 0;
   right: 0;
-  padding: 12px 24px;
+  height: 100%;
+  padding: 0 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 </style>
