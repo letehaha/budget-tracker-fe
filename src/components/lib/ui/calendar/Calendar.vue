@@ -306,13 +306,13 @@ const vCalendarSlots = computed(() =>
   @apply flex items-center text-sm font-semibold uppercase mt-1 px-1 leading-6;
 }
 .vc-time-select-group {
-  @apply inline-flex items-center px-1 rounded-md bg-primary-foreground border border-solid border-secondary;
+  @apply inline-flex items-center px-1 rounded-md bg-background border border-solid border-secondary;
 }
 .vc-time-select-group .vc-base-icon {
   @apply mr-1 text-primary stroke-primary;
 }
 .vc-time-select-group select {
-  @apply bg-primary-foreground p-1 appearance-none outline-none text-center;
+  @apply bg-background p-1 appearance-none outline-none text-center;
 }
 .vc-time-weekday {
   @apply text-muted-foreground tracking-wide;

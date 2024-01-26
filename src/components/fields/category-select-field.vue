@@ -425,7 +425,7 @@ onBeforeUnmount(() => {
     height: 2px;
     background-color: var(--app-on-surface-color);
     border-radius: 2px;
-    transform: rotate(45deg);
+    transform: rotate(-45deg);
     top: 10px;
     left: inherit;
     transition: transform 0.15s ease-out;
@@ -433,15 +433,15 @@ onBeforeUnmount(() => {
 
   &:before {
     left: 5px;
-    transform: rotate(-45deg);
+    transform: rotate(45deg);
   }
 
   .category-select-field--active & {
     &:before {
-      transform: rotate(45deg);
+      transform: rotate(-45deg);
     }
     &:after {
-      transform: rotate(-45deg);
+      transform: rotate(45deg);
     }
   }
 }

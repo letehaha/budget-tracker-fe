@@ -76,7 +76,7 @@ const form = ref<UI_FORM_STRUCT>({
   toAccount: null,
   targetAmount: null,
   category: formattedCategories.value[0],
-  time: new Date().toISOString().substring(0, 19),
+  time: new Date(),
   paymentType: VERBOSE_PAYMENT_TYPES.find(
     (item) => item.value === PAYMENT_TYPES.creditCard,
   ),
@@ -200,7 +200,7 @@ watch(
       const initialFormValues = {
         type: getFormTypeFromTransaction(value),
         category: categoriesMap.value[value.categoryId],
-        time: new Date(value.time).toISOString().substring(0, 19),
+        time: new Date(value.time),
         paymentType: VERBOSE_PAYMENT_TYPES.find(
           (item) => item.value === value.paymentType,
         ),

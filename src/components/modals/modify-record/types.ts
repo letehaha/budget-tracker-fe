@@ -13,7 +13,7 @@ export interface UI_FORM_STRUCT {
   account: AccountModel;
   toAccount?: AccountModel;
   category: CategoryModel;
-  time: string;
+  time: Date;
   paymentType: VerbosePaymentType;
   note?: string;
   type: FORM_TYPES;
