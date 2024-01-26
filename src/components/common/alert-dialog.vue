@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import * as AlertDialog from "@/components/lib/ui/alert-dialog";
+import type { ButtonVariantProps } from "@/components/lib/ui/button";
 
 defineEmits(["accept", "cancel"]);
 withDefaults(
@@ -8,11 +9,15 @@ withDefaults(
     description?: string;
     cancelLabel?: string;
     acceptLabel?: string;
+    acceptVariant?: ButtonVariantProps["variant"];
+    acceptDisabled?: boolean;
   }>(),
   {
     description: undefined,
     cancelLabel: "Cancel",
     acceptLabel: "Accept",
+    acceptDisabled: false,
+    acceptVariant: "default",
   },
 );
 </script>
@@ -39,7 +44,11 @@ withDefaults(
           <AlertDialog.AlertDialogCancel @click="$emit('cancel')">
             {{ cancelLabel }}
           </AlertDialog.AlertDialogCancel>
-          <AlertDialog.AlertDialogAction @click="$emit('accept')">
+          <AlertDialog.AlertDialogAction
+            :disabled="acceptDisabled"
+            :variant="acceptVariant"
+            @click="$emit('accept')"
+          >
             {{ acceptLabel }}
           </AlertDialog.AlertDialogAction>
         </AlertDialog.AlertDialogFooter>

@@ -21,7 +21,7 @@ const isOpen = ref(false);
 
 <template>
   <Tabs.TabsContent :value="tabName">
-    <div class="grid gap-4 pt-6">
+    <div class="grid gap-4 py-6">
       <div class="flex items-center justify-between gap-2">
         <span> Credit Limit: </span>
 

@@ -1,10 +1,7 @@
 <script setup lang="ts">
-import type { VariantProps } from "class-variance-authority";
 import { Primitive, type PrimitiveProps } from "radix-vue";
 import { cn } from "@/lib/utils";
-import { buttonVariants } from ".";
-
-interface ButtonVariantProps extends VariantProps<typeof buttonVariants> {}
+import { buttonVariants, type ButtonVariantProps } from ".";
 
 interface Props extends PrimitiveProps {
   variant?: ButtonVariantProps["variant"];

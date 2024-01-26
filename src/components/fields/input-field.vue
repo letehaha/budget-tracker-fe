@@ -13,9 +13,9 @@
         </template>
       </template>
 
-      <div class="input-field__wrapper">
+      <div class="relative">
         <template v-if="isLeadingIconExist">
-          <div class="input-field__leading-icon">
+          <div class="absolute top-0 left-0 px-6 py-3">
             <slot name="iconLeading" />
           </div>
         </template>
@@ -41,7 +41,7 @@
         />
 
         <template v-if="isTrailIconExist">
-          <div class="input-field__trailing-icon">
+          <div class="absolute top-0 right-0 px-6 py-3">
             <slot name="iconTrailing" />
           </div>
         </template>
@@ -149,26 +149,6 @@ const isLeadingIconExist = computed(() => !!slots.iconLeading);
 </script>
 
 <style lang="scss">
-.input-field {
-  position: relative;
-  width: 100%;
-  flex: 1;
-  input[type="number"]::-webkit-inner-spin-button,
-  input[type="number"]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-  input[type="number"] {
-    appearance: textfield;
-  }
-}
-.input-field__wrapper {
-  position: relative;
-
-  .input-field--disabled & {
-    opacity: 0.3;
-  }
-}
 .input-fields__sublabel {
   position: absolute;
   right: 0;
@@ -181,16 +161,5 @@ const isLeadingIconExist = computed(() => !!slots.iconLeading);
     color: #ffffff;
     text-decoration: none;
   }
-}
-.input-field__leading-icon,
-.input-field__trailing-icon {
-  position: absolute;
-  top: 0;
-  right: 0;
-  height: 100%;
-  padding: 0 24px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
 }
 </style>
