@@ -50,7 +50,7 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref } from "vue";
+import { computed, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import { API_ERROR_CODES } from "shared-types";
 
@@ -90,7 +90,7 @@ const { isFormValid, getFieldErrorMessage } = useFormValidation(
       verifyPassowrd: {
         required,
         passwordMinLength: minLength(6),
-        sameAs: sameAs(form.password),
+        sameAs: sameAs(computed(() => form.password)),
       },
     },
   },
