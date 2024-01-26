@@ -32,7 +32,7 @@ import { MODAL_TYPES, useModalCenter } from "@/components/modal-center";
 import CategorySelectField from "@/components/fields/category-select-field.vue";
 import TextareaField from "@/components/fields/textarea-field.vue";
 import DateField from "@/components/fields/date-field.vue";
-import UiButton from "@/components/common/ui-button.vue";
+import { Button } from "@/components/lib/ui/button";
 import { EVENTS as MODAL_EVENTS } from "@/components/modal-center/ui-modal.vue";
 import TransactionRecrod from "@/components/transactions-list/transaction-record.vue";
 import FormHeader from "./components/form-header.vue";
@@ -409,7 +409,7 @@ onMounted(() => {
         @change-tx-type="selectTransactionType"
       />
     </div>
-    <div class="modify-record__form">
+    <div class="px-6">
       <form-row>
         <input-field
           v-model="form.amount"
@@ -477,41 +477,41 @@ onMounted(() => {
         "
       >
         <form-row>
-          <ui-button
-            class="modify-record__action modify-record__action-link"
+          <Button
+            class="w-full"
             :disabled="isLoading"
+            size="sm"
             @click="openTransactionModalList"
           >
             Link existing transaction
-          </ui-button>
+          </Button>
         </form-row>
       </template>
 
       <template v-if="isTransferTx && oppositeTransaction">
         <form-row>
-          <ui-button
-            class="modify-record__action modify-record__action-link"
+          <Button
+            class="w-full"
             :disabled="isLoading"
+            size="sm"
             @click="unlinkTransactions"
           >
             Unlink transactions
-          </ui-button>
+          </Button>
         </form-row>
       </template>
 
       <template v-if="linkedTransaction && isTransferTx && !isFormCreation">
-        <form-row class="modify-record__transaction">
-          <TransactionRecrod
-            class="modify-record__transaction-button"
-            :tx="linkedTransaction"
-          />
-          <ui-button
-            class="modify-record__action modify-record__action-transaction"
+        <form-row class="flex items-center gap-2.5">
+          <TransactionRecrod class="bg-background" :tx="linkedTransaction" />
+
+          <Button
             aria-label="Cancel linking"
+            size="sm"
             @click="deleteTransactionRecordHandler"
           >
             Cancel
-          </ui-button>
+          </Button>
         </form-row>
       </template>
 
@@ -539,24 +539,26 @@ onMounted(() => {
         />
       </form-row>
     </div>
-    <div class="modify-record__actions">
-      <ui-button
+
+    <div class="flex items-center justify-between p-6">
+      <Button
         v-if="transaction && transaction.accountType === ACCOUNT_TYPES.system"
-        class="modify-record__action"
+        class="min-w-[100px]"
         :disabled="isLoading"
         aria-label="Delete transaction"
+        variant="destructive"
         @click="deleteTransactionHandler"
       >
         Delete
-      </ui-button>
-      <ui-button
-        class="modify-record__action modify-record__action--submit"
+      </Button>
+      <Button
+        class="ml-auto min-w-[100px]"
         :aria-label="isFormCreation ? 'Create transaction' : 'Edit transaction'"
         :disabled="isLoading"
         @click="submit"
       >
         {{ isLoading ? "Loading..." : isFormCreation ? "Submit" : "Edit" }}
-      </ui-button>
+      </Button>
     </div>
   </div>
 </template>
@@ -588,30 +590,5 @@ $border-top-radius: 10px;
   .modify-record--transfer & {
     background-color: var(--app-transfer-color);
   }
-}
-.modify-record__form {
-  padding: 0 24px;
-}
-.modify-record__actions {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  padding: 24px;
-}
-.modify-record__action--submit {
-  margin-left: auto;
-}
-.modify-record__transaction {
-  display: flex;
-}
-.modify-record__transaction-button {
-  background-color: var(--app-surface-color);
-}
-.modify-record__action-link {
-  width: 100%;
-}
-.modify-record__action-transaction {
-  margin-left: 10px;
 }
 </style>
