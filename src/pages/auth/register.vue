@@ -32,9 +32,9 @@
         />
 
         <div class="flex justify-center">
-          <ui-button type="submit" :disabled="isFormLoading" class="w-full">
+          <Button type="submit" :disabled="isFormLoading" class="w-full">
             {{ isFormLoading ? "Loading..." : "Sign up" }}
-          </ui-button>
+          </Button>
         </div>
       </CardContent>
 
@@ -42,7 +42,7 @@
         Don't have an account?
 
         <router-link :to="{ name: ROUTES_NAMES.signIn }">
-          <ui-button as="span" variant="link"> Sign in </ui-button>
+          <Button as="span" variant="link"> Sign in </Button>
         </router-link>
       </CardFooter>
     </Card>
@@ -57,8 +57,8 @@ import { API_ERROR_CODES } from "shared-types";
 import { ROUTES_NAMES } from "@/routes/constants";
 import { useAuthStore } from "@/stores";
 import { required, minLength, sameAs } from "@/js/helpers/validators";
-import UiButton from "@/components/lib/ui/button/Button.vue";
-import InputField from "@/components/lib/ui/input/Input.vue";
+import { Button } from "@/components/lib/ui/button";
+import { InputField } from "@/components/fields";
 import {
   Card,
   CardHeader,

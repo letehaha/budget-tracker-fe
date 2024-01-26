@@ -6,7 +6,7 @@ import { Edit2Icon } from "lucide-vue-next";
 import { CardHeader } from "@/components/lib/ui/card";
 import { Button } from "@/components/lib/ui/button";
 import * as Popover from "@/components/lib/ui/popover";
-import { Input } from "@/components/lib/ui/input";
+import { InputField } from "@/components/fields";
 import { useAccountsStore, useCurrenciesStore } from "@/stores";
 import { useFormValidation } from "@/composable";
 import { toLocalNumber } from "@/js/helpers";
@@ -74,7 +74,7 @@ const updateAccount = async () => {
           </Popover.PopoverTrigger>
           <Popover.PopoverContent>
             <form class="grid gap-6" @submit.prevent="updateAccount">
-              <Input
+              <InputField
                 v-model="accountNameForm.name"
                 label="Account name"
                 placeholder="Account name"

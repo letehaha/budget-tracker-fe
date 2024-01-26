@@ -14,7 +14,15 @@
         <button
           v-bind="$attrs"
           ref="buttonRef"
-          class="button-style-reset category-select-field__input"
+          :class="
+            cn(
+              'flex items-center gap-2 h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background',
+              'placeholder:text-muted-foreground',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+              'disabled:cursor-not-allowed disabled:opacity-50',
+              $attrs.class ?? '',
+            )
+          "
           type="button"
           :disabled="$attrs.disabled as boolean"
           aria-label="Select category"
@@ -35,7 +43,7 @@
             role="listbox"
           >
             <!-- Show top parent category at the top of list of child categories -->
-            <div class="category-select-field__search-field">
+            <div class="p-1 px-2 category-select-field__search-field">
               <input-field
                 v-model="searchQuery"
                 name="search"
@@ -43,15 +51,17 @@
               />
             </div>
             <template v-if="previousLevelsIndices.length">
-              <button
+              <Button
                 v-if="!searchQuery.length"
                 type="button"
+                variant="link"
+                size="sm"
                 class="category-select-field__dropdown-back-level"
                 @click="backLevelUp"
               >
                 <ChevronLeftIcon />
                 Previous level
-              </button>
+              </Button>
               <button
                 v-if="!searchQuery.length"
                 type="button"
@@ -119,13 +129,12 @@
 import { ref, Ref, computed, watch, onBeforeUnmount } from "vue";
 import { CategoryModel } from "shared-types";
 import { type FormattedCategory } from "@/common/types";
-import ChevronRightIcon from "@/assets/icons/chevron-right.svg?component";
-import ChevronLeftIcon from "@/assets/icons/chevron-left.svg?component";
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-vue-next";
+import { cn } from "@/lib/utils";
 
-import InputField from "@/components/fields/input-field.vue";
+import { InputField, FieldError, FieldLabel } from "@/components/fields";
+import { Button } from "@/components/lib/ui/button";
 import CategoryCircle from "@/components/common/category-circle.vue";
-import FieldError from "./components/field-error.vue";
-import FieldLabel from "./components/field-label.vue";
 
 const props = withDefaults(
   defineProps<{
@@ -386,13 +395,8 @@ onBeforeUnmount(() => {
   }
 }
 .category-select-field__dropdown-back-level {
-  margin: 2px 8px 8px;
-  padding: 8px;
-  border-radius: 4px;
-  border: none;
-  color: var(--app-primary);
-  cursor: pointer;
-  background-color: transparent;
+  @apply flex items-center gap-1 hover:no-underline;
+  @apply m-2 mt-0.5 p-2 border-none;
 
   &:hover {
     svg {

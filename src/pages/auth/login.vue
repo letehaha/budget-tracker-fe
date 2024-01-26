@@ -27,16 +27,16 @@
         </form-wrapper>
 
         <div class="flex justify-center">
-          <ui-button type="submit" :disabled="isFormLoading" class="w-full">
+          <Button type="submit" :disabled="isFormLoading" class="w-full">
             {{ isFormLoading ? "Loading..." : "Log in" }}
-          </ui-button>
+          </Button>
         </div>
       </card-content>
       <card-footer class="text-sm text-center">
         Don't have an account?
 
         <router-link :to="{ name: ROUTES_NAMES.signUp }">
-          <ui-button as="span" variant="link"> Sign up </ui-button>
+          <Button as="span" variant="link"> Sign up </Button>
         </router-link>
       </card-footer>
     </Card>
@@ -54,8 +54,8 @@ import { useFormValidation } from "@/composable";
 import { required, minLength } from "@/js/helpers/validators";
 
 import FormWrapper from "@/components/fields/form-wrapper.vue";
-import UiButton from "@/components/lib/ui/button/Button.vue";
-import InputField from "@/components/lib/ui/input/Input.vue";
+import { Button } from "@/components/lib/ui/button";
+import { InputField } from "@/components/fields";
 import {
   Card,
   CardHeader,

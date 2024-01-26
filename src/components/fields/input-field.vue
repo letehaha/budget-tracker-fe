@@ -15,7 +15,7 @@
 
       <div class="relative">
         <template v-if="isLeadingIconExist">
-          <div class="absolute top-0 left-0 px-6 py-3">
+          <div class="absolute top-0 left-0 flex items-center h-full px-6">
             <slot name="iconLeading" />
           </div>
         </template>
@@ -41,7 +41,7 @@
         />
 
         <template v-if="isTrailIconExist">
-          <div class="absolute top-0 right-0 px-6 py-3">
+          <div class="absolute top-0 right-0 flex items-center h-full px-6">
             <slot name="iconTrailing" />
           </div>
         </template>
