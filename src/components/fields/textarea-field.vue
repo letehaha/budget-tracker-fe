@@ -16,7 +16,12 @@
       </template>
 
       <textarea
-        class="text-field__input"
+        :class="
+          cn(
+            'flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
+            $attrs.class ?? '',
+          )
+        "
         :placeholder="placeholder || ''"
         :value="modelValue"
         :disabled="disabled"
@@ -40,57 +45,68 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script lang="ts" setup>
+import { computed, onMounted, ref } from "vue";
+import { cn } from "@/lib/utils";
+import { FieldLabel, FieldError } from "@/components/fields";
 
-import FieldLabel from "./components/field-label.vue";
-import FieldError from "./components/field-error.vue";
+interface InputChangeEvent extends InputEvent {
+  target: HTMLInputElement;
+}
 
 const MODEL_EVENTS = Object.freeze({
   input: "update:modelValue",
 });
 
-export default defineComponent({
-  components: {
-    FieldLabel,
-    FieldError,
-  },
-  props: {
-    label: { type: String, default: undefined },
-    modelValue: { type: [String, Number], default: undefined },
-    errorMessage: { type: String, default: undefined },
+const emit = defineEmits<{
+  (e: "update:modelValue", payload: string | number): void;
+}>();
+
+const props = withDefaults(
+  defineProps<{
+    label?: string;
+    modelValue?: string | number;
+    errorMessage?: string;
     // proxies
-    autocomplete: { type: String, default: "off" },
-    autofocus: { type: Boolean, default: false },
-    disabled: { type: Boolean, default: false },
-    name: { type: String, default: undefined },
-    placeholder: { type: String, default: undefined },
-    required: { type: Boolean, default: false },
-    readonly: { type: Boolean, default: false },
-    title: { type: String, default: undefined },
-    maxlength: { type: [String, Number], default: undefined },
+    autocomplete?: string;
+    autofocus?: boolean;
+    disabled?: boolean;
+    name?: string;
+    placeholder?: string;
+    required?: boolean;
+    readonly?: boolean;
+    title?: string;
+    maxlength?: string | number;
     // textarea proxies
-    rows: { type: [String, Number], default: 4 },
-    cols: { type: [String, Number], default: undefined },
+    rows?: string | number;
+    cols?: string | number;
+  }>(),
+  {
+    label: undefined,
+    autocomplete: "off",
+    autofocus: false,
+    rows: 4,
+    modelValue: "",
+    errorMessage: undefined,
+    name: undefined,
+    placeholder: undefined,
+    title: undefined,
+    maxlength: undefined,
+    cols: undefined,
   },
-  data: () => ({
-    currentLength: "0",
-  }),
-  computed: {
-    hasValue() {
-      return Boolean(this.modelValue);
-    },
-  },
-  mounted() {
-    if (this.modelValue) this.currentLength = String(this.modelValue).length;
-  },
-  methods: {
-    onInput(event) {
-      if (this.maxlength) this.currentLength = event.target.value.length;
-      this.$emit(MODEL_EVENTS.input, event.target.value);
-    },
-  },
+);
+
+const currentLength = ref(0);
+const hasValue = computed(() => props.modelValue);
+
+onMounted(() => {
+  if (props.modelValue) currentLength.value = String(props.modelValue).length;
 });
+
+const onInput = (event: InputChangeEvent) => {
+  if (props.maxlength) currentLength.value = event.target.value.length;
+  emit(MODEL_EVENTS.input, event.target.value);
+};
 </script>
 
 <style lang="scss">
