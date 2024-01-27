@@ -8,8 +8,10 @@
   >
     <Popover.Popover>
       <FieldLabel :label="label">
-        <Popover.PopoverTrigger class="w-full">
-          <div
+        <div class="relative">
+          <input
+            :value="inputValue"
+            type="datetime-local"
             :class="
               cn(
                 'datetime-local-raw-input',
@@ -17,11 +19,19 @@
                 $attrs.class ?? '',
               )
             "
-          >
-            {{ format(localValue, "MM.dd.yyyy, HH:mm:ss") }}
-          </div>
-          <FieldError :error-message="errorMessage" />
-        </Popover.PopoverTrigger>
+            @input="handleLocalInputUpdate"
+          />
+          <Popover.PopoverTrigger as-child>
+            <Button
+              class="absolute top-0 right-0 flex items-center justify-center h-10"
+              variant="ghost"
+              size="icon"
+            >
+              <CalendarClockIcon :size="24" />
+            </Button>
+          </Popover.PopoverTrigger>
+        </div>
+        <FieldError :error-message="errorMessage" />
         <Popover.PopoverContent class="w-[350px]">
           <Calendar v-model="localValue" mode="dateTime" is24hr type="single" />
         </Popover.PopoverContent>
@@ -36,7 +46,13 @@ import { cn } from "@/lib/utils";
 import * as Popover from "@/components/lib/ui/popover";
 import { Calendar } from "@/components/lib/ui/calendar";
 import { FieldLabel, FieldError } from "@/components/fields";
+import { CalendarClockIcon } from "lucide-vue-next";
 import { ref, watch } from "vue";
+import { Button } from "@/components/lib/ui/button";
+
+interface InputChangeEvent extends InputEvent {
+  target: HTMLInputElement;
+}
 
 const props = withDefaults(
   defineProps<{
@@ -57,11 +73,29 @@ const props = withDefaults(
   },
 );
 
-const emit = defineEmits(["update:modelValue"]);
-const localValue = ref(props.modelValue);
+const formatToInput = (value: Date) => format(value, "yyyy-MM-dd HH:mm");
+
+const inputValue = ref(props.modelValue ? formatToInput(props.modelValue) : "");
+
+const emit = defineEmits<{
+  (e: "update:modelValue", payload: Date): void;
+}>();
+const localValue = ref<Date>(props.modelValue);
+
+const handleLocalInputUpdate = (event: InputChangeEvent) => {
+  emit("update:modelValue", new Date(event.target.value));
+};
+
+watch(
+  () => props.modelValue,
+  (value) => {
+    inputValue.value = value ? formatToInput(value) : "";
+    localValue.value = value;
+  },
+);
 
 watch(localValue, () => {
-  emit("update:modelValue", localValue);
+  emit("update:modelValue", localValue.value);
 });
 </script>
 
