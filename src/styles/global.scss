@@ -1,64 +1,4 @@
-html {
-  font-size: 16px;
-  line-height: 1.4;
-}
-
-body {
-  @extend %base-text;
-
-  background-color: var(--app-bg-page);
-  color: var(--app-text-base);
-  transition:
-    color 0.3s ease-out,
-    background-color 0.3s ease-out;
-}
-
-button,
-a,
-input,
-select,
-textarea {
-  &:focus {
-    outline: 1px solid var(--app-primary);
-  }
-}
-
-html,
-body,
-main,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p,
-a,
-span,
-b,
-strong,
-div,
-header,
-footer,
-section,
-article,
-aside,
-code,
-button,
-input,
-textarea,
-form,
-img,
-pre {
-  font-family: "Montserrat", "Aria", sans-serif;
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-a {
-  text-decoration: none;
-}
+@import "global.css";
 
 .container {
   max-width: calc(var(--container-width) + (var(--container-padding) * 2));
@@ -67,7 +7,6 @@ a {
   margin: 0 auto;
 }
 
-button,
 .button-style-reset {
   @include button-style-reset();
 }
@@ -96,4 +35,14 @@ button,
 .spending-categories-widget-tooltip__name {
   margin-bottom: 4px;
   font-size: 12px;
+}
+
+.datetime-raw-input::-webkit-inner-spin-button,
+.datetime-raw-input::-webkit-calendar-picker-indicator,
+.date-raw-input::-webkit-inner-spin-button,
+.date-raw-input::-webkit-calendar-picker-indicator,
+.datetime-local-raw-input::-webkit-inner-spin-button,
+.datetime-local-raw-input::-webkit-calendar-picker-indicator {
+  display: none;
+  -webkit-appearance: none;
 }

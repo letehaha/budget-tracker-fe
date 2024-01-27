@@ -1,57 +1,69 @@
 <template>
   <div class="accounts">
-    <h1 class="accounts__title">
-      Accounts
+    <div class="flex items-center justify-between gap-8 mb-6">
+      <h1 class="text-2xl tracking-wider">Accounts</h1>
 
-      <router-link
-        :to="{ name: ROUTES_NAMES.createAccount }"
-        class="accounts__action-link"
-      >
-        Create account
-      </router-link>
+      <div class="flex gap-4">
+        <router-link :to="{ name: ROUTES_NAMES.createAccount }">
+          <UiButton as="span"> Create account </UiButton>
+        </router-link>
 
-      <template v-if="!isPaired">
-        <button
-          data-cy="pair-monobank-account"
-          type="button"
-          @click="() => setMonobankToken()"
-        >
-          Pair Monobank account
-        </button>
-      </template>
-      <template v-else-if="isPaired && isTokenPresent">
-        <button type="button" @click="refreshMonoAccounts">
-          Refresh Monobank balances
-        </button>
-      </template>
-      <template v-else-if="isPaired && !isTokenPresent">
-        <button type="button" @click="setMonobankToken({ isUpdate: true })">
-          Update Monobank token
-        </button>
-      </template>
-    </h1>
+        <template v-if="!isPaired">
+          <UiButton
+            data-cy="pair-monobank-account"
+            type="button"
+            variant="outline"
+            @click="() => setMonobankToken()"
+          >
+            Pair Monobank account
+          </UiButton>
+        </template>
+        <template v-else-if="isPaired && isTokenPresent">
+          <UiButton
+            type="button"
+            variant="outline"
+            @click="refreshMonoAccounts"
+          >
+            Refresh Monobank balances
+          </UiButton>
+        </template>
+        <template v-else-if="isPaired && !isTokenPresent">
+          <button type="button" @click="setMonobankToken({ isUpdate: true })">
+            Update Monobank token
+          </button>
+        </template>
+      </div>
+    </div>
 
     <template v-if="formattedAccounts.length">
       <div class="accounts__list">
         <template v-for="account in formattedAccounts" :key="account.id">
-          <router-link
-            :to="{
-              name: ROUTES_NAMES.account,
-              params: { id: account.id },
-            }"
-            class="accounts__item"
-            :class="{ 'accounts__item--disabled': !account.isEnabled }"
-          >
-            <div v-if="!account.isEnabled" class="accounts__state">
-              Disabled
-            </div>
-            <div class="accounts__item-name">
-              {{ account.name || "No name set..." }}
-            </div>
-            <div class="accounts__item-balance">
-              {{ formatBalance(account) }}
-            </div>
-          </router-link>
+          <Card :class="cn('relative', !account.isEnabled && 'opacity-40')">
+            <router-link
+              :to="{
+                name: ROUTES_NAMES.account,
+                params: { id: account.id },
+              }"
+              class="block h-full"
+            >
+              <CardHeader class="p-3">
+                <div
+                  v-if="!account.isEnabled"
+                  class="absolute top-0 right-0 p-1 text-xs leading-none rounded-tr-md bg-background"
+                >
+                  Hidden
+                </div>
+                <div class="accounts__item-name">
+                  {{ account.name || "No name set..." }}
+                </div>
+              </CardHeader>
+              <CardContent class="px-3 pb-3">
+                <div class="accounts__item-balance">
+                  {{ formatBalance(account) }}
+                </div>
+              </CardContent>
+            </router-link>
+          </Card>
         </template>
       </div>
     </template>
@@ -71,6 +83,9 @@ import { ROUTES_NAMES } from "@/routes/constants";
 import { useFormatCurrency } from "@/composable";
 import { useBanksMonobankStore, useAccountsStore } from "@/stores";
 import { MODAL_TYPES, useModalCenter } from "@/components/modal-center/index";
+import UiButton from "@/components/lib/ui/button/Button.vue";
+import { Card, CardContent, CardHeader } from "@/components/lib/ui/card";
+import { cn } from "@/lib/utils";
 
 const monobankStore = useBanksMonobankStore();
 const { accounts } = storeToRefs(useAccountsStore());
@@ -107,14 +122,6 @@ const formatBalance = (account: AccountModel) =>
 <style lang="scss" scoped>
 .accounts {
   padding: 24px;
-}
-.accounts__title {
-  margin-bottom: 16px;
-  color: var(--app-on-bg-color);
-
-  display: flex;
-  align-items: center;
-  gap: 24px;
 }
 .accounts__list {
   display: grid;
@@ -160,12 +167,6 @@ const formatBalance = (account: AccountModel) =>
   padding: 2px 4px;
   font-size: 12px;
   border-radius: 4px;
-}
-.accounts__action-link {
-  @extend %heading-h4;
-
-  color: var(--primary-500);
-  text-decoration: underline;
 }
 .accounts__no-data {
   color: var(--app-on-surface-color);

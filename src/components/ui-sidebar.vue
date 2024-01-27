@@ -1,55 +1,96 @@
 <template>
-  <div class="sidebar">
-    <div class="sidebar__logo">BudgetTracker</div>
-    <nav class="sidebar__navigation">
-      <router-link
-        :to="{ name: ROUTES_NAMES.home }"
-        class="sidebar__navigation-link"
-      >
-        <span> Dashboard </span>
-      </router-link>
-      <router-link
-        :to="{ name: ROUTES_NAMES.accounts }"
-        class="sidebar__navigation-link"
-      >
-        <span> Accounts </span>
-      </router-link>
-      <router-link
-        :to="{ name: ROUTES_NAMES.records }"
-        class="sidebar__navigation-link"
-      >
-        <span> Records </span>
-      </router-link>
-      <template v-if="isDevEnv">
-        <router-link
-          :to="{ name: ROUTES_NAMES.analytics }"
-          class="sidebar__navigation-link"
-        >
-          <span> Analytics </span>
+  <Card class="sidebar">
+    <CardHeader>
+      <div class="sidebar__logo">BudgetTracker</div>
+    </CardHeader>
+    <CardContent class="sidebar__content">
+      <nav class="sidebar__navigation">
+        <router-link v-slot="{ isActive }" :to="{ name: ROUTES_NAMES.home }">
+          <ui-button
+            :variant="isActive ? 'default' : 'ghost'"
+            as="span"
+            class="justify-start w-full px-3"
+            size="lg"
+          >
+            Dashboard
+          </ui-button>
         </router-link>
-      </template>
-      <router-link
-        :to="{ name: ROUTES_NAMES.crypto }"
-        class="sidebar__navigation-link"
-      >
-        <span> Crypto </span>
-      </router-link>
-      <router-link
-        :to="{ name: ROUTES_NAMES.settings }"
-        class="sidebar__navigation-link"
-      >
-        <span> Settings </span>
-      </router-link>
-    </nav>
 
-    <ui-button
-      theme="light-dark"
-      class="sidebar__logout"
-      @click="logOutHandler"
-    >
-      Logout
-    </ui-button>
-  </div>
+        <router-link
+          v-slot="{ isActive }"
+          :to="{ name: ROUTES_NAMES.accounts }"
+        >
+          <ui-button
+            :variant="isActive ? 'default' : 'ghost'"
+            as="span"
+            class="justify-start w-full px-3"
+            size="lg"
+          >
+            Accounts
+          </ui-button>
+        </router-link>
+
+        <router-link v-slot="{ isActive }" :to="{ name: ROUTES_NAMES.records }">
+          <ui-button
+            :variant="isActive ? 'default' : 'ghost'"
+            as="span"
+            class="justify-start w-full px-3"
+            size="lg"
+          >
+            Records
+          </ui-button>
+        </router-link>
+
+        <template v-if="isDevEnv">
+          <router-link
+            v-slot="{ isActive }"
+            :to="{ name: ROUTES_NAMES.analytics }"
+          >
+            <ui-button
+              :variant="isActive ? 'default' : 'ghost'"
+              as="span"
+              class="justify-start w-full px-3"
+              size="lg"
+            >
+              Analytics
+            </ui-button>
+          </router-link>
+        </template>
+
+        <router-link v-slot="{ isActive }" :to="{ name: ROUTES_NAMES.crypto }">
+          <ui-button
+            :variant="isActive ? 'default' : 'ghost'"
+            as="span"
+            class="justify-start w-full px-3"
+            size="lg"
+          >
+            Crypto
+          </ui-button>
+        </router-link>
+        <router-link
+          v-slot="{ isActive }"
+          :to="{ name: ROUTES_NAMES.settings }"
+        >
+          <ui-button
+            :variant="isActive ? 'default' : 'ghost'"
+            as="span"
+            class="justify-start w-full px-3"
+            size="lg"
+          >
+            Settings
+          </ui-button>
+        </router-link>
+      </nav>
+
+      <ui-button
+        variant="secondary"
+        class="sidebar__logout"
+        @click="logOutHandler"
+      >
+        Logout
+      </ui-button>
+    </CardContent>
+  </Card>
 </template>
 
 <script setup lang="ts">
@@ -58,7 +99,8 @@ import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores";
 import { isDevEnv } from "@/common/const";
 import { ROUTES_NAMES } from "@/routes";
-import UiButton from "@/components/common/ui-button.vue";
+import UiButton from "@/components/lib/ui/button/Button.vue";
+import { Card, CardContent, CardHeader } from "@/components/lib/ui/card";
 
 const router = useRouter();
 const { logout } = useAuthStore();
@@ -71,26 +113,17 @@ const logOutHandler = () => {
 
 <style lang="scss" scoped>
 .sidebar {
-  --sidebar-bg: var(--abc-background-dark-200);
-  --sidebar-btn-bg-active: var(--abc-brand-light-500);
-  --sidebar-btn-bg-hover: var(--abc-background-dark-400);
-  --sidebar-btn-text: var(--abc-text-white-base);
-
-  width: 180px;
-  flex-grow: 0;
-  padding: 48px 16px;
-  background-color: var(--sidebar-bg);
-  display: flex;
-  flex-direction: column;
+  @apply flex flex-col rounded-none;
 }
-
 .sidebar__logo {
   font-size: 18px;
   font-weight: 500;
   letter-spacing: 0.5px;
   text-align: center;
-  margin-bottom: 40px;
   color: var(--abc-text-white-base);
+}
+.sidebar__content {
+  @apply flex flex-col flex-grow;
 }
 .sidebar__navigation {
   display: grid;

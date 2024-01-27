@@ -51,7 +51,7 @@ export const prepareTxUpdationParams = ({
       ...editionParams,
       amount: Number(amount),
       note,
-      time,
+      time: time.toISOString(),
       transactionType: getTxTypeFromFormType(formTxType),
       paymentType: paymentType.value,
       accountId,

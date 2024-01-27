@@ -33,7 +33,7 @@ export const prepareTxCreationParams = ({
   const creationParams: Parameters<typeof createTransaction>[0] = {
     amount,
     note,
-    time: new Date(time).toUTCString(),
+    time: time.toUTCString(),
     transactionType: getTxTypeFromFormType(formTxType),
     paymentType: paymentType.value,
     accountId,

@@ -2,52 +2,69 @@
   <div
     :class="{
       'date-field--error': errorMessage,
-      'date-field--disabled': $attrs.disabled,
+      'date-field--disabled': disabled,
     }"
-    class="date-field"
+    class="w-full date-field"
   >
-    <FieldLabel :label="label">
-      <template #label-right>
-        <template v-if="$slots['label-right']">
-          <slot name="label-right" />
-        </template>
-      </template>
-
-      <div class="date-field__wrapper">
-        <input
-          type="datetime-local"
-          :value="modelValue"
-          :disabled="$attrs.disabled as boolean"
-          :style="inputFieldStyles"
-          :tabindex="tabindex"
-          class="date-field__input"
-          v-on="computedEvents"
-        />
-      </div>
-    </FieldLabel>
-
-    <div v-if="isSubLabelExists" class="date-fields__sublabel">
-      <slot name="subLabel" />
-    </div>
-
-    <FieldError :error-message="errorMessage" />
+    <Popover.Popover>
+      <FieldLabel :label="label">
+        <div class="relative">
+          <input
+            :value="inputValue"
+            type="datetime-local"
+            :disabled="disabled"
+            :class="
+              cn(
+                'datetime-local-raw-input',
+                'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
+                $attrs.class ?? '',
+              )
+            "
+            @input="handleLocalInputUpdate"
+          />
+          <Popover.PopoverTrigger as-child>
+            <Button
+              class="absolute top-0 right-0 flex items-center justify-center w-16 h-10"
+              variant="ghost"
+              size="icon"
+              :disabled="disabled"
+            >
+              <CalendarClockIcon :size="24" />
+            </Button>
+          </Popover.PopoverTrigger>
+        </div>
+        <FieldError :error-message="errorMessage" />
+        <Popover.PopoverContent class="w-[350px]">
+          <Calendar v-model="localValue" mode="dateTime" is24hr type="single" />
+        </Popover.PopoverContent>
+      </FieldLabel>
+    </Popover.Popover>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+import * as Popover from "@/components/lib/ui/popover";
+import { Calendar } from "@/components/lib/ui/calendar";
+import { FieldLabel, FieldError } from "@/components/fields";
+import { CalendarClockIcon } from "lucide-vue-next";
+import { ref, watch } from "vue";
+import { Button } from "@/components/lib/ui/button";
 
-import FieldLabel from "./components/field-label.vue";
-import FieldError from "./components/field-error.vue";
+interface InputChangeEvent extends InputEvent {
+  target: HTMLInputElement;
+}
 
 const props = withDefaults(
   defineProps<{
     label?: string;
-    modelValue?: string | number;
+    modelValue?: Date;
     type?: string;
     tabindex?: string;
     errorMessage?: string;
     inputFieldStyles?: Record<string, string>;
+    disabled?: boolean;
   }>(),
   {
     label: undefined,
@@ -56,25 +73,34 @@ const props = withDefaults(
     tabindex: undefined,
     errorMessage: undefined,
     inputFieldStyles: undefined,
+    disabled: false,
   },
 );
 
-const slots = defineSlots<{
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  subLabel(): any;
+const formatToInput = (value: Date) => format(value, "yyyy-MM-dd HH:mm");
+
+const inputValue = ref(props.modelValue ? formatToInput(props.modelValue) : "");
+
+const emit = defineEmits<{
+  (e: "update:modelValue", payload: Date): void;
 }>();
+const localValue = ref<Date>(props.modelValue);
 
-const emit = defineEmits(["update:modelValue"]);
-
-const computedEvents = {
-  input: (event: InputEvent) => {
-    const eventTarget = event.target as HTMLInputElement;
-    if (props.modelValue === eventTarget.value) return;
-    emit("update:modelValue", eventTarget.value);
-  },
+const handleLocalInputUpdate = (event: InputChangeEvent) => {
+  emit("update:modelValue", new Date(event.target.value));
 };
 
-const isSubLabelExists = computed(() => !!slots.subLabel);
+watch(
+  () => props.modelValue,
+  (value) => {
+    inputValue.value = value ? formatToInput(value) : "";
+    localValue.value = value;
+  },
+);
+
+watch(localValue, () => {
+  emit("update:modelValue", localValue.value);
+});
 </script>
 
 <style lang="scss">
@@ -82,39 +108,6 @@ const isSubLabelExists = computed(() => !!slots.subLabel);
   position: relative;
   width: 100%;
   flex: 1;
-}
-.date-field__wrapper {
-  .date-field--disabled & {
-    opacity: 0.3;
-  }
-}
-.date-field__input {
-  font-size: 16px;
-  line-height: 1;
-  color: var(--app-on-surface-color);
-  font-weight: 400;
-  letter-spacing: 0.5px;
-  padding: 12px 24px;
-  background-color: var(--app-surface-color);
-  border: 1px solid #acafb3;
-  box-sizing: border-box;
-  border-radius: var(--system-border-radius);
-  width: 100%;
-
-  @include placeholder-custom(rgba(var(--app-on-surface-color-rgb), 0.6));
-
-  &::-webkit-calendar-picker-indicator {
-    opacity: 1;
-    display: block;
-    background: url("@/assets/icons/colored/calendar-black.svg") no-repeat;
-    width: 18px;
-    height: 18px;
-    margin-top: -2px;
-
-    body.dark & {
-      background: url("@/assets/icons/colored/calendar-white.svg") no-repeat;
-    }
-  }
 }
 .date-fields__sublabel {
   position: absolute;

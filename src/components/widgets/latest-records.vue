@@ -5,7 +5,7 @@
         class="latest-records-widget__show-all"
         :to="{ name: ROUTES_NAMES.records }"
       >
-        Show all
+        <ui-button variant="link" as="span" size="sm"> Show all </ui-button>
       </router-link>
     </template>
     <TransactionsList
@@ -22,6 +22,7 @@ import { ROUTES_NAMES } from "@/routes/constants";
 import { useRootStore } from "@/stores";
 import { VUE_QUERY_CACHE_KEYS } from "@/common/const";
 import { loadTransactions as apiLoadTransactions } from "@/api/transactions";
+import UiButton from "@/components/lib/ui/button/Button.vue";
 
 import TransactionsList from "@/components/transactions-list/transactions-list.vue";
 import WidgetWrapper from "./components/widget-wrapper.vue";

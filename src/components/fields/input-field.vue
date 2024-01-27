@@ -13,9 +13,9 @@
         </template>
       </template>
 
-      <div class="input-field__wrapper">
+      <div class="relative">
         <template v-if="isLeadingIconExist">
-          <div class="input-field__leading-icon">
+          <div class="absolute top-0 left-0 flex items-center h-full px-6">
             <slot name="iconLeading" />
           </div>
         </template>
@@ -28,15 +28,20 @@
           :disabled="disabled"
           :tabindex="tabindex"
           :min="minValue"
-          class="input-field__input"
           autocomplete="off"
           autocorrect="off"
           autocapitalize="off"
           spellcheck="false"
+          :class="
+            cn(
+              'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
+              computedAttrs.class ?? '',
+            )
+          "
         />
 
         <template v-if="isTrailIconExist">
-          <div class="input-field__trailing-icon">
+          <div class="absolute top-0 right-0 flex items-center h-full px-6">
             <slot name="iconTrailing" />
           </div>
         </template>
@@ -53,137 +58,97 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, computed } from "vue";
+<script lang="ts" setup>
+import { computed, HTMLAttributes, useAttrs } from "vue";
 import { KEYBOARD_CODES } from "@/common/types";
+import { cn } from "@/lib/utils";
 
 import FieldLabel from "./components/field-label.vue";
 import FieldError from "./components/field-error.vue";
 
-export const MODEL_EVENTS = {
-  input: "update:modelValue",
-};
+enum MODEL_EVENTS {
+  input = "update:modelValue",
+}
 
 interface InputChangeEvent extends Event {
   target: HTMLInputElement;
 }
 
-export default defineComponent({
-  components: {
-    FieldLabel,
-    FieldError,
+const props = defineProps<{
+  label?: string;
+  modelValue?: string | number;
+  type?: string;
+  disabled?: boolean;
+  tabindex?: string;
+  errorMessage?: string;
+  inputFieldStyles?: HTMLAttributes["style"];
+  onlyPositive?: boolean;
+}>();
+
+const emits = defineEmits<{
+  (e: MODEL_EVENTS.input, payload: string | number): void;
+}>();
+
+const slots = defineSlots<{
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  subLabel(): any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  iconTrailing(): any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  iconLeading(): any;
+}>();
+const attrs = useAttrs();
+
+const computedAttrs = {
+  ...attrs,
+  class: attrs.class,
+  onInput: (event: InputChangeEvent) => {
+    const value: string = event.target.value;
+
+    if (props.disabled) return;
+    if (props.modelValue === value) return;
+
+    emits(MODEL_EVENTS.input, value);
   },
-  props: {
-    label: { type: String, default: undefined },
-    modelValue: { type: [String, Number], default: undefined },
-    type: { type: String, default: undefined },
-    disabled: { type: Boolean, default: false },
-    tabindex: { type: String, default: undefined },
-    errorMessage: { type: String, default: undefined },
-    inputFieldStyles: { type: Object, default: undefined },
-    onlyPositive: Boolean,
-  },
-  emits: {
-    [MODEL_EVENTS.input]: (value: number | string) =>
-      typeof value === "number" || typeof value === "string",
-  },
-  setup(props, { attrs, emit, slots }) {
-    const computedAttrs = {
-      ...attrs,
-      onInput: (event: InputChangeEvent) => {
-        const value: string = event.target.value;
+  onkeypress: (event: KeyboardEvent) => {
+    if (props.disabled) return;
 
-        if (props.disabled) return;
-        if (props.modelValue === value) return;
-
-        emit(MODEL_EVENTS.input, value);
-      },
-      onkeypress: (event: KeyboardEvent) => {
-        if (props.disabled) return;
-
-        if (props.type === "number") {
-          if (event.keyCode === KEYBOARD_CODES.keyE) {
-            event.preventDefault();
-          }
-        }
-        if (props.onlyPositive) {
-          if (
-            [
-              KEYBOARD_CODES.minus,
-              KEYBOARD_CODES.equal,
-              KEYBOARD_CODES.plus,
-            ].includes(event.keyCode)
-          ) {
-            event.preventDefault();
-          }
-        }
-      },
-    };
-
-    const minValue = computed<number>(() => {
-      if (props.onlyPositive && !attrs.min) {
-        return 0;
+    if (props.type === "number") {
+      if (event.keyCode === KEYBOARD_CODES.keyE) {
+        event.preventDefault();
       }
-      if (Number(attrs.min) < 0) {
-        return 0;
+    }
+    if (props.onlyPositive) {
+      if (
+        [
+          KEYBOARD_CODES.minus,
+          KEYBOARD_CODES.equal,
+          KEYBOARD_CODES.plus,
+        ].includes(event.keyCode)
+      ) {
+        event.preventDefault();
       }
-
-      return Number(attrs.min);
-    });
-
-    const isSubLabelExist = computed(() => !!slots.subLabel);
-
-    const isTrailIconExist = computed(() => !!slots.iconTrailing);
-
-    const isLeadingIconExist = computed(() => !!slots.iconLeading);
-
-    return {
-      minValue,
-      computedAttrs,
-      isSubLabelExist,
-      isTrailIconExist,
-      isLeadingIconExist,
-    };
+    }
   },
+};
+
+const minValue = computed<number>(() => {
+  if (props.onlyPositive && !attrs.min) {
+    return 0;
+  }
+  if (Number(attrs.min) < 0) {
+    return 0;
+  }
+
+  return Number(attrs.min);
 });
+
+const isSubLabelExist = computed(() => !!slots.subLabel);
+const isTrailIconExist = computed(() => !!slots.iconTrailing);
+const isLeadingIconExist = computed(() => !!slots.iconLeading);
 </script>
 
 <style lang="scss">
-.input-field {
-  position: relative;
-  width: 100%;
-  flex: 1;
-  input[type="number"]::-webkit-inner-spin-button,
-  input[type="number"]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-  input[type="number"] {
-    appearance: textfield;
-  }
-}
-.input-field__input {
-  font-size: 16px;
-  line-height: 1;
-  color: var(--app-on-surface-color);
-  font-weight: 400;
-  letter-spacing: 0.5px;
-  padding: 12px 24px;
-  background-color: var(--app-surface-color);
-  border: 1px solid #acafb3;
-  box-sizing: border-box;
-  border-radius: var(--system-border-radius);
-  width: 100%;
-
-  @include placeholder-custom(rgba(var(--app-on-surface-color-rgb), 0.6));
-}
-.input-field__wrapper {
-  position: relative;
-
-  .input-field--disabled & {
-    opacity: 0.3;
-  }
-}
 .input-fields__sublabel {
   position: absolute;
   right: 0;
@@ -196,12 +161,5 @@ export default defineComponent({
     color: #ffffff;
     text-decoration: none;
   }
-}
-.input-field__leading-icon,
-.input-field__trailing-icon {
-  position: absolute;
-  top: 0;
-  right: 0;
-  padding: 12px 24px;
 }
 </style>

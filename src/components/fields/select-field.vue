@@ -19,7 +19,12 @@
         ref="buttonRef"
         type="button"
         :disabled="disabled"
-        class="button-style-reset select-field__input"
+        :class="
+          cn(
+            'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
+            $attrs.class ?? '',
+          )
+        "
         :title="modelValue ? getLabelFromValue(modelValue as T) : placeholder"
         @click="toggleDropdown"
       >
@@ -30,7 +35,7 @@
       <dropdown
         :is-visible="isDropdownOpened"
         :values="dropdownValues"
-        :label-key="String(labelKey)"
+        :label-key="(labelKey as any)"
         :selected-value="(modelValue as T)"
         @select="selectItem"
       >
@@ -59,6 +64,7 @@
 import { ref, computed, watch, onBeforeUnmount } from "vue";
 
 import Dropdown from "@/components/common/dropdown.vue";
+import { cn } from "@/lib/utils";
 import FieldError from "./components/field-error.vue";
 import FieldLabel from "./components/field-label.vue";
 import InputField from "./input-field.vue";
@@ -202,7 +208,7 @@ const selectItem = ({ index }: { index: number }) => {
     height: 2px;
     background-color: var(--app-on-surface-color);
     border-radius: 2px;
-    transform: rotate(45deg);
+    transform: rotate(-45deg);
     top: 10px;
     left: inherit;
     transition: transform 0.15s ease-out;
@@ -210,15 +216,15 @@ const selectItem = ({ index }: { index: number }) => {
 
   &:before {
     left: 5px;
-    transform: rotate(-45deg);
+    transform: rotate(45deg);
   }
 
   .select-field--active & {
     &:before {
-      transform: rotate(45deg);
+      transform: rotate(-45deg);
     }
     &:after {
-      transform: rotate(-45deg);
+      transform: rotate(45deg);
     }
   }
 }

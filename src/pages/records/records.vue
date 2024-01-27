@@ -1,8 +1,8 @@
 <template>
-  <div class="records">
-    <div class="records__list">
+  <div class="p-4">
+    <Card class="p-6 rounded-md max-w-[560px] mx-auto">
       <TransactionsList />
-    </div>
+    </Card>
     <button
       type="button"
       class="records__scroll-top"
@@ -14,57 +14,32 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, onBeforeUnmount, ref } from "vue";
+<script lang="ts" setup>
+import { onBeforeUnmount, ref } from "vue";
 
+import { Card } from "@/components/lib/ui/card";
 import TransactionsList from "./list.vue";
 
-export default defineComponent({
-  components: {
-    TransactionsList,
-  },
-  setup() {
-    const showScrollTopBtn = ref(false);
+const showScrollTopBtn = ref(false);
 
-    const onWindowScroll = () => {
-      showScrollTopBtn.value = window.pageYOffset > 150;
-    };
-    window.addEventListener("scroll", onWindowScroll);
+const onWindowScroll = () => {
+  showScrollTopBtn.value = window.pageYOffset > 150;
+};
+window.addEventListener("scroll", onWindowScroll);
 
-    onBeforeUnmount(() => {
-      window.removeEventListener("scroll", onWindowScroll);
-    });
-
-    const scrollTop = () => {
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth",
-      });
-    };
-
-    return {
-      scrollTop,
-      showScrollTopBtn,
-    };
-  },
+onBeforeUnmount(() => {
+  window.removeEventListener("scroll", onWindowScroll);
 });
+
+const scrollTop = () => {
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth",
+  });
+};
 </script>
 
 <style lang="scss" scoped>
-.records {
-  padding: 24px;
-  height: calc(100vh - var(--header-height));
-}
-.records__list {
-  background-color: var(--app-surface-color);
-  border-radius: 8px;
-  padding: 24px;
-
-  max-width: 560px;
-  max-height: 100%;
-  margin: 0 auto;
-  overflow-y: auto;
-}
 .records__scroll-top {
   border: none;
   cursor: pointer;

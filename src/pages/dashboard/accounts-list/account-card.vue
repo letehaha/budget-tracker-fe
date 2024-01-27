@@ -1,47 +1,35 @@
 <template>
-  <div class="account">
-    <div class="account__name">
-      {{ account.name || "No name set..." }}
-    </div>
-    <div class="account__balance-info">
-      <div class="account__balance">
-        {{
-          formatUIAmount(account.currentBalance - account.creditLimit, {
-            currency: currenciesMap[account.currencyId].currency.code,
-          })
-        }}
+  <Card>
+    <CardContent class="p-4">
+      <div class="account__name">
+        {{ account.name || "No name set..." }}
       </div>
-    </div>
-  </div>
+      <div class="account__balance-info">
+        <div class="account__balance">
+          {{
+            formatUIAmount(account.currentBalance - account.creditLimit, {
+              currency: currenciesMap[account.currencyId].currency.code,
+            })
+          }}
+        </div>
+      </div>
+    </CardContent>
+  </Card>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from "vue";
+<script lang="ts" setup>
 import { storeToRefs } from "pinia";
 import { AccountModel } from "shared-types";
 import { useCurrenciesStore } from "@/stores";
-import { formatUIAmount, toLocalFiatCurrency } from "@/js/helpers";
+import { formatUIAmount } from "@/js/helpers";
+import { Card, CardContent } from "@/components/lib/ui/card";
 
-export default defineComponent({
-  props: {
-    account: {
-      type: Object as PropType<AccountModel>,
-      required: true,
-    },
-  },
-  setup() {
-    const currenciesStore = useCurrenciesStore();
-    const { currenciesMap } = storeToRefs(currenciesStore);
+defineProps<{
+  account: AccountModel;
+}>();
 
-    return {
-      currenciesMap,
-    };
-  },
-  methods: {
-    formatUIAmount,
-    toLocalFiatCurrency,
-  },
-});
+const currenciesStore = useCurrenciesStore();
+const { currenciesMap } = storeToRefs(currenciesStore);
 </script>
 
 <style lang="scss" scoped>

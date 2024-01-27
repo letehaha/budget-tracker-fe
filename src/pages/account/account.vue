@@ -1,39 +1,57 @@
 <template>
-  <div class="account-page">
-    <div class="account-page__block">
-      <h3 class="account-page__block-title">Account info</h3>
-      <template v-if="account.type === ACCOUNT_TYPES.monobank">
-        <MonobankAccount :account="account" />
-      </template>
-      <template v-else-if="account.type === ACCOUNT_TYPES.system">
-        <SystemAccount :account="account" />
-      </template>
-    </div>
+  <div class="flex justify-start gap-4 p-6">
+    <Card.Card class="max-w-[600px] w-full">
+      <Header :account="account" />
 
-    <div class="account-page__block">
-      <h3 class="account-page__block-title">Records</h3>
+      <Separator />
+      <Card.CardContent>
+        <template v-if="account.type === ACCOUNT_TYPES.monobank">
+          <MonobankAccount :account="account" />
+        </template>
+        <template v-else-if="account.type === ACCOUNT_TYPES.system">
+          <SystemAccount :account="account" />
+        </template>
+      </Card.CardContent>
+    </Card.Card>
 
-      <template v-if="isFetched">
-        <TransactionsList
-          class="account-page__records-list"
-          :transactions="rawTransactionsList"
-        />
-      </template>
-      <template v-if="hasNextPage">
-        <button
-          class="account-page__load-more"
-          type="button"
-          @click="() => fetchNextPage()"
-        >
-          Load more
-        </button>
-      </template>
-      <template v-else>
-        <p class="account-page__no-more-data">
-          {{ rawTransactionsList.length ? "No more data to load" : "No data" }}
-        </p>
-      </template>
-    </div>
+    <Card.Card class="max-w-[600px] w-full pt-6">
+      <Card.CardContent>
+        <Tabs.Tabs default-value="records">
+          <Tabs.TabsList class="justify-start w-full">
+            <Tabs.TabsTrigger value="records"> Records </Tabs.TabsTrigger>
+            <Tabs.TabsTrigger disabled value="analytics">
+              Analytics (soon)
+            </Tabs.TabsTrigger>
+          </Tabs.TabsList>
+          <Tabs.TabsContent value="records">
+            <template v-if="isFetched">
+              <TransactionsList
+                class="account-page__records-list"
+                :transactions="rawTransactionsList"
+              />
+            </template>
+            <template v-if="hasNextPage">
+              <button
+                class="account-page__load-more"
+                type="button"
+                @click="() => fetchNextPage()"
+              >
+                Load more
+              </button>
+            </template>
+            <template v-else>
+              <p class="account-page__no-more-data">
+                {{
+                  rawTransactionsList.length
+                    ? "No more data to load"
+                    : "No data"
+                }}
+              </p>
+            </template>
+          </Tabs.TabsContent>
+        </Tabs.Tabs>
+      </Card.CardContent>
+    </Card.Card>
   </div>
 </template>
 
@@ -48,9 +66,13 @@ import { ACCOUNT_TYPES } from "shared-types";
 import { loadTransactions } from "@/api";
 import { VUE_QUERY_CACHE_KEYS } from "@/common/const";
 
+import * as Card from "@/components/lib/ui/card";
+import { Separator } from "@/components/lib/ui/separator";
 import TransactionsList from "@/components/transactions-list/transactions-list.vue";
+import * as Tabs from "@/components/lib/ui/tabs";
 import SystemAccount from "./types/system/system.vue";
 import MonobankAccount from "./types/monobank/monobank.vue";
+import Header from "./components/header.vue";
 
 const route = useRoute();
 const accountsStore = useAccountsStore();
@@ -94,12 +116,6 @@ const rawTransactionsList = computed(
 </script>
 
 <style lang="scss">
-.account-page {
-  padding: 24px;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 32px;
-}
 .account-page__block-title {
   margin-bottom: 24px;
 }
