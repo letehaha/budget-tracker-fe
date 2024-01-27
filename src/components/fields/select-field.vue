@@ -35,7 +35,7 @@
       <dropdown
         :is-visible="isDropdownOpened"
         :values="dropdownValues"
-        :label-key="String(labelKey)"
+        :label-key="(labelKey as any)"
         :selected-value="(modelValue as T)"
         @select="selectItem"
       >
