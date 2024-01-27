@@ -2,7 +2,7 @@
   <div
     :class="{
       'date-field--error': errorMessage,
-      'date-field--disabled': $attrs.disabled,
+      'date-field--disabled': disabled,
     }"
     class="w-full date-field"
   >
@@ -12,6 +12,7 @@
           <input
             :value="inputValue"
             type="datetime-local"
+            :disabled="disabled"
             :class="
               cn(
                 'datetime-local-raw-input',
@@ -23,9 +24,10 @@
           />
           <Popover.PopoverTrigger as-child>
             <Button
-              class="absolute top-0 right-0 flex items-center justify-center h-10"
+              class="absolute top-0 right-0 flex items-center justify-center w-16 h-10"
               variant="ghost"
               size="icon"
+              :disabled="disabled"
             >
               <CalendarClockIcon :size="24" />
             </Button>
@@ -62,6 +64,7 @@ const props = withDefaults(
     tabindex?: string;
     errorMessage?: string;
     inputFieldStyles?: Record<string, string>;
+    disabled?: boolean;
   }>(),
   {
     label: undefined,
@@ -70,6 +73,7 @@ const props = withDefaults(
     tabindex: undefined,
     errorMessage: undefined,
     inputFieldStyles: undefined,
+    disabled: false,
   },
 );
 
