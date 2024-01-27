@@ -1,6 +1,6 @@
 <template>
-  <div class="add-new-currency">
-    <div class="add-new-currency__selector">
+  <div class="flex gap-4 p-4 mb-8 add-new-currency">
+    <div class="flex-shrink-0 w-full max-w-[300px]">
       <select-field
         v-model="selectedCurrency"
         :values="filteredCurrencies"
@@ -10,9 +10,13 @@
         :label-key="(item: CurrencyModel) => `${item.code} - ${item.currency}`"
       />
     </div>
-    <ui-button :disabled="isCurrenciesLoading" @click="addCurrency">
+    <Button
+      :disabled="isCurrenciesLoading"
+      class="w-[100px]"
+      @click="addCurrency"
+    >
       Add
-    </ui-button>
+    </Button>
   </div>
 </template>
 
@@ -23,8 +27,8 @@ import { CurrencyModel } from "shared-types";
 import { useCurrenciesStore } from "@/stores";
 import { addUserCurrencies } from "@/api/currencies";
 import { useNotificationCenter } from "@/components/notification-center";
-import SelectField from "@/components/fields/select-field.vue";
-import UiButton from "@/components/common/ui-button.vue";
+import { SelectField } from "@/components/fields";
+import { Button } from "@/components/lib/ui/button";
 
 const currenciesStore = useCurrenciesStore();
 const { addErrorNotification } = useNotificationCenter();
@@ -63,16 +67,5 @@ const addCurrency = async () => {
 <style lang="scss" scoped>
 .add-new-currency {
   @include surface-container();
-
-  margin-bottom: 32px;
-  padding: 16px;
-
-  display: flex;
-  gap: 16px;
-}
-.add-new-currency__selector {
-  max-width: 300px;
-  width: 100%;
-  flex: none;
 }
 </style>
