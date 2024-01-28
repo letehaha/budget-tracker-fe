@@ -57,7 +57,7 @@ const updateAccount = async () => {
 
 <template>
   <CardHeader>
-    <div class="flex items-start justify-between">
+    <div class="flex flex-wrap items-start justify-between">
       <p class="flex items-center gap-2">
         <span class="text-xl">
           {{ account.name }}
@@ -91,7 +91,7 @@ const updateAccount = async () => {
           </Popover.PopoverContent>
         </Popover.Popover>
       </p>
-      <div class="flex items-end gap-2">
+      <div class="flex flex-wrap items-end justify-start gap-2 ml-auto">
         <span
           v-if="account.currencyId !== baseCurrency.currencyId"
           class="text-white text-opacity-50"
