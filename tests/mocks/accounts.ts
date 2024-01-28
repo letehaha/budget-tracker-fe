@@ -1,4 +1,4 @@
-import { AccountModel, ACCOUNT_TYPES } from "shared-types";
+import { AccountModel, ACCOUNT_TYPES, ACCOUNT_CATEGORIES } from "shared-types";
 import { USER } from "./user";
 import { USER_CURRENCIES } from "./currencies";
 
@@ -18,7 +18,7 @@ export const ACCOUNTS: AccountModel[] = [
     creditLimit: 0,
     refCreditLimit: 0,
     type: ACCOUNT_TYPES.system,
-    accountTypeId: 1,
+    accountCategory: ACCOUNT_CATEGORIES.general,
     currencyId: USER_CURRENCIES.find((item) => item.currency.code === "EUR")
       .currencyId,
     userId: USER.id,
@@ -36,7 +36,7 @@ export const ACCOUNTS: AccountModel[] = [
     creditLimit: 0,
     refCreditLimit: 0,
     type: ACCOUNT_TYPES.system,
-    accountTypeId: 1,
+    accountCategory: ACCOUNT_CATEGORIES.general,
     currencyId: USER_CURRENCIES.find((item) => item.currency.code === "USD")
       .currencyId,
     userId: USER.id,
@@ -54,7 +54,7 @@ export const ACCOUNTS: AccountModel[] = [
     creditLimit: 0,
     refCreditLimit: 0,
     type: ACCOUNT_TYPES.system,
-    accountTypeId: 1,
+    accountCategory: ACCOUNT_CATEGORIES.general,
     currencyId: USER_CURRENCIES.find((item) => item.currency.code === "UAH")
       .currencyId,
     userId: USER.id,
@@ -72,7 +72,7 @@ export const ACCOUNTS: AccountModel[] = [
     creditLimit: 0,
     refCreditLimit: 0,
     type: ACCOUNT_TYPES.system,
-    accountTypeId: 1,
+    accountCategory: ACCOUNT_CATEGORIES.general,
     currencyId: USER_CURRENCIES.find((item) => item.currency.code === "UAH")
       .currencyId,
     userId: USER.id,

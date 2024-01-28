@@ -9,6 +9,7 @@ import * as Collapsible from "@/components/lib/ui/collapsible";
 import { Separator } from "@/components/lib/ui/separator";
 import { useCurrenciesStore } from "@/stores";
 import { toLocalNumber } from "@/js/helpers";
+import { ACCOUNT_CATEGORIES_VERBOSE } from "@/common/const";
 
 defineProps<{
   account: AccountModel;
@@ -41,6 +42,15 @@ const isOpen = ref(false);
         <span> Account Type: </span>
 
         {{ account.type }}
+      </div>
+      <Separator />
+
+      <div class="flex items-center justify-between gap-2">
+        <span> Account Category: </span>
+
+        <span class="capitalize">
+          {{ ACCOUNT_CATEGORIES_VERBOSE[account.accountCategory] }}
+        </span>
       </div>
       <Separator />
 

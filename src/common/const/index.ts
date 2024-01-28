@@ -31,3 +31,5 @@ export const OUT_OF_WALLET_ACCOUNT_MOCK = {
   name: OUT_OF_WALLET_ACCOUNT_NAME,
   id: null,
 } as OutOfWalletAccountModel;
+
+export * from "./account-categories-verbose";
