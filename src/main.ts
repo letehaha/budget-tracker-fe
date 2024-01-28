@@ -3,12 +3,16 @@ import { VueQueryPlugin } from "@tanstack/vue-query";
 import { router } from "@/routes";
 import { clickOutside, nodeResizeObserver } from "@/directives";
 import { store } from "@/stores/setup";
-import { identifyCurrentTheme } from "@/common/utils";
+import {
+  identifyCurrentTheme,
+  patchMetaViewportMaxScaleForiOS,
+} from "@/common/utils";
 import App from "./app.vue";
 import "@/styles/index.scss";
 import "./registerServiceWorker";
 
 identifyCurrentTheme();
+patchMetaViewportMaxScaleForiOS();
 
 const app = createApp(App);
 
