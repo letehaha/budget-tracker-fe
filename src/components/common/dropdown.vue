@@ -3,19 +3,53 @@
     <slot name="header" />
 
     <div class="ui-dropdown__values" role="listbox">
-      <template v-for="(item, index) in values" :key="item">
-        <button
-          type="button"
-          role="option"
-          class="ui-dropdown__item"
-          :aria-selected="isItemHighlighted(item)"
-          :class="{
-            'ui-dropdown__item--highlighed': isItemHighlighted(item),
-          }"
-          @click="emit('select', { item, index })"
+      <template v-if="virtualScroll">
+        <RecycleScroller
+          v-slot="{ item, index }: { item: T; index: number }"
+          :items="values"
+          :item-size="itemSize"
+          :style="{ height: virtualScrollHeight }"
+          :key-field="keyField"
         >
-          {{ getLabelFromValue(item) }}
-        </button>
+          <template v-if="$slots.item">
+            <slot name="item" v-bind="{ item }" />
+          </template>
+          <template v-else>
+            <button
+              type="button"
+              role="option"
+              class="ui-dropdown__item"
+              :aria-selected="isItemHighlighted(item)"
+              :class="{
+                'ui-dropdown__item--highlighed': isItemHighlighted(item),
+              }"
+              @click="emit('select', { item, index })"
+            >
+              {{ getLabelFromValue(item) }}
+            </button>
+          </template>
+        </RecycleScroller>
+      </template>
+      <template v-else>
+        <template v-for="(item, index) in values" :key="item">
+          <template v-if="$slots.item">
+            <slot name="item" v-bind="{ item, index }" />
+          </template>
+          <template v-else>
+            <button
+              type="button"
+              role="option"
+              class="ui-dropdown__item"
+              :aria-selected="isItemHighlighted(item)"
+              :class="{
+                'ui-dropdown__item--highlighed': isItemHighlighted(item),
+              }"
+              @click="emit('select', { item, index })"
+            >
+              {{ getLabelFromValue(item) }}
+            </button>
+          </template>
+        </template>
       </template>
     </div>
 
@@ -24,24 +58,52 @@
 </template>
 
 <script lang="ts" setup generic="T extends Record<string, any>">
+import "vue-virtual-scroller/dist/vue-virtual-scroller.css";
+import { RecycleScroller } from "vue-virtual-scroller";
+import { computed } from "vue";
+
 const emit = defineEmits<{
   select: [item: { item: T; index: number }];
 }>();
 
-const props = withDefaults(
-  defineProps<{
-    isVisible?: boolean;
-    values: T[];
-    selectedValue: T | null;
-    labelKey?: keyof T | ((value: T) => string) | "label";
-    position?: "top" | "bottom";
-  }>(),
-  {
-    isVisible: false,
-    position: "bottom",
-    labelKey: "label",
-  },
-);
+type BaseProps = {
+  isVisible?: boolean;
+  values: T[];
+  selectedValue?: T | null;
+  labelKey?: keyof T | ((value: T) => string) | "label";
+  position?: "top" | "bottom";
+};
+type VirtualScrollProps = BaseProps & {
+  virtualScroll: true;
+  itemSize: number;
+  maxHeight: number | string;
+  keyField?: string;
+};
+
+type NonVirtualScrollProps = BaseProps & {
+  virtualScroll?: false;
+  itemSize?: never;
+  maxHeight?: never;
+  keyField?: never;
+};
+
+type ComponentProps = VirtualScrollProps | NonVirtualScrollProps;
+
+const props = withDefaults(defineProps<ComponentProps>(), {
+  isVisible: false,
+  selectedValue: null,
+  labelKey: "label",
+  position: "bottom",
+
+  maxHeight: 250,
+  itemSize: 50,
+  keyField: "id",
+});
+
+const virtualScrollHeight = computed(() => {
+  const { maxHeight } = props;
+  return typeof maxHeight === "number" ? `${maxHeight}px` : maxHeight;
+});
 
 const getLabelFromValue = (value: T) => {
   const { labelKey } = props;

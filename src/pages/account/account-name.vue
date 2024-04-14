@@ -11,64 +11,54 @@
   </label>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import { debounce } from "lodash-es";
-import { defineComponent, reactive, watchEffect, watch, PropType } from "vue";
-import { AccountModel } from "shared-types";
-
+import { reactive, watchEffect, watch } from "vue";
+import type { AccountModel } from "shared-types";
 import { useAccountsStore } from "@/stores";
-
-import { useNotificationCenter, NotificationType } from "@/components/notification-center";
+import {
+  useNotificationCenter,
+  NotificationType,
+} from "@/components/notification-center";
 import InputField from "@/components/fields/input-field.vue";
 
-export default defineComponent({
-  components: { InputField },
-  props: {
-    account: {
-      type: Object as PropType<AccountModel>,
-      required: true,
-    },
-  },
-  setup(props) {
-    const { addNotification } = useNotificationCenter();
-    const accountsStore = useAccountsStore();
+const props = defineProps<{
+  account: AccountModel;
+}>();
 
-    const form = reactive({
-      name: "",
-    });
+const { addNotification } = useNotificationCenter();
+const accountsStore = useAccountsStore();
 
-    const updateName = debounce(async ({ id, name }) => {
-      if (name) {
-        await accountsStore.editAccount({ id, name });
-
-        addNotification({
-          text: "Account name changed successfully",
-          type: NotificationType.success,
-        });
-      }
-    }, 2000);
-
-    watchEffect(() => {
-      if (props.account) {
-        form.name = props.account.name;
-      }
-    });
-
-    watch(
-      () => form.name,
-      (value) => {
-        if (value !== props.account.name) {
-          updateName({ id: props.account.id, name: value });
-        }
-      },
-      { immediate: true },
-    );
-
-    return {
-      form,
-    };
-  },
+const form = reactive({
+  name: "",
 });
+
+const updateName = debounce(async ({ id, name }) => {
+  if (name) {
+    await accountsStore.editAccount({ id, name });
+
+    addNotification({
+      text: "Account name changed successfully",
+      type: NotificationType.success,
+    });
+  }
+}, 2000);
+
+watchEffect(() => {
+  if (props.account) {
+    form.name = props.account.name;
+  }
+});
+
+watch(
+  () => form.name,
+  (value) => {
+    if (value !== props.account.name) {
+      updateName({ id: props.account.id, name: value });
+    }
+  },
+  { immediate: true },
+);
 </script>
 
 <style lang="scss" scoped>

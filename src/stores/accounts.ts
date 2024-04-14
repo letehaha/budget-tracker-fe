@@ -1,7 +1,7 @@
 import { ref, WritableComputedRef, computed, watch } from "vue";
 import { defineStore, storeToRefs } from "pinia";
 import { useQuery } from "@tanstack/vue-query";
-import { ACCOUNT_TYPES, AccountModel } from "shared-types";
+import { ACCOUNT_CATEGORIES, ACCOUNT_TYPES, AccountModel } from "shared-types";
 import {
   loadAccounts as apiLoadAccounts,
   createAccount as apiCreateAccount,
@@ -31,9 +31,9 @@ export const useAccountsStore = defineStore("accounts", () => {
     }
   });
 
-  const getAccountById: WritableComputedRef<(id: number) => AccountModel | undefined> = computed(
-    () => (id: number) => accounts.value.find((i) => i.id === id),
-  );
+  const getAccountById: WritableComputedRef<
+    (id: number) => AccountModel | undefined
+  > = computed(() => (id: number) => accounts.value.find((i) => i.id === id));
 
   const accountsCurrencyIds = computed(() => [
     ...new Set(accounts.value.map((item) => item.currencyId)),
@@ -42,9 +42,18 @@ export const useAccountsStore = defineStore("accounts", () => {
   const systemAccounts = computed(() =>
     accounts.value.filter((item) => item.type === ACCOUNT_TYPES.system),
   );
-  const enabledAccounts = computed(() => accounts.value.filter((item) => item.isEnabled));
+  const enabledAccounts = computed(() =>
+    accounts.value.filter((item) => item.isEnabled),
+  );
+  const investmentAccounts = computed(() =>
+    accounts.value.filter(
+      (item) => item.accountCategory === ACCOUNT_CATEGORIES.investment,
+    ),
+  );
 
-  const createAccount = async (payload: Parameters<typeof apiCreateAccount>[0]) => {
+  const createAccount = async (
+    payload: Parameters<typeof apiCreateAccount>[0],
+  ) => {
     try {
       await apiCreateAccount(payload);
       await refetchAccounts();
@@ -54,7 +63,10 @@ export const useAccountsStore = defineStore("accounts", () => {
     }
   };
 
-  const editAccount = async ({ id, ...data }: Parameters<typeof apiEditAccount>[0]) => {
+  const editAccount = async ({
+    id,
+    ...data
+  }: Parameters<typeof apiEditAccount>[0]) => {
     try {
       await apiEditAccount({ id, ...data });
       await refetchAccounts();
@@ -80,6 +92,7 @@ export const useAccountsStore = defineStore("accounts", () => {
     accountsRecord,
     enabledAccounts,
     systemAccounts,
+    investmentAccounts,
     accountsCurrencyIds,
 
     getAccountById,
