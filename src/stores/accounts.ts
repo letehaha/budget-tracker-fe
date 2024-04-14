@@ -54,48 +54,32 @@ export const useAccountsStore = defineStore("accounts", () => {
   const createAccount = async (
     payload: Parameters<typeof apiCreateAccount>[0],
   ) => {
-    try {
-      const result = await apiCreateAccount(payload);
+    const result = await apiCreateAccount(payload);
 
-      accounts.value.push(result);
-      accountsRecord.value[result.id] = result;
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.log(e);
-    }
+    accounts.value.push(result);
+    accountsRecord.value[result.id] = result;
   };
 
   const editAccount = async ({
     id,
     ...data
   }: Parameters<typeof apiEditAccount>[0]) => {
-    try {
-      const result = await apiEditAccount({ id, ...data });
+    const result = await apiEditAccount({ id, ...data });
 
-      accounts.value = accounts.value.map((item) => {
-        if (item.id === id) {
-          return result;
-        }
-        return item;
-      });
-      accountsRecord.value[id] = result;
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.log(e);
-      throw e;
-    }
+    accounts.value = accounts.value.map((item) => {
+      if (item.id === id) {
+        return result;
+      }
+      return item;
+    });
+    accountsRecord.value[id] = result;
   };
 
   const deleteAccount = async ({ id }: DeleteAccountPayload) => {
-    try {
-      await apiDeleteAccount({ id });
+    await apiDeleteAccount({ id });
 
-      accounts.value = accounts.value.filter((item) => item.id !== id);
-      delete accountsRecord.value[id];
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.log(e);
-    }
+    accounts.value = accounts.value.filter((item) => item.id !== id);
+    delete accountsRecord.value[id];
   };
 
   return {

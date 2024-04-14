@@ -63,8 +63,7 @@ export default defineComponent({
           secret: "",
         };
       } catch (e) {
-        // eslint-disable-next-line no-console
-        console.log(e);
+        console.error(e);
       } finally {
         isFormLoading.value = false;
         resetValidation();
