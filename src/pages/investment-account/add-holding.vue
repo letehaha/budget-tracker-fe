@@ -52,7 +52,6 @@ const createHoldingHandler = async (security) => {
 
     queryClient.invalidateQueries({ queryKey: ["useFetchHoldingsList"] });
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.error(err);
     addErrorNotification("Cannot add holding!");
   }

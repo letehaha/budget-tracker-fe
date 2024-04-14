@@ -15,12 +15,14 @@ import DateField from "@/components/fields/date-field.vue";
 import Button from "@/components/lib/ui/button/Button.vue";
 import * as Card from "@/components/lib/ui/card";
 import * as Popover from "@/components/lib/ui/popover";
+import { useNotificationCenter } from "@/components/notification-center";
 
 const props = defineProps<{
   account: AccountModel;
   holding: HoldingModel;
 }>();
 const queryClient = useQueryClient();
+const { addErrorNotification } = useNotificationCenter();
 const { data: securities } = useFetchSecuritiesList();
 
 const txTypeValues = computed(() => [
@@ -54,25 +56,28 @@ const securityRecord = computed<SecurityModel>(
 );
 
 const createTransaction = async () => {
-  let quantity = parseFloat(form.quantity);
+  try {
+    let quantity = parseFloat(form.quantity);
 
-  if (form.type.value === TRANSACTION_TYPES.expense) quantity *= -1;
+    if (form.type.value === TRANSACTION_TYPES.expense) quantity *= -1;
 
-  const params = {
-    accountId: props.account.id,
-    securityId: securityRecord.value.id,
-    transactionType: form.type.value,
-    date: form.date.toISOString(),
-    name: form.note,
-    quantity: String(quantity),
-    price: String(form.price || 0),
-    fees: String(form.fees || 0),
-  };
-  console.log("params");
-  const result = await createInvestmentTransaction(params);
-  console.log("result", result);
-  popoverOpened.value = false;
-  queryClient.invalidateQueries({ queryKey: ["useFetchHoldingsList"] });
+    const params = {
+      accountId: props.account.id,
+      securityId: securityRecord.value.id,
+      transactionType: form.type.value,
+      date: form.date.toISOString(),
+      name: form.note,
+      quantity: String(quantity),
+      price: String(form.price || 0),
+      fees: String(form.fees || 0),
+    };
+    await createInvestmentTransaction(params);
+    popoverOpened.value = false;
+    queryClient.invalidateQueries({ queryKey: ["useFetchHoldingsList"] });
+  } catch (err) {
+    console.error(err);
+    addErrorNotification("Unexpected error");
+  }
 };
 </script>
 
