@@ -1,12 +1,12 @@
 <template>
   <div class="p-6">
     <div class="flex gap-6">
-      <div class="flex flex-col gap-6">
-        <Card.Card class="max-w-[600px] w-full">
+      <div class="flex flex-col gap-6 max-w-[750px] w-full">
+        <Card.Card class="w-full">
           <AccountHeader :account="account" />
         </Card.Card>
 
-        <Card.Card class="max-w-[600px] w-full">
+        <Card.Card class="w-full">
           <Card.CardHeader>
             <div class="flex items-center justify-between">
               <span> Holdings </span>
@@ -14,11 +14,22 @@
             </div>
           </Card.CardHeader>
           <Card.CardContent class="grid gap-1">
+            <template v-if="holdings.length">
+              <div
+                class="grid grid-cols-5 gap-1 px-4 py-2 mb-1 text-left border-b border-white/20"
+              >
+                <span>Name</span>
+                <span>Symbol</span>
+                <span>Quantity</span>
+                <span>Holding</span>
+                <span>Cost basis</span>
+              </div>
+            </template>
             <template v-for="holding in holdings" :key="holding.id">
               <template v-if="securitiesRecord[holding.securityId]">
                 <Button
                   variant="ghost"
-                  class="flex items-center justify-between"
+                  class="grid grid-cols-5 gap-1 text-left"
                   @click="() => (activeHolding = holding)"
                 >
                   <span>

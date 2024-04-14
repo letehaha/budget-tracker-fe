@@ -27,14 +27,10 @@
         </router-link>
       </template>
     </div>
-    <!-- <button type="button" @click="createHoldingHandler">Add holding</button> -->
   </div>
 </template>
 
 <script setup lang="ts">
-// import { ACCOUNT_CATEGORIES } from "shared-types";
-// import { useFetchSecuritiesList, useFetchHoldingsList } from "@/composable";
-// import { createHolding } from "@/api";
 import { computed, ref } from "vue";
 import { storeToRefs } from "pinia";
 import { isSameDay } from "date-fns";
@@ -45,12 +41,14 @@ import { syncSecurities } from "@/api";
 import { useFormatCurrency } from "@/composable";
 import { Card } from "@/components/lib/ui/card";
 import { Button } from "@/components/lib/ui/button";
+import { useNotificationCenter } from "@/components/notification-center";
 
 const LSKey = "securities-sync-date";
 
 const accountsStore = useAccountsStore();
 const { formatAmountByCurrencyId } = useFormatCurrency();
 const { investmentAccounts } = storeToRefs(accountsStore);
+const { addErrorNotification } = useNotificationCenter();
 
 const isSyncing = ref(false);
 
@@ -79,30 +77,9 @@ const syncData = async () => {
     lastSyncDate.value = localStorage.getItem(LSKey);
   } catch (err) {
     localStorage.removeItem(LSKey);
+    addErrorNotification("Cannot sync securities data!");
   } finally {
     isSyncing.value = false;
   }
 };
-console.log("investmentAccounts", investmentAccounts);
-
-// const { data: securities } = useFetchSecuritiesList();
-// const { data: prices } = useFetchSecuritiesPrices();
-// const { data: holdings } = useFetchHoldingsList();
-
-// const createHoldingHandler = async () => {
-//   const account = accounts.value.find(
-//     (item) => item.accountCategory === ACCOUNT_CATEGORIES.investment,
-//   );
-//   const security = securities.value.find((item) => item.symbol === "NVDA");
-
-//   console.log({ account, security });
-//   const holding = await createHolding({
-//     accountId: account.id,
-//     securityId: security.id,
-//   });
-
-//   console.log("holding", holding);
-// };
-
-// console.log("holdings", holdings);
 </script>
