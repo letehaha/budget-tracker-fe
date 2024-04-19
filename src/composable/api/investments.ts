@@ -5,7 +5,9 @@ import {
   loadSecuritiesList,
   loadSecuritiesPrices,
   loadHoldingsList,
+  getInvestmentTransactionsForAccount,
 } from "@/api";
+import { InvestmentTransactionModel } from "shared-types";
 
 export const useFetchSecuritiesList = () => {
   const rootStore = useRootStore();
@@ -40,6 +42,20 @@ export const useFetchHoldingsList = () => {
   return useQuery({
     queryKey: ["useFetchHoldingsList"],
     queryFn: loadHoldingsList,
+    staleTime: Infinity,
+    placeholderData: [],
+    enabled: isAppInitialized,
+  });
+};
+
+export const useInvestTxsForAccount = ({ accountId, securityId }) => {
+  const rootStore = useRootStore();
+  const { isAppInitialized } = storeToRefs(rootStore);
+
+  return useQuery({
+    queryKey: ["useInvestTxsForAccount", { accountId, securityId }],
+    queryFn: (): Promise<InvestmentTransactionModel[]> =>
+      getInvestmentTransactionsForAccount({ accountId, securityId }),
     staleTime: Infinity,
     placeholderData: [],
     enabled: isAppInitialized,

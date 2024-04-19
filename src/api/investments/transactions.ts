@@ -1,4 +1,4 @@
-import { TRANSACTION_TYPES } from "shared-types";
+import { TRANSACTION_TYPES, InvestmentTransactionModel } from "shared-types";
 import { api } from "@/api/_api";
 
 interface CreateInvestmentTransactionParams {
@@ -19,3 +19,12 @@ export const createInvestmentTransaction = async (
 
   return result;
 };
+
+export const getInvestmentTransactionsForAccount = async ({
+  accountId,
+  securityId,
+}: {
+  accountId: number;
+  securityId?: number;
+}): Promise<InvestmentTransactionModel[]> =>
+  api.get("/investing/transactions", { accountId, securityId });
