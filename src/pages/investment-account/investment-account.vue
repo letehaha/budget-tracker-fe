@@ -57,7 +57,11 @@
       </div>
 
       <template v-if="activeHolding">
-        <HoldingCard :account="account" :holding="activeHolding" />
+        <HoldingCard
+          :key="activeHolding.securityId"
+          :account="account"
+          :holding="activeHolding"
+        />
       </template>
     </div>
   </div>

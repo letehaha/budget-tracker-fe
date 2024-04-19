@@ -8,11 +8,12 @@ import {
 } from "shared-types";
 import { useQueryClient } from "@tanstack/vue-query";
 import { createInvestmentTransaction } from "@/api";
-import { useFetchSecuritiesList } from "@/composable";
+import { useFetchSecuritiesList, useInvestTxsForAccount } from "@/composable";
 import InputField from "@/components/fields/input-field.vue";
 import SelectField from "@/components/fields/select-field.vue";
 import DateField from "@/components/fields/date-field.vue";
 import Button from "@/components/lib/ui/button/Button.vue";
+import InvestmentTransactionRecord from "@/components/investment-transactions/investment-transaction-record.vue";
 import * as Card from "@/components/lib/ui/card";
 import * as Popover from "@/components/lib/ui/popover";
 import { useNotificationCenter } from "@/components/notification-center";
@@ -24,6 +25,10 @@ const props = defineProps<{
 const queryClient = useQueryClient();
 const { addErrorNotification } = useNotificationCenter();
 const { data: securities } = useFetchSecuritiesList();
+const { data: transactions } = useInvestTxsForAccount({
+  accountId: props.account.id,
+  securityId: props.holding.securityId,
+});
 
 const txTypeValues = computed(() => [
   { value: TRANSACTION_TYPES.income, label: "Buy" },
@@ -114,6 +119,23 @@ const createTransaction = async () => {
         </Popover.Popover>
       </div>
     </Card.CardHeader>
-    <Card.CardContent class="grid gap-4"> No records yet </Card.CardContent>
+    <Card.CardContent class="grid gap-2 overflow-y-auto max-h-[700px]">
+      <template v-if="transactions.length">
+        <div
+          class="sticky top-0 grid grid-cols-4 px-4 py-2 text-center bg-card"
+        >
+          <span class="text-left">Quantity</span>
+          <span>Price</span>
+          <span>Total cost</span>
+          <span>Date</span>
+        </div>
+        <template v-for="tx of transactions" :key="tx.id">
+          <Button variant="ghost" class="h-auto">
+            <InvestmentTransactionRecord :transaction="tx" />
+          </Button>
+        </template>
+      </template>
+      <template v-else> No records yet </template>
+    </Card.CardContent>
   </Card.Card>
 </template>
