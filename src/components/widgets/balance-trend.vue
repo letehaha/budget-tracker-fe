@@ -1,25 +1,19 @@
 <template>
-  <WidgetWrapper class="balance-trend-widget" title="Balance trend">
-    <div class="balance-trend-widget__details">
-      <div class="balance-trend-widget__details-titles">
-        <div
-          class="balance-trend-widget__details-title balance-trend-widget__details-title--today"
-        >
-          Today
-        </div>
-        <div class="balance-trend-widget__details-title">
-          vs previous period
-        </div>
+  <WidgetWrapper title="Balance trend" :is-fetching="isWidgetDataFetching">
+    <div>
+      <div class="flex items-center justify-between mb-1 text-xs">
+        <div class="font-medium tracking-tight uppercase">Today</div>
+        <div class="tracking-tight">vs previous period</div>
       </div>
-      <div class="balance-trend-widget__details-values">
-        <div class="balance-trend-widget__today-balance">
+
+      <div class="flex items-center justify-between">
+        <div class="text-lg font-bold tracking-wider">
           {{ formatBaseCurrency(todayBalance) }}
         </div>
         <div
-          class="balance-trend-widget__diff"
           :class="{
-            'balance-trend-widget__diff--positive': balancesDiff > 0,
-            'balance-trend-widget__diff--negative': balancesDiff < 0,
+            'text-[var(--app-success)]': balancesDiff < 0,
+            'text-[var(--app-error)]': balancesDiff > 0,
           }"
         >
           {{ `${balancesDiff}%` }}
@@ -29,7 +23,6 @@
 
     <highcharts
       v-node-resize-observer="{ callback: onChartResize }"
-      class="balance-trend-widget__chart"
       :options="chartOptions"
     />
   </WidgetWrapper>
@@ -101,26 +94,59 @@ watch(
   },
 );
 
-const { data: balanceHistory } = useQuery({
-  queryKey: [...VUE_QUERY_CACHE_KEYS.widgetBalanceTrend, periodFrom],
-  queryFn: () => loadBalanceTrendData(props.selectedPeriod),
-  staleTime: Infinity,
-});
-const { data: todayBalance } = useQuery({
+const { data: _balanceHistory, isFetching: isBalanceHistoryFetching } =
+  useQuery({
+    queryKey: [...VUE_QUERY_CACHE_KEYS.widgetBalanceTrend, periodFrom],
+    queryFn: () => loadBalanceTrendData(props.selectedPeriod),
+    staleTime: Infinity,
+  });
+const { data: _todayBalance, isFetching: isTodayBalanceFetching } = useQuery({
   queryKey: [...VUE_QUERY_CACHE_KEYS.widgetBalanceTotalBalance, periodFrom],
   queryFn: () => getTotalBalance({ date: props.selectedPeriod.to }),
   placeholderData: 0,
   staleTime: Infinity,
 });
-const { data: previousBalance } = useQuery({
-  queryKey: [...VUE_QUERY_CACHE_KEYS.widgetBalancePreviousBalance, periodFrom],
-  queryFn: () =>
-    getTotalBalance({
-      date: endOfMonth(subMonths(props.selectedPeriod.to, 1)),
-    }),
-  placeholderData: 0,
-  staleTime: Infinity,
-});
+const { data: _previousBalance, isFetching: isPreviousBalanceFetching } =
+  useQuery({
+    queryKey: [
+      ...VUE_QUERY_CACHE_KEYS.widgetBalancePreviousBalance,
+      periodFrom,
+    ],
+    queryFn: () =>
+      getTotalBalance({
+        date: endOfMonth(subMonths(props.selectedPeriod.to, 1)),
+      }),
+    placeholderData: 0,
+    staleTime: Infinity,
+  });
+
+const isWidgetDataFetching = computed(
+  () =>
+    isBalanceHistoryFetching.value ||
+    isTodayBalanceFetching.value ||
+    isPreviousBalanceFetching.value,
+);
+
+// We store actual data separately, so when new data is loading, we can still show
+// the old data, to avoid UI flickering
+const balanceHistory = ref([]);
+const todayBalance = ref(0);
+const previousBalance = ref(0);
+const actualDataPeriod = ref(props.selectedPeriod);
+
+watch(
+  isWidgetDataFetching,
+  (value) => {
+    // When full data is loaded,
+    if (value === false) {
+      balanceHistory.value = _balanceHistory.value;
+      todayBalance.value = _todayBalance.value;
+      previousBalance.value = _previousBalance.value;
+      actualDataPeriod.value = props.selectedPeriod;
+    }
+  },
+  { immediate: true },
+);
 
 const chartOptions = computed(() => {
   const pixelsPerTick = 120;
@@ -128,13 +154,16 @@ const chartOptions = computed(() => {
     ? Math.round(currentChartWidth.value / pixelsPerTick)
     : 5;
 
+  const fromDate = actualDataPeriod.value.from;
+  const toDate = actualDataPeriod.value.to;
+
   const config = buildAreaChartConfig({
     chart: {
       height: 220,
       marginTop: 20,
     },
     xAxis: {
-      tickPositions: generateDateSteps(ticksAmount, props.selectedPeriod.from),
+      tickPositions: generateDateSteps(ticksAmount, fromDate),
     },
     yAxis: {
       tickAmount: 5,
@@ -158,15 +187,9 @@ const chartOptions = computed(() => {
           ]),
           // fill remaining days with `null` so chart will be rendered for all
           // days in the month
-          ...Array(
-            getDaysInMonth(props.selectedPeriod.to) -
-              props.selectedPeriod.to.getDate(),
-          )
+          ...Array(getDaysInMonth(toDate) - toDate.getDate())
             .fill([])
-            .map((_, i) => [
-              addDays(props.selectedPeriod.to, i + 1).getTime(),
-              null,
-            ]),
+            .map((_, i) => [addDays(toDate, i + 1).getTime(), null]),
         ],
       },
     ],
@@ -188,34 +211,3 @@ const onChartResize = (entries: ResizeObserverEntry[]) => {
   currentChartWidth.value = entry.contentRect.width;
 };
 </script>
-
-<style lang="scss">
-.balance-trend-widget__details-titles,
-.balance-trend-widget__details-values {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.balance-trend-widget__details-titles {
-  font-size: 12px;
-  margin-bottom: 4px;
-}
-.balance-trend-widget__details-title {
-  letter-spacing: -0.3px;
-}
-.balance-trend-widget__details-title--today {
-  text-transform: uppercase;
-  font-weight: 500;
-}
-.balance-trend-widget__today-balance {
-  font-size: 18px;
-  letter-spacing: 1px;
-  font-weight: 700;
-}
-.balance-trend-widget__diff--positive {
-  color: var(--app-success);
-}
-.balance-trend-widget__diff--negative {
-  color: var(--app-error);
-}
-</style>

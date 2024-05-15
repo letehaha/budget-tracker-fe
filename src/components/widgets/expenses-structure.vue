@@ -1,25 +1,20 @@
 <template>
-  <WidgetWrapper class="expenses-structure-widget" title="Expenses Structure">
-    <div class="expenses-structure-widget__details">
-      <div class="expenses-structure-widget__details-titles">
-        <div
-          class="expenses-structure-widget__details-title expenses-structure-widget__details-title--today"
-        >
-          Today
-        </div>
-        <div class="expenses-structure-widget__details-title">
-          vs previous period
-        </div>
+  <WidgetWrapper title="Expenses Structure" :is-fetching="isWidgetDataFetching">
+    <div>
+      <div class="flex items-center justify-between mb-1 text-xs">
+        <div class="font-medium tracking-tight uppercase">Today</div>
+        <div class="tracking-tight">vs previous period</div>
       </div>
-      <div class="expenses-structure-widget__details-values">
-        <div class="expenses-structure-widget__today-balance">
+
+      <div class="flex items-center justify-between">
+        <div class="text-lg font-bold tracking-wider">
           {{ formatBaseCurrency(-(currentMonthExpense || 0)) }}
         </div>
+
         <div
-          class="expenses-structure-widget__diff"
           :class="{
-            'expenses-structure-widget__diff--positive': expensesDiff < 0,
-            'expenses-structure-widget__diff--negative': expensesDiff > 0,
+            'text-[var(--app-success)]': expensesDiff < 0,
+            'text-[var(--app-error)]': expensesDiff > 0,
           }"
         >
           {{ `${expensesDiff}%` }}
@@ -27,10 +22,7 @@
       </div>
     </div>
 
-    <highcharts
-      class="expenses-structure-widget__chart"
-      :options="chartOptions"
-    />
+    <highcharts :options="chartOptions" />
   </WidgetWrapper>
 </template>
 
@@ -75,7 +67,10 @@ watch(
   },
 );
 
-const { data: spendingsByCategories } = useQuery({
+const {
+  data: spendingsByCategories,
+  isFetching: isSpendingsByCategoriesFetching,
+} = useQuery({
   queryKey: [...VUE_QUERY_CACHE_KEYS.widgetExpensesStructureTotal, periodFrom],
   queryFn: () =>
     getSpendingsByCategories({
@@ -83,36 +78,45 @@ const { data: spendingsByCategories } = useQuery({
       to: props.selectedPeriod.to,
     }),
   staleTime: Infinity,
-  placeholderData: {},
+  placeholderData: (previousData) => previousData || {},
 });
 
-const { data: currentMonthExpense } = useQuery({
-  queryKey: [
-    ...VUE_QUERY_CACHE_KEYS.widgetExpensesStructureCurrentAmount,
-    periodFrom,
-  ],
-  queryFn: () =>
-    getExpensesAmountForPeriod({
-      from: props.selectedPeriod.from,
-      to: props.selectedPeriod.to,
-    }),
-  staleTime: Infinity,
-  placeholderData: 0,
-});
+const { data: currentMonthExpense, isFetching: isCurrentMonthExpenseFetching } =
+  useQuery({
+    queryKey: [
+      ...VUE_QUERY_CACHE_KEYS.widgetExpensesStructureCurrentAmount,
+      periodFrom,
+    ],
+    queryFn: () =>
+      getExpensesAmountForPeriod({
+        from: props.selectedPeriod.from,
+        to: props.selectedPeriod.to,
+      }),
+    staleTime: Infinity,
+    placeholderData: (previousData) => previousData || 0,
+  });
 
-const { data: prevMonthExpense } = useQuery({
-  queryKey: [
-    ...VUE_QUERY_CACHE_KEYS.widgetExpensesStructurePrevAmount,
-    periodFrom,
-  ],
-  queryFn: () =>
-    getExpensesAmountForPeriod({
-      from: startOfMonth(subMonths(props.selectedPeriod.from, 1)),
-      to: endOfMonth(subMonths(props.selectedPeriod.to, 1)),
-    }),
-  staleTime: Infinity,
-  placeholderData: 0,
-});
+const { data: prevMonthExpense, isFetching: isPrevMonthExpenseFetching } =
+  useQuery({
+    queryKey: [
+      ...VUE_QUERY_CACHE_KEYS.widgetExpensesStructurePrevAmount,
+      periodFrom,
+    ],
+    queryFn: () =>
+      getExpensesAmountForPeriod({
+        from: startOfMonth(subMonths(props.selectedPeriod.from, 1)),
+        to: endOfMonth(subMonths(props.selectedPeriod.to, 1)),
+      }),
+    staleTime: Infinity,
+    placeholderData: (previousData) => previousData || 0,
+  });
+
+const isWidgetDataFetching = computed(
+  () =>
+    isSpendingsByCategoriesFetching.value ||
+    isCurrentMonthExpenseFetching.value ||
+    isPrevMonthExpenseFetching.value,
+);
 
 const expensesDiff = computed(() => {
   const percentage = Number(
@@ -172,34 +176,3 @@ const chartOptions = computed(() =>
   }),
 );
 </script>
-
-<style lang="scss">
-.expenses-structure-widget__details-titles,
-.expenses-structure-widget__details-values {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.expenses-structure-widget__details-titles {
-  font-size: 12px;
-  margin-bottom: 4px;
-}
-.expenses-structure-widget__details-title {
-  letter-spacing: -0.3px;
-}
-.expenses-structure-widget__details-title--today {
-  text-transform: uppercase;
-  font-weight: 500;
-}
-.expenses-structure-widget__today-balance {
-  font-size: 18px;
-  letter-spacing: 1px;
-  font-weight: 700;
-}
-.expenses-structure-widget__diff--positive {
-  color: var(--app-success);
-}
-.expenses-structure-widget__diff--negative {
-  color: var(--app-error);
-}
-</style>
