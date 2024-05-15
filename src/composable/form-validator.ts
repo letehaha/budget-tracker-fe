@@ -136,7 +136,6 @@ export const useFormValidation = <
    */
   const getFieldErrorMessage = (fieldPath: string): string => {
     if (!fieldPath) {
-      // eslint-disable-next-line no-console
       console.error('getFieldErrorMessage: "fieldPath" is required');
     }
 
@@ -146,7 +145,6 @@ export const useFormValidation = <
 
     const field = _extractVuelidateField(fieldPath);
     if (!field || !Object.keys(field).length) {
-      // eslint-disable-next-line no-console
       console.error(
         `getFieldErrorMessage: Cannot extract vuelidate field by ${fieldPath.trim()}`,
       );

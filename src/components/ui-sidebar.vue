@@ -69,6 +69,20 @@
         </router-link>
         <router-link
           v-slot="{ isActive }"
+          :to="{ name: ROUTES_NAMES.investments }"
+        >
+          <ui-button
+            :variant="isActive ? 'default' : 'ghost'"
+            as="span"
+            class="justify-start w-full px-3"
+            size="lg"
+          >
+            Investments
+          </ui-button>
+        </router-link>
+
+        <router-link
+          v-slot="{ isActive }"
           :to="{ name: ROUTES_NAMES.settings }"
         >
           <ui-button

@@ -28,7 +28,6 @@ export default defineComponent({
   methods: {
     validateProgressValue(value: string | number) {
       if (value > this.maxProgress) {
-        // eslint-disable-next-line no-console
         console.error(
           `["Progress" component]: current progress value is ${value}, but maximum allowed is ${this.maxProgress}. Override default "maxProgress" value using props to have right visualization!`,
         );

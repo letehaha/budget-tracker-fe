@@ -324,7 +324,6 @@ const submit = async () => {
     // Reload all cached data in the app
     queryClient.invalidateQueries({ queryKey: [VUE_QUERY_TX_CHANGE_QUERY] });
   } catch (e) {
-    // eslint-disable-next-line no-console
     console.error(e);
   } finally {
     isLoading.value = false;
@@ -343,7 +342,6 @@ const unlinkTransactions = async () => {
     // Reload all cached data in the app
     queryClient.invalidateQueries({ queryKey: [VUE_QUERY_TX_CHANGE_QUERY] });
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.error(err);
   } finally {
     isLoading.value = false;
@@ -364,7 +362,6 @@ const deleteTransactionHandler = async () => {
     // Reload all cached data in the app
     queryClient.invalidateQueries({ queryKey: [VUE_QUERY_TX_CHANGE_QUERY] });
   } catch (e) {
-    // eslint-disable-next-line no-console
     console.error(e);
   } finally {
     isLoading.value = false;

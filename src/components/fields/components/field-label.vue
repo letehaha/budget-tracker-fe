@@ -9,6 +9,9 @@
         </template>
       </div>
     </template>
+    <template v-else-if="$slots.label">
+      <slot name="label" />
+    </template>
     <div class="field-label__field-wrapper">
       <slot />
     </div>

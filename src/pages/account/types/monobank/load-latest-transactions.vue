@@ -84,7 +84,6 @@ const loadLatestTransactionsHandler = async () => {
         type: NotificationType.error,
       });
     } else {
-      // eslint-disable-next-line no-console
       console.error(e);
     }
   }

@@ -1,7 +1,7 @@
 import { ref, WritableComputedRef, computed, watch } from "vue";
 import { defineStore, storeToRefs } from "pinia";
 import { useQuery } from "@tanstack/vue-query";
-import { ACCOUNT_TYPES, AccountModel } from "shared-types";
+import { ACCOUNT_CATEGORIES, ACCOUNT_TYPES, AccountModel } from "shared-types";
 import {
   loadAccounts as apiLoadAccounts,
   createAccount as apiCreateAccount,
@@ -42,6 +42,11 @@ export const useAccountsStore = defineStore("accounts", () => {
   const systemAccounts = computed(() =>
     accounts.value.filter((item) => item.type === ACCOUNT_TYPES.system),
   );
+  const investmentAccounts = computed(() =>
+    accounts.value.filter(
+      (item) => item.accountCategory === ACCOUNT_CATEGORIES.investment,
+    ),
+  );
   const enabledAccounts = computed(() =>
     accounts.value.filter((item) => item.isEnabled),
   );
@@ -49,48 +54,32 @@ export const useAccountsStore = defineStore("accounts", () => {
   const createAccount = async (
     payload: Parameters<typeof apiCreateAccount>[0],
   ) => {
-    try {
-      const result = await apiCreateAccount(payload);
+    const result = await apiCreateAccount(payload);
 
-      accounts.value.push(result);
-      accountsRecord.value[result.id] = result;
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.log(e);
-    }
+    accounts.value.push(result);
+    accountsRecord.value[result.id] = result;
   };
 
   const editAccount = async ({
     id,
     ...data
   }: Parameters<typeof apiEditAccount>[0]) => {
-    try {
-      const result = await apiEditAccount({ id, ...data });
+    const result = await apiEditAccount({ id, ...data });
 
-      accounts.value = accounts.value.map((item) => {
-        if (item.id === id) {
-          return result;
-        }
-        return item;
-      });
-      accountsRecord.value[id] = result;
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.log(e);
-      throw e;
-    }
+    accounts.value = accounts.value.map((item) => {
+      if (item.id === id) {
+        return result;
+      }
+      return item;
+    });
+    accountsRecord.value[id] = result;
   };
 
   const deleteAccount = async ({ id }: DeleteAccountPayload) => {
-    try {
-      await apiDeleteAccount({ id });
+    await apiDeleteAccount({ id });
 
-      accounts.value = accounts.value.filter((item) => item.id !== id);
-      delete accountsRecord.value[id];
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.log(e);
-    }
+    accounts.value = accounts.value.filter((item) => item.id !== id);
+    delete accountsRecord.value[id];
   };
 
   return {
@@ -98,6 +87,7 @@ export const useAccountsStore = defineStore("accounts", () => {
     accountsRecord,
     enabledAccounts,
     systemAccounts,
+    investmentAccounts,
     accountsCurrencyIds,
 
     getAccountById,
