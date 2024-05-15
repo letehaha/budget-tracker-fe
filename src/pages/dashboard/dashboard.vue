@@ -30,10 +30,7 @@
         :selected-period="currentPeriod"
         class="dashboard-page__spending-categories"
       />
-      <LatestRecordsWidget
-        :selected-period="currentPeriod"
-        class="dashboard-page__latest-records"
-      />
+      <LatestRecordsWidget class="dashboard-page__latest-records" />
     </div>
   </section>
 </template>
