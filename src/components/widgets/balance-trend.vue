@@ -69,54 +69,46 @@ defineOptions({
   name: "balance-trend-widget",
 });
 
-const props = withDefaults(
-  defineProps<{
-    selectedPeriod?: { from: Date; to: Date };
-  }>(),
-  {
-    selectedPeriod: () => ({
-      from: startOfMonth(new Date()),
-      to: new Date(),
-    }),
-  },
-);
+const props = defineProps<{
+  selectedPeriod: { from: Date; to: Date };
+}>();
 
-const periodFrom = ref(new Date().getTime());
 const currentChartWidth = ref(0);
 const { formatBaseCurrency } = useFormatCurrency();
 const { baseCurrency } = storeToRefs(useCurrenciesStore());
 const { buildAreaChartConfig } = useHighcharts();
 
-watch(
-  () => props.selectedPeriod.from,
-  () => {
-    periodFrom.value = props.selectedPeriod.from.getTime();
-  },
-);
+// We store actual and prev period separately, so when new data is loading, we
+// can still show the old period, to avoid UI flickering
+const actualDataPeriod = ref(props.selectedPeriod);
+const prevDataPeriod = ref(props.selectedPeriod);
+const periodQueryKey = computed(() => props.selectedPeriod.from.getTime());
 
-const { data: _balanceHistory, isFetching: isBalanceHistoryFetching } =
-  useQuery({
-    queryKey: [...VUE_QUERY_CACHE_KEYS.widgetBalanceTrend, periodFrom],
+const { data: balanceHistory, isFetching: isBalanceHistoryFetching } = useQuery(
+  {
+    queryKey: [...VUE_QUERY_CACHE_KEYS.widgetBalanceTrend, periodQueryKey],
     queryFn: () => loadBalanceTrendData(props.selectedPeriod),
     staleTime: Infinity,
-  });
-const { data: _todayBalance, isFetching: isTodayBalanceFetching } = useQuery({
-  queryKey: [...VUE_QUERY_CACHE_KEYS.widgetBalanceTotalBalance, periodFrom],
+    placeholderData: (prevData) => prevData,
+  },
+);
+const { data: todayBalance, isFetching: isTodayBalanceFetching } = useQuery({
+  queryKey: [...VUE_QUERY_CACHE_KEYS.widgetBalanceTotalBalance, periodQueryKey],
   queryFn: () => getTotalBalance({ date: props.selectedPeriod.to }),
-  placeholderData: 0,
+  placeholderData: (prevData) => prevData || 0,
   staleTime: Infinity,
 });
-const { data: _previousBalance, isFetching: isPreviousBalanceFetching } =
+const { data: previousBalance, isFetching: isPreviousBalanceFetching } =
   useQuery({
     queryKey: [
       ...VUE_QUERY_CACHE_KEYS.widgetBalancePreviousBalance,
-      periodFrom,
+      periodQueryKey,
     ],
     queryFn: () =>
       getTotalBalance({
         date: endOfMonth(subMonths(props.selectedPeriod.to, 1)),
       }),
-    placeholderData: 0,
+    placeholderData: (prevData) => prevData || 0,
     staleTime: Infinity,
   });
 
@@ -127,22 +119,25 @@ const isWidgetDataFetching = computed(
     isPreviousBalanceFetching.value,
 );
 
-// We store actual data separately, so when new data is loading, we can still show
-// the old data, to avoid UI flickering
-const balanceHistory = ref([]);
-const todayBalance = ref(0);
-const previousBalance = ref(0);
-const actualDataPeriod = ref(props.selectedPeriod);
-
+// On each "selectedPeriod" change we immediately set it as "actualDataPeriod"
+// but if "isWidgetDataFetching" is also triggered, means we started loading new
+// data, then we need to actually reassing "actualDataPeriod" to be as "prevDataPeriod",
+// so there won't be any data flickering. Once data is fully loaded, we assign
+// actual values to both of them
+watch(
+  () => props.selectedPeriod,
+  (value) => {
+    actualDataPeriod.value = value;
+  },
+);
 watch(
   isWidgetDataFetching,
   (value) => {
-    // When full data is loaded,
-    if (value === false) {
-      balanceHistory.value = _balanceHistory.value;
-      todayBalance.value = _todayBalance.value;
-      previousBalance.value = _previousBalance.value;
+    if (value) {
+      actualDataPeriod.value = prevDataPeriod.value;
+    } else {
       actualDataPeriod.value = props.selectedPeriod;
+      prevDataPeriod.value = props.selectedPeriod;
     }
   },
   { immediate: true },

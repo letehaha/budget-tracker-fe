@@ -45,17 +45,9 @@ defineOptions({
   name: "expenses-structure-widget",
 });
 
-const props = withDefaults(
-  defineProps<{
-    selectedPeriod?: { from: Date; to: Date };
-  }>(),
-  {
-    selectedPeriod: () => ({
-      from: startOfMonth(new Date()),
-      to: new Date(),
-    }),
-  },
-);
+const props = defineProps<{
+  selectedPeriod: { from: Date; to: Date };
+}>();
 
 const { formatBaseCurrency } = useFormatCurrency();
 const periodFrom = ref(new Date().getTime());
