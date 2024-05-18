@@ -32,14 +32,27 @@ defineProps<{
   display: grid;
   grid-gap: 8px;
 
-  &:not(:empty) {
-    margin-bottom: 16px;
-  }
+  animation: slide-appear 1s ease-out 300ms both;
 }
 .form-wrapper__error {
   text-align: center;
   color: var(--app-danger-color-text);
   font-size: 14px;
   line-height: 1.3;
+  overflow: hidden;
+}
+
+@keyframes slide-appear {
+  0% {
+    grid-template-rows: 0fr;
+    opacity: 0;
+  }
+  50% {
+    grid-template-rows: 1fr;
+  }
+  100% {
+    opacity: 1;
+    grid-template-rows: 1fr;
+  }
 }
 </style>
