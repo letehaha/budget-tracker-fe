@@ -24,7 +24,7 @@
             )
           "
           type="button"
-          :disabled="$attrs.disabled as boolean"
+          :disabled="Boolean($attrs.disabled)"
           aria-label="Select category"
           :title="selectedValue?.name || 'Select category'"
           @click="() => toggleDropdown()"
@@ -180,7 +180,7 @@ const topLevelCategory = computed<FormattedCategory>(() => {
     if (i === 0) {
       category = props.values[previousLevelsIndices.value[i]];
     } else {
-      category = category[previousLevelsIndices.value[i]];
+      category = category.subCategories[previousLevelsIndices.value[i]];
     }
   }
   return category;
