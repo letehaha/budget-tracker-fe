@@ -68,6 +68,9 @@
       <div class="categories-page__add-subcategory">
         <button type="button" @click="startCreating">Add subcategory +</button>
       </div>
+      <div v-if="errorMessage" class="categories-page__error-message">
+        {{ errorMessage }}
+      </div>
     </div>
     <template v-if="isFormVisible">
       <form class="categories-page__card" @submit.prevent="applyChanges">
@@ -98,7 +101,7 @@
         </div>
         <template v-if="isEditing">
           <div class="categories-page__form-actions">
-            <UiButton @click="deleteCategory"> Delete </UiButton>
+            <UiButton @click="deleteCategory"> Delete</UiButton>
           </div>
         </template>
       </form>
@@ -130,9 +133,12 @@ const categoriesStore = useCategoriesStore();
 
 const { addErrorNotification, addSuccessNotification } =
   useNotificationCenter();
-const { formattedCategories } = storeToRefs(categoriesStore);
+const { formattedCategories, categories } = storeToRefs(categoriesStore);
 const currentLevel = ref<FormattedCategory[]>(formattedCategories.value);
 const selectedCategory = ref<FormattedCategory | null>(null);
+const MAX_DEPTH = ref<number>(2);
+const currentDepth = ref(0);
+const errorMessage = ref("");
 
 const form = reactive({
   name: "",
@@ -153,11 +159,13 @@ const startEditing = () => {
   }
   isEditing.value = true;
   isFormVisible.value = true;
+  errorMessage.value = "";
 };
 const startCreating = () => {
   closeForm();
   isCreating.value = true;
   isFormVisible.value = true;
+  errorMessage.value = "";
 };
 const goBack = () => {
   closeForm();
@@ -196,9 +204,24 @@ const applyChanges = async () => {
     addErrorNotification("Unexpected error!");
   }
 };
+const findCategoryById = (id: number) =>
+  categories.value.find((category: FormattedCategory) => category.id === id);
+const getDepth = (category, depth = 0) => {
+  if (!category.parentId) return depth;
+  const parentCategory = findCategoryById(category.parentId);
+  return getDepth(parentCategory, depth + 1);
+};
 const selectCategory = (category: FormattedCategory) => {
+  currentDepth.value = getDepth(category);
+  if (currentDepth.value >= MAX_DEPTH.value) {
+    // eslint-disable-next-line no-alert
+    errorMessage.value = "You cannot go deeper.";
+    return;
+  }
+
   closeForm();
   selectedCategory.value = category;
+  errorMessage.value = "";
 
   if (category.subCategories) {
     currentLevel.value = category.subCategories;
@@ -229,12 +252,14 @@ const deleteCategory = async () => {
   grid-template-columns: repeat(2, minmax(0, 450px));
   gap: 16px;
 }
+
 .categories-page__card {
   @include surface-container();
   padding: 16px 8px;
 
   max-width: 450px;
 }
+
 .categories-page__header {
   display: flex;
   justify-content: center;
@@ -242,9 +267,11 @@ const deleteCategory = async () => {
   margin-bottom: 16px;
   padding: 8px 16px;
 }
+
 .categories-page__title {
   @extend %heading-3;
 }
+
 .categories-page__list {
   display: grid;
   gap: 8px;
@@ -252,6 +279,7 @@ const deleteCategory = async () => {
   padding: 0 16px;
   text-align: center;
 }
+
 .categories-page__list-item {
   padding: 12px 16px;
   display: grid;
@@ -267,21 +295,25 @@ const deleteCategory = async () => {
     background-color: var(--abc-background-dark-400);
   }
 }
+
 .categories-page__category-info {
   display: flex;
   align-items: center;
   gap: 8px;
 }
+
 .categories-page__category-view {
   width: max-content;
   opacity: 0.7;
   display: flex;
   gap: 8px;
 }
+
 .categories-page__subcategories-title {
   margin-left: 16px;
   text-transform: uppercase;
 }
+
 .categories-page__categories-back {
   padding: 8px;
   position: absolute;
@@ -289,6 +321,7 @@ const deleteCategory = async () => {
   top: 0;
   color: var(--app-primary);
 }
+
 .categories-page__category-edit {
   padding: 8px;
   position: absolute;
@@ -296,6 +329,7 @@ const deleteCategory = async () => {
   top: 0;
   color: var(--app-primary);
 }
+
 .categories-page__details {
   padding: 0 16px 16px;
   display: grid;
@@ -303,6 +337,7 @@ const deleteCategory = async () => {
   margin: 24px 0;
   border-bottom: 1px solid var(--abc-background-dark-400);
 }
+
 .categories-page__details-row {
   display: flex;
   justify-content: space-between;
@@ -311,14 +346,17 @@ const deleteCategory = async () => {
     opacity: 0.7;
   }
 }
+
 .categories-page__fields {
   padding: 0 16px;
   margin-top: 48px;
 }
+
 .categories-page__form-actions {
   padding: 0 16px;
   margin-top: 48px;
 }
+
 .categories-page__add-subcategory {
   padding: 0 16px;
   margin-top: 24px;
@@ -329,5 +367,9 @@ const deleteCategory = async () => {
     padding: 8px 16px;
     border-radius: 8px;
   }
+}
+.categories-page__error-message {
+  text-align: center;
+  color: var(--app-error);
 }
 </style>
