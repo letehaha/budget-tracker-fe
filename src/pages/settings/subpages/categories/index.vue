@@ -66,13 +66,10 @@
       </div>
 
       <div class="categories-page__add-subcategory">
-        <button
-          :disabled="disableAddCategoryBtn"
-          type="button"
-          @click="startCreating"
-        >
-          Add subcategory +
-        </button>
+        <button type="button" @click="startCreating">Add subcategory +</button>
+      </div>
+      <div v-if="errorMessage" class="categories-page__error-message">
+        {{ errorMessage }}
       </div>
     </div>
     <template v-if="isFormVisible">
@@ -114,13 +111,13 @@
 
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
-import { ref, reactive, computed } from "vue";
+import { ref, reactive } from "vue";
 import { API_ERROR_CODES } from "shared-types";
 import { useCategoriesStore } from "@/stores";
 import {
   editCategory,
   createCategory,
-  deleteCategory as apiDeleteCategory
+  deleteCategory as apiDeleteCategory,
 } from "@/api";
 import { useNotificationCenter } from "@/components/notification-center";
 import CategoryCircle from "@/components/common/category-circle.vue";
@@ -140,8 +137,8 @@ const { formattedCategories, categories } = storeToRefs(categoriesStore);
 const currentLevel = ref<FormattedCategory[]>(formattedCategories.value);
 const selectedCategory = ref<FormattedCategory | null>(null);
 const MAX_DEPTH = ref<number>(2);
-const MAX_BTN_DISABLED_DEPTH = ref<number>(1);
 const currentDepth = ref(0);
+const errorMessage = ref("");
 
 const form = reactive({
   name: "",
@@ -162,11 +159,13 @@ const startEditing = () => {
   }
   isEditing.value = true;
   isFormVisible.value = true;
+  errorMessage.value = "";
 };
 const startCreating = () => {
   closeForm();
   isCreating.value = true;
   isFormVisible.value = true;
+  errorMessage.value = "";
 };
 const goBack = () => {
   closeForm();
@@ -205,9 +204,8 @@ const applyChanges = async () => {
     addErrorNotification("Unexpected error!");
   }
 };
-const findCategoryById = (id: number) => {
-  return categories.value.find((category: any) => category.id === id);
-};
+const findCategoryById = (id: number) =>
+  categories.value.find((category: FormattedCategory) => category.id === id);
 const getDepth = (category, depth = 0) => {
   if (!category.parentId) return depth;
   const parentCategory = findCategoryById(category.parentId);
@@ -216,20 +214,19 @@ const getDepth = (category, depth = 0) => {
 const selectCategory = (category: FormattedCategory) => {
   currentDepth.value = getDepth(category);
   if (currentDepth.value >= MAX_DEPTH.value) {
-    alert('Cannot add more categories. Maximum depth reached.');
+    // eslint-disable-next-line no-alert
+    errorMessage.value = "You cannot go deeper.";
     return;
   }
 
   closeForm();
   selectedCategory.value = category;
+  errorMessage.value = "";
 
   if (category.subCategories) {
     currentLevel.value = category.subCategories;
   }
 };
-const disableAddCategoryBtn = computed(
-  () => currentDepth.value >= MAX_BTN_DISABLED_DEPTH.value,
-);
 const deleteCategory = async () => {
   try {
     await apiDeleteCategory({ categoryId: selectedCategory.value.id });
@@ -370,5 +367,9 @@ const deleteCategory = async () => {
     padding: 8px 16px;
     border-radius: 8px;
   }
+}
+.categories-page__error-message {
+  text-align: center;
+  color: var(--app-error);
 }
 </style>
