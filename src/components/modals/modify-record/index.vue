@@ -2,6 +2,7 @@
 import { ref, watch, computed, onMounted, nextTick } from "vue";
 import { storeToRefs } from "pinia";
 import { useQueryClient } from "@tanstack/vue-query";
+import { useEventListener } from "@vueuse/core";
 import {
   TRANSACTION_TYPES,
   PAYMENT_TYPES,
@@ -387,6 +388,10 @@ onMounted(() => {
   if (!props.transaction) {
     form.value.account = systemAccounts.value[0];
   }
+});
+
+useEventListener(document, "keydown", (event) => {
+  if (event.key === "Escape") closeModal();
 });
 </script>
 
