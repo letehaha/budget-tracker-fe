@@ -22,6 +22,7 @@
 
         <input
           v-bind="computedAttrs"
+          ref="inputFieldRef"
           :type="type"
           :value="modelValue"
           :style="inputFieldStyles"
@@ -59,7 +60,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, HTMLAttributes, useAttrs } from "vue";
+import { computed, HTMLAttributes, onMounted, ref, useAttrs } from "vue";
 import { KEYBOARD_CODES } from "@/common/types";
 import { cn } from "@/lib/utils";
 
@@ -83,6 +84,7 @@ const props = defineProps<{
   errorMessage?: string;
   inputFieldStyles?: HTMLAttributes["style"];
   onlyPositive?: boolean;
+  autofocus?: boolean;
 }>();
 
 const emits = defineEmits<{
@@ -132,6 +134,7 @@ const computedAttrs = {
   },
 };
 
+const inputFieldRef = ref<HTMLInputElement | null>(null);
 const minValue = computed<number>(() => {
   if (props.onlyPositive && !attrs.min) {
     return 0;
@@ -146,6 +149,12 @@ const minValue = computed<number>(() => {
 const isSubLabelExist = computed(() => !!slots.subLabel);
 const isTrailIconExist = computed(() => !!slots.iconTrailing);
 const isLeadingIconExist = computed(() => !!slots.iconLeading);
+
+onMounted(() => {
+  if (props.autofocus) {
+    inputFieldRef.value.focus();
+  }
+});
 </script>
 
 <style lang="scss">

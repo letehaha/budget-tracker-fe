@@ -48,6 +48,7 @@
                 v-model="searchQuery"
                 name="search"
                 placeholder="Search..."
+                autofocus
               />
             </div>
             <template v-if="previousLevelsIndices.length">
