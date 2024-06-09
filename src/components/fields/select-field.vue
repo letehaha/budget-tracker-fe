@@ -138,18 +138,19 @@ const closeDropdown = () => {
 const handleEscPress = (event: KeyboardEvent) => {
   if (event.key === "Escape") {
     closeDropdown();
+    event.stopImmediatePropagation();
   }
 };
 
 watch(isDropdownOpened, (value) => {
   if (value) {
-    document.addEventListener("keydown", handleEscPress);
+    document.addEventListener("keydown", handleEscPress, true);
   } else {
-    document.removeEventListener("keydown", handleEscPress);
+    document.removeEventListener("keydown", handleEscPress, true);
   }
 });
 onBeforeUnmount(() => {
-  document.removeEventListener("keydown", handleEscPress);
+  document.removeEventListener("keydown", handleEscPress, true);
 });
 
 const selectItem = ({ index }: { index: number }) => {
