@@ -98,7 +98,7 @@
         </div>
         <template v-if="isEditing">
           <div class="categories-page__form-actions">
-            <UiButton @click="deleteCategory"> Delete </UiButton>
+            <UiButton theme="danger" @click="deleteCategory"> Delete </UiButton>
           </div>
         </template>
       </form>

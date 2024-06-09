@@ -1,7 +1,8 @@
 <script lang="ts" setup>
-import { ref, watch, computed, onMounted, nextTick } from "vue";
+import { ref, watch, computed, onMounted, nextTick, onUnmounted } from "vue";
 import { storeToRefs } from "pinia";
 import { useQueryClient } from "@tanstack/vue-query";
+import { useEventListener } from "@vueuse/core";
 import {
   TRANSACTION_TYPES,
   PAYMENT_TYPES,
@@ -383,10 +384,22 @@ const selectTransactionType = (type: FORM_TYPES, disabled = false) => {
   if (!disabled) form.value.type = type;
 };
 
+// Stores element that was focused before modal was opened, to then focus it back
+// when modal will be closed
+const previouslyFocusedElement = ref(document.activeElement);
+
 onMounted(() => {
   if (!props.transaction) {
     form.value.account = systemAccounts.value[0];
   }
+});
+
+onUnmounted(() => {
+  (previouslyFocusedElement.value as HTMLElement).focus();
+});
+
+useEventListener(document, "keydown", (event) => {
+  if (event.key === "Escape") closeModal();
 });
 </script>
 
@@ -418,6 +431,7 @@ onMounted(() => {
           :disabled="isAmountFieldDisabled"
           only-positive
           placeholder="Amount"
+          autofocus
         >
           <template #iconTrailing>
             <span>{{ currencyCode }}</span>
