@@ -1,7 +1,11 @@
 <template>
   <div class="accounts-list">
     <template v-for="account in allAccounts" :key="account.id">
-      <account-card :account="account" @click="redirectToAccount(account)" />
+      <account-card
+        :account="account"
+        class="cursor-pointer"
+        @click="redirectToAccount(account)"
+      />
     </template>
   </div>
 </template>
