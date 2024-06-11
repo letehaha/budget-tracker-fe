@@ -13,8 +13,8 @@
 
         <div
           :class="{
-            'text-[var(--app-success)]': expensesDiff < 0,
-            'text-[var(--app-error)]': expensesDiff > 0,
+            'text-[var(--app-error)]': expensesDiff < 0,
+            'text-[var(--app-success)]': expensesDiff > 0,
           }"
         >
           {{ `${expensesDiff}%` }}
