@@ -12,8 +12,8 @@
         </div>
         <div
           :class="{
-            'text-[var(--app-success)]': balancesDiff < 0,
-            'text-[var(--app-error)]': balancesDiff > 0,
+            'text-[var(--app-error)]': balancesDiff < 0,
+            'text-[var(--app-success)]': balancesDiff > 0,
           }"
         >
           {{ `${balancesDiff}%` }}
