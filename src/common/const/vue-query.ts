@@ -38,7 +38,7 @@ export const VUE_QUERY_CACHE_KEYS = Object.freeze({
 
   recordsPageTransactionList: [TX_CHANGE_QUERY, "records-page"],
 
-  accountSpecificTransactions: ["account-transactions"],
+  accountSpecificTransactions: [TX_CHANGE_QUERY, "account-transactions"],
 
   allAccounts: [TX_CHANGE_QUERY, "all-accounts"],
 });
