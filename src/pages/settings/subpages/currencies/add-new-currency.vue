@@ -11,7 +11,7 @@
       />
     </div>
     <Button
-      :disabled="isCurrenciesLoading"
+      :disabled="!selectedCurrency || isCurrenciesLoading"
       class="w-[100px]"
       @click="addCurrency"
     >
