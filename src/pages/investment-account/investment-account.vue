@@ -25,7 +25,7 @@
                 <span>Cost basis</span>
               </div>
             </template>
-            <template v-for="holding in holdings" :key="holding.id">
+            <template v-for="holding in holdings" :key="holding.accountId">
               <template v-if="securitiesRecord[holding.securityId]">
                 <Button
                   variant="ghost"
