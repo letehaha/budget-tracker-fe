@@ -153,7 +153,7 @@ export const useHighcharts = () => {
                   const chart: Highcharts.Chart & {
                     hoverLabel?: Highcharts.SVGElement;
                   } = this.series.chart;
-                  const pieSeries: Highcharts.PlotPieOptions = this.series;
+                  const pieSeries = this.series;
                   const center = pieSeries.center;
 
                   // Remove any existing label
