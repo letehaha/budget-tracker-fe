@@ -13,4 +13,4 @@ export const ACCOUNT_CATEGORIES_VERBOSE = Object.freeze({
   [ACCOUNT_CATEGORIES.mortgage]: "Mortgage",
   [ACCOUNT_CATEGORIES.overdraft]: "Overdraft",
   [ACCOUNT_CATEGORIES.crypto]: "Crypto",
-});
+}) as Record<ACCOUNT_CATEGORIES, string>;

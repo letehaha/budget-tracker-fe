@@ -16,7 +16,7 @@
           <Card.CardContent class="grid gap-1">
             <template v-if="holdings.length">
               <div
-                class="grid grid-cols-5 gap-1 px-4 py-2 mb-1 text-left border-b border-white/20"
+                class="grid grid-cols-[2fr,1fr,0.7fr,1fr,1fr] gap-1 px-4 py-2 mb-1 text-left border-b border-white/20"
               >
                 <span>Name</span>
                 <span>Symbol</span>
@@ -29,7 +29,7 @@
               <template v-if="securitiesRecord[holding.securityId]">
                 <Button
                   variant="ghost"
-                  class="grid grid-cols-5 gap-1 text-left"
+                  class="grid grid-cols-[2fr,1fr,0.7fr,1fr,1fr] gap-1 text-left"
                   @click="() => (activeHolding = holding)"
                 >
                   <span>
