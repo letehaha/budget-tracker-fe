@@ -110,7 +110,7 @@ module.exports = {
         ignoreStrings: true,
         ignoreTemplateLiterals: true,
         ignoreRegExpLiterals: true,
-        ignoreHTMLAttributeValues: false,
+        ignoreHTMLAttributeValues: true,
         ignoreHTMLTextContents: false,
       },
     ],
