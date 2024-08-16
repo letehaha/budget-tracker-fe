@@ -1,30 +1,37 @@
 <template>
   <WidgetWrapper title="Balance trend" :is-fetching="isWidgetDataFetching">
-    <div>
-      <div class="flex items-center justify-between mb-1 text-xs">
-        <div class="font-medium tracking-tight uppercase">Today</div>
-        <div class="tracking-tight">vs previous period</div>
+    <template v-if="isDataEmpty">
+      <EmptyState>
+        <ChartLineIcon class="size-32" />
+      </EmptyState>
+    </template>
+    <template v-else>
+      <div>
+        <div class="flex items-center justify-between mb-1 text-xs">
+          <div class="font-medium tracking-tight uppercase">Today</div>
+          <div class="tracking-tight">vs previous period</div>
+        </div>
+
+        <div class="flex items-center justify-between">
+          <div class="text-lg font-bold tracking-wider">
+            {{ formatBaseCurrency(todayBalance) }}
+          </div>
+          <div
+            :class="{
+              'text-[var(--app-error)]': balancesDiff < 0,
+              'text-[var(--app-success)]': balancesDiff > 0,
+            }"
+          >
+            {{ `${balancesDiff}%` }}
+          </div>
+        </div>
       </div>
 
-      <div class="flex items-center justify-between">
-        <div class="text-lg font-bold tracking-wider">
-          {{ formatBaseCurrency(todayBalance) }}
-        </div>
-        <div
-          :class="{
-            'text-[var(--app-error)]': balancesDiff < 0,
-            'text-[var(--app-success)]': balancesDiff > 0,
-          }"
-        >
-          {{ `${balancesDiff}%` }}
-        </div>
-      </div>
-    </div>
-
-    <highcharts
-      v-node-resize-observer="{ callback: onChartResize }"
-      :options="chartOptions"
-    />
+      <highcharts
+        v-node-resize-observer="{ callback: onChartResize }"
+        :options="chartOptions"
+      />
+    </template>
   </WidgetWrapper>
 </template>
 
@@ -41,6 +48,7 @@ import {
   subMonths,
 } from "date-fns";
 import { storeToRefs } from "pinia";
+import { ChartLineIcon } from "lucide-vue-next";
 import { getTotalBalance } from "@/api";
 import { VUE_QUERY_CACHE_KEYS } from "@/common/const";
 import { calculatePercentageDifference, formatLargeNumber } from "@/js/helpers";
@@ -49,6 +57,7 @@ import { loadBalanceTrendData } from "@/services";
 
 import { useCurrenciesStore } from "@/stores";
 import WidgetWrapper from "./components/widget-wrapper.vue";
+import EmptyState from "./components/empty-state.vue";
 
 // Calculate it manually so shart will always have first and last ticks (dates)
 function generateDateSteps(datesToShow = 5, date = new Date()) {
@@ -141,6 +150,11 @@ watch(
     }
   },
   { immediate: true },
+);
+
+const isDataEmpty = computed(
+  () =>
+    !balanceHistory.value || balanceHistory.value.every((i) => i.amount === 0),
 );
 
 const chartOptions = computed(() => {

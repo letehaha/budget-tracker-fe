@@ -1,6 +1,6 @@
 <template>
   <Card
-    class="max-h-[350px]"
+    class="max-h-[350px] flex flex-col"
     :class="{
       'max-h-[724px]': higher,
     }"
@@ -25,7 +25,7 @@
       </slot>
     </CardHeader>
 
-    <CardContent class="widget-wrapper__content">
+    <CardContent class="h-full">
       <slot />
     </CardContent>
   </Card>

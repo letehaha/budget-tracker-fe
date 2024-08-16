@@ -24,7 +24,7 @@
           <p class="welcome__disclaimer">
             Your base currency should ideally be the one you use most often. All
             transactions in other currencies will be calculated based on this
-            one. You won't be able to change your base currency later.
+            one. You won't be able to change your base currency later (for now).
           </p>
           <ui-button
             class="welcome__submit"
