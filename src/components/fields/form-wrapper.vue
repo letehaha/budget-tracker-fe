@@ -32,7 +32,7 @@ defineProps<{
   display: grid;
   grid-gap: 8px;
 
-  animation: slide-appear 1s ease-out 300ms both;
+  // animation: slide-appear 1s ease-out 2000ms both;
 }
 .form-wrapper__error {
   text-align: center;
