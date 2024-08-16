@@ -1,8 +1,8 @@
 <template>
-  <section class="dashboard-page">
-    <accounts-list class="dashboard-page__accounts" />
+  <section class="p-6">
+    <accounts-list />
 
-    <div class="dashboard-page__period-selector">
+    <div class="flex items-center justify-center gap-1 my-6">
       <ui-button size="icon" variant="ghost" @click="selectPrevPeriod">
         <ChevronLeft :size="20" />
       </ui-button>
@@ -99,9 +99,6 @@ const selectNextPeriod = () => {
 </script>
 
 <style lang="scss">
-.dashboard-page {
-  padding: 24px;
-}
 .dashboard-page__info {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr)) 420px;
@@ -132,9 +129,6 @@ const selectNextPeriod = () => {
 }
 .dashboard-page__spending-categories {
   grid-area: spending-categories;
-}
-.dashboard-page__period-selector {
-  @apply flex items-center justify-center gap-1 my-6;
 }
 .dashboard-page__period {
   @apply w-[150px] text-center;
