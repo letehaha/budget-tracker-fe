@@ -1,9 +1,11 @@
 <template>
-  <div class="currencies-list">
+  <Card class="currencies-list">
     <div class="currencies-list__row currencies-list__row--header">
       <div class="currencies-list__column" />
       <div class="currencies-list__column">Name</div>
-      <div class="currencies-list__column">Ratio</div>
+      <div class="currencies-list__column">
+        Currency rate per {{ baseCurrency.currency.code }}
+      </div>
     </div>
     <template v-for="(currency, index) in currenciesList" :key="currency.id">
       <div class="currencies-list__item">
@@ -51,7 +53,7 @@
         </template>
       </div>
     </template>
-  </div>
+  </Card>
 </template>
 
 <script setup lang="ts">
@@ -68,6 +70,7 @@ import {
   loadUserCurrenciesExchangeRates,
 } from "@/api/currencies";
 import { useNotificationCenter } from "@/components/notification-center";
+import { Card } from "@/components/lib/ui/card";
 import EditCurrency from "./edit-currency.vue";
 import { CurrencyWithExchangeRate } from "./types";
 
@@ -77,7 +80,7 @@ const currenciesStore = useCurrenciesStore();
 const accountsStore = useAccountsStore();
 const { addSuccessNotification, addErrorNotification } =
   useNotificationCenter();
-const { currencies } = storeToRefs(currenciesStore);
+const { currencies, baseCurrency } = storeToRefs(currenciesStore);
 const { accountsCurrencyIds } = storeToRefs(accountsStore);
 const rates = ref<UserExchangeRatesModel[]>([]);
 
@@ -146,8 +149,6 @@ const isDeletionDisabled = (currency: UserCurrencyModel) =>
 <style lang="scss" scoped>
 .currencies-list {
   --settings-currency-list-item-padding: 16px 32px;
-
-  @include surface-container();
 
   padding: 16px 0;
 }

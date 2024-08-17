@@ -1,23 +1,34 @@
 <template>
   <WidgetWrapper class="latest-records-widget" title="Latest records" higher>
     <template #action>
-      <router-link
-        class="latest-records-widget__show-all"
-        :to="{ name: ROUTES_NAMES.records }"
-      >
-        <ui-button variant="link" as="span" size="sm"> Show all </ui-button>
-      </router-link>
+      <template v-if="!isDataEmpty">
+        <router-link
+          class="latest-records-widget__show-all"
+          :to="{ name: ROUTES_NAMES.records }"
+        >
+          <ui-button variant="link" as="span" size="sm"> Show all </ui-button>
+        </router-link>
+      </template>
     </template>
-    <TransactionsList
-      class="latest-records-widget__list"
-      :transactions="transactions || []"
-    />
+    <template v-if="isDataEmpty">
+      <EmptyState>
+        <ListIcon class="size-32" />
+      </EmptyState>
+    </template>
+    <template v-else>
+      <TransactionsList
+        class="latest-records-widget__list"
+        :transactions="transactions || []"
+      />
+    </template>
   </WidgetWrapper>
 </template>
 
 <script lang="ts" setup>
+import { computed } from "vue";
 import { storeToRefs } from "pinia";
 import { useQuery } from "@tanstack/vue-query";
+import { ListIcon } from "lucide-vue-next";
 import { ROUTES_NAMES } from "@/routes/constants";
 import { useRootStore } from "@/stores";
 import { VUE_QUERY_CACHE_KEYS } from "@/common/const";
@@ -26,6 +37,7 @@ import UiButton from "@/components/lib/ui/button/Button.vue";
 
 import TransactionsList from "@/components/transactions-list/transactions-list.vue";
 import WidgetWrapper from "./components/widget-wrapper.vue";
+import EmptyState from "./components/empty-state.vue";
 
 const { isAppInitialized } = storeToRefs(useRootStore());
 
@@ -36,6 +48,8 @@ const { data: transactions } = useQuery({
   placeholderData: [],
   enabled: isAppInitialized,
 });
+
+const isDataEmpty = computed(() => transactions.value.length === 0);
 </script>
 
 <style lang="scss">

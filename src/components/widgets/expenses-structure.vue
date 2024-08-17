@@ -1,28 +1,35 @@
 <template>
   <WidgetWrapper title="Expenses Structure" :is-fetching="isWidgetDataFetching">
-    <div>
-      <div class="flex items-center justify-between mb-1 text-xs">
-        <div class="font-medium tracking-tight uppercase">Today</div>
-        <div class="tracking-tight">vs previous period</div>
-      </div>
-
-      <div class="flex items-center justify-between">
-        <div class="text-lg font-bold tracking-wider">
-          {{ formatBaseCurrency(-(currentMonthExpense || 0)) }}
+    <template v-if="isDataEmpty">
+      <EmptyState>
+        <ChartPieIcon class="size-32" />
+      </EmptyState>
+    </template>
+    <template v-else>
+      <div>
+        <div class="flex items-center justify-between mb-1 text-xs">
+          <div class="font-medium tracking-tight uppercase">Today</div>
+          <div class="tracking-tight">vs previous period</div>
         </div>
 
-        <div
-          :class="{
-            'text-[var(--app-error)]': expensesDiff < 0,
-            'text-[var(--app-success)]': expensesDiff > 0,
-          }"
-        >
-          {{ `${expensesDiff}%` }}
+        <div class="flex items-center justify-between">
+          <div class="text-lg font-bold tracking-wider">
+            {{ formatBaseCurrency(-(currentMonthExpense || 0)) }}
+          </div>
+
+          <div
+            :class="{
+              'text-[var(--app-error)]': expensesDiff < 0,
+              'text-[var(--app-success)]': expensesDiff > 0,
+            }"
+          >
+            {{ `${expensesDiff}%` }}
+          </div>
         </div>
       </div>
-    </div>
 
-    <highcharts :options="chartOptions" />
+      <highcharts :options="chartOptions" />
+    </template>
   </WidgetWrapper>
 </template>
 
@@ -32,6 +39,7 @@ import { storeToRefs } from "pinia";
 import { subMonths, startOfMonth, endOfMonth } from "date-fns";
 import { useQuery } from "@tanstack/vue-query";
 import { Chart as Highcharts } from "highcharts-vue";
+import { ChartPieIcon } from "lucide-vue-next";
 import { useFormatCurrency, useHighcharts } from "@/composable";
 import { calculatePercentageDifference } from "@/js/helpers";
 import { fromSystemAmount } from "@/api/helpers";
@@ -40,6 +48,7 @@ import { getSpendingsByCategories, getExpensesAmountForPeriod } from "@/api";
 import { VUE_QUERY_CACHE_KEYS } from "@/common/const";
 import { UnwrapPromise } from "@/common/types";
 import WidgetWrapper from "./components/widget-wrapper.vue";
+import EmptyState from "./components/empty-state.vue";
 
 defineOptions({
   name: "expenses-structure-widget",
@@ -139,30 +148,37 @@ function computeTotalAmount(
 
 const { categoriesMap } = storeToRefs(useCategoriesStore());
 const { buildDonutChartConfig } = useHighcharts();
+
+const chartSeries = computed(() =>
+  Object.entries(spendingsByCategories.value || {}).reduce(
+    (acc, curr) => {
+      const [categoryId, value] = curr;
+      const totalTransactionsValue = computeTotalAmount(value);
+
+      acc.push({
+        name: categoriesMap.value[Number(categoryId)].name,
+        color: categoriesMap.value[Number(categoryId)].color,
+        y: totalTransactionsValue,
+      });
+      return acc;
+    },
+    [] as {
+      name: string;
+      color: string;
+      y: number;
+    }[],
+  ),
+);
+
+const isDataEmpty = computed(() => chartSeries.value.length === 0);
+
 const chartOptions = computed(() =>
   buildDonutChartConfig({
     chart: { height: 220 },
     series: [
       {
         type: "pie",
-        data: Object.entries(spendingsByCategories.value || {}).reduce(
-          (acc, curr) => {
-            const [categoryId, value] = curr;
-            const totalTransactionsValue = computeTotalAmount(value);
-
-            acc.push({
-              name: categoriesMap.value[Number(categoryId)].name,
-              color: categoriesMap.value[Number(categoryId)].color,
-              y: totalTransactionsValue,
-            });
-            return acc;
-          },
-          [] as {
-            name: string;
-            color: string;
-            y: number;
-          }[],
-        ),
+        data: chartSeries.value,
       },
     ],
   }),
