@@ -17,7 +17,7 @@ export const useAccountsStore = defineStore("accounts", () => {
 
   const accountsRecord = ref<Record<number, AccountModel>>({});
 
-  const { data: accounts } = useQuery({
+  const { data: accounts, refetch: refetchAccounts } = useQuery({
     queryKey: VUE_QUERY_CACHE_KEYS.allAccounts,
     queryFn: apiLoadAccounts,
     staleTime: Infinity,
@@ -50,10 +50,8 @@ export const useAccountsStore = defineStore("accounts", () => {
     payload: Parameters<typeof apiCreateAccount>[0],
   ) => {
     try {
-      const result = await apiCreateAccount(payload);
-
-      accounts.value.push(result);
-      accountsRecord.value[result.id] = result;
+      await apiCreateAccount(payload);
+      await refetchAccounts();
     } catch (e) {
       // eslint-disable-next-line no-console
       console.log(e);
@@ -65,15 +63,8 @@ export const useAccountsStore = defineStore("accounts", () => {
     ...data
   }: Parameters<typeof apiEditAccount>[0]) => {
     try {
-      const result = await apiEditAccount({ id, ...data });
-
-      accounts.value = accounts.value.map((item) => {
-        if (item.id === id) {
-          return result;
-        }
-        return item;
-      });
-      accountsRecord.value[id] = result;
+      await apiEditAccount({ id, ...data });
+      await refetchAccounts();
     } catch (e) {
       // eslint-disable-next-line no-console
       console.log(e);
@@ -84,9 +75,7 @@ export const useAccountsStore = defineStore("accounts", () => {
   const deleteAccount = async ({ id }: DeleteAccountPayload) => {
     try {
       await apiDeleteAccount({ id });
-
-      accounts.value = accounts.value.filter((item) => item.id !== id);
-      delete accountsRecord.value[id];
+      await refetchAccounts();
     } catch (e) {
       // eslint-disable-next-line no-console
       console.log(e);
