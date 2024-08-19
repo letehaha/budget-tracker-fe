@@ -21,7 +21,10 @@
         </template>
 
         <input
-          v-bind="computedAttrs"
+          v-bind="{
+            step: type === 'number' ? 'any' : undefined,
+            ...computedAttrs,
+          }"
           ref="inputFieldRef"
           :type="type"
           :value="modelValue"
