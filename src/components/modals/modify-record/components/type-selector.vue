@@ -87,8 +87,7 @@ const selectTransactionType = (type: FORM_TYPES) => {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 
   background-color: rgba(#000, 0.4);
-  border-radius: 10px;
-  margin-top: 24px;
+  border-radius: 12px;
 }
 .type-selector__item {
   padding: 6px;

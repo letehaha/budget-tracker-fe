@@ -36,7 +36,6 @@ import DateField from "@/components/fields/date-field.vue";
 import { Button } from "@/components/lib/ui/button";
 import { EVENTS as MODAL_EVENTS } from "@/components/modal-center/ui-modal.vue";
 import TransactionRecrod from "@/components/transactions-list/transaction-record.vue";
-import FormHeader from "./components/form-header.vue";
 import TypeSelector from "./components/type-selector.vue";
 import FormRow from "./components/form-row.vue";
 import AccountField from "./components/account-field.vue";
@@ -404,205 +403,196 @@ useEventListener(document, "keydown", (event) => {
 </script>
 
 <template>
-  <div
-    class="modify-record"
-    :class="{
-      'modify-record--income': currentTxType === FORM_TYPES.income,
-      'modify-record--expense': currentTxType === FORM_TYPES.expense,
-      'modify-record--transfer': currentTxType === FORM_TYPES.transfer,
-    }"
-  >
-    <div class="modify-record__header">
-      <form-header :is-form-creation="isFormCreation" @close="closeModal" />
+  <div class="rounded-t-xl bg-card w-full max-w-[800px]">
+    <div
+      :class="[
+        'h-3 transition-[background-color] ease-out duration-200 rounded-t-xl',
+        currentTxType === FORM_TYPES.income && 'bg-app-income-color',
+        currentTxType === FORM_TYPES.expense && 'bg-app-expense-color',
+        currentTxType === FORM_TYPES.transfer && 'bg-app-transfer-color',
+      ]"
+    />
+    <div class="flex items-center justify-between py-3 px-6 mb-4">
+      <span class="text-2xl">
+        {{ isFormCreation ? "Add Record" : "Edit Record" }}
+      </span>
 
-      <type-selector
-        :is-form-creation="isFormCreation"
-        :selected-transaction-type="currentTxType"
-        :transaction="transaction"
-        @change-tx-type="selectTransactionType"
-      />
+      <Button variant="ghost" @click="closeModal"> Close </Button>
     </div>
-    <div class="px-6">
-      <form-row>
-        <input-field
-          v-model="form.amount"
-          label="Amount"
-          type="number"
-          :disabled="isAmountFieldDisabled"
-          only-positive
-          placeholder="Amount"
-          autofocus
-        >
-          <template #iconTrailing>
-            <span>{{ currencyCode }}</span>
+    <div class="grid grid-cols-[450px,1fr] relative">
+      <div class="px-6">
+        <type-selector
+          :is-form-creation="isFormCreation"
+          :selected-transaction-type="currentTxType"
+          :transaction="transaction"
+          class="mb-6"
+          @change-tx-type="selectTransactionType"
+        />
+
+        <div>
+          <form-row>
+            <input-field
+              v-model="form.amount"
+              label="Amount"
+              type="number"
+              :disabled="isAmountFieldDisabled"
+              only-positive
+              placeholder="Amount"
+              autofocus
+            >
+              <template #iconTrailing>
+                <span>{{ currencyCode }}</span>
+              </template>
+            </input-field>
+          </form-row>
+
+          <account-field
+            v-model:account="form.account"
+            v-model:to-account="form.toAccount"
+            :is-transfer-transaction="isTransferTx"
+            :is-transaction-linking="!!linkedTransaction"
+            :transaction-type="
+              props.transaction?.transactionType || TRANSACTION_TYPES.expense
+            "
+            :accounts="isTransferTx ? transferSourceAccounts : systemAccounts"
+            :from-account-disabled="fromAccountFieldDisabled"
+            :to-account-disabled="toAccountFieldDisabled"
+            :filtered-accounts="transferDestinationAccounts"
+            @close-modal="emit(MODAL_EVENTS.closeModal)"
+          />
+
+          <template v-if="currentTxType !== FORM_TYPES.transfer">
+            <form-row>
+              <category-select-field
+                v-model="form.category"
+                label="Category"
+                :values="formattedCategories"
+                label-key="name"
+              />
+            </form-row>
           </template>
-        </input-field>
-      </form-row>
 
-      <account-field
-        v-model:account="form.account"
-        v-model:to-account="form.toAccount"
-        :is-transfer-transaction="isTransferTx"
-        :is-transaction-linking="!!linkedTransaction"
-        :transaction-type="
-          props.transaction?.transactionType || TRANSACTION_TYPES.expense
-        "
-        :accounts="isTransferTx ? transferSourceAccounts : systemAccounts"
-        :from-account-disabled="fromAccountFieldDisabled"
-        :to-account-disabled="toAccountFieldDisabled"
-        :filtered-accounts="transferDestinationAccounts"
-        @close-modal="emit(MODAL_EVENTS.closeModal)"
-      />
+          <template v-if="isTargetFieldVisible">
+            <form-row>
+              <input-field
+                v-model="form.targetAmount"
+                :disabled="isTargetAmountFieldDisabled"
+                only-positive
+                label="Target amount"
+                placeholder="Target amount"
+                type="number"
+              >
+                <template #iconTrailing>
+                  <span>{{ targetCurrency?.currency?.code }}</span>
+                </template>
+              </input-field>
+            </form-row>
+          </template>
 
-      <template v-if="currentTxType !== FORM_TYPES.transfer">
+          <template
+            v-if="
+              isTransferTx &&
+              !linkedTransaction &&
+              !isFormCreation &&
+              !Boolean(oppositeTransaction)
+            "
+          >
+            <form-row>
+              <Button
+                class="w-full"
+                :disabled="isLoading"
+                size="sm"
+                @click="openTransactionModalList"
+              >
+                Link existing transaction
+              </Button>
+            </form-row>
+          </template>
+
+          <template v-if="isTransferTx && oppositeTransaction">
+            <form-row>
+              <Button
+                class="w-full"
+                :disabled="isLoading"
+                size="sm"
+                @click="unlinkTransactions"
+              >
+                Unlink transactions
+              </Button>
+            </form-row>
+          </template>
+
+          <template v-if="linkedTransaction && isTransferTx && !isFormCreation">
+            <form-row class="flex items-center gap-2.5">
+              <TransactionRecrod
+                class="bg-background"
+                :tx="linkedTransaction"
+              />
+
+              <Button
+                aria-label="Cancel linking"
+                size="sm"
+                @click="deleteTransactionRecordHandler"
+              >
+                Cancel
+              </Button>
+            </form-row>
+          </template>
+
+          <form-row>
+            <date-field
+              v-model="form.time"
+              :disabled="isRecordExternal"
+              label="Datetime"
+            />
+          </form-row>
+        </div>
+
+        <div class="flex items-center justify-between p-6">
+          <Button
+            v-if="
+              transaction && transaction.accountType === ACCOUNT_TYPES.system
+            "
+            class="min-w-[100px]"
+            :disabled="isLoading"
+            aria-label="Delete transaction"
+            variant="destructive"
+            @click="deleteTransactionHandler"
+          >
+            Delete
+          </Button>
+          <Button
+            class="ml-auto min-w-[100px]"
+            :aria-label="
+              isFormCreation ? 'Create transaction' : 'Edit transaction'
+            "
+            :disabled="isLoading"
+            @click="submit"
+          >
+            {{ isLoading ? "Loading..." : isFormCreation ? "Submit" : "Edit" }}
+          </Button>
+        </div>
+      </div>
+      <div
+        class="px-6 pt-6 bg-black/20 shadow-inner shadow-black/40 shadow-[inset_2px_4px_12px]"
+      >
         <form-row>
-          <category-select-field
-            v-model="form.category"
-            label="Category"
-            :values="formattedCategories"
-            label-key="name"
+          <select-field
+            v-model="form.paymentType"
+            label="Payment Type"
+            :disabled="isRecordExternal"
+            :values="VERBOSE_PAYMENT_TYPES"
+            is-value-preselected
           />
         </form-row>
-      </template>
-
-      <template v-if="isTargetFieldVisible">
         <form-row>
-          <input-field
-            v-model="form.targetAmount"
-            :disabled="isTargetAmountFieldDisabled"
-            only-positive
-            label="Target amount"
-            placeholder="Target amount"
-            type="number"
-          >
-            <template #iconTrailing>
-              <span>{{ targetCurrency?.currency?.code }}</span>
-            </template>
-          </input-field>
+          <textarea-field
+            v-model="form.note"
+            placeholder="Note"
+            label="Note (optional)"
+          />
         </form-row>
-      </template>
-
-      <template
-        v-if="
-          isTransferTx &&
-          !linkedTransaction &&
-          !isFormCreation &&
-          !Boolean(oppositeTransaction)
-        "
-      >
-        <form-row>
-          <Button
-            class="w-full"
-            :disabled="isLoading"
-            size="sm"
-            @click="openTransactionModalList"
-          >
-            Link existing transaction
-          </Button>
-        </form-row>
-      </template>
-
-      <template v-if="isTransferTx && oppositeTransaction">
-        <form-row>
-          <Button
-            class="w-full"
-            :disabled="isLoading"
-            size="sm"
-            @click="unlinkTransactions"
-          >
-            Unlink transactions
-          </Button>
-        </form-row>
-      </template>
-
-      <template v-if="linkedTransaction && isTransferTx && !isFormCreation">
-        <form-row class="flex items-center gap-2.5">
-          <TransactionRecrod class="bg-background" :tx="linkedTransaction" />
-
-          <Button
-            aria-label="Cancel linking"
-            size="sm"
-            @click="deleteTransactionRecordHandler"
-          >
-            Cancel
-          </Button>
-        </form-row>
-      </template>
-
-      <form-row>
-        <date-field
-          v-model="form.time"
-          :disabled="isRecordExternal"
-          label="Datetime"
-        />
-      </form-row>
-      <form-row>
-        <select-field
-          v-model="form.paymentType"
-          label="Payment Type"
-          :disabled="isRecordExternal"
-          :values="VERBOSE_PAYMENT_TYPES"
-          is-value-preselected
-        />
-      </form-row>
-      <form-row>
-        <textarea-field
-          v-model="form.note"
-          placeholder="Note"
-          label="Note (optional)"
-        />
-      </form-row>
-    </div>
-
-    <div class="flex items-center justify-between p-6">
-      <Button
-        v-if="transaction && transaction.accountType === ACCOUNT_TYPES.system"
-        class="min-w-[100px]"
-        :disabled="isLoading"
-        aria-label="Delete transaction"
-        variant="destructive"
-        @click="deleteTransactionHandler"
-      >
-        Delete
-      </Button>
-      <Button
-        class="ml-auto min-w-[100px]"
-        :aria-label="isFormCreation ? 'Create transaction' : 'Edit transaction'"
-        :disabled="isLoading"
-        @click="submit"
-      >
-        {{ isLoading ? "Loading..." : isFormCreation ? "Submit" : "Edit" }}
-      </Button>
+      </div>
     </div>
   </div>
 </template>
-
-<style lang="scss" scoped>
-$border-top-radius: 10px;
-.modify-record {
-  background-color: var(--app-bg-color);
-  width: 100%;
-  max-width: 600px;
-  border-top-right-radius: $border-top-radius;
-  border-top-left-radius: $border-top-radius;
-}
-.modify-record__header {
-  padding: 24px;
-  margin-bottom: 24px;
-
-  border-top-right-radius: $border-top-radius;
-  border-top-left-radius: $border-top-radius;
-
-  transition: 0.2s ease-out;
-
-  .modify-record--income & {
-    background-color: var(--app-income-color);
-  }
-  .modify-record--expense & {
-    background-color: var(--app-expense-color);
-  }
-  .modify-record--transfer & {
-    background-color: var(--app-transfer-color);
-  }
-}
-</style>
