@@ -18,4 +18,5 @@ export interface UI_FORM_STRUCT {
   note?: string;
   type: FORM_TYPES;
   targetAmount?: number;
+  refundTransaction: TransactionModel;
 }

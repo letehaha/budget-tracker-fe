@@ -3,6 +3,7 @@ import { ref, watch, computed, onMounted, nextTick, onUnmounted } from "vue";
 import { storeToRefs } from "pinia";
 import { useQueryClient } from "@tanstack/vue-query";
 import { useEventListener } from "@vueuse/core";
+import { XIcon } from "lucide-vue-next";
 import {
   TRANSACTION_TYPES,
   PAYMENT_TYPES,
@@ -10,11 +11,7 @@ import {
   ACCOUNT_TYPES,
   TRANSACTION_TRANSFER_NATURE,
 } from "shared-types";
-import {
-  useAccountsStore,
-  useCategoriesStore,
-  useCurrenciesStore,
-} from "@/stores";
+import { useAccountsStore, useCategoriesStore, useCurrenciesStore } from "@/stores";
 import {
   createTransaction,
   editTransaction,
@@ -39,6 +36,7 @@ import TransactionRecrod from "@/components/transactions-list/transaction-record
 import TypeSelector from "./components/type-selector.vue";
 import FormRow from "./components/form-row.vue";
 import AccountField from "./components/account-field.vue";
+import MarkAsRefundDialog from "./components/mark-as-refund/mark-as-refund-dialog.vue";
 import { FORM_TYPES, UI_FORM_STRUCT } from "./types";
 import { getFormTypeFromTransaction } from "./helpers";
 import { useTransferFormLogic } from "./composables";
@@ -63,8 +61,7 @@ const emit = defineEmits([MODAL_EVENTS.closeModal]);
 const { addModal } = useModalCenter();
 const { currenciesMap } = storeToRefs(useCurrenciesStore());
 const { accountsRecord, systemAccounts } = storeToRefs(useAccountsStore());
-const { formattedCategories, categoriesMap } =
-  storeToRefs(useCategoriesStore());
+const { formattedCategories, categoriesMap } = storeToRefs(useCategoriesStore());
 const queryClient = useQueryClient();
 
 const isFormCreation = computed(() => !props.transaction);
@@ -77,14 +74,17 @@ const form = ref<UI_FORM_STRUCT>({
   targetAmount: null,
   category: formattedCategories.value[0],
   time: new Date(),
-  paymentType: VERBOSE_PAYMENT_TYPES.find(
-    (item) => item.value === PAYMENT_TYPES.creditCard,
-  ),
+  paymentType: VERBOSE_PAYMENT_TYPES.find((item) => item.value === PAYMENT_TYPES.creditCard),
   note: null,
   type: FORM_TYPES.expense,
+  refundTransaction: null,
 });
 
 const linkedTransaction = ref<TransactionModel | null>(null);
+
+const refundTransactionsTypeBasedOnFormType = computed(() =>
+  form.value.type === FORM_TYPES.expense ? TRANSACTION_TYPES.income : TRANSACTION_TYPES.expense,
+);
 
 const openTransactionModalList = async () => {
   const type =
@@ -121,13 +121,11 @@ watch(
   (value) => {
     if (
       value &&
-      props.transaction.transferNature !==
-        TRANSACTION_TRANSFER_NATURE.transfer_out_wallet
+      props.transaction.transferNature !== TRANSACTION_TRANSFER_NATURE.transfer_out_wallet
     ) {
       nextTick(() => {
         if (accountsRecord.value[props.transaction.accountId]) {
-          form.value.account =
-            accountsRecord.value[props.transaction.accountId];
+          form.value.account = accountsRecord.value[props.transaction.accountId];
         }
       });
     }
@@ -138,9 +136,7 @@ watch(
 const isLoading = ref(false);
 
 const currentTxType = computed(() => form.value.type);
-const isTransferTx = computed(
-  () => currentTxType.value === FORM_TYPES.transfer,
-);
+const isTransferTx = computed(() => currentTxType.value === FORM_TYPES.transfer);
 
 const {
   isTargetFieldVisible,
@@ -188,9 +184,7 @@ const transferSourceAccounts = computed(() => [
 ]);
 
 const transferDestinationAccounts = computed(() =>
-  transferSourceAccounts.value.filter(
-    (item) => item.id !== form.value.account?.id,
-  ),
+  transferSourceAccounts.value.filter((item) => item.id !== form.value.account?.id),
 );
 
 watch(
@@ -201,16 +195,13 @@ watch(
         type: getFormTypeFromTransaction(value),
         category: categoriesMap.value[value.categoryId],
         time: new Date(value.time),
-        paymentType: VERBOSE_PAYMENT_TYPES.find(
-          (item) => item.value === value.paymentType,
-        ),
+        paymentType: VERBOSE_PAYMENT_TYPES.find((item) => item.value === value.paymentType),
         note: value.note,
         transactionRecordItem: value,
+        refundTransaction: null,
       } as typeof form.value;
 
-      if (
-        value.transferNature === TRANSACTION_TRANSFER_NATURE.transfer_out_wallet
-      ) {
+      if (value.transferNature === TRANSACTION_TRANSFER_NATURE.transfer_out_wallet) {
         if (value.transactionType === TRANSACTION_TYPES.income) {
           initialFormValues.account = OUT_OF_WALLET_ACCOUNT_MOCK;
           initialFormValues.targetAmount = value.amount;
@@ -256,8 +247,7 @@ watch(
   () => [currentTxType.value, linkedTransaction.value],
   ([txType, isLinked], [prevTxType]) => {
     if (props.transaction) {
-      const { amount, transactionType, accountId, transferNature } =
-        props.transaction;
+      const { amount, transactionType, accountId, transferNature } = props.transaction;
 
       if (isLinked) {
         form.value.amount = amount;
@@ -270,9 +260,7 @@ watch(
           form.value.toAccount = accountsRecord.value[accountId];
           form.value.account = null;
 
-          if (
-            transferNature === TRANSACTION_TRANSFER_NATURE.transfer_out_wallet
-          ) {
+          if (transferNature === TRANSACTION_TRANSFER_NATURE.transfer_out_wallet) {
             form.value.account = OUT_OF_WALLET_ACCOUNT_MOCK;
           }
         }
@@ -451,9 +439,7 @@ useEventListener(document, "keydown", (event) => {
             v-model:to-account="form.toAccount"
             :is-transfer-transaction="isTransferTx"
             :is-transaction-linking="!!linkedTransaction"
-            :transaction-type="
-              props.transaction?.transactionType || TRANSACTION_TYPES.expense
-            "
+            :transaction-type="props.transaction?.transactionType || TRANSACTION_TYPES.expense"
             :accounts="isTransferTx ? transferSourceAccounts : systemAccounts"
             :from-account-disabled="fromAccountFieldDisabled"
             :to-account-disabled="toAccountFieldDisabled"
@@ -491,10 +477,7 @@ useEventListener(document, "keydown", (event) => {
 
           <template
             v-if="
-              isTransferTx &&
-              !linkedTransaction &&
-              !isFormCreation &&
-              !Boolean(oppositeTransaction)
+              isTransferTx && !linkedTransaction && !isFormCreation && !Boolean(oppositeTransaction)
             "
           >
             <form-row>
@@ -511,12 +494,7 @@ useEventListener(document, "keydown", (event) => {
 
           <template v-if="isTransferTx && oppositeTransaction">
             <form-row>
-              <Button
-                class="w-full"
-                :disabled="isLoading"
-                size="sm"
-                @click="unlinkTransactions"
-              >
+              <Button class="w-full" :disabled="isLoading" size="sm" @click="unlinkTransactions">
                 Unlink transactions
               </Button>
             </form-row>
@@ -524,35 +502,22 @@ useEventListener(document, "keydown", (event) => {
 
           <template v-if="linkedTransaction && isTransferTx && !isFormCreation">
             <form-row class="flex items-center gap-2.5">
-              <TransactionRecrod
-                class="bg-background"
-                :tx="linkedTransaction"
-              />
+              <TransactionRecrod class="bg-background" :tx="linkedTransaction" />
 
-              <Button
-                aria-label="Cancel linking"
-                size="sm"
-                @click="deleteTransactionRecordHandler"
-              >
+              <Button aria-label="Cancel linking" size="sm" @click="deleteTransactionRecordHandler">
                 Cancel
               </Button>
             </form-row>
           </template>
 
           <form-row>
-            <date-field
-              v-model="form.time"
-              :disabled="isRecordExternal"
-              label="Datetime"
-            />
+            <date-field v-model="form.time" :disabled="isRecordExternal" label="Datetime" />
           </form-row>
         </div>
 
         <div class="flex items-center justify-between p-6">
           <Button
-            v-if="
-              transaction && transaction.accountType === ACCOUNT_TYPES.system
-            "
+            v-if="transaction && transaction.accountType === ACCOUNT_TYPES.system"
             class="min-w-[100px]"
             :disabled="isLoading"
             aria-label="Delete transaction"
@@ -563,9 +528,7 @@ useEventListener(document, "keydown", (event) => {
           </Button>
           <Button
             class="ml-auto min-w-[100px]"
-            :aria-label="
-              isFormCreation ? 'Create transaction' : 'Edit transaction'
-            "
+            :aria-label="isFormCreation ? 'Create transaction' : 'Edit transaction'"
             :disabled="isLoading"
             @click="submit"
           >
@@ -573,9 +536,7 @@ useEventListener(document, "keydown", (event) => {
           </Button>
         </div>
       </div>
-      <div
-        class="px-6 pt-6 bg-black/20 shadow-inner shadow-black/40 shadow-[inset_2px_4px_12px]"
-      >
+      <div class="px-6 pt-6 bg-black/20 shadow-inner shadow-black/40 shadow-[inset_2px_4px_12px]">
         <form-row>
           <select-field
             v-model="form.paymentType"
@@ -586,12 +547,33 @@ useEventListener(document, "keydown", (event) => {
           />
         </form-row>
         <form-row>
-          <textarea-field
-            v-model="form.note"
-            placeholder="Note"
-            label="Note (optional)"
-          />
+          <textarea-field v-model="form.note" placeholder="Note" label="Note (optional)" />
         </form-row>
+        <template v-if="!isTransferTx">
+          <form-row>
+            <template v-if="form.refundTransaction">
+              <p class="text-sm">Refund of:</p>
+              <div class="flex gap-2 items-center">
+                <TransactionRecrod :tx="form.refundTransaction" />
+                <Button
+                  variant="default"
+                  size="icon"
+                  class="flex-shrink-0"
+                  @click="form.refundTransaction = null"
+                >
+                  <XIcon />
+                </Button>
+              </div>
+            </template>
+            <template v-else>
+              <MarkAsRefundDialog
+                :key="refundTransactionsTypeBasedOnFormType"
+                v-model="form.refundTransaction"
+                :transaction-type="refundTransactionsTypeBasedOnFormType"
+              />
+            </template>
+          </form-row>
+        </template>
       </div>
     </div>
   </div>
