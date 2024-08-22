@@ -1263,15 +1263,11 @@ export const USER_BASE_CURRENCY_CODE = "UAH";
 export const USER_BASE_CURRENCY: UserCurrencyModel = {
   id: 1,
   userId: USER.id,
-  currencyId: SYSTEM_CURRENCIES.find(
-    (item) => item.code === USER_BASE_CURRENCY_CODE,
-  ).id,
+  currencyId: SYSTEM_CURRENCIES.find((item) => item.code === USER_BASE_CURRENCY_CODE).id,
   exchangeRate: 1,
   liveRateUpdate: false,
   isDefaultCurrency: true,
-  currency: SYSTEM_CURRENCIES.find(
-    (item) => item.code === USER_BASE_CURRENCY_CODE,
-  ),
+  currency: SYSTEM_CURRENCIES.find((item) => item.code === USER_BASE_CURRENCY_CODE),
 };
 
 export const USER_CURRENCIES: UserCurrencyModel[] = [
