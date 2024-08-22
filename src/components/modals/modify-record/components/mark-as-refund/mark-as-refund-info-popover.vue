@@ -8,7 +8,7 @@ import * as ScrollArea from "@/components/lib/ui/scroll-area";
   <Popover.Popover>
     <Popover.PopoverTrigger as-child>
       <div class="inline-flex gap-1 items-center text-primary cursor-pointer hover:underline">
-        Read more <InfoIcon :size="16" />
+        How it works? <InfoIcon :size="16" />
       </div>
     </Popover.PopoverTrigger>
     <Popover.PopoverContent class="w-[500px] overflow-y-auto" side="right">

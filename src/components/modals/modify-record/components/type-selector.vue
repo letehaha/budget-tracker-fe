@@ -6,8 +6,7 @@
       :disabled="isExpenseDisabled"
       :class="{
         'type-selector__item--disabled': isExpenseDisabled,
-        'type-selector__item--active':
-          selectedTransactionType === FORM_TYPES.expense,
+        'type-selector__item--active': selectedTransactionType === FORM_TYPES.expense,
       }"
       aria-label="Select expense"
       :aria-selected="selectedTransactionType === FORM_TYPES.expense"
@@ -21,8 +20,7 @@
       :disabled="isIncomeDisabled"
       :class="{
         'type-selector__item--disabled': isIncomeDisabled,
-        'type-selector__item--active':
-          selectedTransactionType === FORM_TYPES.income,
+        'type-selector__item--active': selectedTransactionType === FORM_TYPES.income,
       }"
       aria-label="Select income"
       :aria-selected="selectedTransactionType === FORM_TYPES.income"
@@ -34,8 +32,7 @@
       type="button"
       class="button-style-reset type-selector__item"
       :class="{
-        'type-selector__item--active':
-          selectedTransactionType === FORM_TYPES.transfer,
+        'type-selector__item--active': selectedTransactionType === FORM_TYPES.transfer,
       }"
       aria-label="Select transfer"
       :aria-selected="selectedTransactionType === FORM_TYPES.transfer"
@@ -48,11 +45,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import {
-  ACCOUNT_TYPES,
-  TRANSACTION_TYPES,
-  type TransactionModel,
-} from "shared-types";
+import { ACCOUNT_TYPES, TRANSACTION_TYPES, type TransactionModel } from "shared-types";
 import { FORM_TYPES } from "../types";
 
 const props = defineProps<{
@@ -110,7 +103,7 @@ const selectTransactionType = (type: FORM_TYPES) => {
   color: #000;
 }
 .type-selector__item--disabled {
-  opacity: 0.4;
-  cursor: initial;
+  opacity: 0.1;
+  cursor: not-allowed;
 }
 </style>

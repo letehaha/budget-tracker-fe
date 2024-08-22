@@ -25,8 +25,8 @@ const saveResult = (v: TransactionModel) => {
     <Dialog.DialogTrigger as-child>
       <Button class="w-full" variant="secondary"> Mark as refund </Button>
     </Dialog.DialogTrigger>
-    <Dialog.DialogContent class="sm:max-w-md">
-      <Dialog.DialogHeader>
+    <Dialog.DialogContent class="sm:max-w-md max-h-[90dvh] grid-rows-[auto_minmax(0,1fr)_auto]">
+      <Dialog.DialogHeader class="mb-4">
         <Dialog.DialogTitle>Select transaction</Dialog.DialogTitle>
         <Dialog.DialogDescription>
           <span> Select the original transaction that this new entry is refunding. </span>

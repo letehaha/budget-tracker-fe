@@ -39,6 +39,10 @@ export const prepareTxCreationParams = ({
     accountId,
   };
 
+  if (form.refundTransaction?.id) {
+    creationParams.refundForTxId = form.refundTransaction?.id;
+  }
+
   // if (linkedTransaction) {
   //   creationParams.destinationTransactionId = linkedTransaction.id;
   //   creationParams.transferNature = TRANSACTION_TRANSFER_NATURE.common_transfer;
@@ -48,9 +52,7 @@ export const prepareTxCreationParams = ({
   // // everything that is below...
   if (isTransferTx) {
     creationParams.destinationAccountId = toAccount.id;
-    creationParams.destinationAmount = isCurrenciesDifferent
-      ? form.targetAmount
-      : amount;
+    creationParams.destinationAmount = isCurrenciesDifferent ? form.targetAmount : amount;
     creationParams.transferNature = TRANSACTION_TRANSFER_NATURE.common_transfer;
   } else {
     creationParams.categoryId = category.id;
@@ -63,8 +65,7 @@ export const prepareTxCreationParams = ({
       OUT_OF_WALLET_ACCOUNT_MOCK.id,
     )
   ) {
-    creationParams.transferNature =
-      TRANSACTION_TRANSFER_NATURE.transfer_out_wallet;
+    creationParams.transferNature = TRANSACTION_TRANSFER_NATURE.transfer_out_wallet;
 
     if (creationParams.accountId === OUT_OF_WALLET_ACCOUNT_MOCK.id) {
       creationParams.transactionType = TRANSACTION_TYPES.income;
@@ -72,9 +73,7 @@ export const prepareTxCreationParams = ({
       creationParams.accountId = creationParams.destinationAccountId;
       delete creationParams.destinationAmount;
       delete creationParams.destinationAccountId;
-    } else if (
-      creationParams.destinationAccountId === OUT_OF_WALLET_ACCOUNT_MOCK.id
-    ) {
+    } else if (creationParams.destinationAccountId === OUT_OF_WALLET_ACCOUNT_MOCK.id) {
       creationParams.transactionType = TRANSACTION_TYPES.expense;
       delete creationParams.destinationAmount;
       delete creationParams.destinationAccountId;

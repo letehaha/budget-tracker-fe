@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { TRANSACTION_TYPES, TransactionModel } from "shared-types";
 import { useInfiniteQuery } from "@tanstack/vue-query";
+import { CircleAlert } from "lucide-vue-next";
 import { VUE_QUERY_CACHE_KEYS } from "@/common/const";
 import { loadTransactions } from "@/api/transactions";
 import { EVENTS as MODAL_EVENTS } from "@/components/modal-center/ui-modal.vue";
 import TransactionRecrod from "@/components/transactions-list/transaction-record.vue";
-import { CircleAlert } from "lucide-vue-next";
+import Button from "@/components/lib/ui/button/Button.vue";
 
 export interface RecordListModalProps {
   transactionType: TRANSACTION_TYPES;
@@ -20,7 +21,7 @@ const limit = 15;
 const fetchTransactions = ({ pageParam = 0 }) => {
   const type = props.transactionType;
   const from = pageParam * limit;
-  return loadTransactions({ limit, from, type, excludeTransfer: true });
+  return loadTransactions({ limit, from, type, excludeTransfer: true, excludeRefunds: true });
 };
 
 const {
@@ -48,16 +49,20 @@ const handlerRecordClick = (transaction: TransactionModel) => {
 </script>
 
 <template>
-  <div>
-    <template v-if="isFetched && transactionsPages">
-      <div v-for="item in transactionsPages?.pages?.flat()" :key="item.id">
-        <TransactionRecrod :tx="item" @record-click="(payload) => handlerRecordClick(payload[0])" />
-      </div>
-    </template>
+  <div class="grid gap-4 grid-rows-[minmax(0,1fr)_max-content]">
+    <div class="overflow-y-auto">
+      <template v-if="isFetched && transactionsPages">
+        <template v-for="item in transactionsPages?.pages?.flat()" :key="item.id">
+          <TransactionRecrod
+            :tx="item"
+            @record-click="(payload) => handlerRecordClick(payload[0])"
+          />
+        </template>
+      </template>
+    </div>
+
     <template v-if="hasNextPage">
-      <button class="record-list__load-more" type="button" @click="() => fetchNextPage()">
-        Load more
-      </button>
+      <Button variant="secondary" @click="() => fetchNextPage()"> Load more </Button>
     </template>
     <template v-else-if="!hasNextPage && transactionsPages?.pages?.flat().length">
       <p class="mt-4 text-center text-sm">No more transactions to load</p>

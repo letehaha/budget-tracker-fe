@@ -2,10 +2,7 @@ import { API_ERROR_CODES, API_RESPONSE_STATUS } from "shared-types";
 import { useAuthStore } from "@/stores";
 import { router } from "@/routes";
 import { ApiBaseError } from "@/common/types";
-import {
-  useNotificationCenter,
-  NotificationType,
-} from "@/components/notification-center";
+import { useNotificationCenter, NotificationType } from "@/components/notification-center";
 
 import * as errors from "@/js/errors";
 

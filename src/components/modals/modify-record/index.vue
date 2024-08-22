@@ -33,6 +33,8 @@ import DateField from "@/components/fields/date-field.vue";
 import { Button } from "@/components/lib/ui/button";
 import { EVENTS as MODAL_EVENTS } from "@/components/modal-center/ui-modal.vue";
 import TransactionRecrod from "@/components/transactions-list/transaction-record.vue";
+import { ApiErrorResponseError } from "@/js/errors";
+import { useNotificationCenter } from "@/components/notification-center";
 import TypeSelector from "./components/type-selector.vue";
 import FormRow from "./components/form-row.vue";
 import AccountField from "./components/account-field.vue";
@@ -58,6 +60,7 @@ const props = withDefaults(defineProps<CreateRecordModalProps>(), {
 
 const emit = defineEmits([MODAL_EVENTS.closeModal]);
 
+const { addErrorNotification } = useNotificationCenter();
 const { addModal } = useModalCenter();
 const { currenciesMap } = storeToRefs(useCurrenciesStore());
 const { accountsRecord, systemAccounts } = storeToRefs(useAccountsStore());
@@ -151,6 +154,13 @@ const {
   transaction: props.transaction,
   linkedTransaction,
 });
+
+// TODO:
+// 1. Tx creation, validate that refAmount is less than refund refAmount. Use useFormValidation for
+// that
+// 2. When tx is opened, fetch refund, if there's any. For refund keep "Refund of", for base
+// call it "Refunded by"
+// 3. When editing, validate refAmount in the same way
 
 const isAmountFieldDisabled = computed(() => {
   if (isRecordExternal.value) {
@@ -312,8 +322,9 @@ const submit = async () => {
     // Reload all cached data in the app
     queryClient.invalidateQueries({ queryKey: [VUE_QUERY_TX_CHANGE_QUERY] });
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error(e);
+    if (e instanceof ApiErrorResponseError) {
+      addErrorNotification(e.data.message);
+    }
   } finally {
     isLoading.value = false;
   }
