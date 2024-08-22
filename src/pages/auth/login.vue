@@ -2,9 +2,7 @@
   <div class="flex items-center justify-center h-full">
     <Card class="max-w-[450px] w-full" as="form" @submit.prevent="submit">
       <card-header>
-        <h1 class="text-2xl font-semibold tracking-tight text-center">
-          Log in to account
-        </h1>
+        <h1 class="text-2xl font-semibold tracking-tight text-center">Log in to account</h1>
       </card-header>
       <card-content class="grid gap-7">
         <form-wrapper :error="formError" class="grid gap-7">
@@ -56,12 +54,7 @@ import { required, minLength } from "@/js/helpers/validators";
 import FormWrapper from "@/components/fields/form-wrapper.vue";
 import { Button } from "@/components/lib/ui/button";
 import { InputField } from "@/components/fields";
-import {
-  Card,
-  CardHeader,
-  CardFooter,
-  CardContent,
-} from "@/components/lib/ui/card";
+import { Card, CardHeader, CardFooter, CardContent } from "@/components/lib/ui/card";
 import { ApiErrorResponseError } from "@/js/errors";
 
 const router = useRouter();

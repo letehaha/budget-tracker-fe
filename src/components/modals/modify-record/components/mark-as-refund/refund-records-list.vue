@@ -105,4 +105,3 @@ const handlerRecordClick = (transaction: TransactionModel) => {
   margin-top: 32px;
 }
 </style>
-

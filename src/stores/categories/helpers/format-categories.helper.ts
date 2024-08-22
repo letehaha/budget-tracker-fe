@@ -1,9 +1,7 @@
 import { CategoryModel } from "shared-types";
 import { type FormattedCategory } from "@/common/types";
 
-export const buildCategiesObjectGraph = (
-  items: CategoryModel[],
-): FormattedCategory[] => {
+export const buildCategiesObjectGraph = (items: CategoryModel[]): FormattedCategory[] => {
   const itemsById: Record<string, FormattedCategory> = {};
   const roots: FormattedCategory[] = [];
   const tempItems: FormattedCategory[] = items.map((item) => {

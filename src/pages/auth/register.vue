@@ -2,9 +2,7 @@
   <div class="flex items-center justify-center h-full">
     <Card class="max-w-[450px] w-full" as="form" @submit.prevent="submit">
       <CardHeader>
-        <h1 class="text-2xl font-semibold tracking-tight text-center">
-          Create an account
-        </h1>
+        <h1 class="text-2xl font-semibold tracking-tight text-center">Create an account</h1>
       </CardHeader>
       <CardContent class="grid gap-7">
         <input-field
@@ -59,12 +57,7 @@ import { useAuthStore } from "@/stores";
 import { required, minLength, sameAs } from "@/js/helpers/validators";
 import { Button } from "@/components/lib/ui/button";
 import { InputField } from "@/components/fields";
-import {
-  Card,
-  CardHeader,
-  CardFooter,
-  CardContent,
-} from "@/components/lib/ui/card";
+import { Card, CardHeader, CardFooter, CardContent } from "@/components/lib/ui/card";
 import { useNotificationCenter } from "@/components/notification-center";
 import { ApiErrorResponseError } from "@/js/errors";
 import { useFormValidation } from "@/composable";

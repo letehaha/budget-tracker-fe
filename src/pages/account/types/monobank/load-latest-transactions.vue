@@ -18,10 +18,7 @@ import { API_ERROR_CODES, AccountModel } from "shared-types";
 import { useBanksMonobankStore } from "@/stores";
 import { useLocalStorage } from "@/composable";
 
-import {
-  useNotificationCenter,
-  NotificationType,
-} from "@/components/notification-center";
+import { useNotificationCenter, NotificationType } from "@/components/notification-center";
 import { Button } from "@/components/lib/ui/button";
 import { useQueryClient } from "@tanstack/vue-query";
 import { VUE_QUERY_CACHE_KEYS } from "@/common/const";
@@ -37,9 +34,7 @@ const monobankStore = useBanksMonobankStore();
 
 const isRefreshDisabled = ref(false);
 
-const accountLSKey = computed(
-  () => `monobank-${props.account.externalId}-txs-loading-end`,
-);
+const accountLSKey = computed(() => `monobank-${props.account.externalId}-txs-loading-end`);
 
 const setLoadingTimer = (wait: number) => {
   isRefreshDisabled.value = true;
@@ -83,10 +78,7 @@ const loadLatestTransactionsHandler = async () => {
 
     if (!isUserNeedToWait) {
       queryClient.invalidateQueries({
-        queryKey: [
-          ...VUE_QUERY_CACHE_KEYS.accountSpecificTransactions,
-          props.account.id,
-        ],
+        queryKey: [...VUE_QUERY_CACHE_KEYS.accountSpecificTransactions, props.account.id],
       });
     }
   } catch (e) {

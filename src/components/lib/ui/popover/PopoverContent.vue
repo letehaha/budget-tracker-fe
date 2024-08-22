@@ -8,13 +8,10 @@ import {
 } from "radix-vue";
 import { cn } from "@/lib/utils";
 
-const props = withDefaults(
-  defineProps<PopoverContentProps & { class?: string }>(),
-  {
-    sideOffset: 4,
-    class: "",
-  },
-);
+const props = withDefaults(defineProps<PopoverContentProps & { class?: string }>(), {
+  sideOffset: 4,
+  class: "",
+});
 const emits = defineEmits<PopoverContentEmits>();
 
 const forwarded = useForwardPropsEmits(props, emits);

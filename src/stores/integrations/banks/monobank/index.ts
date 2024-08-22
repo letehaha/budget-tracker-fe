@@ -1,12 +1,7 @@
 import { ref, computed } from "vue";
 import { defineStore, storeToRefs } from "pinia";
 import { useQueryClient } from "@tanstack/vue-query";
-import {
-  ACCOUNT_TYPES,
-  MonobankUserModel,
-  endpointsTypes,
-  API_ERROR_CODES,
-} from "shared-types";
+import { ACCOUNT_TYPES, MonobankUserModel, endpointsTypes, API_ERROR_CODES } from "shared-types";
 import {
   loadMonoUser,
   refreshMonoAccounts,
@@ -17,11 +12,7 @@ import {
   loadTransactions,
 } from "@/api";
 import { getHoursInMilliseconds } from "@/js/helpers";
-import {
-  NetworkError,
-  TooManyRequestsError,
-  UnexpectedError,
-} from "@/js/errors";
+import { NetworkError, TooManyRequestsError, UnexpectedError } from "@/js/errors";
 import { useAccountsStore } from "@/stores/accounts";
 import { VUE_QUERY_CACHE_KEYS } from "@/common/const";
 
@@ -47,10 +38,7 @@ export const useBanksMonobankStore = defineStore("banks-monobank", () => {
         isMonoAccountPaired.value = true;
       }
     } catch (e) {
-      if (
-        e instanceof NetworkError &&
-        e?.data?.code === API_ERROR_CODES.monobankUserNotPaired
-      ) {
+      if (e instanceof NetworkError && e?.data?.code === API_ERROR_CODES.monobankUserNotPaired) {
         isMonoAccountPaired.value = false;
       }
     }
@@ -84,10 +72,7 @@ export const useBanksMonobankStore = defineStore("banks-monobank", () => {
     try {
       await refreshMonoAccounts();
 
-      localStorage.setItem(
-        "latest-account-refresh-date",
-        `${new Date().getTime()}`,
-      );
+      localStorage.setItem("latest-account-refresh-date", `${new Date().getTime()}`);
     } catch (e) {
       if (e instanceof TooManyRequestsError) {
         throw e;
@@ -114,11 +99,7 @@ export const useBanksMonobankStore = defineStore("banks-monobank", () => {
     }
   };
 
-  const loadTransactionsFromLatest = async ({
-    accountId,
-  }: {
-    accountId: number;
-  }) => {
+  const loadTransactionsFromLatest = async ({ accountId }: { accountId: number }) => {
     if (!isMonoAccountPaired.value) {
       return undefined;
     }
@@ -171,13 +152,7 @@ export const useBanksMonobankStore = defineStore("banks-monobank", () => {
     }
   };
 
-  const updateUser = async ({
-    token,
-    name,
-  }: {
-    token: string;
-    name?: string;
-  }) => {
+  const updateUser = async ({ token, name }: { token: string; name?: string }) => {
     try {
       const response = await updateMonoUser({ apiToken: token, name });
 

@@ -29,14 +29,10 @@ import { formatFiat } from "@/js/helpers";
 import { useCryptoBinanceStore } from "@/stores";
 
 const binanceStore = useCryptoBinanceStore();
-const { existingBalances: balances, totalUSDBalance: totalBalance } =
-  storeToRefs(binanceStore);
+const { existingBalances: balances, totalUSDBalance: totalBalance } = storeToRefs(binanceStore);
 
 const fiatTotalBalance = computed(() => formatFiat(totalBalance.value));
 
-const getPrice = (balance: {
-  price?: string | number;
-  total: string | number;
-}): number =>
+const getPrice = (balance: { price?: string | number; total: string | number }): number =>
   balance.price ? +balance.price * +balance.total : +balance.total;
 </script>

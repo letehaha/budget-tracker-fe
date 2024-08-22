@@ -13,10 +13,7 @@ interface BindingValue {
 }
 
 export const nodeResizeObserver: Directive = {
-  beforeMount(
-    el: ResizableElement,
-    binding: DirectiveBinding & { value: BindingValue },
-  ) {
+  beforeMount(el: ResizableElement, binding: DirectiveBinding & { value: BindingValue }) {
     const { callback, debounceTime = 300 } = binding.value as BindingValue;
 
     if (!callback || typeof callback !== "function") {

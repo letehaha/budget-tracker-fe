@@ -45,10 +45,7 @@
     <form-row>
       <input-field model-value="No account exists" label="Account" readonly>
         <template #label-right>
-          <div
-            class="account-field__create-account"
-            @click="redirectToCreateAccountPage"
-          >
+          <div class="account-field__create-account" @click="redirectToCreateAccountPage">
             Create account
           </div>
         </template>
@@ -89,11 +86,7 @@ withDefaults(
   },
 );
 
-const emit = defineEmits([
-  "close-modal",
-  "update:account",
-  "update:to-account",
-]);
+const emit = defineEmits(["close-modal", "update:account", "update:to-account"]);
 
 const router = useRouter();
 

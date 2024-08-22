@@ -5,11 +5,7 @@ import {
   buildOutOfWalletTransaction,
 } from "@tests/mocks";
 import { TRANSACTION_TYPES } from "shared-types";
-import {
-  getDestinationAmount,
-  getFormTypeFromTransaction,
-  getTxTypeFromFormType,
-} from "./helpers";
+import { getDestinationAmount, getFormTypeFromTransaction, getTxTypeFromFormType } from "./helpers";
 import { FORM_TYPES } from "./types";
 
 describe("components/modals/modify-record/helpers", () => {

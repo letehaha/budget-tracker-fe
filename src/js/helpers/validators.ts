@@ -6,8 +6,7 @@ export const maxDecimalPoints =
   (value: number | string): boolean => {
     const number = parseFloat(String(value));
 
-    if (!number || !Number.isFinite(number) || typeof number !== "number")
-      return false;
+    if (!number || !Number.isFinite(number) || typeof number !== "number") return false;
 
     const splittedValue = String(number).split(".");
     if (splittedValue.length < 2) {

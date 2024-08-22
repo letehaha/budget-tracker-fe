@@ -35,8 +35,8 @@
       <dropdown
         :is-visible="isDropdownOpened"
         :values="dropdownValues"
-        :label-key="(labelKey as any)"
-        :selected-value="(modelValue as T)"
+        :label-key="labelKey as any"
+        :selected-value="modelValue as T"
         @select="selectItem"
       >
         <template #header>
@@ -47,9 +47,7 @@
           </template>
         </template>
         <template #footer>
-          <template
-            v-if="withSearchField && values.length && !dropdownValues.length"
-          >
+          <template v-if="withSearchField && values.length && !dropdownValues.length">
             <div class="select-field__no-results">No results found</div>
           </template>
         </template>

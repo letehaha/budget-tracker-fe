@@ -10,10 +10,7 @@ describe("useFormValidation", () => {
       const form = ref({
         email: validEmail,
       });
-      const { isFormValid } = useFormValidation(
-        { form },
-        { form: { email: { email } } },
-      );
+      const { isFormValid } = useFormValidation({ form }, { form: { email: { email } } });
 
       expect(isFormValid()).toBe(true);
     });
@@ -21,10 +18,7 @@ describe("useFormValidation", () => {
       const form = {
         email: validEmail,
       };
-      const { isFormValid } = useFormValidation(
-        { form },
-        { form: { email: { email } } },
-      );
+      const { isFormValid } = useFormValidation({ form }, { form: { email: { email } } });
 
       expect(isFormValid()).toBe(true);
     });
@@ -32,10 +26,7 @@ describe("useFormValidation", () => {
       const form = {
         email: invalidEmail,
       };
-      const { isFormValid } = useFormValidation(
-        { form },
-        { form: { email: { email } } },
-      );
+      const { isFormValid } = useFormValidation({ form }, { form: { email: { email } } });
 
       expect(isFormValid()).toBe(false);
     });
@@ -105,10 +96,7 @@ describe("useFormValidation", () => {
       const form = ref({
         email: invalidEmail,
       });
-      const { getFieldErrorMessage } = useFormValidation(
-        { form },
-        { form: { email: { email } } },
-      );
+      const { getFieldErrorMessage } = useFormValidation({ form }, { form: { email: { email } } });
 
       expect(getFieldErrorMessage("form.email")).toBe("");
     });
@@ -137,9 +125,7 @@ describe("useFormValidation", () => {
 
       touchField("form.email");
 
-      expect(getFieldErrorMessage("form.email")).toBe(
-        "Value is not a valid email address",
-      );
+      expect(getFieldErrorMessage("form.email")).toBe("Value is not a valid email address");
     });
     it("returns custom error message if it is passed and form is invalid", () => {
       const form = ref({

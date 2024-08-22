@@ -20,8 +20,7 @@ const props = defineProps<{
 }>();
 const router = useRouter();
 
-const { addSuccessNotification, addErrorNotification } =
-  useNotificationCenter();
+const { addSuccessNotification, addErrorNotification } = useNotificationCenter();
 const accountsStore = useAccountsStore();
 const confirmAccountName = ref("");
 
@@ -56,9 +55,7 @@ const deleteAccount = async () => {
 
         <div></div>
 
-        <div
-          class="grid gap-4 p-4 mt-4 -mx-4 border border-destructive rounded-xl"
-        >
+        <div class="grid gap-4 p-4 mt-4 -mx-4 border border-destructive rounded-xl">
           <p class="text-xl font-medium">Danger zone</p>
 
           <Separator />

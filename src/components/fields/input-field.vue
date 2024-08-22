@@ -125,11 +125,7 @@ const computedAttrs = {
     }
     if (props.onlyPositive) {
       if (
-        [
-          KEYBOARD_CODES.minus,
-          KEYBOARD_CODES.equal,
-          KEYBOARD_CODES.plus,
-        ].includes(event.keyCode)
+        [KEYBOARD_CODES.minus, KEYBOARD_CODES.equal, KEYBOARD_CODES.plus].includes(event.keyCode)
       ) {
         event.preventDefault();
       }

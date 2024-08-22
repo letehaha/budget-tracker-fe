@@ -2,9 +2,7 @@
   <div class="ui-tooltip" :class="[`ui-tooltip--${position}`]">
     <slot />
 
-    <template
-      v-if="content || $refs['tooltip-content'] || $refs['tooltip-message']"
-    >
+    <template v-if="content || $refs['tooltip-content'] || $refs['tooltip-message']">
       <div class="ui-tooltip__content-wrapper">
         <slot name="tooltip-content">
           <div class="ui-tooltip__content">

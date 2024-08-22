@@ -31,11 +31,7 @@
         class="account-create__form-field"
       />
 
-      <ui-button
-        type="submit"
-        class="account-create__form-submit"
-        :disabled="isLoading"
-      >
+      <ui-button type="submit" class="account-create__form-submit" :disabled="isLoading">
         {{ isLoading ? "Creating..." : "Create" }}
       </ui-button>
     </form>
@@ -53,10 +49,7 @@ import { ROUTES_NAMES } from "@/routes/constants";
 import { useAccountsStore, useCurrenciesStore } from "@/stores";
 import { VUE_QUERY_CACHE_KEYS } from "@/common/const";
 
-import {
-  useNotificationCenter,
-  NotificationType,
-} from "@/components/notification-center";
+import { useNotificationCenter, NotificationType } from "@/components/notification-center";
 import InputField from "@/components/fields/input-field.vue";
 import SelectField from "@/components/fields/select-field.vue";
 import UiButton from "@/components/common/ui-button.vue";

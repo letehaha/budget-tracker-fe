@@ -1,21 +1,13 @@
 <template>
-  <transition-group
-    class="notifications-center"
-    name="notifications-center"
-    tag="div"
-  >
+  <transition-group class="notifications-center" name="notifications-center" tag="div">
     <template v-for="item in notifications" :key="item.id">
       <div
         class="notifications-center__item"
         :class="{
-          'notifications-center__item--warning':
-            item.type === NotificationType.warning,
-          'notifications-center__item--error':
-            item.type === NotificationType.error,
-          'notifications-center__item--info':
-            item.type === NotificationType.info,
-          'notifications-center__item--success':
-            item.type === NotificationType.success,
+          'notifications-center__item--warning': item.type === NotificationType.warning,
+          'notifications-center__item--error': item.type === NotificationType.error,
+          'notifications-center__item--info': item.type === NotificationType.info,
+          'notifications-center__item--success': item.type === NotificationType.success,
         }"
       >
         <template v-if="item.type === NotificationType.warning">

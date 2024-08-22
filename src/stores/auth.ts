@@ -16,13 +16,7 @@ export const useAuthStore = defineStore("auth", () => {
   const isLoggedIn = ref(false);
   const userToken: Ref<string | null> = ref(null);
 
-  const login = async ({
-    password,
-    username,
-  }: {
-    password: string;
-    username: string;
-  }) => {
+  const login = async ({ password, username }: { password: string; username: string }) => {
     try {
       const result = await authLogin({
         password,
@@ -33,10 +27,7 @@ export const useAuthStore = defineStore("auth", () => {
         api.setToken(result.token);
 
         await userStore.loadUser();
-        await Promise.all([
-          currenciesStore.loadBaseCurrency(),
-          categoriesStore.loadCategories(),
-        ]);
+        await Promise.all([currenciesStore.loadBaseCurrency(), categoriesStore.loadCategories()]);
 
         isLoggedIn.value = true;
         userToken.value = result.token;
@@ -59,21 +50,12 @@ export const useAuthStore = defineStore("auth", () => {
   };
 
   const setLoggedIn = async () => {
-    await Promise.all([
-      currenciesStore.loadBaseCurrency(),
-      categoriesStore.loadCategories(),
-    ]);
+    await Promise.all([currenciesStore.loadBaseCurrency(), categoriesStore.loadCategories()]);
 
     isLoggedIn.value = true;
   };
 
-  const signup = async ({
-    password,
-    username,
-  }: {
-    password: string;
-    username: string;
-  }) => {
+  const signup = async ({ password, username }: { password: string; username: string }) => {
     await authRegister({ password, username });
     await login({ password, username });
   };

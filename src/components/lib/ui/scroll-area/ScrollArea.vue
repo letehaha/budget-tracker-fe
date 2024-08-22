@@ -19,14 +19,8 @@ const props = withDefaults(
 </script>
 
 <template>
-  <ScrollAreaRoot
-    :type="type"
-    :class="cn('relative overflow-hidden', props.class)"
-  >
-    <ScrollAreaViewport
-      class="h-full w-full rounded-[inherit]"
-      @scroll="scrollY"
-    >
+  <ScrollAreaRoot :type="type" :class="cn('relative overflow-hidden', props.class)">
+    <ScrollAreaViewport class="h-full w-full rounded-[inherit]" @scroll="scrollY">
       <slot />
     </ScrollAreaViewport>
     <ScrollBar />

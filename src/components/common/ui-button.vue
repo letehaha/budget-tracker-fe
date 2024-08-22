@@ -23,12 +23,7 @@ enum EVENTS {
 }
 
 export type SIZES = "default" | "small";
-export type BUTTON_THEMES =
-  | "primary"
-  | "danger"
-  | "outline"
-  | "text"
-  | "light-dark";
+export type BUTTON_THEMES = "primary" | "danger" | "outline" | "text" | "light-dark";
 export type BUTTON_TYPES = "button" | "submit" | "reset";
 
 export default defineComponent({

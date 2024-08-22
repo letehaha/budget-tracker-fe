@@ -37,19 +37,10 @@
           <div class="category-select-field__arrow" />
         </button>
         <div v-if="isDropdownOpened" class="category-select-field__dropdown">
-          <div
-            ref="DOMList"
-            class="category-select-field__dropdown-values"
-            role="listbox"
-          >
+          <div ref="DOMList" class="category-select-field__dropdown-values" role="listbox">
             <!-- Show top parent category at the top of list of child categories -->
             <div class="p-1 px-2 category-select-field__search-field">
-              <input-field
-                v-model="searchQuery"
-                name="search"
-                placeholder="Search..."
-                autofocus
-              />
+              <input-field v-model="searchQuery" name="search" placeholder="Search..." autofocus />
             </div>
             <template v-if="previousLevelsIndices.length">
               <Button
@@ -96,8 +87,7 @@
                 class="category-select-field__dropdown-item"
                 type="button"
                 :class="{
-                  'category-select-field__dropdown-item--highlighed':
-                    selectedValue.id === item.id,
+                  'category-select-field__dropdown-item--highlighed': selectedValue.id === item.id,
                 }"
                 role="option"
                 :aria-selected="selectedValue.id === item.id"
@@ -107,9 +97,7 @@
 
                 <span>{{ item.name }}</span>
 
-                <template
-                  v-if="item.subCategories.length && !searchQuery.length"
-                >
+                <template v-if="item.subCategories.length && !searchQuery.length">
                   <div class="category-select-field__dropdown-child-amount">
                     <span>({{ item.subCategories.length }})</span>
                     <ChevronRightIcon />
@@ -195,10 +183,7 @@ const toggleDropdown = (state?: boolean) => {
   }
 };
 
-const filterCategories = (
-  categories: FormattedCategory[],
-  query: string,
-): FormattedCategory[] => {
+const filterCategories = (categories: FormattedCategory[], query: string): FormattedCategory[] => {
   let result: FormattedCategory[] = [];
   const lowerCaseQuery = query.toLowerCase();
 
@@ -208,10 +193,7 @@ const filterCategories = (
     }
 
     if (category.subCategories?.length > 0 && searchQuery.value.length) {
-      const filteredSubCategories = filterCategories(
-        category.subCategories,
-        query,
-      );
+      const filteredSubCategories = filterCategories(category.subCategories, query);
       result = [...result, ...filteredSubCategories];
     }
   }
@@ -244,11 +226,7 @@ const selectItem = (item: FormattedCategory, ignorePreselect = false) => {
    * will disable diving level deeper and will select category even if it
    * has child categories
    */
-  if (
-    item.subCategories.length &&
-    !ignorePreselect &&
-    !searchQuery.value.length
-  ) {
+  if (item.subCategories.length && !ignorePreselect && !searchQuery.value.length) {
     definePreviousLevelsIndices(item);
     levelValues.value = item.subCategories;
 

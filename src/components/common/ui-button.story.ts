@@ -30,8 +30,7 @@ const Template = (args: Args) => ({
   setup() {
     return { args };
   },
-  template:
-    '<ui-button v-bind="args">{{ args.slotContent || "Button" }}</ui-button>',
+  template: '<ui-button v-bind="args">{{ args.slotContent || "Button" }}</ui-button>',
 });
 
 export const Default = Template.bind({}) as Story;

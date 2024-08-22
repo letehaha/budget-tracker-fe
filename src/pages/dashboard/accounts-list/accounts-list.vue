@@ -47,15 +47,11 @@ const router = useRouter();
 const { enabledAccounts, accounts } = storeToRefs(useAccountsStore());
 
 const sortedAccounts = computed(() =>
-  [...enabledAccounts.value].sort(
-    (a, b) => b.currentBalance - a.currentBalance,
-  ),
+  [...enabledAccounts.value].sort((a, b) => b.currentBalance - a.currentBalance),
 );
 
 const noAccountsExist = computed(() => accounts.value.length === 0);
-const noEnabledAccoutnsExist = computed(
-  () => enabledAccounts.value.length === 0,
-);
+const noEnabledAccoutnsExist = computed(() => enabledAccounts.value.length === 0);
 
 const redirectToAccount = (account: AccountModel) => {
   router.push({ name: ROUTES_NAMES.account, params: { id: account.id } });

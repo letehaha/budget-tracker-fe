@@ -5,10 +5,7 @@ import { AccountModel } from "shared-types";
 import { Switch } from "@/components/lib/ui/switch";
 import { useAccountsStore } from "@/stores";
 
-import {
-  useNotificationCenter,
-  NotificationType,
-} from "@/components/notification-center";
+import { useNotificationCenter, NotificationType } from "@/components/notification-center";
 
 const props = defineProps<{
   account: AccountModel;
@@ -21,13 +18,7 @@ const form = reactive({
   isEnabled: false,
 });
 
-const updateVisibility = async ({
-  id,
-  isEnabled,
-}: {
-  id: number;
-  isEnabled: boolean;
-}) => {
+const updateVisibility = async ({ id, isEnabled }: { id: number; isEnabled: boolean }) => {
   try {
     await accountsStore.editAccount({ id, isEnabled });
 

@@ -1,9 +1,6 @@
 <template>
   <div class="transactions-list">
-    <template
-      v-for="item in transactions"
-      :key="`${item.id}-render-id-${renderId}`"
-    >
+    <template v-for="item in transactions" :key="`${item.id}-render-id-${renderId}`">
       <TransactionRecrod :tx="item" @record-click="handlerRecordClick" />
     </template>
   </div>

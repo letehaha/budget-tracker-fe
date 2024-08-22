@@ -1,10 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
-import {
-  redirectRouteGuard,
-  authPageGuard,
-  baseCurrencyExists,
-  devOnly,
-} from "./guards";
+import { redirectRouteGuard, authPageGuard, baseCurrencyExists, devOnly } from "./guards";
 import { ROUTES_NAMES } from "./constants";
 
 export { ROUTES_NAMES, ROUTER_LAYOUTS } from "./constants";
@@ -61,14 +56,12 @@ const routes = [
           {
             path: "categories",
             name: ROUTES_NAMES.settingsCategories,
-            component: () =>
-              import("@/pages/settings/subpages/categories/index.vue"),
+            component: () => import("@/pages/settings/subpages/categories/index.vue"),
           },
           {
             path: "currencies",
             name: ROUTES_NAMES.settingsCurrencies,
-            component: () =>
-              import("@/pages/settings/subpages/currencies/index.vue"),
+            component: () => import("@/pages/settings/subpages/currencies/index.vue"),
           },
         ],
       },

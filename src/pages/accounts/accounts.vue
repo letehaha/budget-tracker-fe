@@ -19,11 +19,7 @@
           </UiButton>
         </template>
         <template v-else-if="isPaired && isTokenPresent">
-          <UiButton
-            type="button"
-            variant="outline"
-            @click="refreshMonoAccounts"
-          >
+          <UiButton type="button" variant="outline" @click="refreshMonoAccounts">
             Refresh Monobank balances
           </UiButton>
         </template>
@@ -89,8 +85,7 @@ import { cn } from "@/lib/utils";
 
 const monobankStore = useBanksMonobankStore();
 const { accounts } = storeToRefs(useAccountsStore());
-const { isMonoAccountPaired: isPaired, isTokenPresent } =
-  storeToRefs(monobankStore);
+const { isMonoAccountPaired: isPaired, isTokenPresent } = storeToRefs(monobankStore);
 
 const { formatAmountByCurrencyId } = useFormatCurrency();
 const { addModal } = useModalCenter();
@@ -113,10 +108,7 @@ const setMonobankToken = ({ isUpdate = false } = {}) => {
 };
 
 const formatBalance = (account: AccountModel) =>
-  formatAmountByCurrencyId(
-    account.currentBalance - account.creditLimit,
-    account.currencyId,
-  );
+  formatAmountByCurrencyId(account.currentBalance - account.creditLimit, account.currencyId);
 </script>
 
 <style lang="scss" scoped>

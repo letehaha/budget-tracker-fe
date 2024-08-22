@@ -22,10 +22,7 @@
     </div>
 
     <div class="dashboard-page__info">
-      <BalanceTrendWidget
-        :selected-period="currentPeriod"
-        class="dashboard-page__balance-trend"
-      />
+      <BalanceTrendWidget :selected-period="currentPeriod" class="dashboard-page__balance-trend" />
       <SpendingCategoriesWidget
         :selected-period="currentPeriod"
         class="dashboard-page__spending-categories"
@@ -71,9 +68,7 @@ const currentPeriod = ref({
   to: new Date(),
 });
 
-const isCurrentPeriodSameMonth = computed(() =>
-  isSameMonth(new Date(), currentPeriod.value.to),
-);
+const isCurrentPeriodSameMonth = computed(() => isSameMonth(new Date(), currentPeriod.value.to));
 const periodSelectorText = computed(() => {
   if (isCurrentPeriodSameMonth.value) return "Current Month";
 

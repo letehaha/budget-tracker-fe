@@ -15,9 +15,8 @@ export const loadMonoTransactions = async (
 ): Promise<endpointsTypes.LoadMonoTransactionsResponse> =>
   api.get("/banks/monobank/load-transactions", payload);
 
-export const updateMonoWebhook = async (
-  payload: endpointsTypes.UpdateWebhookBody,
-): Promise<void> => api.post("/banks/monobank/update-webhook", payload);
+export const updateMonoWebhook = async (payload: endpointsTypes.UpdateWebhookBody): Promise<void> =>
+  api.post("/banks/monobank/update-webhook", payload);
 
 export const updateMonoUser = async (
   payload: endpointsTypes.UpdateMonobankUserBody,

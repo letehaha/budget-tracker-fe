@@ -2,9 +2,7 @@
   <div class="layout-header">
     <div class="layout-header__actions">
       <div class="layout-header__action">
-        <ui-button variant="default" size="lg" @click="openFormModal">
-          New Record
-        </ui-button>
+        <ui-button variant="default" size="lg" @click="openFormModal"> New Record </ui-button>
       </div>
     </div>
 
@@ -19,11 +17,7 @@
       </ui-button>
 
       <ui-tooltip
-        :content="
-          !isAllowedToSyncFinancialData
-            ? 'You can sync data only once in 30 mins'
-            : ''
-        "
+        :content="!isAllowedToSyncFinancialData ? 'You can sync data only once in 30 mins' : ''"
         position="bottom"
         class="layout-header__sync-status-wrapper"
       >
@@ -36,9 +30,7 @@
         >
           <template v-if="isSyncing">
             <RefreshCcw />
-            <span class="layout-header__sync-status-text"
-              >Synchronizing...</span
-            >
+            <span class="layout-header__sync-status-text">Synchronizing...</span>
           </template>
           <template v-else>
             <CheckCircle :size="14" class="text-green-700" />
@@ -62,15 +54,10 @@ import { MoonStar, Sun, CheckCircle, RefreshCcw } from "lucide-vue-next";
 
 const { addModal } = useModalCenter();
 const rootStore = useRootStore();
-const {
-  isAppInitialized,
-  isFinancialDataSyncing,
-  isAllowedToSyncFinancialData,
-} = storeToRefs(rootStore);
+const { isAppInitialized, isFinancialDataSyncing, isAllowedToSyncFinancialData } =
+  storeToRefs(rootStore);
 
-const isSyncing = computed(
-  () => !isAppInitialized.value || isFinancialDataSyncing.value,
-);
+const isSyncing = computed(() => !isAppInitialized.value || isFinancialDataSyncing.value);
 
 const openFormModal = () => {
   addModal({ type: MODAL_TYPES.createRecord });

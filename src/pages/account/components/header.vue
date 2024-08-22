@@ -19,8 +19,7 @@ const props = defineProps<{
 const { currenciesMap, baseCurrency } = storeToRefs(useCurrenciesStore());
 const accountsStore = useAccountsStore();
 const formEditingPopoverOpen = ref(false);
-const { addSuccessNotification, addErrorNotification } =
-  useNotificationCenter();
+const { addSuccessNotification, addErrorNotification } = useNotificationCenter();
 
 const accountNameForm = ref({
   name: props.account.name,
@@ -81,10 +80,7 @@ const updateAccount = async () => {
                 :error-message="getFieldErrorMessage('form.name')"
               />
 
-              <Button
-                type="submit"
-                :disabled="accountNameForm.name === account.name"
-              >
+              <Button type="submit" :disabled="accountNameForm.name === account.name">
                 Save
               </Button>
             </form>

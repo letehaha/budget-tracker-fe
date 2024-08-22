@@ -40,15 +40,12 @@ export const useTransferFormLogic = ({
     return false;
   });
 
-  const targetCurrency = computed(
-    () => currenciesMap.value[form.value.toAccount?.currencyId],
-  );
+  const targetCurrency = computed(() => currenciesMap.value[form.value.toAccount?.currencyId]);
 
   const fromAccountFieldDisabled = computed(() => {
     if (isRecordExternal.value) {
       if (!isTransferTx.value) return true;
-      if (transaction.transactionType === TRANSACTION_TYPES.expense)
-        return true;
+      if (transaction.transactionType === TRANSACTION_TYPES.expense) return true;
     }
     if (isTransferTx.value && linkedTransaction.value) return true;
     return false;

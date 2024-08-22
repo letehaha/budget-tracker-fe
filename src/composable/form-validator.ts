@@ -1,9 +1,5 @@
 import { Ref, ComputedRef, ToRefs, isRef } from "vue";
-import useVuelidate, {
-  GlobalConfig,
-  ValidationArgs,
-  ExtractState,
-} from "@vuelidate/core";
+import useVuelidate, { GlobalConfig, ValidationArgs, ExtractState } from "@vuelidate/core";
 import { get as safeGet } from "lodash-es";
 
 const GENERIC_VALIDATION_MESSAGES = Object.freeze({
@@ -47,18 +43,12 @@ const GENERIC_VALIDATION_MESSAGES = Object.freeze({
  * @returns list of methods
  */
 
-export const useFormValidation = <
-  Vargs extends ValidationArgs,
-  T extends ExtractState<Vargs>,
->(
+export const useFormValidation = <Vargs extends ValidationArgs, T extends ExtractState<Vargs>>(
   form: T | Ref<T> | ToRefs<T>,
   rules: Ref<Vargs> | Vargs,
   vuelidateOptions?: GlobalConfig,
   validationOptions?: {
-    customValidationMessages: Record<
-      string,
-      string | Ref<string> | ComputedRef<string>
-    >;
+    customValidationMessages: Record<string, string | Ref<string> | ComputedRef<string>>;
   },
 ): {
   isFormValid: (formPart?: string) => boolean;
@@ -147,9 +137,7 @@ export const useFormValidation = <
     const field = _extractVuelidateField(fieldPath);
     if (!field || !Object.keys(field).length) {
       // eslint-disable-next-line no-console
-      console.error(
-        `getFieldErrorMessage: Cannot extract vuelidate field by ${fieldPath.trim()}`,
-      );
+      console.error(`getFieldErrorMessage: Cannot extract vuelidate field by ${fieldPath.trim()}`);
     }
 
     const fieldRules = safeGet(isRef(rules) ? rules.value : rules, fieldPath);
@@ -163,15 +151,10 @@ export const useFormValidation = <
       if (field[rule].$invalid) {
         const customMessage = validationOptions?.customValidationMessages[rule];
 
-        const customErrorMessage = isRef(customMessage)
-          ? customMessage.value
-          : customMessage;
+        const customErrorMessage = isRef(customMessage) ? customMessage.value : customMessage;
 
         return (
-          customErrorMessage ||
-          GENERIC_VALIDATION_MESSAGES[rule] ||
-          field[rule].$message ||
-          ""
+          customErrorMessage || GENERIC_VALIDATION_MESSAGES[rule] || field[rule].$message || ""
         );
       }
     }

@@ -19,8 +19,7 @@ export const getDestinationAccount = ({
   toAccount: AccountModel;
 }) => {
   if (isRecordExternal) {
-    const isIncome =
-      sourceTransaction.transactionType === TRANSACTION_TYPES.income;
+    const isIncome = sourceTransaction.transactionType === TRANSACTION_TYPES.income;
     return isIncome ? account : toAccount;
   }
   return toAccount;
@@ -34,16 +33,13 @@ export const getDestinationAmount = ({
   sourceTransaction,
 }) => {
   if (isRecordExternal) {
-    const isIncome =
-      sourceTransaction.transactionType === TRANSACTION_TYPES.income;
+    const isIncome = sourceTransaction.transactionType === TRANSACTION_TYPES.income;
     return isIncome ? fromAmount : toAmount;
   }
   return isCurrenciesDifferent ? toAmount : fromAmount;
 };
 
-export const getFormTypeFromTransaction = (
-  tx: TransactionModel,
-): FORM_TYPES => {
+export const getFormTypeFromTransaction = (tx: TransactionModel): FORM_TYPES => {
   if (
     [
       TRANSACTION_TRANSFER_NATURE.common_transfer,
@@ -53,23 +49,16 @@ export const getFormTypeFromTransaction = (
     return FORM_TYPES.transfer;
   }
 
-  return tx.transactionType === TRANSACTION_TYPES.expense
-    ? FORM_TYPES.expense
-    : FORM_TYPES.income;
+  return tx.transactionType === TRANSACTION_TYPES.expense ? FORM_TYPES.expense : FORM_TYPES.income;
 };
 
-export const getTxTypeFromFormType = (
-  formType: FORM_TYPES,
-): TRANSACTION_TYPES => {
+export const getTxTypeFromFormType = (formType: FORM_TYPES): TRANSACTION_TYPES => {
   // When user creates a brand-new "transfer" transaction, it's always should be
   // considered as "expense"
   if (formType === FORM_TYPES.transfer) return TRANSACTION_TYPES.expense;
 
-  return formType === FORM_TYPES.expense
-    ? TRANSACTION_TYPES.expense
-    : TRANSACTION_TYPES.income;
+  return formType === FORM_TYPES.expense ? TRANSACTION_TYPES.expense : TRANSACTION_TYPES.income;
 };
 
-export const isOutOfWalletAccount = (
-  account: typeof OUT_OF_WALLET_ACCOUNT_MOCK,
-) => account._isOutOfWallet;
+export const isOutOfWalletAccount = (account: typeof OUT_OF_WALLET_ACCOUNT_MOCK) =>
+  account._isOutOfWallet;

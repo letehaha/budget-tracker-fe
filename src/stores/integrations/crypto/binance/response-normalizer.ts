@@ -1,8 +1,6 @@
 import { RawAccountDataResponse, NormalizedAccountData } from "@/common/types";
 
-export const normalizeAccountData = (
-  response: RawAccountDataResponse,
-): NormalizedAccountData => {
+export const normalizeAccountData = (response: RawAccountDataResponse): NormalizedAccountData => {
   const formattedBalances = response.balances.map((item) => {
     const precision = item.free.split(".")[1].length;
 

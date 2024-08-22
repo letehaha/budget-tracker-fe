@@ -68,10 +68,7 @@ watch(
   },
 );
 
-const {
-  data: spendingsByCategories,
-  isFetching: isSpendingsByCategoriesFetching,
-} = useQuery({
+const { data: spendingsByCategories, isFetching: isSpendingsByCategoriesFetching } = useQuery({
   queryKey: [...VUE_QUERY_CACHE_KEYS.widgetExpensesStructureTotal, periodFrom],
   queryFn: () =>
     getSpendingsByCategories({
@@ -82,35 +79,27 @@ const {
   placeholderData: (previousData) => previousData || {},
 });
 
-const { data: currentMonthExpense, isFetching: isCurrentMonthExpenseFetching } =
-  useQuery({
-    queryKey: [
-      ...VUE_QUERY_CACHE_KEYS.widgetExpensesStructureCurrentAmount,
-      periodFrom,
-    ],
-    queryFn: () =>
-      getExpensesAmountForPeriod({
-        from: props.selectedPeriod.from,
-        to: props.selectedPeriod.to,
-      }),
-    staleTime: Infinity,
-    placeholderData: (previousData) => previousData || 0,
-  });
+const { data: currentMonthExpense, isFetching: isCurrentMonthExpenseFetching } = useQuery({
+  queryKey: [...VUE_QUERY_CACHE_KEYS.widgetExpensesStructureCurrentAmount, periodFrom],
+  queryFn: () =>
+    getExpensesAmountForPeriod({
+      from: props.selectedPeriod.from,
+      to: props.selectedPeriod.to,
+    }),
+  staleTime: Infinity,
+  placeholderData: (previousData) => previousData || 0,
+});
 
-const { data: prevMonthExpense, isFetching: isPrevMonthExpenseFetching } =
-  useQuery({
-    queryKey: [
-      ...VUE_QUERY_CACHE_KEYS.widgetExpensesStructurePrevAmount,
-      periodFrom,
-    ],
-    queryFn: () =>
-      getExpensesAmountForPeriod({
-        from: startOfMonth(subMonths(props.selectedPeriod.from, 1)),
-        to: endOfMonth(subMonths(props.selectedPeriod.to, 1)),
-      }),
-    staleTime: Infinity,
-    placeholderData: (previousData) => previousData || 0,
-  });
+const { data: prevMonthExpense, isFetching: isPrevMonthExpenseFetching } = useQuery({
+  queryKey: [...VUE_QUERY_CACHE_KEYS.widgetExpensesStructurePrevAmount, periodFrom],
+  queryFn: () =>
+    getExpensesAmountForPeriod({
+      from: startOfMonth(subMonths(props.selectedPeriod.from, 1)),
+      to: endOfMonth(subMonths(props.selectedPeriod.to, 1)),
+    }),
+  staleTime: Infinity,
+  placeholderData: (previousData) => previousData || 0,
+});
 
 const isWidgetDataFetching = computed(
   () =>
@@ -121,10 +110,7 @@ const isWidgetDataFetching = computed(
 
 const expensesDiff = computed(() => {
   const percentage = Number(
-    calculatePercentageDifference(
-      currentMonthExpense.value || 0,
-      prevMonthExpense.value || 0,
-    ),
+    calculatePercentageDifference(currentMonthExpense.value || 0, prevMonthExpense.value || 0),
   ).toFixed(2);
   return Number(percentage);
 });

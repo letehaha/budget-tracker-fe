@@ -36,16 +36,15 @@ export default defineComponent({
       secret: "",
     });
 
-    const { isFormValid, getFieldErrorMessage, resetValidation } =
-      useFormValidation(
-        { form },
-        {
-          form: {
-            public: { required },
-            secret: { required },
-          },
+    const { isFormValid, getFieldErrorMessage, resetValidation } = useFormValidation(
+      { form },
+      {
+        form: {
+          public: { required },
+          secret: { required },
         },
-      );
+      },
+    );
 
     const submit = async (): Promise<undefined> => {
       if (!isFormValid()) return undefined;

@@ -17,11 +17,9 @@ export interface BalanceHistoryEntity {
   accountId: number;
 }
 
-export const getBalanceHistory = async ({
-  from,
-  to,
-  ...rest
-}: Params = {}): Promise<BalanceHistoryEntity[]> => {
+export const getBalanceHistory = async ({ from, to, ...rest }: Params = {}): Promise<
+  BalanceHistoryEntity[]
+> => {
   const params: endpointsTypes.GetBalanceHistoryPayload = {
     ...rest,
   };
@@ -29,10 +27,7 @@ export const getBalanceHistory = async ({
   if (from) params.from = formatDate(from);
   if (to) params.to = formatDate(to);
 
-  const history: BalanceHistoryEntity[] = await api.get(
-    "/stats/balance-history",
-    params,
-  );
+  const history: BalanceHistoryEntity[] = await api.get("/stats/balance-history", params);
 
   return history.map((item) => ({
     ...item,
@@ -52,10 +47,7 @@ export const getExpensesAmountForPeriod = async ({
   if (from) params.from = formatDate(from);
   if (to) params.to = formatDate(to);
 
-  const amount: number = await api.get(
-    "/stats/expenses-amount-for-period",
-    params,
-  );
+  const amount: number = await api.get("/stats/expenses-amount-for-period", params);
 
   return fromSystemAmount(amount);
 };
