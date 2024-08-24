@@ -35,18 +35,14 @@
 
 <script lang="ts" setup>
 import { computed, ref, watch } from "vue";
-import { storeToRefs } from "pinia";
 import { subMonths, startOfMonth, endOfMonth } from "date-fns";
 import { useQuery } from "@tanstack/vue-query";
 import { Chart as Highcharts } from "highcharts-vue";
 import { ChartPieIcon } from "lucide-vue-next";
 import { useFormatCurrency, useHighcharts } from "@/composable";
 import { calculatePercentageDifference } from "@/js/helpers";
-import { fromSystemAmount } from "@/api/helpers";
-import { useCategoriesStore } from "@/stores/categories/categories";
 import { getSpendingsByCategories, getExpensesAmountForPeriod } from "@/api";
 import { VUE_QUERY_CACHE_KEYS } from "@/common/const";
-import { UnwrapPromise } from "@/common/types";
 import WidgetWrapper from "./components/widget-wrapper.vue";
 import EmptyState from "./components/empty-state.vue";
 
@@ -115,45 +111,14 @@ const expensesDiff = computed(() => {
   return Number(percentage);
 });
 
-function computeTotalAmount(
-  group: UnwrapPromise<ReturnType<typeof getSpendingsByCategories>>[number],
-): number {
-  // Sum amounts from the current group's transactions
-  let total = group.transactions.reduce(
-    (sum, transaction) => sum + fromSystemAmount(transaction.refAmount),
-    0,
-  );
-
-  // Recursively sum amounts from nested categories
-  for (const nestedGroup of Object.values(group.nestedCategories)) {
-    total += computeTotalAmount(nestedGroup);
-  }
-
-  return total;
-}
-
-const { categoriesMap } = storeToRefs(useCategoriesStore());
 const { buildDonutChartConfig } = useHighcharts();
 
 const chartSeries = computed(() =>
-  Object.entries(spendingsByCategories.value || {}).reduce(
-    (acc, curr) => {
-      const [categoryId, value] = curr;
-      const totalTransactionsValue = computeTotalAmount(value);
-
-      acc.push({
-        name: categoriesMap.value[Number(categoryId)].name,
-        color: categoriesMap.value[Number(categoryId)].color,
-        y: totalTransactionsValue,
-      });
-      return acc;
-    },
-    [] as {
-      name: string;
-      color: string;
-      y: number;
-    }[],
-  ),
+  Object.values(spendingsByCategories.value || {}).map((value) => ({
+    name: value.name,
+    color: value.color,
+    y: value.amount,
+  })),
 );
 
 const isDataEmpty = computed(() => chartSeries.value.length === 0);
