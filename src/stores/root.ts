@@ -53,9 +53,7 @@ export const useRootStore = defineStore("root", () => {
       await Promise.all([
         ...(categories.value.length ? [] : [categoriesStore.loadCategories()]),
         currenciesStore.loadCurrencies(),
-        ...(isBaseCurrencyExists.value
-          ? []
-          : [currenciesStore.loadBaseCurrency()]),
+        ...(isBaseCurrencyExists.value ? [] : [currenciesStore.loadBaseCurrency()]),
         monobankStore.loadUserData(),
       ]);
 

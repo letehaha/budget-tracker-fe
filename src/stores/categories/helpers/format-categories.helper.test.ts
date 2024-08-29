@@ -19,12 +19,7 @@ describe("Categories formatting helper", () => {
 
     [
       "nested categories",
-      [
-        category(1),
-        category(2),
-        { ...category(3), parentId: 2 },
-        { ...category(4), parentId: 3 },
-      ],
+      [category(1), category(2), { ...category(3), parentId: 2 }, { ...category(4), parentId: 3 }],
       [
         { ...category(1), subCategories: [] },
         {

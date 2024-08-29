@@ -7,9 +7,11 @@ export enum FORM_TYPES {
   transfer = "transfer",
 }
 
+export type RefundsAnoterTx = TransactionModel | null | undefined;
+export type RefundedByAnotherTxs = TransactionModel[] | null | undefined;
+
 export interface UI_FORM_STRUCT {
   amount: number;
-  transactionRecordItem: TransactionModel;
   account: AccountModel;
   toAccount?: AccountModel;
   category: CategoryModel;
@@ -18,4 +20,6 @@ export interface UI_FORM_STRUCT {
   note?: string;
   type: FORM_TYPES;
   targetAmount?: number;
+  refundedByTxs: RefundedByAnotherTxs;
+  refundsTx: RefundsAnoterTx;
 }

@@ -2,10 +2,7 @@
   <WidgetWrapper class="latest-records-widget" title="Latest records" higher>
     <template #action>
       <template v-if="!isDataEmpty">
-        <router-link
-          class="latest-records-widget__show-all"
-          :to="{ name: ROUTES_NAMES.records }"
-        >
+        <router-link class="latest-records-widget__show-all" :to="{ name: ROUTES_NAMES.records }">
           <ui-button variant="link" as="span" size="sm"> Show all </ui-button>
         </router-link>
       </template>
@@ -16,10 +13,7 @@
       </EmptyState>
     </template>
     <template v-else>
-      <TransactionsList
-        class="latest-records-widget__list"
-        :transactions="transactions || []"
-      />
+      <TransactionsList class="latest-records-widget__list" :transactions="transactions || []" />
     </template>
   </WidgetWrapper>
 </template>

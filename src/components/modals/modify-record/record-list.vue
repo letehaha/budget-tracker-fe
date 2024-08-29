@@ -2,18 +2,11 @@
   <div class="record-list" data-cy="record-list-modal">
     <template v-if="isFetched && transactionsPages">
       <div v-for="item in transactionsPages?.pages?.flat()" :key="item.id">
-        <TransactionRecrod
-          :tx="item"
-          @record-click="(payload) => handlerRecordClick(payload[0])"
-        />
+        <TransactionRecrod :tx="item" @record-click="(payload) => handlerRecordClick(payload[0])" />
       </div>
     </template>
     <template v-if="hasNextPage">
-      <button
-        class="record-list__load-more"
-        type="button"
-        @click="() => fetchNextPage()"
-      >
+      <button class="record-list__load-more" type="button" @click="() => fetchNextPage()">
         Load more
       </button>
     </template>
@@ -53,10 +46,7 @@ const {
   hasNextPage,
   isFetched,
 } = useInfiniteQuery({
-  queryKey: [
-    VUE_QUERY_CACHE_KEYS.recordsPageTransactionList,
-    props.transactionType,
-  ],
+  queryKey: [VUE_QUERY_CACHE_KEYS.recordsPageTransactionList, props.transactionType],
   queryFn: fetchTransactions,
   initialPageParam: 0,
   getNextPageParam: (lastPage, pages) => {

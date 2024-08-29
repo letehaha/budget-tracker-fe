@@ -19,10 +19,7 @@ export const setTheme = (theme: Themes, save = false) => {
 };
 
 export const toggleTheme = () => {
-  setTheme(
-    currentTheme.value === Themes.dark ? Themes.light : Themes.dark,
-    true,
-  );
+  setTheme(currentTheme.value === Themes.dark ? Themes.light : Themes.dark, true);
 };
 
 export const identifyCurrentTheme = () => {

@@ -18,10 +18,7 @@ import { AccountModel } from "shared-types";
 
 import { useAccountsStore } from "@/stores";
 
-import {
-  useNotificationCenter,
-  NotificationType,
-} from "@/components/notification-center";
+import { useNotificationCenter, NotificationType } from "@/components/notification-center";
 import InputField from "@/components/fields/input-field.vue";
 
 export default defineComponent({

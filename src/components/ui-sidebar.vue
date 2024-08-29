@@ -16,10 +16,7 @@
           </ui-button>
         </router-link>
 
-        <router-link
-          v-slot="{ isActive }"
-          :to="{ name: ROUTES_NAMES.accounts }"
-        >
+        <router-link v-slot="{ isActive }" :to="{ name: ROUTES_NAMES.accounts }">
           <ui-button
             :variant="isActive ? 'default' : 'ghost'"
             as="span"
@@ -42,10 +39,7 @@
         </router-link>
 
         <template v-if="isDevEnv">
-          <router-link
-            v-slot="{ isActive }"
-            :to="{ name: ROUTES_NAMES.analytics }"
-          >
+          <router-link v-slot="{ isActive }" :to="{ name: ROUTES_NAMES.analytics }">
             <ui-button
               :variant="isActive ? 'default' : 'ghost'"
               as="span"
@@ -67,10 +61,7 @@
             Crypto
           </ui-button>
         </router-link>
-        <router-link
-          v-slot="{ isActive }"
-          :to="{ name: ROUTES_NAMES.settings }"
-        >
+        <router-link v-slot="{ isActive }" :to="{ name: ROUTES_NAMES.settings }">
           <ui-button
             :variant="isActive ? 'default' : 'ghost'"
             as="span"
@@ -82,11 +73,7 @@
         </router-link>
       </nav>
 
-      <ui-button
-        variant="secondary"
-        class="sidebar__logout"
-        @click="logOutHandler"
-      >
+      <ui-button variant="secondary" class="sidebar__logout" @click="logOutHandler">
         Logout
       </ui-button>
     </CardContent>

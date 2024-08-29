@@ -1,10 +1,6 @@
 import { ref, Ref, computed } from "vue";
 import { defineStore } from "pinia";
-import {
-  RawAccountDataResponse,
-  NormalizedAccountData,
-  AccountSettings,
-} from "@/common/types";
+import { RawAccountDataResponse, NormalizedAccountData, AccountSettings } from "@/common/types";
 import { api } from "@/api/_api";
 import { normalizeAccountData } from "./response-normalizer";
 
@@ -14,9 +10,7 @@ export const useCryptoBinanceStore = defineStore("crypto-binance", () => {
 
   const accountBalances = computed(() => accountData.value?.balances);
   const existingBalances = computed(() =>
-    accountBalances.value?.filter(
-      (item) => Number(item.free) || Number(item.locked),
-    ),
+    accountBalances.value?.filter((item) => Number(item.free) || Number(item.locked)),
   );
   const totalUSDBalance = computed(() =>
     (existingBalances.value || []).reduce((acc, item) => {
@@ -28,9 +22,7 @@ export const useCryptoBinanceStore = defineStore("crypto-binance", () => {
 
   const loadAccountData = async () => {
     try {
-      const result: RawAccountDataResponse = await api.get(
-        "/crypto/binance/account",
-      );
+      const result: RawAccountDataResponse = await api.get("/crypto/binance/account");
 
       accountData.value = normalizeAccountData(result);
     } catch (e) {
@@ -46,13 +38,10 @@ export const useCryptoBinanceStore = defineStore("crypto-binance", () => {
     secretKey: string;
   }) => {
     try {
-      const result: AccountSettings = await api.post(
-        "/crypto/binance/set-settings",
-        {
-          apiKey: publicKey,
-          secretKey,
-        },
-      );
+      const result: AccountSettings = await api.post("/crypto/binance/set-settings", {
+        apiKey: publicKey,
+        secretKey,
+      });
 
       userSettings.value = result;
     } catch (e) {

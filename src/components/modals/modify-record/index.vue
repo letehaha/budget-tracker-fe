@@ -2,7 +2,7 @@
 import { ref, watch, computed, onMounted, nextTick, onUnmounted } from "vue";
 import { storeToRefs } from "pinia";
 import { useQueryClient } from "@tanstack/vue-query";
-import { useEventListener } from "@vueuse/core";
+import { useEventListener, watchOnce } from "@vueuse/core";
 import {
   TRANSACTION_TYPES,
   PAYMENT_TYPES,
@@ -10,11 +10,7 @@ import {
   ACCOUNT_TYPES,
   TRANSACTION_TRANSFER_NATURE,
 } from "shared-types";
-import {
-  useAccountsStore,
-  useCategoriesStore,
-  useCurrenciesStore,
-} from "@/stores";
+import { useAccountsStore, useCategoriesStore, useCurrenciesStore } from "@/stores";
 import {
   createTransaction,
   editTransaction,
@@ -26,6 +22,7 @@ import {
   VERBOSE_PAYMENT_TYPES,
   OUT_OF_WALLET_ACCOUNT_MOCK,
   VUE_QUERY_TX_CHANGE_QUERY,
+  VUE_QUERY_CACHE_KEYS,
 } from "@/common/const";
 import InputField from "@/components/fields/input-field.vue";
 import SelectField from "@/components/fields/select-field.vue";
@@ -36,13 +33,15 @@ import DateField from "@/components/fields/date-field.vue";
 import { Button } from "@/components/lib/ui/button";
 import { EVENTS as MODAL_EVENTS } from "@/components/modal-center/ui-modal.vue";
 import TransactionRecrod from "@/components/transactions-list/transaction-record.vue";
-import FormHeader from "./components/form-header.vue";
+import { ApiErrorResponseError } from "@/js/errors";
+import { useNotificationCenter } from "@/components/notification-center";
 import TypeSelector from "./components/type-selector.vue";
 import FormRow from "./components/form-row.vue";
 import AccountField from "./components/account-field.vue";
+import MarkAsRefundField from "./components/mark-as-refund/mark-as-refund-field.vue";
 import { FORM_TYPES, UI_FORM_STRUCT } from "./types";
-import { getFormTypeFromTransaction } from "./helpers";
-import { useTransferFormLogic } from "./composables";
+import { prepopulateForm } from "./helpers";
+import { getRefundInfo, useTransferFormLogic } from "./composables";
 import { prepareTxCreationParams, prepareTxUpdationParams } from "./utils";
 
 defineOptions({
@@ -61,11 +60,11 @@ const props = withDefaults(defineProps<CreateRecordModalProps>(), {
 
 const emit = defineEmits([MODAL_EVENTS.closeModal]);
 
+const { addErrorNotification } = useNotificationCenter();
 const { addModal } = useModalCenter();
 const { currenciesMap } = storeToRefs(useCurrenciesStore());
 const { accountsRecord, systemAccounts } = storeToRefs(useAccountsStore());
-const { formattedCategories, categoriesMap } =
-  storeToRefs(useCategoriesStore());
+const { formattedCategories, categoriesMap } = storeToRefs(useCategoriesStore());
 const queryClient = useQueryClient();
 
 const isFormCreation = computed(() => !props.transaction);
@@ -73,32 +72,43 @@ const isFormCreation = computed(() => !props.transaction);
 const form = ref<UI_FORM_STRUCT>({
   amount: null,
   account: null,
-  transactionRecordItem: null,
   toAccount: null,
   targetAmount: null,
   category: formattedCategories.value[0],
   time: new Date(),
-  paymentType: VERBOSE_PAYMENT_TYPES.find(
-    (item) => item.value === PAYMENT_TYPES.creditCard,
-  ),
+  paymentType: VERBOSE_PAYMENT_TYPES.find((item) => item.value === PAYMENT_TYPES.creditCard),
   note: null,
   type: FORM_TYPES.expense,
+  refundedByTxs: undefined,
+  refundsTx: undefined,
 });
+
+const {
+  isInitialRefundsDataLoaded,
+  initialRefundsFormSlice,
+  originalRefunds,
+  isOriginalRefundsOverriden,
+  refundTransactionsTypeBasedOnFormType,
+} = getRefundInfo({
+  initialTransaction: props.transaction,
+  form,
+});
+
+watchOnce(
+  initialRefundsFormSlice,
+  (value) => {
+    form.value = Object.assign(form.value, value);
+  },
+  { deep: true },
+);
 
 const linkedTransaction = ref<TransactionModel | null>(null);
 
-const openTransactionModalList = async () => {
+const openTransactionLinkingModal = async () => {
   const type =
     props.transaction?.transactionType === TRANSACTION_TYPES.expense
       ? TRANSACTION_TYPES.income
       : TRANSACTION_TYPES.expense;
-
-  // if (isFormCreation.value) {
-  //   type =
-  //     form.value.type === FORM_TYPES.expense
-  //       ? TRANSACTION_TYPES.expense
-  //       : TRANSACTION_TYPES.income;
-  // }
 
   addModal({
     type: MODAL_TYPES.recordList,
@@ -122,13 +132,11 @@ watch(
   (value) => {
     if (
       value &&
-      props.transaction.transferNature !==
-        TRANSACTION_TRANSFER_NATURE.transfer_out_wallet
+      props.transaction.transferNature !== TRANSACTION_TRANSFER_NATURE.transfer_out_wallet
     ) {
       nextTick(() => {
         if (accountsRecord.value[props.transaction.accountId]) {
-          form.value.account =
-            accountsRecord.value[props.transaction.accountId];
+          form.value.account = accountsRecord.value[props.transaction.accountId];
         }
       });
     }
@@ -137,11 +145,10 @@ watch(
 );
 
 const isLoading = ref(false);
+const isFormFieldsDisabled = computed(() => isLoading.value || !isInitialRefundsDataLoaded.value);
 
 const currentTxType = computed(() => form.value.type);
-const isTransferTx = computed(
-  () => currentTxType.value === FORM_TYPES.transfer,
-);
+const isTransferTx = computed(() => currentTxType.value === FORM_TYPES.transfer);
 
 const {
   isTargetFieldVisible,
@@ -149,6 +156,8 @@ const {
   targetCurrency,
   fromAccountFieldDisabled,
   toAccountFieldDisabled,
+  transferSourceAccounts,
+  transferDestinationAccounts,
 } = useTransferFormLogic({
   form,
   isTransferTx,
@@ -156,6 +165,13 @@ const {
   transaction: props.transaction,
   linkedTransaction,
 });
+
+// TODO:
+// 1. Tx creation, validate that refAmount is less than refund refAmount. Use useFormValidation for
+// that
+// 2. When tx is opened, fetch refund, if there's any. For refund keep "Refund of", for base
+// call it "Refunded by"
+// 3. When editing, validate refAmount in the same way
 
 const isAmountFieldDisabled = computed(() => {
   if (isRecordExternal.value) {
@@ -183,82 +199,14 @@ const currencyCode = computed(() => {
   return undefined;
 });
 
-const transferSourceAccounts = computed(() => [
-  OUT_OF_WALLET_ACCOUNT_MOCK,
-  ...systemAccounts.value,
-]);
-
-const transferDestinationAccounts = computed(() =>
-  transferSourceAccounts.value.filter(
-    (item) => item.id !== form.value.account?.id,
-  ),
-);
-
-watch(
-  () => props.transaction,
-  (value) => {
-    if (value) {
-      const initialFormValues = {
-        type: getFormTypeFromTransaction(value),
-        category: categoriesMap.value[value.categoryId],
-        time: new Date(value.time),
-        paymentType: VERBOSE_PAYMENT_TYPES.find(
-          (item) => item.value === value.paymentType,
-        ),
-        note: value.note,
-        transactionRecordItem: value,
-      } as typeof form.value;
-
-      if (
-        value.transferNature === TRANSACTION_TRANSFER_NATURE.transfer_out_wallet
-      ) {
-        if (value.transactionType === TRANSACTION_TYPES.income) {
-          initialFormValues.account = OUT_OF_WALLET_ACCOUNT_MOCK;
-          initialFormValues.targetAmount = value.amount;
-          initialFormValues.toAccount = accountsRecord.value[value.accountId];
-        } else if (value.transactionType === TRANSACTION_TYPES.expense) {
-          initialFormValues.amount = value.amount;
-          initialFormValues.account = accountsRecord.value[value.accountId];
-          initialFormValues.toAccount = OUT_OF_WALLET_ACCOUNT_MOCK;
-        }
-      } else {
-        initialFormValues.amount = value.amount;
-        initialFormValues.account = accountsRecord.value[value.accountId];
-      }
-
-      form.value = initialFormValues;
-    }
-  },
-  { immediate: true, deep: true },
-);
-
-watch(
-  () => props.oppositeTransaction,
-  (value) => {
-    if (value) {
-      form.value.toAccount = accountsRecord.value[value.accountId];
-      form.value.targetAmount = value.amount;
-    }
-  },
-  { immediate: true, deep: true },
-);
-
-watch(
-  () => form.value.account,
-  (value) => {
-    // If fromAccount is the same as toAccount, make toAccount empty
-    if (form.value.toAccount?.id === value?.id) {
-      form.value.toAccount = null;
-    }
-  },
-);
-
 watch(
   () => [currentTxType.value, linkedTransaction.value],
   ([txType, isLinked], [prevTxType]) => {
     if (props.transaction) {
-      const { amount, transactionType, accountId, transferNature } =
-        props.transaction;
+      // If it's a transaction coming from props it means user currectly edits the form.
+      // When switching between transfer type and others we need to keep consistent fields
+      // fulfillment
+      const { amount, transactionType, accountId, transferNature } = props.transaction;
 
       if (isLinked) {
         form.value.amount = amount;
@@ -271,9 +219,7 @@ watch(
           form.value.toAccount = accountsRecord.value[accountId];
           form.value.account = null;
 
-          if (
-            transferNature === TRANSACTION_TRANSFER_NATURE.transfer_out_wallet
-          ) {
+          if (transferNature === TRANSACTION_TRANSFER_NATURE.transfer_out_wallet) {
             form.value.account = OUT_OF_WALLET_ACCOUNT_MOCK;
           }
         }
@@ -317,6 +263,7 @@ const submit = async () => {
           isTransferTx: isTransferTx.value,
           isRecordExternal: isRecordExternal.value,
           isCurrenciesDifferent: isCurrenciesDifferent.value,
+          isOriginalRefundsOverriden: isOriginalRefundsOverriden.value,
         }),
       );
     }
@@ -324,9 +271,16 @@ const submit = async () => {
     emit(MODAL_EVENTS.closeModal);
     // Reload all cached data in the app
     queryClient.invalidateQueries({ queryKey: [VUE_QUERY_TX_CHANGE_QUERY] });
+    queryClient.invalidateQueries({
+      queryKey: [
+        VUE_QUERY_CACHE_KEYS.recordsPageTransactionList,
+        refundTransactionsTypeBasedOnFormType.value,
+      ],
+    });
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error(e);
+    if (e instanceof ApiErrorResponseError) {
+      addErrorNotification(e.data.message);
+    }
   } finally {
     isLoading.value = false;
   }
@@ -353,9 +307,7 @@ const unlinkTransactions = async () => {
 
 const deleteTransactionHandler = async () => {
   try {
-    if (props.transaction.accountType !== ACCOUNT_TYPES.system) {
-      return;
-    }
+    if (props.transaction.accountType !== ACCOUNT_TYPES.system) return;
 
     isLoading.value = true;
 
@@ -391,6 +343,14 @@ const previouslyFocusedElement = ref(document.activeElement);
 onMounted(() => {
   if (!props.transaction) {
     form.value.account = systemAccounts.value[0];
+  } else {
+    const data = prepopulateForm({
+      transaction: props.transaction,
+      oppositeTransaction: props.oppositeTransaction,
+      accounts: accountsRecord.value,
+      categories: categoriesMap.value,
+    });
+    if (data) form.value = data;
   }
 });
 
@@ -404,205 +364,200 @@ useEventListener(document, "keydown", (event) => {
 </script>
 
 <template>
-  <div
-    class="modify-record"
-    :class="{
-      'modify-record--income': currentTxType === FORM_TYPES.income,
-      'modify-record--expense': currentTxType === FORM_TYPES.expense,
-      'modify-record--transfer': currentTxType === FORM_TYPES.transfer,
-    }"
-  >
-    <div class="modify-record__header">
-      <form-header :is-form-creation="isFormCreation" @close="closeModal" />
+  <div class="rounded-t-xl bg-card w-full max-w-[800px]">
+    <div
+      :class="[
+        'h-3 transition-[background-color] ease-out duration-200 rounded-t-xl',
+        currentTxType === FORM_TYPES.income && 'bg-app-income-color',
+        currentTxType === FORM_TYPES.expense && 'bg-app-expense-color',
+        currentTxType === FORM_TYPES.transfer && 'bg-app-transfer-color',
+      ]"
+    />
+    <div class="flex items-center justify-between py-3 px-6 mb-4">
+      <span class="text-2xl">
+        {{ isFormCreation ? "Add Record" : "Edit Record" }}
+      </span>
 
-      <type-selector
-        :is-form-creation="isFormCreation"
-        :selected-transaction-type="currentTxType"
-        :transaction="transaction"
-        @change-tx-type="selectTransactionType"
-      />
+      <Button variant="ghost" @click="closeModal"> Close </Button>
     </div>
-    <div class="px-6">
-      <form-row>
-        <input-field
-          v-model="form.amount"
-          label="Amount"
-          type="number"
-          :disabled="isAmountFieldDisabled"
-          only-positive
-          placeholder="Amount"
-          autofocus
-        >
-          <template #iconTrailing>
-            <span>{{ currencyCode }}</span>
+    <div class="grid grid-cols-[450px,1fr] relative">
+      <div class="px-6">
+        <type-selector
+          :is-form-creation="isFormCreation"
+          :selected-transaction-type="currentTxType"
+          :transaction="transaction"
+          :disabled="isFormFieldsDisabled"
+          class="mb-6"
+          @change-tx-type="selectTransactionType"
+        />
+
+        <div>
+          <form-row>
+            <input-field
+              v-model="form.amount"
+              label="Amount"
+              type="number"
+              :disabled="isFormFieldsDisabled || isAmountFieldDisabled"
+              only-positive
+              placeholder="Amount"
+              autofocus
+            >
+              <template #iconTrailing>
+                <span>{{ currencyCode }}</span>
+              </template>
+            </input-field>
+          </form-row>
+
+          <account-field
+            v-model:account="form.account"
+            v-model:to-account="form.toAccount"
+            :disabled="isFormFieldsDisabled"
+            :is-transfer-transaction="isTransferTx"
+            :is-transaction-linking="!!linkedTransaction"
+            :transaction-type="props.transaction?.transactionType || TRANSACTION_TYPES.expense"
+            :accounts="isTransferTx ? transferSourceAccounts : systemAccounts"
+            :from-account-disabled="fromAccountFieldDisabled"
+            :to-account-disabled="toAccountFieldDisabled"
+            :filtered-accounts="transferDestinationAccounts"
+            @close-modal="emit(MODAL_EVENTS.closeModal)"
+          />
+
+          <template v-if="currentTxType !== FORM_TYPES.transfer">
+            <form-row>
+              <category-select-field
+                v-model="form.category"
+                label="Category"
+                :values="formattedCategories"
+                label-key="name"
+                :disabled="isFormFieldsDisabled"
+              />
+            </form-row>
           </template>
-        </input-field>
-      </form-row>
 
-      <account-field
-        v-model:account="form.account"
-        v-model:to-account="form.toAccount"
-        :is-transfer-transaction="isTransferTx"
-        :is-transaction-linking="!!linkedTransaction"
-        :transaction-type="
-          props.transaction?.transactionType || TRANSACTION_TYPES.expense
-        "
-        :accounts="isTransferTx ? transferSourceAccounts : systemAccounts"
-        :from-account-disabled="fromAccountFieldDisabled"
-        :to-account-disabled="toAccountFieldDisabled"
-        :filtered-accounts="transferDestinationAccounts"
-        @close-modal="emit(MODAL_EVENTS.closeModal)"
-      />
+          <template v-if="isTargetFieldVisible">
+            <form-row>
+              <input-field
+                v-model="form.targetAmount"
+                :disabled="isFormFieldsDisabled || isTargetAmountFieldDisabled"
+                only-positive
+                label="Target amount"
+                placeholder="Target amount"
+                type="number"
+              >
+                <template #iconTrailing>
+                  <span>{{ targetCurrency?.currency?.code }}</span>
+                </template>
+              </input-field>
+            </form-row>
+          </template>
 
-      <template v-if="currentTxType !== FORM_TYPES.transfer">
+          <template
+            v-if="
+              isTransferTx && !linkedTransaction && !isFormCreation && !Boolean(oppositeTransaction)
+            "
+          >
+            <form-row>
+              <Button
+                class="w-full"
+                :disabled="isFormFieldsDisabled"
+                size="sm"
+                @click="openTransactionLinkingModal"
+              >
+                Link existing transaction
+              </Button>
+            </form-row>
+          </template>
+
+          <template v-if="isTransferTx && oppositeTransaction">
+            <form-row>
+              <Button
+                class="w-full"
+                :disabled="isFormFieldsDisabled"
+                size="sm"
+                @click="unlinkTransactions"
+              >
+                Unlink transactions
+              </Button>
+            </form-row>
+          </template>
+
+          <template v-if="linkedTransaction && isTransferTx && !isFormCreation">
+            <form-row class="flex items-center gap-2.5">
+              <TransactionRecrod class="bg-background" :tx="linkedTransaction" />
+
+              <Button
+                aria-label="Cancel linking"
+                :disabled="isFormFieldsDisabled"
+                size="sm"
+                @click="deleteTransactionRecordHandler"
+              >
+                Cancel
+              </Button>
+            </form-row>
+          </template>
+
+          <form-row>
+            <date-field
+              v-model="form.time"
+              :disabled="isFormFieldsDisabled || isRecordExternal"
+              label="Datetime"
+            />
+          </form-row>
+        </div>
+
+        <div class="flex items-center justify-between p-6">
+          <Button
+            v-if="transaction && transaction.accountType === ACCOUNT_TYPES.system"
+            class="min-w-[100px]"
+            :disabled="isFormFieldsDisabled"
+            aria-label="Delete transaction"
+            variant="destructive"
+            @click="deleteTransactionHandler"
+          >
+            Delete
+          </Button>
+          <Button
+            class="ml-auto min-w-[100px]"
+            :aria-label="isFormCreation ? 'Create transaction' : 'Edit transaction'"
+            :disabled="isFormFieldsDisabled"
+            @click="submit"
+          >
+            {{ isLoading ? "Loading..." : isFormCreation ? "Submit" : "Edit" }}
+          </Button>
+        </div>
+      </div>
+      <div class="px-6 pt-6 bg-black/20 shadow-black/40 shadow-[inset_2px_4px_12px]">
         <form-row>
-          <category-select-field
-            v-model="form.category"
-            label="Category"
-            :values="formattedCategories"
-            label-key="name"
+          <select-field
+            v-model="form.paymentType"
+            label="Payment Type"
+            :disabled="isFormFieldsDisabled || isRecordExternal"
+            :values="VERBOSE_PAYMENT_TYPES"
+            is-value-preselected
           />
         </form-row>
-      </template>
-
-      <template v-if="isTargetFieldVisible">
         <form-row>
-          <input-field
-            v-model="form.targetAmount"
-            :disabled="isTargetAmountFieldDisabled"
-            only-positive
-            label="Target amount"
-            placeholder="Target amount"
-            type="number"
-          >
-            <template #iconTrailing>
-              <span>{{ targetCurrency?.currency?.code }}</span>
-            </template>
-          </input-field>
+          <textarea-field
+            v-model="form.note"
+            placeholder="Note"
+            :disabled="isFormFieldsDisabled"
+            label="Note (optional)"
+          />
         </form-row>
-      </template>
-
-      <template
-        v-if="
-          isTransferTx &&
-          !linkedTransaction &&
-          !isFormCreation &&
-          !Boolean(oppositeTransaction)
-        "
-      >
-        <form-row>
-          <Button
-            class="w-full"
-            :disabled="isLoading"
-            size="sm"
-            @click="openTransactionModalList"
-          >
-            Link existing transaction
-          </Button>
-        </form-row>
-      </template>
-
-      <template v-if="isTransferTx && oppositeTransaction">
-        <form-row>
-          <Button
-            class="w-full"
-            :disabled="isLoading"
-            size="sm"
-            @click="unlinkTransactions"
-          >
-            Unlink transactions
-          </Button>
-        </form-row>
-      </template>
-
-      <template v-if="linkedTransaction && isTransferTx && !isFormCreation">
-        <form-row class="flex items-center gap-2.5">
-          <TransactionRecrod class="bg-background" :tx="linkedTransaction" />
-
-          <Button
-            aria-label="Cancel linking"
-            size="sm"
-            @click="deleteTransactionRecordHandler"
-          >
-            Cancel
-          </Button>
-        </form-row>
-      </template>
-
-      <form-row>
-        <date-field
-          v-model="form.time"
-          :disabled="isRecordExternal"
-          label="Datetime"
-        />
-      </form-row>
-      <form-row>
-        <select-field
-          v-model="form.paymentType"
-          label="Payment Type"
-          :disabled="isRecordExternal"
-          :values="VERBOSE_PAYMENT_TYPES"
-          is-value-preselected
-        />
-      </form-row>
-      <form-row>
-        <textarea-field
-          v-model="form.note"
-          placeholder="Note"
-          label="Note (optional)"
-        />
-      </form-row>
-    </div>
-
-    <div class="flex items-center justify-between p-6">
-      <Button
-        v-if="transaction && transaction.accountType === ACCOUNT_TYPES.system"
-        class="min-w-[100px]"
-        :disabled="isLoading"
-        aria-label="Delete transaction"
-        variant="destructive"
-        @click="deleteTransactionHandler"
-      >
-        Delete
-      </Button>
-      <Button
-        class="ml-auto min-w-[100px]"
-        :aria-label="isFormCreation ? 'Create transaction' : 'Edit transaction'"
-        :disabled="isLoading"
-        @click="submit"
-      >
-        {{ isLoading ? "Loading..." : isFormCreation ? "Submit" : "Edit" }}
-      </Button>
+        <template v-if="!isTransferTx">
+          <form-row>
+            <MarkAsRefundField
+              v-model:refunds="form.refundsTx"
+              v-model:refunded-by="form.refundedByTxs"
+              :transaction-id="transaction?.id"
+              :is-record-creation="isFormCreation"
+              :transaction-type="refundTransactionsTypeBasedOnFormType"
+              :disabled="isFormFieldsDisabled"
+              :is-there-original-refunds="Boolean(originalRefunds.length)"
+            />
+          </form-row>
+        </template>
+      </div>
     </div>
   </div>
 </template>
-
-<style lang="scss" scoped>
-$border-top-radius: 10px;
-.modify-record {
-  background-color: var(--app-bg-color);
-  width: 100%;
-  max-width: 600px;
-  border-top-right-radius: $border-top-radius;
-  border-top-left-radius: $border-top-radius;
-}
-.modify-record__header {
-  padding: 24px;
-  margin-bottom: 24px;
-
-  border-top-right-radius: $border-top-radius;
-  border-top-left-radius: $border-top-radius;
-
-  transition: 0.2s ease-out;
-
-  .modify-record--income & {
-    background-color: var(--app-income-color);
-  }
-  .modify-record--expense & {
-    background-color: var(--app-expense-color);
-  }
-  .modify-record--transfer & {
-    background-color: var(--app-transfer-color);
-  }
-}
-</style>

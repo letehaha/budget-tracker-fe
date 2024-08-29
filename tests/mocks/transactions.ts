@@ -12,14 +12,10 @@ import { getUahAccount, getUah2Account } from "./accounts";
 import { USER_BASE_CURRENCY, USER_CURRENCIES } from "./currencies";
 
 const SHARED_TX_ACCOUNT = getUahAccount();
-const buildCommonTxBody = (
-  overrides: Partial<TransactionModel> = {},
-): TransactionModel => {
+const buildCommonTxBody = (overrides: Partial<TransactionModel> = {}): TransactionModel => {
   const amount = faker.number.int({ min: 1000, max: 100000 });
   const currencyId = SHARED_TX_ACCOUNT.currencyId;
-  const currency = USER_CURRENCIES.find(
-    (item) => item.currencyId === currencyId,
-  );
+  const currency = USER_CURRENCIES.find((item) => item.currencyId === currencyId);
   const refAmount = amount * currency.exchangeRate;
 
   return {
@@ -44,6 +40,7 @@ const buildCommonTxBody = (
     commissionRate: 0,
     refCommissionRate: 0,
     cashbackAmount: 0,
+    refundLinked: false,
     ...overrides,
   };
 };
@@ -103,17 +100,13 @@ export const buildExternalIncomeTransaction = (
     ...overrides,
   });
 
-export const buildExternalTransferTransaction = (
-  type: TRANSACTION_TYPES,
-): TransactionModel => ({
+export const buildExternalTransferTransaction = (type: TRANSACTION_TYPES): TransactionModel => ({
   ...buildSystemTransferExpenseTransaction(),
   transactionType: type,
   accountType: ACCOUNT_TYPES.monobank,
 });
 
-export const buildExtendedCommonTx = (
-  data: Partial<TransactionModel> = {},
-): TransactionModel => ({
+export const buildExtendedCommonTx = (data: Partial<TransactionModel> = {}): TransactionModel => ({
   ...buildCommonTxBody(),
   ...data,
 });

@@ -28,10 +28,9 @@
             </Tooltip.TooltipTrigger>
             <Tooltip.TooltipContent class="max-w-[400px] p-4">
               <span class="text-sm opacity-90 leading-6">
-                By adding custom currencies, you can create and manage accounts
-                and transactions in those currencies. You’ll also be able to
-                adjust and update their exchange rates relative to your base
-                currency. Linked accounts will automatically create required
+                By adding custom currencies, you can create and manage accounts and transactions in
+                those currencies. You’ll also be able to adjust and update their exchange rates
+                relative to your base currency. Linked accounts will automatically create required
                 currencies.
               </span>
             </Tooltip.TooltipContent>
@@ -57,15 +56,13 @@ import * as Tooltip from "@/components/lib/ui/tooltip";
 
 const currenciesStore = useCurrenciesStore();
 const { addErrorNotification } = useNotificationCenter();
-const { currencies: userCurrencies, systemCurrencies } =
-  storeToRefs(currenciesStore);
+const { currencies: userCurrencies, systemCurrencies } = storeToRefs(currenciesStore);
 
 const isCurrenciesLoading = ref(false);
 const selectedCurrency = ref<CurrencyModel>(null);
 const filteredCurrencies = computed(() =>
   systemCurrencies.value.filter(
-    (item) =>
-      !userCurrencies.value.some((el) => el.currency.code === item.code),
+    (item) => !userCurrencies.value.some((el) => el.currency.code === item.code),
   ),
 );
 

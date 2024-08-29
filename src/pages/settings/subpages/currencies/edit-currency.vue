@@ -27,17 +27,11 @@
     </div>
     <div class="edit-currency__actions">
       <ui-tooltip :content="!isFormDirty ? 'Nothing to save' : ''">
-        <ui-button :disabled="!isFormDirty" @click="onSaveHandler">
-          Save
-        </ui-button>
+        <ui-button :disabled="!isFormDirty" @click="onSaveHandler"> Save </ui-button>
       </ui-tooltip>
 
       <ui-tooltip :content="deletionDisabled ? DISABLED_DELETE_TEXT : ''">
-        <ui-button
-          theme="danger"
-          :disabled="deletionDisabled"
-          @click="onDeleteHandler"
-        >
+        <ui-button theme="danger" :disabled="deletionDisabled" @click="onDeleteHandler">
           Delete currency
         </ui-button>
       </ui-tooltip>
@@ -49,10 +43,7 @@
 import { reactive, computed, onMounted, ref, watch } from "vue";
 import { API_ERROR_CODES } from "shared-types";
 import { useCurrenciesStore } from "@/stores";
-import {
-  editUserCurrenciesExchangeRates,
-  deleteCustomRate,
-} from "@/api/currencies";
+import { editUserCurrenciesExchangeRates, deleteCustomRate } from "@/api/currencies";
 import UiButton from "@/components/common/ui-button.vue";
 import InputField from "@/components/fields/input-field.vue";
 import UiTooltip from "@/components/common/tooltip.vue";
@@ -80,8 +71,7 @@ const emit = defineEmits<{
 }>();
 
 const currenciesStore = useCurrenciesStore();
-const { addSuccessNotification, addErrorNotification } =
-  useNotificationCenter();
+const { addSuccessNotification, addErrorNotification } = useNotificationCenter();
 
 const form = reactive({
   baseRate: props.currency.rate,
@@ -92,9 +82,7 @@ const isQuoteEditing = ref(false);
 const isChecked = ref<boolean>(false);
 
 const isRateChanged = computed(
-  () =>
-    +props.currency.rate !== +form.baseRate ||
-    +props.currency.quoteRate !== +form.quoteRate,
+  () => +props.currency.rate !== +form.baseRate || +props.currency.quoteRate !== +form.quoteRate,
 );
 
 const isFormDirty = computed(

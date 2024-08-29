@@ -27,10 +27,7 @@
         </div>
       </div>
 
-      <highcharts
-        v-node-resize-observer="{ callback: onChartResize }"
-        :options="chartOptions"
-      />
+      <highcharts v-node-resize-observer="{ callback: onChartResize }" :options="chartOptions" />
     </template>
   </WidgetWrapper>
 </template>
@@ -39,14 +36,7 @@
 import { ref, computed, watch } from "vue";
 import { useQuery } from "@tanstack/vue-query";
 import { Chart as Highcharts } from "highcharts-vue";
-import {
-  getDaysInMonth,
-  addDays,
-  startOfMonth,
-  endOfMonth,
-  startOfDay,
-  subMonths,
-} from "date-fns";
+import { getDaysInMonth, addDays, startOfMonth, endOfMonth, startOfDay, subMonths } from "date-fns";
 import { storeToRefs } from "pinia";
 import { ChartLineIcon } from "lucide-vue-next";
 import { getTotalBalance } from "@/api";
@@ -93,33 +83,27 @@ const actualDataPeriod = ref(props.selectedPeriod);
 const prevDataPeriod = ref(props.selectedPeriod);
 const periodQueryKey = computed(() => props.selectedPeriod.from.getTime());
 
-const { data: balanceHistory, isFetching: isBalanceHistoryFetching } = useQuery(
-  {
-    queryKey: [...VUE_QUERY_CACHE_KEYS.widgetBalanceTrend, periodQueryKey],
-    queryFn: () => loadBalanceTrendData(props.selectedPeriod),
-    staleTime: Infinity,
-    placeholderData: (prevData) => prevData,
-  },
-);
+const { data: balanceHistory, isFetching: isBalanceHistoryFetching } = useQuery({
+  queryKey: [...VUE_QUERY_CACHE_KEYS.widgetBalanceTrend, periodQueryKey],
+  queryFn: () => loadBalanceTrendData(props.selectedPeriod),
+  staleTime: Infinity,
+  placeholderData: (prevData) => prevData,
+});
 const { data: todayBalance, isFetching: isTodayBalanceFetching } = useQuery({
   queryKey: [...VUE_QUERY_CACHE_KEYS.widgetBalanceTotalBalance, periodQueryKey],
   queryFn: () => getTotalBalance({ date: props.selectedPeriod.to }),
   placeholderData: (prevData) => prevData || 0,
   staleTime: Infinity,
 });
-const { data: previousBalance, isFetching: isPreviousBalanceFetching } =
-  useQuery({
-    queryKey: [
-      ...VUE_QUERY_CACHE_KEYS.widgetBalancePreviousBalance,
-      periodQueryKey,
-    ],
-    queryFn: () =>
-      getTotalBalance({
-        date: endOfMonth(subMonths(props.selectedPeriod.to, 1)),
-      }),
-    placeholderData: (prevData) => prevData || 0,
-    staleTime: Infinity,
-  });
+const { data: previousBalance, isFetching: isPreviousBalanceFetching } = useQuery({
+  queryKey: [...VUE_QUERY_CACHE_KEYS.widgetBalancePreviousBalance, periodQueryKey],
+  queryFn: () =>
+    getTotalBalance({
+      date: endOfMonth(subMonths(props.selectedPeriod.to, 1)),
+    }),
+  placeholderData: (prevData) => prevData || 0,
+  staleTime: Infinity,
+});
 
 const isWidgetDataFetching = computed(
   () =>
@@ -153,8 +137,7 @@ watch(
 );
 
 const isDataEmpty = computed(
-  () =>
-    !balanceHistory.value || balanceHistory.value.every((i) => i.amount === 0),
+  () => !balanceHistory.value || balanceHistory.value.every((i) => i.amount === 0),
 );
 
 const chartOptions = computed(() => {

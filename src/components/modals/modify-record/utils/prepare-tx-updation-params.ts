@@ -15,6 +15,7 @@ export const prepareTxUpdationParams = ({
   isTransferTx,
   isRecordExternal,
   isCurrenciesDifferent,
+  isOriginalRefundsOverriden,
 }: {
   transaction: TransactionModel;
   linkedTransaction?: TransactionModel | null;
@@ -22,22 +23,31 @@ export const prepareTxUpdationParams = ({
   isTransferTx: boolean;
   isRecordExternal: boolean;
   isCurrenciesDifferent: boolean;
+  isOriginalRefundsOverriden: boolean;
 }) => {
-  const {
-    amount,
-    note,
-    time,
-    type: formTxType,
-    paymentType,
-    account,
-    category,
-  } = form;
+  const { amount, note, time, type: formTxType, paymentType, account, category } = form;
 
   const accountId = account?.id || null;
 
   let editionParams: Parameters<typeof editTransaction>[0] = {
     txId: transaction.id,
   };
+
+  if (isOriginalRefundsOverriden) {
+    // Make sure that only one non-nullish field is being sent to the API
+    if (form.refundsTx && form.refundedByTxs === null) {
+      editionParams.refundsTxId = form.refundsTx ? form.refundsTx.id : null;
+    } else if (form.refundsTx === null && form.refundedByTxs) {
+      editionParams.refundedByTxIds = form.refundedByTxs
+        ? form.refundedByTxs.map((i) => i.id)
+        : null;
+    } else {
+      editionParams.refundsTxId = form.refundsTx ? form.refundsTx.id : null;
+      editionParams.refundedByTxIds = form.refundedByTxs
+        ? form.refundedByTxs.map((i) => i.id)
+        : null;
+    }
+  }
 
   if (isRecordExternal) {
     editionParams = {
@@ -69,8 +79,7 @@ export const prepareTxUpdationParams = ({
 
     if (!linkedTransaction?.id) {
       if (isOutOfWalletAccount(destinationAccount)) {
-        editionParams.transferNature =
-          TRANSACTION_TRANSFER_NATURE.transfer_out_wallet;
+        editionParams.transferNature = TRANSACTION_TRANSFER_NATURE.transfer_out_wallet;
       } else {
         editionParams.destinationAccountId = destinationAccount.id;
         editionParams.destinationAmount = getDestinationAmount({
@@ -80,13 +89,11 @@ export const prepareTxUpdationParams = ({
           toAmount: Number(form.targetAmount),
           isCurrenciesDifferent,
         });
-        editionParams.transferNature =
-          TRANSACTION_TRANSFER_NATURE.common_transfer;
+        editionParams.transferNature = TRANSACTION_TRANSFER_NATURE.common_transfer;
       }
     } else {
       editionParams.destinationTransactionId = linkedTransaction.id;
-      editionParams.transferNature =
-        TRANSACTION_TRANSFER_NATURE.common_transfer;
+      editionParams.transferNature = TRANSACTION_TRANSFER_NATURE.common_transfer;
     }
   } else {
     editionParams.categoryId = category.id;

@@ -16,8 +16,7 @@
                 class: [
                   'button-style-reset',
                   {
-                    'ui-tabs__header-item--active':
-                      activeTab?.name === item.name,
+                    'ui-tabs__header-item--active': activeTab?.name === item.name,
                   },
                 ],
               }

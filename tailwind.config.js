@@ -56,6 +56,9 @@ module.exports = {
           DEFAULT: "rgba(var(--card), <alpha-value>)",
           foreground: "rgba(var(--card-foreground), <alpha-value>)",
         },
+        "app-income-color": "#2ecc71",
+        "app-expense-color": "#e74c3c",
+        "app-transfer-color": "#95a5a6",
       },
       borderRadius: {
         lg: "var(--radius)",

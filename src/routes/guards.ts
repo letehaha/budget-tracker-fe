@@ -24,11 +24,7 @@ export const baseCurrencyExists: NavigationGuard = (to, from, next): void => {
   }
 };
 
-export const redirectRouteGuard: NavigationGuard = async (
-  to,
-  from,
-  next,
-): Promise<void> => {
+export const redirectRouteGuard: NavigationGuard = async (to, from, next): Promise<void> => {
   const token = localStorage.getItem("user-token") || "";
   const authStore = useAuthStore();
 

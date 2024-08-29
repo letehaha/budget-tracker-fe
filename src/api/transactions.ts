@@ -1,14 +1,8 @@
-import {
-  TransactionModel,
-  endpointsTypes,
-  TRANSACTION_TRANSFER_NATURE,
-} from "shared-types";
+import { TransactionModel, endpointsTypes, TRANSACTION_TRANSFER_NATURE } from "shared-types";
 import { api } from "@/api/_api";
 import { fromSystemAmount, toSystemAmount } from "@/api/helpers";
 
-const formatTransactionResponse = (
-  transaction: TransactionModel,
-): TransactionModel => ({
+export const formatTransactionResponse = (transaction: TransactionModel): TransactionModel => ({
   ...transaction,
   amount: fromSystemAmount(transaction.amount),
   refAmount: fromSystemAmount(transaction.refAmount),
@@ -17,7 +11,7 @@ const formatTransactionResponse = (
   commissionRate: fromSystemAmount(transaction.commissionRate),
 });
 
-const formatTransactionPayload = <T>(transaction: T): T => {
+export const formatTransactionPayload = <T>(transaction: T): T => {
   const params = transaction;
   const fieldsToPatch = ["amount", "destinationAmount"];
 
@@ -36,11 +30,7 @@ export const loadTransactions = async (
   return result.map((item) => formatTransactionResponse(item));
 };
 
-export const loadTransactionById = async ({
-  id,
-}: {
-  id: number;
-}): Promise<TransactionModel> => {
+export const loadTransactionById = async ({ id }: { id: number }): Promise<TransactionModel> => {
   const result = await api.get(`/transactions/${id}`);
 
   return formatTransactionResponse(result);
@@ -54,9 +44,7 @@ export const loadTransactionsByTransferId = async (
   return result.map((item) => formatTransactionResponse(item));
 };
 
-export const createTransaction = async (
-  params: endpointsTypes.CreateTransactionBody,
-) => {
+export const createTransaction = async (params: endpointsTypes.CreateTransactionBody) => {
   try {
     const formattedParams = formatTransactionPayload({
       transferNature: TRANSACTION_TRANSFER_NATURE.not_transfer,
@@ -64,7 +52,7 @@ export const createTransaction = async (
       ...params,
     });
 
-    await api.post("/transactions", formattedParams);
+    return api.post("/transactions", formattedParams);
   } catch (e) {
     throw new Error(e);
   }

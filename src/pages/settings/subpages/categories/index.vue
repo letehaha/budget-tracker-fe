@@ -35,19 +35,13 @@
           </div>
         </div>
 
-        <h4 class="base-text-xsmall categories-page__subcategories-title">
-          Subcategories
-        </h4>
+        <h4 class="base-text-xsmall categories-page__subcategories-title">Subcategories</h4>
       </template>
 
       <div class="categories-page__list">
         <template v-if="currentLevel.length">
           <template v-for="cat in currentLevel" :key="cat.id">
-            <button
-              class="categories-page__list-item"
-              type="button"
-              @click="selectCategory(cat)"
-            >
+            <button class="categories-page__list-item" type="button" @click="selectCategory(cat)">
               <div class="categories-page__category-info">
                 <CategoryCircle :category="cat" />
 
@@ -72,11 +66,7 @@
     <template v-if="isFormVisible">
       <form class="categories-page__card" @submit.prevent="applyChanges">
         <div class="categories-page__header">
-          <button
-            type="button"
-            class="categories-page__categories-back"
-            @click="closeForm"
-          >
+          <button type="button" class="categories-page__categories-back" @click="closeForm">
             Cancel
           </button>
 
@@ -84,17 +74,11 @@
             {{ isEditing ? "Edit Category" : "Create Category" }}
           </h3>
 
-          <button type="submit" class="categories-page__category-edit">
-            Save
-          </button>
+          <button type="submit" class="categories-page__category-edit">Save</button>
         </div>
 
         <div class="categories-page__fields">
-          <InputField
-            v-model="form.name"
-            label="Category name"
-            placeholder="Category name"
-          />
+          <InputField v-model="form.name" label="Category name" placeholder="Category name" />
         </div>
         <template v-if="isEditing">
           <div class="categories-page__form-actions">
@@ -111,11 +95,7 @@ import { storeToRefs } from "pinia";
 import { ref, reactive } from "vue";
 import { API_ERROR_CODES } from "shared-types";
 import { useCategoriesStore } from "@/stores";
-import {
-  editCategory,
-  createCategory,
-  deleteCategory as apiDeleteCategory,
-} from "@/api";
+import { editCategory, createCategory, deleteCategory as apiDeleteCategory } from "@/api";
 import { useNotificationCenter } from "@/components/notification-center";
 import CategoryCircle from "@/components/common/category-circle.vue";
 import InputField from "@/components/fields/input-field.vue";
@@ -128,8 +108,7 @@ defineOptions({
 });
 const categoriesStore = useCategoriesStore();
 
-const { addErrorNotification, addSuccessNotification } =
-  useNotificationCenter();
+const { addErrorNotification, addSuccessNotification } = useNotificationCenter();
 const { formattedCategories } = storeToRefs(categoriesStore);
 const currentLevel = ref<FormattedCategory[]>(formattedCategories.value);
 const selectedCategory = ref<FormattedCategory | null>(null);

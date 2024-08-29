@@ -23,10 +23,8 @@ export const createAccount = async (
 ): Promise<AccountModel> => {
   const params = payload;
 
-  if (params.creditLimit)
-    params.creditLimit = toSystemAmount(Number(params.creditLimit));
-  if (params.initialBalance)
-    params.initialBalance = toSystemAmount(Number(params.initialBalance));
+  if (params.creditLimit) params.creditLimit = toSystemAmount(Number(params.creditLimit));
+  if (params.initialBalance) params.initialBalance = toSystemAmount(Number(params.initialBalance));
 
   const result = await api.post("/accounts", {
     ...params,
@@ -45,10 +43,8 @@ export const editAccount = async ({
 }): Promise<AccountModel> => {
   const params = data;
 
-  if (params.creditLimit)
-    params.creditLimit = toSystemAmount(Number(params.creditLimit));
-  if (params.currentBalance)
-    params.currentBalance = toSystemAmount(Number(params.currentBalance));
+  if (params.creditLimit) params.creditLimit = toSystemAmount(Number(params.creditLimit));
+  if (params.currentBalance) params.currentBalance = toSystemAmount(Number(params.currentBalance));
 
   const result = await api.put(`/accounts/${id}`, params);
 
@@ -58,6 +54,5 @@ export const editAccount = async ({
 export interface DeleteAccountPayload {
   id: number;
 }
-export const deleteAccount = async ({
-  id,
-}: DeleteAccountPayload): Promise<void> => api.delete(`/accounts/${id}`);
+export const deleteAccount = async ({ id }: DeleteAccountPayload): Promise<void> =>
+  api.delete(`/accounts/${id}`);

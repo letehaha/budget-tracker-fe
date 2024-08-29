@@ -15,11 +15,8 @@
 
     <p class="my-5">
       Please visit
-      <a href="https://api.monobank.ua/" class="text-primary"
-        >https://api.monobank.ua/</a
-      >
-      and follow all the instructions. Paste the API token from Monobank in the
-      field below
+      <a href="https://api.monobank.ua/" class="text-primary">https://api.monobank.ua/</a>
+      and follow all the instructions. Paste the API token from Monobank in the field below
     </p>
     <div class="my-5">
       <input-field
@@ -51,10 +48,7 @@ import Button from "@/components/common/ui-button.vue";
 import { EVENTS as MODAL_EVENTS } from "@/components/modal-center/ui-modal.vue";
 import { Card } from "@/components/lib/ui/card";
 
-import {
-  useNotificationCenter,
-  NotificationType,
-} from "@/components/notification-center";
+import { useNotificationCenter, NotificationType } from "@/components/notification-center";
 
 defineOptions({
   name: "monobank-set-token",

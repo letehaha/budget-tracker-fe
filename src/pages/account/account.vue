@@ -19,9 +19,7 @@
         <Tabs.Tabs default-value="records">
           <Tabs.TabsList class="justify-start w-full">
             <Tabs.TabsTrigger value="records"> Records </Tabs.TabsTrigger>
-            <Tabs.TabsTrigger disabled value="analytics">
-              Analytics (soon)
-            </Tabs.TabsTrigger>
+            <Tabs.TabsTrigger disabled value="analytics"> Analytics (soon) </Tabs.TabsTrigger>
           </Tabs.TabsList>
           <Tabs.TabsContent value="records">
             <template v-if="isFetched">
@@ -31,21 +29,13 @@
               />
             </template>
             <template v-if="hasNextPage">
-              <button
-                class="account-page__load-more"
-                type="button"
-                @click="() => fetchNextPage()"
-              >
+              <button class="account-page__load-more" type="button" @click="() => fetchNextPage()">
                 Load more
               </button>
             </template>
             <template v-else>
               <p class="account-page__no-more-data">
-                {{
-                  rawTransactionsList.length
-                    ? "No more data to load"
-                    : "No data"
-                }}
+                {{ rawTransactionsList.length ? "No more data to load" : "No data" }}
               </p>
             </template>
           </Tabs.TabsContent>
@@ -94,10 +84,7 @@ const {
   hasNextPage,
   isFetched,
 } = useInfiniteQuery({
-  queryKey: [
-    ...VUE_QUERY_CACHE_KEYS.accountSpecificTransactions,
-    account.value.id,
-  ],
+  queryKey: [...VUE_QUERY_CACHE_KEYS.accountSpecificTransactions, account.value.id],
   queryFn: fetchTransactions,
   initialPageParam: 0,
   getNextPageParam: (lastPage, pages) => {
@@ -110,9 +97,7 @@ const {
   staleTime: Infinity,
 });
 
-const rawTransactionsList = computed(
-  () => transactionsPages.value?.pages?.flat() || [],
-);
+const rawTransactionsList = computed(() => transactionsPages.value?.pages?.flat() || []);
 </script>
 
 <style lang="scss">

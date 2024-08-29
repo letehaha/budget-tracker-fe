@@ -4,10 +4,7 @@ import { AccountModel } from "shared-types";
 import { format, subDays } from "date-fns";
 import { CalendarIcon } from "lucide-vue-next";
 import { useBanksMonobankStore } from "@/stores";
-import {
-  useNotificationCenter,
-  NotificationType,
-} from "@/components/notification-center";
+import { useNotificationCenter, NotificationType } from "@/components/notification-center";
 import { Button } from "@/components/lib/ui/button";
 import * as Popover from "@/components/lib/ui/popover";
 import { Calendar } from "@/components/lib/ui/calendar";
@@ -56,10 +53,7 @@ const loadTransactionsForPeriod = async () => {
   <div class="flex items-center justify-between">
     <p>Load transactions for selected period</p>
 
-    <Popover.Popover
-      :open="selectorVisible"
-      @update:open="selectorVisible = $event"
-    >
+    <Popover.Popover :open="selectorVisible" @update:open="selectorVisible = $event">
       <Popover.PopoverTrigger>
         <Button class="min-w-[100px]" size="sm"> Select period </Button>
       </Popover.PopoverTrigger>
@@ -81,9 +75,7 @@ const loadTransactionsForPeriod = async () => {
         />
 
         <div class="flex justify-end">
-          <Button @click="loadTransactionsForPeriod">
-            Load transactions
-          </Button>
+          <Button @click="loadTransactionsForPeriod"> Load transactions </Button>
         </div>
       </Popover.PopoverContent>
     </Popover.Popover>

@@ -98,9 +98,7 @@ body {
   --header-height: 77px;
   --footer-height: 280px;
 
-  --container-right-corner: calc(
-    ((100vw - var(--container-width)) / 2) + var(--container-width)
-  );
+  --container-right-corner: calc(((100vw - var(--container-width)) / 2) + var(--container-width));
   --container-left-corner: calc(((100vw - var(--container-width)) / 2));
 
   @include respond-to-custom-width(840) {

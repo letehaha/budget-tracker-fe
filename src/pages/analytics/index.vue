@@ -37,9 +37,7 @@ defineOptions({
   name: "analytics-root",
 });
 
-const Dropdown = defineAsyncComponent(
-  () => import("@/components/common/dropdown.vue"),
-);
+const Dropdown = defineAsyncComponent(() => import("@/components/common/dropdown.vue"));
 
 const { buildAreaChartConfig } = useHighcharts();
 const currentChartWidth = ref(null);
@@ -52,10 +50,7 @@ const isDropdownVisible = ref(false);
 const currentTimePeriod = ref<(typeof timePeriods)[0]>(timePeriods[0]);
 
 const { data: balanceHistory } = useQuery({
-  queryKey: [
-    ...VUE_QUERY_CACHE_KEYS.analyticsBalanceHistoryTrend,
-    currentTimePeriod,
-  ],
+  queryKey: [...VUE_QUERY_CACHE_KEYS.analyticsBalanceHistoryTrend, currentTimePeriod],
   queryFn: () =>
     loadBalanceTrendData({
       from: subDays(new Date(), currentTimePeriod.value.value),
@@ -71,10 +66,7 @@ const chartOptions = computed(() =>
       {
         type: "area",
         showInLegend: false,
-        data: balanceHistory.value.map((point) => [
-          new Date(point.date).getTime(),
-          point.amount,
-        ]),
+        data: balanceHistory.value.map((point) => [new Date(point.date).getTime(), point.amount]),
       },
     ],
   }),

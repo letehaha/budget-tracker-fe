@@ -32,9 +32,7 @@ export const useNotificationCenter = (): {
     notifications.value = notifications.value.filter((item) => item.id !== id);
   };
 
-  const addNotification = (
-    notification: Notification,
-  ): NotificationID | void => {
+  const addNotification = (notification: Notification): NotificationID | void => {
     const id = notification.id ?? idCounter++;
 
     if (notificationIds[id]) {

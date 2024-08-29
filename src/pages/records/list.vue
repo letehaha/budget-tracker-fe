@@ -6,12 +6,7 @@
       </template>
     </div>
     <template v-if="hasNextPage">
-      <UiButton
-        type="button"
-        variant="secondary"
-        class="mt-8"
-        @click="() => fetchNextPage()"
-      >
+      <UiButton type="button" variant="secondary" class="mt-8" @click="() => fetchNextPage()">
         Load more
       </UiButton>
     </template>

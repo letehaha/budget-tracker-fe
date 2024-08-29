@@ -27,15 +27,12 @@ export function aggregateBalanceTrendData(data: BalanceHistoryEntity[]) {
   [...accountIds].forEach((accountId) => {
     const firstEntry = data
       .filter((item) => item.accountId === accountId)
-      .sort(
-        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
-      )[0];
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0];
 
     if (firstEntry) {
       allDates.forEach((date) => {
         if (new Date(date) <= new Date(firstEntry.date)) {
-          if (!filledDataPerAccount[accountId])
-            filledDataPerAccount[accountId] = {};
+          if (!filledDataPerAccount[accountId]) filledDataPerAccount[accountId] = {};
           filledDataPerAccount[accountId][date] = firstEntry.amount;
         }
       });
@@ -46,12 +43,9 @@ export function aggregateBalanceTrendData(data: BalanceHistoryEntity[]) {
   // on the given date, use it. Otherwise, propagate the last known amount for that account.
   allDates.forEach((date) => {
     [...accountIds].forEach((accountId) => {
-      if (!filledDataPerAccount[accountId])
-        filledDataPerAccount[accountId] = {};
+      if (!filledDataPerAccount[accountId]) filledDataPerAccount[accountId] = {};
 
-      const currentEntry = data.find(
-        (item) => item.accountId === accountId && item.date === date,
-      );
+      const currentEntry = data.find((item) => item.accountId === accountId && item.date === date);
       if (currentEntry) {
         filledDataPerAccount[accountId][date] = currentEntry.amount;
       } else if (!filledDataPerAccount[accountId][date]) {
@@ -85,13 +79,7 @@ export function aggregateBalanceTrendData(data: BalanceHistoryEntity[]) {
   return toArray;
 }
 
-export const loadBalanceTrendData = async ({
-  from,
-  to,
-}: {
-  from: Date;
-  to?: Date;
-}) => {
+export const loadBalanceTrendData = async ({ from, to }: { from: Date; to?: Date }) => {
   const result = await getBalanceHistory({ from, to });
 
   if (!result?.length) return [];

@@ -4,10 +4,8 @@
     type="button"
     aria-haspopup="true"
     :class="{
-      'transaction-record--income':
-        transaction.transactionType === TRANSACTION_TYPES.income,
-      'transaction-record--expense':
-        transaction.transactionType === TRANSACTION_TYPES.expense,
+      'transaction-record--income': transaction.transactionType === TRANSACTION_TYPES.income,
+      'transaction-record--expense': transaction.transactionType === TRANSACTION_TYPES.expense,
     }"
     @click="transactionEmit"
   >
@@ -35,7 +33,13 @@
       </div>
     </div>
     <div class="flex-none">
-      <div class="text-right transaction-record__amount">
+      <div
+        :class="[
+          'text-right',
+          transaction.transactionType === TRANSACTION_TYPES.income && 'text-app-income-color',
+          transaction.transactionType === TRANSACTION_TYPES.expense && 'text-app-expense-color',
+        ]"
+      >
         {{ formattedAmount }}
       </div>
       <div class="text-sm">
@@ -49,11 +53,7 @@
 import { format } from "date-fns";
 import { computed, reactive, ref } from "vue";
 import { storeToRefs } from "pinia";
-import {
-  TRANSACTION_TRANSFER_NATURE,
-  TRANSACTION_TYPES,
-  TransactionModel,
-} from "shared-types";
+import { TRANSACTION_TRANSFER_NATURE, TRANSACTION_TYPES, TransactionModel } from "shared-types";
 
 import { useCategoriesStore, useAccountsStore } from "@/stores";
 import { loadTransactionsByTransferId } from "@/api/transactions";
@@ -62,9 +62,7 @@ import { formatUIAmount } from "@/js/helpers";
 import CategoryCircle from "@/components/common/category-circle.vue";
 
 const setOppositeTransaction = async (transaction: TransactionModel) => {
-  const transactions = await loadTransactionsByTransferId(
-    transaction.transferId,
-  );
+  const transactions = await loadTransactionsByTransferId(transaction.transferId);
 
   return transactions.find((item) => item.id !== transaction.id);
 };
@@ -89,18 +87,13 @@ const emit = defineEmits<{
 
 const transaction = reactive(props.tx);
 
-const isTransferTransaction = computed(() =>
-  txNatureIsTransfer(transaction.transferNature),
-);
+const isTransferTransaction = computed(() => txNatureIsTransfer(transaction.transferNature));
 
 const oppositeTransferTransaction = ref<TransactionModel | null>(null);
 
-if (
-  transaction.transferNature === TRANSACTION_TRANSFER_NATURE.common_transfer
-) {
+if (transaction.transferNature === TRANSACTION_TRANSFER_NATURE.common_transfer) {
   (async () => {
-    oppositeTransferTransaction.value =
-      await setOppositeTransaction(transaction);
+    oppositeTransferTransaction.value = await setOppositeTransaction(transaction);
   })();
 }
 
@@ -111,13 +104,9 @@ const accountTo = computed(
 );
 
 const accountMovement = computed(() => {
-  const separator =
-    transaction.transactionType === TRANSACTION_TYPES.expense ? "=>" : "<=";
+  const separator = transaction.transactionType === TRANSACTION_TYPES.expense ? "=>" : "<=";
 
-  if (
-    transaction.transferNature ===
-    TRANSACTION_TRANSFER_NATURE.transfer_out_wallet
-  ) {
+  if (transaction.transferNature === TRANSACTION_TRANSFER_NATURE.transfer_out_wallet) {
     return `${accountFrom.value?.name} ${separator} Out of wallet`;
   }
   return `${accountFrom.value?.name} ${separator} ${accountTo.value?.name}`;
@@ -145,14 +134,14 @@ const formattedAmount = computed(() => {
 <style lang="scss">
 .transaction-record {
   @apply py-1 px-2;
-  @apply rounded-md flex justify-between items-center cursor-pointer w-full;
+  @apply rounded-md flex justify-between items-center cursor-pointer w-full gap-2;
 }
 .transaction-record__amount {
   .transaction-record--income & {
-    color: #2ecc71;
+    @apply text-app-income-color;
   }
   .transaction-record--expense & {
-    color: #e74c3c;
+    @apply text-app-expense-color;
   }
 }
 </style>

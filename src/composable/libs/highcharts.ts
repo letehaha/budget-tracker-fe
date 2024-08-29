@@ -24,9 +24,7 @@ export const useHighcharts = () => {
 
   const getDefaultConfig = () => cloneDeep(defaultConfig);
 
-  const buildAreaChartConfig = (
-    extendConfig: Highcharts.Options,
-  ): Highcharts.Options =>
+  const buildAreaChartConfig = (extendConfig: Highcharts.Options): Highcharts.Options =>
     merge(
       getDefaultConfig(),
       {
@@ -126,9 +124,7 @@ export const useHighcharts = () => {
     {
       centerFormatter,
     }: {
-      centerFormatter?: (options: {
-        renderer: Highcharts.SVGRenderer;
-      }) => Highcharts.SVGElement;
+      centerFormatter?: (options: { renderer: Highcharts.SVGRenderer }) => Highcharts.SVGElement;
     } = {},
   ) =>
     merge(
