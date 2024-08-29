@@ -116,9 +116,9 @@
 
 <script setup lang="ts">
 import { ref, Ref, computed, watch, onBeforeUnmount } from "vue";
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-vue-next";
 import { CategoryModel } from "shared-types";
 import { type FormattedCategory } from "@/common/types";
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-vue-next";
 import { cn } from "@/lib/utils";
 
 import { InputField, FieldError, FieldLabel } from "@/components/fields";
@@ -149,6 +149,19 @@ const emit = defineEmits<{
 }>();
 const selectedValue = ref(props.modelValue || props.values[0]);
 const buttonRef = ref<HTMLButtonElement>(null);
+
+watch(
+  () => props.modelValue,
+  (value) => {
+    // Sometimes real value comes with a delay, not immediately. We need to assign it to
+    // selectedValue with a delay. Yet we need to avoid any risks of infinite loop, so we need to
+    // compare IDs to only apply this when values differ
+    if (value.id !== selectedValue.value.id) {
+      selectedValue.value = value;
+    }
+  },
+  { deep: true },
+);
 
 const levelValues = ref(props.values);
 
