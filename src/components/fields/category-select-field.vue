@@ -2,7 +2,7 @@
 <template>
   <div
     :class="{
-      'category-select-field--disabled': $attrs.disabled,
+      'category-select-field--disabled': disabled,
       'category-select-field--active': isDropdownOpened,
     }"
     class="category-select-field"
@@ -24,7 +24,7 @@
             )
           "
           type="button"
-          :disabled="Boolean($attrs.disabled)"
+          :disabled="disabled"
           aria-label="Select category"
           :title="selectedValue?.name || 'Select category'"
           @click="() => toggleDropdown()"
@@ -133,6 +133,7 @@ const props = withDefaults(
     values: FormattedCategory[];
     placeholder?: string;
     errorMessage?: string;
+    disabled?: boolean;
   }>(),
   {
     label: undefined,

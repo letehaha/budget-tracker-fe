@@ -134,7 +134,7 @@ const formattedAmount = computed(() => {
 <style lang="scss">
 .transaction-record {
   @apply py-1 px-2;
-  @apply rounded-md flex justify-between items-center cursor-pointer w-full;
+  @apply rounded-md flex justify-between items-center cursor-pointer w-full gap-2;
 }
 .transaction-record__amount {
   .transaction-record--income & {

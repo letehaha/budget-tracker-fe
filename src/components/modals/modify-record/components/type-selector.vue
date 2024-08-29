@@ -3,9 +3,8 @@
     <button
       type="button"
       class="button-style-reset type-selector__item"
-      :disabled="isExpenseDisabled"
+      :disabled="disabled || isExpenseDisabled"
       :class="{
-        'type-selector__item--disabled': isExpenseDisabled,
         'type-selector__item--active': selectedTransactionType === FORM_TYPES.expense,
       }"
       aria-label="Select expense"
@@ -17,9 +16,8 @@
     <button
       type="button"
       class="button-style-reset type-selector__item"
-      :disabled="isIncomeDisabled"
+      :disabled="disabled || isIncomeDisabled"
       :class="{
-        'type-selector__item--disabled': isIncomeDisabled,
         'type-selector__item--active': selectedTransactionType === FORM_TYPES.income,
       }"
       aria-label="Select income"
@@ -31,6 +29,7 @@
     <button
       type="button"
       class="button-style-reset type-selector__item"
+      :disabled="disabled"
       :class="{
         'type-selector__item--active': selectedTransactionType === FORM_TYPES.transfer,
       }"
@@ -52,6 +51,7 @@ const props = defineProps<{
   selectedTransactionType: FORM_TYPES;
   isFormCreation: boolean;
   transaction?: TransactionModel;
+  disabled?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -92,7 +92,7 @@ const selectTransactionType = (type: FORM_TYPES) => {
   transition: 0.1s ease-out;
   color: #fff;
 
-  &[disabled="true"] {
+  &[disabled] {
     opacity: 0.5;
     cursor: not-allowed;
   }
@@ -101,9 +101,5 @@ const selectTransactionType = (type: FORM_TYPES) => {
   background-color: #fff;
   border-radius: 10px;
   color: #000;
-}
-.type-selector__item--disabled {
-  opacity: 0.1;
-  cursor: not-allowed;
 }
 </style>

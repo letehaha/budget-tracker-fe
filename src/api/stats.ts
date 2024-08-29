@@ -64,7 +64,14 @@ export const getSpendingsByCategories = async ({
   if (from) params.from = formatDate(from);
   if (to) params.to = formatDate(to);
 
-  const history = await api.get("/stats/spendings-by-categories", params);
+  const history: endpointsTypes.GetSpendingsByCategoriesReturnType = await api.get(
+    "/stats/spendings-by-categories",
+    params,
+  );
+
+  Object.keys(history).forEach((id) => {
+    history[id].amount = fromSystemAmount(history[id].amount);
+  });
 
   return history;
 };

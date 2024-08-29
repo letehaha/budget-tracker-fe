@@ -1,21 +1,21 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import { TRANSACTION_TYPES, TransactionModel } from "shared-types";
 import { useInfiniteQuery } from "@tanstack/vue-query";
 import { CircleAlert } from "lucide-vue-next";
 import { VUE_QUERY_CACHE_KEYS } from "@/common/const";
+import { cn } from "@/lib/utils";
 import { loadTransactions } from "@/api/transactions";
-import { EVENTS as MODAL_EVENTS } from "@/components/modal-center/ui-modal.vue";
 import TransactionRecrod from "@/components/transactions-list/transaction-record.vue";
 import Button from "@/components/lib/ui/button/Button.vue";
 
 export interface RecordListModalProps {
   transactionType: TRANSACTION_TYPES;
+  selectedTransactions: TransactionModel[];
   onSelect: (item: TransactionModel) => void;
 }
 
 const props = defineProps<RecordListModalProps>();
-
-const emit = defineEmits([MODAL_EVENTS.closeModal]);
 
 const limit = 15;
 const fetchTransactions = ({ pageParam = 0 }) => {
@@ -42,9 +42,10 @@ const {
   staleTime: Infinity,
 });
 
+const selectedTxsIds = computed(() => new Set(props.selectedTransactions.map((i) => i.id)));
+
 const handlerRecordClick = (transaction: TransactionModel) => {
   props.onSelect(transaction);
-  emit(MODAL_EVENTS.closeModal);
 };
 </script>
 
@@ -53,10 +54,19 @@ const handlerRecordClick = (transaction: TransactionModel) => {
     <div class="overflow-y-auto">
       <template v-if="isFetched && transactionsPages">
         <template v-for="item in transactionsPages?.pages?.flat()" :key="item.id">
-          <TransactionRecrod
-            :tx="item"
-            @record-click="(payload) => handlerRecordClick(payload[0])"
-          />
+          <div
+            :class="
+              cn(
+                'border border-transparent rounded-xl',
+                selectedTxsIds.has(item.id) && 'border-primary/70',
+              )
+            "
+          >
+            <TransactionRecrod
+              :tx="item"
+              @record-click="(payload) => handlerRecordClick(payload[0])"
+            />
+          </div>
         </template>
       </template>
     </div>
@@ -71,10 +81,12 @@ const handlerRecordClick = (transaction: TransactionModel) => {
       <p class="text-center text-sm text-white/80 max-w-[80%] mx-auto">
         <CircleAlert :size="48" class="m-auto mb-4" />
         <template v-if="transactionType === TRANSACTION_TYPES.income">
-          There's no income transactions in the system. Create some to proceed
+          There's no income transactions in the system that are not already marked as refunds.
+          Create some to proceed
         </template>
         <template v-else-if="transactionType === TRANSACTION_TYPES.expense">
-          There's no expense transactions in the system. Create some to proceed
+          There's no expense transactions in the system that are not already marked as refunds.
+          Create some to proceed
         </template>
         <template v-else> There's no transactions to select. Create some to proceed </template>
       </p>

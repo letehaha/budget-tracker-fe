@@ -3,9 +3,10 @@ import {
   TRANSACTION_TRANSFER_NATURE,
   TransactionModel,
   AccountModel,
+  CategoryModel,
 } from "shared-types";
-import { OUT_OF_WALLET_ACCOUNT_MOCK } from "@/common/const";
-import { FORM_TYPES } from "./types";
+import { OUT_OF_WALLET_ACCOUNT_MOCK, VERBOSE_PAYMENT_TYPES } from "@/common/const";
+import { FORM_TYPES, UI_FORM_STRUCT } from "./types";
 
 export const getDestinationAccount = ({
   isRecordExternal,
@@ -62,3 +63,49 @@ export const getTxTypeFromFormType = (formType: FORM_TYPES): TRANSACTION_TYPES =
 
 export const isOutOfWalletAccount = (account: typeof OUT_OF_WALLET_ACCOUNT_MOCK) =>
   account._isOutOfWallet;
+
+export const prepopulateForm = ({
+  transaction,
+  oppositeTransaction,
+  categories,
+  accounts,
+}: {
+  transaction: TransactionModel | undefined;
+  oppositeTransaction: TransactionModel | undefined;
+  categories: Record<number, CategoryModel>;
+  accounts: Record<number, AccountModel>;
+}) => {
+  if (transaction) {
+    const initialFormValues = {
+      type: getFormTypeFromTransaction(transaction),
+      category: categories[transaction.categoryId],
+      time: new Date(transaction.time),
+      paymentType: VERBOSE_PAYMENT_TYPES.find((item) => item.value === transaction.paymentType),
+      note: transaction.note,
+      refundedByTxs: undefined,
+      refundsTx: undefined,
+    } as UI_FORM_STRUCT;
+
+    if (transaction.transferNature === TRANSACTION_TRANSFER_NATURE.transfer_out_wallet) {
+      if (transaction.transactionType === TRANSACTION_TYPES.income) {
+        initialFormValues.account = OUT_OF_WALLET_ACCOUNT_MOCK;
+        initialFormValues.targetAmount = transaction.amount;
+        initialFormValues.toAccount = accounts[transaction.accountId];
+      } else if (transaction.transactionType === TRANSACTION_TYPES.expense) {
+        initialFormValues.amount = transaction.amount;
+        initialFormValues.account = accounts[transaction.accountId];
+        initialFormValues.toAccount = OUT_OF_WALLET_ACCOUNT_MOCK;
+      }
+    } else {
+      initialFormValues.amount = transaction.amount;
+      initialFormValues.account = accounts[transaction.accountId];
+
+      if (oppositeTransaction) {
+        initialFormValues.toAccount = accounts[oppositeTransaction.accountId];
+        initialFormValues.targetAmount = oppositeTransaction.amount;
+      }
+    }
+    return initialFormValues;
+  }
+  return undefined;
+};

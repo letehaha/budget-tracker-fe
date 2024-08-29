@@ -15,6 +15,7 @@ export const prepareTxUpdationParams = ({
   isTransferTx,
   isRecordExternal,
   isCurrenciesDifferent,
+  isOriginalRefundsOverriden,
 }: {
   transaction: TransactionModel;
   linkedTransaction?: TransactionModel | null;
@@ -22,6 +23,7 @@ export const prepareTxUpdationParams = ({
   isTransferTx: boolean;
   isRecordExternal: boolean;
   isCurrenciesDifferent: boolean;
+  isOriginalRefundsOverriden: boolean;
 }) => {
   const { amount, note, time, type: formTxType, paymentType, account, category } = form;
 
@@ -30,6 +32,22 @@ export const prepareTxUpdationParams = ({
   let editionParams: Parameters<typeof editTransaction>[0] = {
     txId: transaction.id,
   };
+
+  if (isOriginalRefundsOverriden) {
+    // Make sure that only one non-nullish field is being sent to the API
+    if (form.refundsTx && form.refundedByTxs === null) {
+      editionParams.refundsTxId = form.refundsTx ? form.refundsTx.id : null;
+    } else if (form.refundsTx === null && form.refundedByTxs) {
+      editionParams.refundedByTxIds = form.refundedByTxs
+        ? form.refundedByTxs.map((i) => i.id)
+        : null;
+    } else {
+      editionParams.refundsTxId = form.refundsTx ? form.refundsTx.id : null;
+      editionParams.refundedByTxIds = form.refundedByTxs
+        ? form.refundedByTxs.map((i) => i.id)
+        : null;
+    }
+  }
 
   if (isRecordExternal) {
     editionParams = {

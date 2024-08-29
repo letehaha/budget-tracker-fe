@@ -7,7 +7,7 @@
           placeholder="Select account"
           :values="accounts"
           label-key="name"
-          :disabled="fromAccountDisabled"
+          :disabled="disabled || fromAccountDisabled"
           is-value-preselected
           :model-value="account"
           @update:model-value="updateFormAccount"
@@ -20,7 +20,7 @@
           placeholder="Select account"
           :values="filteredAccounts"
           label-key="name"
-          :disabled="toAccountDisabled"
+          :disabled="disabled || toAccountDisabled"
           :model-value="toAccount"
           @update:model-value="emit('update:to-account', $event)"
         />
@@ -33,7 +33,7 @@
           placeholder="Select account"
           :values="accounts"
           label-key="name"
-          :disabled="fromAccountDisabled"
+          :disabled="disabled || fromAccountDisabled"
           is-value-preselected
           :model-value="account"
           @update:model-value="updateFormAccount"
@@ -43,7 +43,7 @@
   </template>
   <template v-else>
     <form-row>
-      <input-field model-value="No account exists" label="Account" readonly>
+      <input-field model-value="No account exists" label="Account" readonly :disabled="disabled">
         <template #label-right>
           <div class="account-field__create-account" @click="redirectToCreateAccountPage">
             Create account
@@ -76,6 +76,7 @@ withDefaults(
     transactionType: TRANSACTION_TYPES;
     fromAccountDisabled?: boolean;
     toAccountDisabled?: boolean;
+    disabled?: boolean;
   }>(),
   {
     account: null,

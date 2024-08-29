@@ -2,7 +2,7 @@ import { TransactionModel, endpointsTypes, TRANSACTION_TRANSFER_NATURE } from "s
 import { api } from "@/api/_api";
 import { fromSystemAmount, toSystemAmount } from "@/api/helpers";
 
-const formatTransactionResponse = (transaction: TransactionModel): TransactionModel => ({
+export const formatTransactionResponse = (transaction: TransactionModel): TransactionModel => ({
   ...transaction,
   amount: fromSystemAmount(transaction.amount),
   refAmount: fromSystemAmount(transaction.refAmount),
@@ -11,7 +11,7 @@ const formatTransactionResponse = (transaction: TransactionModel): TransactionMo
   commissionRate: fromSystemAmount(transaction.commissionRate),
 });
 
-const formatTransactionPayload = <T>(transaction: T): T => {
+export const formatTransactionPayload = <T>(transaction: T): T => {
   const params = transaction;
   const fieldsToPatch = ["amount", "destinationAmount"];
 

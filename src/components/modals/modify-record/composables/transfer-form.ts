@@ -1,8 +1,8 @@
-import { Ref, computed } from "vue";
+import { Ref, computed, watch } from "vue";
 import { TRANSACTION_TYPES, TransactionModel } from "shared-types";
 import { OUT_OF_WALLET_ACCOUNT_MOCK } from "@/common/const";
 import { storeToRefs } from "pinia";
-import { useCurrenciesStore } from "@/stores";
+import { useAccountsStore, useCurrenciesStore } from "@/stores";
 import { UI_FORM_STRUCT } from "../types";
 
 export const useTransferFormLogic = ({
@@ -19,6 +19,7 @@ export const useTransferFormLogic = ({
   linkedTransaction: Ref<TransactionModel>;
 }) => {
   const { currenciesMap } = storeToRefs(useCurrenciesStore());
+  const { systemAccounts } = storeToRefs(useAccountsStore());
 
   const toAccount = computed(() => form.value.toAccount);
 
@@ -59,11 +60,33 @@ export const useTransferFormLogic = ({
     return false;
   });
 
+  const transferSourceAccounts = computed(() => [
+    OUT_OF_WALLET_ACCOUNT_MOCK,
+    ...systemAccounts.value,
+  ]);
+
+  const transferDestinationAccounts = computed(() =>
+    transferSourceAccounts.value.filter((item) => item.id !== form.value.account?.id),
+  );
+
+  watch(
+    () => form.value.account,
+    (value) => {
+      // If fromAccount is the same as toAccount, make toAccount empty
+      if (form.value.toAccount?.id === value?.id) {
+        // eslint-disable-next-line no-param-reassign
+        form.value.toAccount = null;
+      }
+    },
+  );
+
   return {
     isTargetFieldVisible,
     isTargetAmountFieldDisabled,
     targetCurrency,
     fromAccountFieldDisabled,
     toAccountFieldDisabled,
+    transferSourceAccounts,
+    transferDestinationAccounts,
   };
 };
