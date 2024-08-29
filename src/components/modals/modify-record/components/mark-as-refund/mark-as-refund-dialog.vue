@@ -11,6 +11,7 @@ import { RefundsAnoterTx, RefundedByAnotherTxs } from "../../types";
 const props = defineProps<{
   transactionType: TRANSACTION_TYPES;
   disabled?: boolean;
+  isRecordCreation: boolean;
   refunds: RefundsAnoterTx;
   refundedBy: RefundedByAnotherTxs;
 }>();
@@ -99,8 +100,13 @@ const saveState = () => {
                 <RadioGroupItem value="refunds" />
                 <p class="text-sm">Refunds</p>
               </label>
-              <label class="flex gap-2 items-center cursor-pointer">
-                <RadioGroupItem value="refunded" />
+              <label
+                :class="[
+                  'flex gap-2 items-center cursor-pointer',
+                  isRecordCreation && 'opacity-70 cursor-not-allowed',
+                ]"
+              >
+                <RadioGroupItem :disabled="isRecordCreation" value="refunded" />
                 <p class="text-sm">Refunded by</p>
               </label>
             </RadioGroup>

@@ -40,6 +40,7 @@ const buildCommonTxBody = (overrides: Partial<TransactionModel> = {}): Transacti
     commissionRate: 0,
     refCommissionRate: 0,
     cashbackAmount: 0,
+    refundLinked: false,
     ...overrides,
   };
 };

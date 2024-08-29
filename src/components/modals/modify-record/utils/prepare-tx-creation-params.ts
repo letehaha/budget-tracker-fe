@@ -39,8 +39,8 @@ export const prepareTxCreationParams = ({
     accountId,
   };
 
-  if (form.refundTransaction?.id) {
-    creationParams.refundForTxId = form.refundTransaction?.id;
+  if (form.refundsTx) {
+    creationParams.refundForTxId = form.refundsTx.id;
   }
 
   // if (linkedTransaction) {

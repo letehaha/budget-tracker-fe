@@ -14,6 +14,7 @@ const props = defineProps<{
   refundedBy: RefundedByAnotherTxs;
   disabled?: boolean;
   isThereOriginalRefunds: boolean;
+  isRecordCreation: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -61,6 +62,7 @@ const refundTransactions = computed(() => {
       :refunded-by="refundedBy"
       :transaction-type="transactionType"
       :disabled="disabled"
+      :is-record-creation="isRecordCreation"
       @update:refunds="emit('update:refunds', $event)"
       @update:refunded-by="emit('update:refundedBy', $event)"
     />

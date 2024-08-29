@@ -550,6 +550,7 @@ useEventListener(document, "keydown", (event) => {
               v-model:refunds="form.refundsTx"
               v-model:refunded-by="form.refundedByTxs"
               :transaction-id="transaction?.id"
+              :is-record-creation="isFormCreation"
               :transaction-type="refundTransactionsTypeBasedOnFormType"
               :disabled="isFormFieldsDisabled"
               :is-there-original-refunds="Boolean(originalRefunds.length)"
