@@ -1,6 +1,6 @@
 <template>
   <div class="settings-page">
-    <UiTabs :options="tabs" tabs-alignment="flex-start" />
+    <UiTabs :initial-tab="initialTab" :options="tabs" tabs-alignment="flex-start" />
 
     <router-view />
   </div>
@@ -9,13 +9,15 @@
 <script setup lang="ts">
 import { ROUTES_NAMES } from "@/routes";
 import UiTabs, { type Tab } from "@/components/ui-tabs.vue";
+import { useRoute } from "vue-router";
+
+const route = useRoute();
 
 const tabs: Tab[] = [
   {
     name: "currencies",
     label: "Currencies",
     to: { name: ROUTES_NAMES.settingsCurrencies },
-    initial: true,
   },
   {
     name: "categories",
@@ -23,6 +25,7 @@ const tabs: Tab[] = [
     to: { name: ROUTES_NAMES.settingsCategories },
   },
 ];
+const initialTab = tabs.find((i) => i.name === route.path.split("/").at(-1));
 </script>
 
 <style lang="scss" scoped>

@@ -105,6 +105,15 @@
                 </template>
               </button>
             </template>
+
+            <router-link
+              to="/settings/categories"
+              :class="buttonVariants({ size: 'sm', variant: 'link', class: 'w-full gap-2 mt-4' })"
+            >
+              Create custom category
+
+              <ExternalLinkIcon class="size-4" />
+            </router-link>
           </div>
         </div>
       </div>
@@ -116,13 +125,13 @@
 
 <script setup lang="ts">
 import { ref, Ref, computed, watch, onBeforeUnmount } from "vue";
+import { ChevronLeftIcon, ChevronRightIcon, ExternalLinkIcon } from "lucide-vue-next";
 import { CategoryModel } from "shared-types";
 import { type FormattedCategory } from "@/common/types";
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-vue-next";
 import { cn } from "@/lib/utils";
 
 import { InputField, FieldError, FieldLabel } from "@/components/fields";
-import { Button } from "@/components/lib/ui/button";
+import { Button, buttonVariants } from "@/components/lib/ui/button";
 import CategoryCircle from "@/components/common/category-circle.vue";
 
 const props = withDefaults(
@@ -149,6 +158,19 @@ const emit = defineEmits<{
 }>();
 const selectedValue = ref(props.modelValue || props.values[0]);
 const buttonRef = ref<HTMLButtonElement>(null);
+
+watch(
+  () => props.modelValue,
+  (value) => {
+    // Sometimes real value comes with a delay, not immediately. We need to assign it to
+    // selectedValue with a delay. Yet we need to avoid any risks of infinite loop, so we need to
+    // compare IDs to only apply this when values differ
+    if (value.id !== selectedValue.value.id) {
+      selectedValue.value = value;
+    }
+  },
+  { deep: true },
+);
 
 const levelValues = ref(props.values);
 

@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { ref, watch, computed, onMounted, nextTick, onUnmounted } from "vue";
+import { useRoute } from "vue-router";
 import { storeToRefs } from "pinia";
 import { useQueryClient } from "@tanstack/vue-query";
 import { useEventListener, watchOnce } from "@vueuse/core";
@@ -59,6 +60,12 @@ const props = withDefaults(defineProps<CreateRecordModalProps>(), {
 });
 
 const emit = defineEmits([MODAL_EVENTS.closeModal]);
+const closeModal = () => {
+  emit(MODAL_EVENTS.closeModal);
+};
+
+const route = useRoute();
+watch(() => route.path, closeModal);
 
 const { addErrorNotification } = useNotificationCenter();
 const { addModal } = useModalCenter();
@@ -326,10 +333,6 @@ const deleteTransactionHandler = async () => {
 
 const deleteTransactionRecordHandler = () => {
   linkedTransaction.value = null;
-};
-
-const closeModal = () => {
-  emit(MODAL_EVENTS.closeModal);
 };
 
 const selectTransactionType = (type: FORM_TYPES, disabled = false) => {
