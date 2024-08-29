@@ -63,7 +63,7 @@ defineOptions({
 const props = withDefaults(
   defineProps<{
     options: Tab[];
-    initialTab?: Tab | null;
+    initialTab?: Tab | null | undefined;
     tabsAlignment?: CSSProperties["justifyContent"];
   }>(),
   {

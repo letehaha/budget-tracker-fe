@@ -105,6 +105,15 @@
                 </template>
               </button>
             </template>
+
+            <router-link
+              to="/settings/categories"
+              :class="buttonVariants({ size: 'sm', variant: 'link', class: 'w-full gap-2 mt-4' })"
+            >
+              Create custom category
+
+              <ExternalLinkIcon class="size-4" />
+            </router-link>
           </div>
         </div>
       </div>
@@ -116,13 +125,13 @@
 
 <script setup lang="ts">
 import { ref, Ref, computed, watch, onBeforeUnmount } from "vue";
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-vue-next";
+import { ChevronLeftIcon, ChevronRightIcon, ExternalLinkIcon } from "lucide-vue-next";
 import { CategoryModel } from "shared-types";
 import { type FormattedCategory } from "@/common/types";
 import { cn } from "@/lib/utils";
 
 import { InputField, FieldError, FieldLabel } from "@/components/fields";
-import { Button } from "@/components/lib/ui/button";
+import { Button, buttonVariants } from "@/components/lib/ui/button";
 import CategoryCircle from "@/components/common/category-circle.vue";
 
 const props = withDefaults(
