@@ -23,8 +23,8 @@ const emit = defineEmits<{
 }>();
 
 const emptyField = () => {
-  emit("update:refunds", props.isThereOriginalRefunds ? null : undefined);
-  emit("update:refundedBy", props.isThereOriginalRefunds ? null : undefined);
+  emit("update:refunds", props.isThereOriginalRefunds && props.refunds ? null : undefined);
+  emit("update:refundedBy", props.isThereOriginalRefunds && props.refundedBy ? null : undefined);
 };
 
 const refundTransactions = computed(() => {

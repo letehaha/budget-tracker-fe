@@ -41,11 +41,15 @@ export const prepareTxUpdationParams = ({
       editionParams.refundedByTxIds = form.refundedByTxs
         ? form.refundedByTxs.map((i) => i.id)
         : null;
+    } else if (form.refundsTx === null && form.refundedByTxs === undefined) {
+      editionParams.refundsTxId = null;
+    } else if (form.refundedByTxs === null && form.refundsTx === undefined) {
+      editionParams.refundedByTxIds = null;
     } else {
-      editionParams.refundsTxId = form.refundsTx ? form.refundsTx.id : null;
+      editionParams.refundsTxId = form.refundsTx ? form.refundsTx.id : undefined;
       editionParams.refundedByTxIds = form.refundedByTxs
         ? form.refundedByTxs.map((i) => i.id)
-        : null;
+        : undefined;
     }
   }
 
