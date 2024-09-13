@@ -46,21 +46,23 @@
               class="justify-start w-full px-3"
               size="lg"
             >
-              Analytics
+              Analytics (dev only)
             </ui-button>
           </router-link>
         </template>
 
-        <router-link v-slot="{ isActive }" :to="{ name: ROUTES_NAMES.crypto }">
-          <ui-button
-            :variant="isActive ? 'default' : 'ghost'"
-            as="span"
-            class="justify-start w-full px-3"
-            size="lg"
-          >
-            Crypto
-          </ui-button>
-        </router-link>
+        <template v-if="isDevEnv">
+          <router-link v-slot="{ isActive }" :to="{ name: ROUTES_NAMES.crypto }">
+            <ui-button
+              :variant="isActive ? 'default' : 'ghost'"
+              as="span"
+              class="justify-start w-full px-3"
+              size="lg"
+            >
+              Crypto (dev only)
+            </ui-button>
+          </router-link>
+        </template>
         <router-link v-slot="{ isActive }" :to="{ name: ROUTES_NAMES.settings }">
           <ui-button
             :variant="isActive ? 'default' : 'ghost'"
