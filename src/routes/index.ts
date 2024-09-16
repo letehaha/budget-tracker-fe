@@ -44,8 +44,8 @@ const routes = [
         component: () => import("@/pages/analytics/index.vue"),
       },
       {
-        path: "/records",
-        name: ROUTES_NAMES.records,
+        path: "/transactions",
+        name: ROUTES_NAMES.transactions,
         component: () => import("@/pages/records/records.vue"),
       },
       {

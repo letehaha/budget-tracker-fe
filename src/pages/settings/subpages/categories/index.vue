@@ -102,6 +102,7 @@ import InputField from "@/components/fields/input-field.vue";
 import UiButton from "@/components/common/ui-button.vue";
 import { type FormattedCategory } from "@/common/types";
 import { ApiErrorResponseError } from "@/js/errors";
+import { removeNullishValues } from "@/common/utils/remove-keys";
 
 defineOptions({
   name: "settings-categories",
@@ -153,18 +154,17 @@ const applyChanges = async () => {
         name: form.name,
       });
     } else if (isCreating.value) {
-      let params: Parameters<typeof createCategory>[0] = {
-        name: form.name,
-        imageUrl: "",
-        color: "",
-      };
+      type InputParams = Parameters<typeof createCategory>[0];
+
+      let params: InputParams = { name: form.name };
+
       if (selectedCategory.value) {
-        params = {
+        params = removeNullishValues({
           ...params,
           imageUrl: selectedCategory.value.imageUrl,
           color: selectedCategory.value.color,
           parentId: selectedCategory.value.id,
-        };
+        }) as InputParams;
       }
       await createCategory(params);
     }

@@ -45,7 +45,10 @@
     <form-row>
       <input-field model-value="No account exists" label="Account" readonly :disabled="disabled">
         <template #label-right>
-          <div class="account-field__create-account" @click="redirectToCreateAccountPage">
+          <div
+            class="text-primary cursor-pointer hover:underline"
+            @click="redirectToCreateAccountPage"
+          >
             Create account
           </div>
         </template>
@@ -101,14 +104,3 @@ const updateFormAccount = (account: AccountModel) => {
   emit("update:account", account);
 };
 </script>
-
-<style lang="scss" scoped>
-.account-field__create-account {
-  color: var(--primary-500);
-  cursor: pointer;
-
-  &:hover {
-    text-decoration: underline;
-  }
-}
-</style>

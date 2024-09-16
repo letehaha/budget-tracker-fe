@@ -1,9 +1,9 @@
 <template>
   <div class="accounts">
-    <div class="flex items-center justify-between gap-8 mb-6">
+    <div class="flex items-center flex-wrap justify-between gap-x-8 gap-y-4 mb-6">
       <h1 class="text-2xl tracking-wider">Accounts</h1>
 
-      <div class="flex gap-4">
+      <div class="flex gap-x-4 gap-y-2 flex-wrap">
         <router-link :to="{ name: ROUTES_NAMES.createAccount }">
           <UiButton as="span"> Create account </UiButton>
         </router-link>
@@ -32,7 +32,7 @@
     </div>
 
     <template v-if="formattedAccounts.length">
-      <div class="accounts__list">
+      <div class="grid gap-3 mb-6 grid-cols-[repeat(auto-fill,minmax(240px,1fr))]">
         <template v-for="account in formattedAccounts" :key="account.id">
           <Card :class="cn('relative', !account.isEnabled && 'opacity-40')">
             <router-link

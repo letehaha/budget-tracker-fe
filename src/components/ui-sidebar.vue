@@ -1,18 +1,22 @@
 <template>
   <Card class="sidebar">
     <CardHeader>
-      <div class="sidebar__logo">BudgetTracker</div>
+      <div class="sidebar__logo">
+        <span class="hidden md:block"> BudgetTracker </span>
+        <span class="md:hidden"> BT </span>
+      </div>
     </CardHeader>
-    <CardContent class="sidebar__content">
+    <CardContent class="px-3 md:px-6 flex flex-col flex-grow">
       <nav class="sidebar__navigation">
         <router-link v-slot="{ isActive }" :to="{ name: ROUTES_NAMES.home }">
           <ui-button
             :variant="isActive ? 'default' : 'ghost'"
             as="span"
-            class="justify-start w-full px-3"
+            class="sidebar__item"
             size="lg"
           >
-            Dashboard
+            <LayoutDashboardIcon />
+            <span> Dashboard </span>
           </ui-button>
         </router-link>
 
@@ -20,21 +24,23 @@
           <ui-button
             :variant="isActive ? 'default' : 'ghost'"
             as="span"
-            class="justify-start w-full px-3"
+            class="sidebar__item"
             size="lg"
           >
-            Accounts
+            <LayersIcon />
+            <span> Accounts </span>
           </ui-button>
         </router-link>
 
-        <router-link v-slot="{ isActive }" :to="{ name: ROUTES_NAMES.records }">
+        <router-link v-slot="{ isActive }" :to="{ name: ROUTES_NAMES.transactions }">
           <ui-button
             :variant="isActive ? 'default' : 'ghost'"
             as="span"
-            class="justify-start w-full px-3"
+            class="sidebar__item"
             size="lg"
           >
-            Records
+            <CreditCardIcon />
+            <span> Transactions </span>
           </ui-button>
         </router-link>
 
@@ -43,10 +49,11 @@
             <ui-button
               :variant="isActive ? 'default' : 'ghost'"
               as="span"
-              class="justify-start w-full px-3"
+              class="sidebar__item"
               size="lg"
             >
-              Analytics (dev only)
+              <ChartAreaIcon />
+              <span> Analytics (dev only) </span>
             </ui-button>
           </router-link>
         </template>
@@ -56,10 +63,11 @@
             <ui-button
               :variant="isActive ? 'default' : 'ghost'"
               as="span"
-              class="justify-start w-full px-3"
+              class="sidebar__item"
               size="lg"
             >
-              Crypto (dev only)
+              <BitcoinIcon />
+              <span> Crypto (dev only) </span>
             </ui-button>
           </router-link>
         </template>
@@ -67,16 +75,18 @@
           <ui-button
             :variant="isActive ? 'default' : 'ghost'"
             as="span"
-            class="justify-start w-full px-3"
+            class="sidebar__item"
             size="lg"
           >
-            Settings
+            <SettingsIcon />
+            <span> Settings </span>
           </ui-button>
         </router-link>
       </nav>
 
-      <ui-button variant="secondary" class="sidebar__logout" @click="logOutHandler">
-        Logout
+      <ui-button variant="secondary" class="sidebar__item mt-auto" @click="logOutHandler">
+        <LogOutIcon />
+        <span> Logout </span>
       </ui-button>
     </CardContent>
   </Card>
@@ -88,6 +98,15 @@ import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores";
 import { isDevEnv } from "@/common/const";
 import { ROUTES_NAMES } from "@/routes";
+import {
+  LayoutDashboardIcon,
+  CreditCardIcon,
+  LayersIcon,
+  ChartAreaIcon,
+  BitcoinIcon,
+  SettingsIcon,
+  LogOutIcon,
+} from "lucide-vue-next";
 import UiButton from "@/components/lib/ui/button/Button.vue";
 import { Card, CardContent, CardHeader } from "@/components/lib/ui/card";
 
@@ -111,8 +130,12 @@ const logOutHandler = () => {
   text-align: center;
   color: var(--abc-text-white-base);
 }
-.sidebar__content {
-  @apply flex flex-col flex-grow;
+.sidebar__item {
+  @apply justify-start w-full px-3 gap-2;
+
+  span {
+    @apply hidden md:block;
+  }
 }
 .sidebar__navigation {
   display: grid;
@@ -141,10 +164,5 @@ const logOutHandler = () => {
       opacity: 1;
     }
   }
-}
-.sidebar__logout {
-  margin-top: auto;
-  width: 100%;
-  justify-content: flex-start;
 }
 </style>

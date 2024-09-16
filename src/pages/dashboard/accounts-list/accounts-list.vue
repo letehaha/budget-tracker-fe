@@ -1,5 +1,5 @@
 <template>
-  <div class="grid gap-2 grid-cols-[repeat(auto-fit,180px)]">
+  <div class="grid gap-2 grid-cols-[repeat(auto-fill,minmax(180px,1fr))]">
     <template v-if="noAccountsExist">
       <Card>
         <RouterLink to="/create-account">

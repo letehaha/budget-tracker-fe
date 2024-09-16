@@ -9,16 +9,17 @@ export function calculatePercentageDifference(_a: number, _b: number): number {
 
   // If one number is zero and the other isn't, it's a 100% difference
   if (a === 0 || b === 0) {
-    return 100;
+    return a > b ? 100 : -100;
   }
 
   // If the numbers have opposite signs
   if ((a > 0 && b < 0) || (a < 0 && b > 0)) {
-    return 100;
+    return a > b ? 100 : -100;
   }
 
-  const difference = Math.abs(a - b);
+  const difference = a - b;
   const average = (Math.abs(a) + Math.abs(b)) / 2;
 
-  return Math.min(100, (difference / average) * 100);
+  const percent = (difference / average) * 100;
+  return Math.max(-100, Math.min(100, percent));
 }

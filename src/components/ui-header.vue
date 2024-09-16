@@ -2,7 +2,7 @@
   <div class="layout-header">
     <div class="layout-header__actions">
       <div class="layout-header__action">
-        <ui-button variant="default" size="lg" @click="openFormModal"> New Record </ui-button>
+        <ui-button variant="default" size="lg" @click="openFormModal"> New Transaction </ui-button>
       </div>
     </div>
 
