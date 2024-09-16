@@ -348,7 +348,7 @@ onBeforeUnmount(() => {
 }
 .category-select-field__dropdown-values {
   overflow: auto;
-  max-height: 250px;
+  max-height: 350px;
 }
 .category-select-field__dropdown-item {
   display: flex;
