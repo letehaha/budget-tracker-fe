@@ -1,9 +1,12 @@
 <template>
   <Card class="sidebar">
     <CardHeader>
-      <div class="sidebar__logo">BudgetTracker</div>
+      <div class="sidebar__logo">
+        <span class="hidden md:block"> BudgetTracker </span>
+        <span class="md:hidden"> BT </span>
+      </div>
     </CardHeader>
-    <CardContent class="sidebar__content">
+    <CardContent class="px-3 md:px-6 flex flex-col flex-grow">
       <nav class="sidebar__navigation">
         <router-link v-slot="{ isActive }" :to="{ name: ROUTES_NAMES.home }">
           <ui-button
@@ -13,7 +16,7 @@
             size="lg"
           >
             <LayoutDashboardIcon />
-            Dashboard
+            <span> Dashboard </span>
           </ui-button>
         </router-link>
 
@@ -24,8 +27,8 @@
             class="sidebar__item"
             size="lg"
           >
-            <CreditCardIcon />
-            Accounts
+            <LayersIcon />
+            <span> Accounts </span>
           </ui-button>
         </router-link>
 
@@ -36,8 +39,8 @@
             class="sidebar__item"
             size="lg"
           >
-            <ListIcon />
-            Records
+            <CreditCardIcon />
+            <span> Transactions </span>
           </ui-button>
         </router-link>
 
@@ -50,7 +53,7 @@
               size="lg"
             >
               <ChartAreaIcon />
-              Analytics (dev only)
+              <span> Analytics (dev only) </span>
             </ui-button>
           </router-link>
         </template>
@@ -64,7 +67,7 @@
               size="lg"
             >
               <BitcoinIcon />
-              Crypto (dev only)
+              <span> Crypto (dev only) </span>
             </ui-button>
           </router-link>
         </template>
@@ -76,14 +79,14 @@
             size="lg"
           >
             <SettingsIcon />
-            Settings
+            <span> Settings </span>
           </ui-button>
         </router-link>
       </nav>
 
       <ui-button variant="secondary" class="sidebar__item mt-auto" @click="logOutHandler">
         <LogOutIcon />
-        Logout
+        <span> Logout </span>
       </ui-button>
     </CardContent>
   </Card>
@@ -98,7 +101,7 @@ import { ROUTES_NAMES } from "@/routes";
 import {
   LayoutDashboardIcon,
   CreditCardIcon,
-  ListIcon,
+  LayersIcon,
   ChartAreaIcon,
   BitcoinIcon,
   SettingsIcon,
@@ -127,11 +130,12 @@ const logOutHandler = () => {
   text-align: center;
   color: var(--abc-text-white-base);
 }
-.sidebar__content {
-  @apply flex flex-col flex-grow;
-}
 .sidebar__item {
   @apply justify-start w-full px-3 gap-2;
+
+  span {
+    @apply hidden md:block;
+  }
 }
 .sidebar__navigation {
   display: grid;
