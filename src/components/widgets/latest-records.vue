@@ -1,5 +1,5 @@
 <template>
-  <WidgetWrapper class="latest-records-widget" title="Latest records" higher>
+  <WidgetWrapper class="latest-records-widget" title="Latest Transactions" higher>
     <template #action>
       <template v-if="!isDataEmpty">
         <router-link

@@ -18,7 +18,7 @@
       <Card.CardContent>
         <Tabs.Tabs default-value="records">
           <Tabs.TabsList class="justify-start w-full">
-            <Tabs.TabsTrigger value="records"> Records </Tabs.TabsTrigger>
+            <Tabs.TabsTrigger value="records"> Transactions </Tabs.TabsTrigger>
             <Tabs.TabsTrigger disabled value="analytics"> Analytics (soon) </Tabs.TabsTrigger>
           </Tabs.TabsList>
           <Tabs.TabsContent value="records">

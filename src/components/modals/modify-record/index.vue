@@ -378,7 +378,7 @@ useEventListener(document, "keydown", (event) => {
     />
     <div class="flex items-center justify-between py-3 px-6 mb-4">
       <span class="text-2xl">
-        {{ isFormCreation ? "Add Record" : "Edit Record" }}
+        {{ isFormCreation ? "Add Transaction" : "Edit Transaction" }}
       </span>
 
       <Button variant="ghost" @click="closeModal"> Close </Button>
