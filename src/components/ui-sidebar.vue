@@ -9,9 +9,10 @@
           <ui-button
             :variant="isActive ? 'default' : 'ghost'"
             as="span"
-            class="justify-start w-full px-3"
+            class="sidebar__item"
             size="lg"
           >
+            <LayoutDashboardIcon />
             Dashboard
           </ui-button>
         </router-link>
@@ -20,9 +21,10 @@
           <ui-button
             :variant="isActive ? 'default' : 'ghost'"
             as="span"
-            class="justify-start w-full px-3"
+            class="sidebar__item"
             size="lg"
           >
+            <CreditCardIcon />
             Accounts
           </ui-button>
         </router-link>
@@ -31,9 +33,10 @@
           <ui-button
             :variant="isActive ? 'default' : 'ghost'"
             as="span"
-            class="justify-start w-full px-3"
+            class="sidebar__item"
             size="lg"
           >
+            <ListIcon />
             Records
           </ui-button>
         </router-link>
@@ -43,9 +46,10 @@
             <ui-button
               :variant="isActive ? 'default' : 'ghost'"
               as="span"
-              class="justify-start w-full px-3"
+              class="sidebar__item"
               size="lg"
             >
+              <ChartAreaIcon />
               Analytics (dev only)
             </ui-button>
           </router-link>
@@ -56,9 +60,10 @@
             <ui-button
               :variant="isActive ? 'default' : 'ghost'"
               as="span"
-              class="justify-start w-full px-3"
+              class="sidebar__item"
               size="lg"
             >
+              <BitcoinIcon />
               Crypto (dev only)
             </ui-button>
           </router-link>
@@ -67,15 +72,17 @@
           <ui-button
             :variant="isActive ? 'default' : 'ghost'"
             as="span"
-            class="justify-start w-full px-3"
+            class="sidebar__item"
             size="lg"
           >
+            <SettingsIcon />
             Settings
           </ui-button>
         </router-link>
       </nav>
 
-      <ui-button variant="secondary" class="sidebar__logout" @click="logOutHandler">
+      <ui-button variant="secondary" class="sidebar__item mt-auto" @click="logOutHandler">
+        <LogOutIcon />
         Logout
       </ui-button>
     </CardContent>
@@ -88,6 +95,15 @@ import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores";
 import { isDevEnv } from "@/common/const";
 import { ROUTES_NAMES } from "@/routes";
+import {
+  LayoutDashboardIcon,
+  CreditCardIcon,
+  ListIcon,
+  ChartAreaIcon,
+  BitcoinIcon,
+  SettingsIcon,
+  LogOutIcon,
+} from "lucide-vue-next";
 import UiButton from "@/components/lib/ui/button/Button.vue";
 import { Card, CardContent, CardHeader } from "@/components/lib/ui/card";
 
@@ -113,6 +129,9 @@ const logOutHandler = () => {
 }
 .sidebar__content {
   @apply flex flex-col flex-grow;
+}
+.sidebar__item {
+  @apply justify-start w-full px-3 gap-2;
 }
 .sidebar__navigation {
   display: grid;
@@ -141,10 +160,5 @@ const logOutHandler = () => {
       opacity: 1;
     }
   }
-}
-.sidebar__logout {
-  margin-top: auto;
-  width: 100%;
-  justify-content: flex-start;
 }
 </style>
