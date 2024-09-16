@@ -29,7 +29,7 @@
           </ui-button>
         </router-link>
 
-        <router-link v-slot="{ isActive }" :to="{ name: ROUTES_NAMES.records }">
+        <router-link v-slot="{ isActive }" :to="{ name: ROUTES_NAMES.transactions }">
           <ui-button
             :variant="isActive ? 'default' : 'ghost'"
             as="span"
