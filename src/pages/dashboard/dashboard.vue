@@ -100,7 +100,7 @@ const selectNextPeriod = () => {
   grid-template-areas: "balance-trend spending-categories latest-records";
   grid-gap: 24px;
 
-  @include below(1200) {
+  @include below(1300) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-areas: "balance-trend spending-categories" "latest-records latest-records";
   }
