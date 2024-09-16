@@ -14,10 +14,9 @@ jobs:
 
     steps:
       - name: Checkout repository and submodules
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           submodules: recursive
-          token: ${{ secrets.REPOSITORIES_ACCESS_TOKEN }}
 
       - id: docker-build
         uses: ./.github/actions/docker-build

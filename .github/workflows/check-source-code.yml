@@ -12,10 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository and submodules
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           submodules: recursive
-          token: ${{ secrets.REPOSITORIES_ACCESS_TOKEN }}
+          # Important for forked repositories
+          # This is dangerous without the "check-permissions" job
+          ref: ${{ github.event.pull_request.head.sha }}
       - id: prepare-env
         uses: ./.github/actions/prepare-local-env
       - name: Install dependencies
@@ -28,10 +30,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository and submodules
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           submodules: recursive
-          token: ${{ secrets.REPOSITORIES_ACCESS_TOKEN }}
+          # Important for forked repositories
+          # This is dangerous without the "check-permissions" job
+          ref: ${{ github.event.pull_request.head.sha }}
       - uses: ./.github/actions/prepare-local-env
       - name: Lint source code
         run: npm run lint
@@ -42,10 +46,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository and submodules
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           submodules: recursive
-          token: ${{ secrets.REPOSITORIES_ACCESS_TOKEN }}
+          # Important for forked repositories
+          # This is dangerous without the "check-permissions" job
+          ref: ${{ github.event.pull_request.head.sha }}
       - uses: ./.github/actions/prepare-local-env
       - name: Unit testing
         run: npm run test:unit
@@ -56,10 +62,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository and submodules
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           submodules: recursive
-          token: ${{ secrets.REPOSITORIES_ACCESS_TOKEN }}
+          # Important for forked repositories
+          # This is dangerous without the "check-permissions" job
+          ref: ${{ github.event.pull_request.head.sha }}
       - uses: ./.github/actions/prepare-local-env
       - name: Build source code
         run: npm run build
@@ -89,10 +97,12 @@ jobs:
     #   options: --user 1001
     # steps:
     #   - name: Checkout repository and submodules
-    #     uses: actions/checkout@v2
+    #     uses: actions/checkout@v4
     #     with:
     #       submodules: recursive
-    #       token: ${{ secrets.REPOSITORIES_ACCESS_TOKEN }}
+    #       # Important for forked repositories
+    #       # This is dangerous without the "check-permissions" job
+    #       ref: ${{ github.event.pull_request.head.sha }}
     #   - uses: ./.github/actions/prepare-local-env
     #   - name: Run Cypress e2e tests
     #     uses: cypress-io/github-action@v6
@@ -122,10 +132,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository and submodules
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           submodules: recursive
-          token: ${{ secrets.REPOSITORIES_ACCESS_TOKEN }}
+          # Important for forked repositories
+          # This is dangerous without the "check-permissions" job
+          ref: ${{ github.event.pull_request.head.sha }}
       - id: docker-build
         uses: ./.github/actions/docker-build
         with:
