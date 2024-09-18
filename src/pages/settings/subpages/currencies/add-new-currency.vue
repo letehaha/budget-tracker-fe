@@ -13,7 +13,7 @@
       </div>
       <Button
         :disabled="!selectedCurrency || isCurrenciesLoading"
-        class="w-[100px]"
+        class="min-w-[100px]"
         @click="addCurrency"
       >
         Add
@@ -42,6 +42,7 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { storeToRefs } from "pinia";
+import { useQueryClient } from "@tanstack/vue-query";
 import { CurrencyModel } from "shared-types";
 import { InfoIcon } from "lucide-vue-next";
 import { useCurrenciesStore } from "@/stores";
@@ -51,10 +52,12 @@ import { SelectField } from "@/components/fields";
 import { Button } from "@/components/lib/ui/button";
 import { Card, CardContent } from "@/components/lib/ui/card";
 import * as Tooltip from "@/components/lib/ui/tooltip";
+import { VUE_QUERY_CACHE_KEYS } from "@/common/const";
 
 const currenciesStore = useCurrenciesStore();
 const { addErrorNotification } = useNotificationCenter();
 const { currencies: userCurrencies, systemCurrencies } = storeToRefs(currenciesStore);
+const queryClient = useQueryClient();
 
 const isCurrenciesLoading = ref(false);
 const selectedCurrency = ref<CurrencyModel>(null);
@@ -68,13 +71,9 @@ const addCurrency = async () => {
   try {
     isCurrenciesLoading.value = true;
 
-    await addUserCurrencies([
-      {
-        // TODO: add more options
-        currencyId: selectedCurrency.value.id,
-      },
-    ]);
+    await addUserCurrencies([{ currencyId: selectedCurrency.value.id }]);
 
+    queryClient.invalidateQueries({ queryKey: VUE_QUERY_CACHE_KEYS.exchangeRates });
     await currenciesStore.loadCurrencies();
   } catch (e) {
     addErrorNotification("Unexpected error. Currency is not added.");
