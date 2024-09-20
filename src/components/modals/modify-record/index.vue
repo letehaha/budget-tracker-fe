@@ -3,7 +3,7 @@ import { ref, watch, computed, onMounted, nextTick, onUnmounted } from "vue";
 import { useRoute } from "vue-router";
 import { storeToRefs } from "pinia";
 import { useQueryClient } from "@tanstack/vue-query";
-import { useEventListener, watchOnce } from "@vueuse/core";
+import { watchOnce } from "@vueuse/core";
 import {
   TRANSACTION_TYPES,
   PAYMENT_TYPES,
@@ -359,10 +359,6 @@ onMounted(() => {
 
 onUnmounted(() => {
   (previouslyFocusedElement.value as HTMLElement).focus();
-});
-
-useEventListener(document, "keydown", (event) => {
-  if (event.key === "Escape") closeModal();
 });
 </script>
 
