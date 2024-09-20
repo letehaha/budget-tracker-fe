@@ -8,14 +8,28 @@
         class="account-create__form-field"
       />
 
-      <select-field
-        v-model="form.currency"
-        label="Currency"
-        :values="systemCurrenciesAssociatedWithUser"
-        is-value-preselected
-        :label-key="(item: CurrencyModel) => `${item.code} - ${item.currency}`"
-        class="account-create__form-field"
-      />
+      <div class="account-create__form-field">
+        <FieldLabel label="Currency">
+          <Select.Select v-model="form.currencyId">
+            <Select.SelectTrigger>
+              <Select.SelectValue placeholder="Select currency" />
+            </Select.SelectTrigger>
+            <Select.SelectContent>
+              <template v-for="item of systemCurrenciesVerbose.linked" :key="item.id">
+                <Select.SelectItem :value="String(item.id)">
+                  {{ item.code }} - {{ item.currency }}
+                </Select.SelectItem>
+              </template>
+
+              <AddCurrencyDialog @added="form.currencyId = String($event)">
+                <ui-button type="button" class="mt-4 w-full" variant="link">
+                  Add new currency +
+                </ui-button>
+              </AddCurrencyDialog>
+            </Select.SelectContent>
+          </Select.Select>
+        </FieldLabel>
+      </div>
 
       <input-field
         v-model="form.initialBalance"
@@ -31,28 +45,32 @@
         class="account-create__form-field"
       />
 
-      <ui-button type="submit" class="account-create__form-submit" :disabled="isLoading">
-        {{ isLoading ? "Creating..." : "Create" }}
-      </ui-button>
+      <div class="flex">
+        <ui-button type="submit" class="ml-auto min-w-[120px]" :disabled="isLoading">
+          {{ isLoading ? "Creating..." : "Create" }}
+        </ui-button>
+      </div>
     </form>
   </div>
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from "vue";
+import { computed, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
-import { CurrencyModel } from "shared-types";
 import { useQueryClient } from "@tanstack/vue-query";
 
 import { ROUTES_NAMES } from "@/routes/constants";
 import { useAccountsStore, useCurrenciesStore } from "@/stores";
 import { VUE_QUERY_CACHE_KEYS } from "@/common/const";
 
+import * as Select from "@/components/lib/ui/select";
 import { useNotificationCenter, NotificationType } from "@/components/notification-center";
 import InputField from "@/components/fields/input-field.vue";
-import SelectField from "@/components/fields/select-field.vue";
-import UiButton from "@/components/common/ui-button.vue";
+import UiButton from "@/components/lib/ui/button/Button.vue";
+import FieldLabel from "@/components/fields/components/field-label.vue";
+
+import AddCurrencyDialog from "@/components/dialogs/add-currency-dialog.vue";
 
 const router = useRouter();
 const queryClient = useQueryClient();
@@ -60,16 +78,21 @@ const accountsStore = useAccountsStore();
 const currenciesStore = useCurrenciesStore();
 const { addNotification } = useNotificationCenter();
 
-const { systemCurrenciesAssociatedWithUser } = storeToRefs(currenciesStore);
+const { baseCurrency, systemCurrenciesVerbose } = storeToRefs(currenciesStore);
 
+const defaultCurrency = computed(
+  () =>
+    systemCurrenciesVerbose.value.linked.find((i) => i.id === baseCurrency.value.currencyId).id ||
+    0,
+);
 const form = reactive<{
   name: string;
-  currency: CurrencyModel;
+  currencyId: string;
   initialBalance: number;
   creditLimit: number;
 }>({
   name: "",
-  currency: systemCurrenciesAssociatedWithUser.value[0],
+  currencyId: String(defaultCurrency.value),
   initialBalance: 0,
   creditLimit: 0,
 });
@@ -81,7 +104,7 @@ const submit = async () => {
     isLoading.value = true;
 
     await accountsStore.createAccount({
-      currencyId: form.currency.id,
+      currencyId: form.currencyId,
       name: form.name,
       creditLimit: form.creditLimit,
       initialBalance: form.initialBalance,
@@ -118,8 +141,5 @@ const submit = async () => {
   &:not(:last-child) {
     margin-bottom: 24px;
   }
-}
-.account-create__form-submit {
-  margin-left: auto;
 }
 </style>

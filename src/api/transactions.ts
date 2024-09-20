@@ -11,8 +11,12 @@ export const formatTransactionResponse = (transaction: TransactionModel): Transa
   commissionRate: fromSystemAmount(transaction.commissionRate),
 });
 
-export const formatTransactionPayload = <T>(transaction: T): T => {
-  const params = transaction;
+export const formatTransactionPayload = <
+  T extends endpointsTypes.CreateTransactionBody | endpointsTypes.UpdateTransactionBody,
+>(
+  transaction: T,
+): T => {
+  const params = { ...transaction, time: new Date(transaction.time).toISOString() };
   const fieldsToPatch = ["amount", "destinationAmount"];
 
   fieldsToPatch.forEach((field) => {
@@ -45,17 +49,13 @@ export const loadTransactionsByTransferId = async (
 };
 
 export const createTransaction = async (params: endpointsTypes.CreateTransactionBody) => {
-  try {
-    const formattedParams = formatTransactionPayload({
-      transferNature: TRANSACTION_TRANSFER_NATURE.not_transfer,
-      note: "",
-      ...params,
-    });
+  const formattedParams = formatTransactionPayload({
+    transferNature: TRANSACTION_TRANSFER_NATURE.not_transfer,
+    note: "",
+    ...params,
+  });
 
-    return api.post("/transactions", formattedParams);
-  } catch (e) {
-    throw new Error(e);
-  }
+  return api.post("/transactions", formattedParams);
 };
 
 export const editTransaction = async ({
