@@ -1,21 +1,31 @@
 <template>
-  <div class="transactions-list">
-    <template v-for="item in transactions" :key="`${item.id}-render-id-${renderId}`">
-      <TransactionRecrod :tx="item" @record-click="handlerRecordClick" />
-    </template>
-  </div>
+  <Dialog.Dialog v-model:open="isDialogVisible">
+    <div v-bind="$attrs" class="transactions-list">
+      <template v-for="item in transactions" :key="`${item.id}-render-id-${renderId}`">
+        <TransactionRecrod :tx="item" @record-click="handlerRecordClick" />
+      </template>
+    </div>
+
+    <Dialog.DialogContent custom-close class="max-h-[90dvh] w-full max-w-[800px] bg-card p-0">
+      <ManageTransactionDoalogContent v-bind="dialogProps" />
+    </Dialog.DialogContent>
+  </Dialog.Dialog>
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from "vue";
+import { defineAsyncComponent, ref, watch } from "vue";
 import {
   TransactionModel,
   ACCOUNT_TYPES,
   TRANSACTION_TYPES,
   TRANSACTION_TRANSFER_NATURE,
 } from "shared-types";
-import { MODAL_TYPES, useModalCenter } from "@/components/modal-center/index";
+import * as Dialog from "@/components/lib/ui/dialog";
 import TransactionRecrod from "./transaction-record.vue";
+
+const ManageTransactionDoalogContent = defineAsyncComponent(
+  () => import("@/components/dialogs/manage-transaction/dialog-content.vue"),
+);
 
 const props = withDefaults(
   defineProps<{
@@ -27,7 +37,19 @@ const props = withDefaults(
   },
 );
 
-const { addModal } = useModalCenter();
+const isDialogVisible = ref(false);
+const defaultDialogProps = {
+  transaction: undefined,
+  oppositeTransaction: undefined,
+};
+const dialogProps = ref<{
+  transaction: TransactionModel;
+  oppositeTransaction: TransactionModel;
+}>(defaultDialogProps);
+
+watch(isDialogVisible, (value) => {
+  if (value === false) dialogProps.value = defaultDialogProps;
+});
 
 const handlerRecordClick = ([baseTx, oppositeTx]: [
   baseTx: TransactionModel,
@@ -37,10 +59,7 @@ const handlerRecordClick = ([baseTx, oppositeTx]: [
     baseTx.accountType !== ACCOUNT_TYPES.system ||
     (oppositeTx && oppositeTx.accountType !== ACCOUNT_TYPES.system);
 
-  const modalOptions: {
-    transaction: TransactionModel;
-    oppositeTransaction?: TransactionModel;
-  } = {
+  const modalOptions: typeof dialogProps.value = {
     transaction: baseTx,
     oppositeTransaction: undefined,
   };
@@ -60,10 +79,8 @@ const handlerRecordClick = ([baseTx, oppositeTx]: [
     modalOptions.oppositeTransaction = isValid ? oppositeTx : baseTx;
   }
 
-  addModal({
-    type: MODAL_TYPES.createRecord,
-    data: modalOptions,
-  });
+  isDialogVisible.value = true;
+  dialogProps.value = modalOptions;
 };
 
 // Since transactions list might change inside but txId will remain the same

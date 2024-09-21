@@ -11,6 +11,7 @@ import {
   ACCOUNT_TYPES,
   TRANSACTION_TRANSFER_NATURE,
 } from "shared-types";
+import { DialogClose, DialogTitle } from "radix-vue";
 import { useAccountsStore, useCategoriesStore, useCurrenciesStore } from "@/stores";
 import {
   createTransaction,
@@ -32,7 +33,6 @@ import CategorySelectField from "@/components/fields/category-select-field.vue";
 import TextareaField from "@/components/fields/textarea-field.vue";
 import DateField from "@/components/fields/date-field.vue";
 import { Button } from "@/components/lib/ui/button";
-import { EVENTS as MODAL_EVENTS } from "@/components/modal-center/ui-modal.vue";
 import TransactionRecrod from "@/components/transactions-list/transaction-record.vue";
 import { ApiErrorResponseError } from "@/js/errors";
 import { useNotificationCenter } from "@/components/notification-center";
@@ -59,9 +59,9 @@ const props = withDefaults(defineProps<CreateRecordModalProps>(), {
   oppositeTransaction: undefined,
 });
 
-const emit = defineEmits([MODAL_EVENTS.closeModal]);
+const emit = defineEmits(["close-modal"]);
 const closeModal = () => {
-  emit(MODAL_EVENTS.closeModal);
+  emit("close-modal");
 };
 
 const route = useRoute();
@@ -275,7 +275,7 @@ const submit = async () => {
       );
     }
 
-    emit(MODAL_EVENTS.closeModal);
+    closeModal();
     // Reload all cached data in the app
     queryClient.invalidateQueries({ queryKey: [VUE_QUERY_TX_CHANGE_QUERY] });
     queryClient.invalidateQueries({
@@ -301,7 +301,7 @@ const unlinkTransactions = async () => {
       transferIds: [props.transaction.transferId],
     });
 
-    emit(MODAL_EVENTS.closeModal);
+    closeModal();
     // Reload all cached data in the app
     queryClient.invalidateQueries({ queryKey: [VUE_QUERY_TX_CHANGE_QUERY] });
   } catch (err) {
@@ -320,7 +320,7 @@ const deleteTransactionHandler = async () => {
 
     await deleteTransaction(props.transaction.id);
 
-    emit(MODAL_EVENTS.closeModal);
+    closeModal();
     // Reload all cached data in the app
     queryClient.invalidateQueries({ queryKey: [VUE_QUERY_TX_CHANGE_QUERY] });
   } catch (e) {
@@ -363,7 +363,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="rounded-t-xl bg-card w-full max-w-[800px]">
+  <div class="rounded-t-xl">
     <div
       :class="[
         'h-3 transition-[background-color] ease-out duration-200 rounded-t-xl',
@@ -373,11 +373,15 @@ onUnmounted(() => {
       ]"
     />
     <div class="flex items-center justify-between py-3 px-6 mb-4">
-      <span class="text-2xl">
-        {{ isFormCreation ? "Add Transaction" : "Edit Transaction" }}
-      </span>
+      <DialogTitle>
+        <span class="text-2xl">
+          {{ isFormCreation ? "Add Transaction" : "Edit Transaction" }}
+        </span>
+      </DialogTitle>
 
-      <Button variant="ghost" @click="closeModal"> Close </Button>
+      <DialogClose>
+        <Button variant="ghost"> Close </Button>
+      </DialogClose>
     </div>
     <div class="grid grid-cols-[450px,1fr] relative">
       <div class="px-6">
@@ -418,7 +422,7 @@ onUnmounted(() => {
             :from-account-disabled="fromAccountFieldDisabled"
             :to-account-disabled="toAccountFieldDisabled"
             :filtered-accounts="transferDestinationAccounts"
-            @close-modal="emit(MODAL_EVENTS.closeModal)"
+            @close-modal="closeModal"
           />
 
           <template v-if="currentTxType !== FORM_TYPES.transfer">

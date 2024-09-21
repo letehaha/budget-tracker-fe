@@ -23,9 +23,6 @@ import { defineAsyncComponent, defineComponent, onBeforeUnmount } from "vue";
 import { MODAL_TYPES, useModalCenter } from "./index";
 
 const MODAL_COMPONENTS = Object.freeze({
-  [MODAL_TYPES.createRecord]: defineAsyncComponent(
-    () => import("@/components/modals/modify-record/index.vue"),
-  ),
   [MODAL_TYPES.recordList]: defineAsyncComponent(
     () => import("@/components/modals/modify-record/record-list.vue"),
   ),
