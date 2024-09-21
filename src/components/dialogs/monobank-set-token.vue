@@ -1,43 +1,7 @@
-<template>
-  <Card
-    class="py-12 px-8 w-full max-w-[600px] relative rounded-xl"
-    data-cy="monobank-set-token-modal"
-  >
-    <Button
-      type="button"
-      class="absolute top-3 right-3"
-      theme="light-dark"
-      is-icon
-      @click="$emit(MODAL_EVENTS.closeModal)"
-    >
-      X
-    </Button>
-
-    <p class="my-5">
-      Please visit
-      <a href="https://api.monobank.ua/" class="text-primary">https://api.monobank.ua/</a>
-      and follow all the instructions. Paste the API token from Monobank in the field below
-    </p>
-    <div class="my-5">
-      <input-field
-        v-model="form.token"
-        name="token"
-        label="API Token"
-        :error-message="getFieldErrorMessage('form.token')"
-      />
-    </div>
-    <div class="flex justify-center">
-      <Button type="submit" :disabled="isLoading" @click="submit">
-        <template v-if="isUpdate"> Update token </template>
-        <template v-else> Pair account </template>
-      </Button>
-    </div>
-  </Card>
-</template>
-
 <script setup lang="ts">
 import { reactive, ref } from "vue";
 import { API_ERROR_CODES } from "shared-types";
+import * as Dialog from "@/components/lib/ui/dialog";
 import { useBanksMonobankStore, useCurrenciesStore } from "@/stores";
 import { MONOBANK_API_TOKEN_LENGTH } from "@/common/const";
 import { ApiErrorResponseError } from "@/js/errors";
@@ -45,8 +9,6 @@ import { useFormValidation } from "@/composable";
 import { required, minLength } from "@/js/helpers/validators";
 import InputField from "@/components/fields/input-field.vue";
 import Button from "@/components/common/ui-button.vue";
-import { EVENTS as MODAL_EVENTS } from "@/components/modal-center/ui-modal.vue";
-import { Card } from "@/components/lib/ui/card";
 
 import { useNotificationCenter, NotificationType } from "@/components/notification-center";
 
@@ -63,11 +25,12 @@ const props = withDefaults(
   },
 );
 
-const emit = defineEmits([MODAL_EVENTS.closeModal]);
+const emit = defineEmits(["set"]);
 const monobankStore = useBanksMonobankStore();
 const currenciesStore = useCurrenciesStore();
 const { addNotification } = useNotificationCenter();
 
+const isDialogOpen = ref(false);
 const isLoading = ref(false);
 const form = reactive({ token: "" });
 const { isFormValid, getFieldErrorMessage } = useFormValidation(
@@ -102,12 +65,13 @@ const submit = async () => {
 
     await currenciesStore.loadCurrencies();
 
-    emit(MODAL_EVENTS.closeModal);
-
     addNotification({
       text: "Paired",
       type: NotificationType.success,
     });
+
+    isDialogOpen.value = false;
+    emit("set");
   } catch (e) {
     if (e instanceof ApiErrorResponseError) {
       if (e.data.code === API_ERROR_CODES.monobankUserAlreadyConnected) {
@@ -129,3 +93,44 @@ const submit = async () => {
   }
 };
 </script>
+
+<template>
+  <Dialog.Dialog v-model:open="isDialogOpen">
+    <Dialog.DialogTrigger as-child>
+      <slot />
+    </Dialog.DialogTrigger>
+    <Dialog.DialogContent
+      class="sm:max-w-md max-h-[90dvh] grid-rows-[auto_auto_minmax(0,1fr)_auto]"
+    >
+      <Dialog.DialogHeader class="mb-10">
+        <Dialog.DialogTitle>
+          {{ isUpdate ? "Update your Monobank API Token" : "Set Monobank API Token" }}
+        </Dialog.DialogTitle>
+      </Dialog.DialogHeader>
+
+      <form class="grid gap-6" data-cy="monobank-set-token-modal" @submit.prevent="submit">
+        <p>
+          Please visit
+          <a href="https://api.monobank.ua/" class="text-primary">https://api.monobank.ua/</a>
+          and follow all the instructions. Paste the API token from Monobank in the field below
+        </p>
+        <div>
+          <input-field
+            v-model="form.token"
+            name="token"
+            label="API Token"
+            placeholder="uBrAYwEg6H..."
+            :error-message="getFieldErrorMessage('form.token')"
+          />
+        </div>
+
+        <div class="flex justify-center">
+          <Button type="submit" :disabled="isLoading">
+            <template v-if="isUpdate"> Update token </template>
+            <template v-else> Pair account </template>
+          </Button>
+        </div>
+      </form>
+    </Dialog.DialogContent>
+  </Dialog.Dialog>
+</template>

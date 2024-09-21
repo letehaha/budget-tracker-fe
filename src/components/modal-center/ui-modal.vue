@@ -29,9 +29,6 @@ const MODAL_COMPONENTS = Object.freeze({
   [MODAL_TYPES.recordList]: defineAsyncComponent(
     () => import("@/components/modals/modify-record/record-list.vue"),
   ),
-  [MODAL_TYPES.monobankSetToken]: defineAsyncComponent(
-    () => import("@/components/modals/monobank-set-token.vue"),
-  ),
 });
 
 export enum EVENTS {

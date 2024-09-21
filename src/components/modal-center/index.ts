@@ -22,19 +22,12 @@ interface CreateRecordModal extends CommonModalDataProps {
 interface MonobankTxFormModal extends CommonModalDataProps {
   type: MODAL_TYPES.monobankTxForm;
 }
-interface MonobankSetTokenModal extends CommonModalDataProps {
-  type: MODAL_TYPES.monobankSetToken;
-}
 interface RecordListModal extends CommonModalDataProps {
   type: MODAL_TYPES.recordList;
   data: RecordListModalProps;
 }
 
-export type ModalDataProp =
-  | RecordListModal
-  | CreateRecordModal
-  | MonobankTxFormModal
-  | MonobankSetTokenModal;
+export type ModalDataProp = RecordListModal | CreateRecordModal | MonobankTxFormModal;
 
 let idCounter = 0;
 const activeModals = ref<ModalDataProp[]>([]);

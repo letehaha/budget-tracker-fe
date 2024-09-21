@@ -9,14 +9,11 @@
         </router-link>
 
         <template v-if="!isPaired">
-          <UiButton
-            data-cy="pair-monobank-account"
-            type="button"
-            variant="outline"
-            @click="() => setMonobankToken()"
-          >
-            Pair Monobank account
-          </UiButton>
+          <MonobankSetToken>
+            <UiButton data-cy="pair-monobank-account" type="button" variant="outline">
+              Pair Monobank account
+            </UiButton>
+          </MonobankSetToken>
         </template>
         <template v-else-if="isPaired && isTokenPresent">
           <UiButton type="button" variant="outline" @click="refreshMonoAccounts">
@@ -24,9 +21,11 @@
           </UiButton>
         </template>
         <template v-else-if="isPaired && !isTokenPresent">
-          <button type="button" @click="setMonobankToken({ isUpdate: true })">
-            Update Monobank token
-          </button>
+          <MonobankSetToken is-update>
+            <UiButton data-cy="pair-monobank-account" type="button" variant="outline">
+              Update Monobank token
+            </UiButton>
+          </MonobankSetToken>
         </template>
       </div>
     </div>
@@ -78,17 +77,16 @@ import { AccountModel } from "shared-types";
 import { ROUTES_NAMES } from "@/routes/constants";
 import { useFormatCurrency } from "@/composable";
 import { useBanksMonobankStore, useAccountsStore } from "@/stores";
-import { MODAL_TYPES, useModalCenter } from "@/components/modal-center/index";
 import UiButton from "@/components/lib/ui/button/Button.vue";
 import { Card, CardContent, CardHeader } from "@/components/lib/ui/card";
 import { cn } from "@/lib/utils";
+import MonobankSetToken from "@/components/dialogs/monobank-set-token.vue";
 
 const monobankStore = useBanksMonobankStore();
 const { accounts } = storeToRefs(useAccountsStore());
 const { isMonoAccountPaired: isPaired, isTokenPresent } = storeToRefs(monobankStore);
 
 const { formatAmountByCurrencyId } = useFormatCurrency();
-const { addModal } = useModalCenter();
 
 const refreshMonoAccounts = () => {
   monobankStore.refreshAccounts();
@@ -97,15 +95,6 @@ const refreshMonoAccounts = () => {
 const formattedAccounts = computed(() =>
   [...accounts.value].sort((a, b) => +b.isEnabled - +a.isEnabled),
 );
-
-const setMonobankToken = ({ isUpdate = false } = {}) => {
-  addModal({
-    type: MODAL_TYPES.monobankSetToken,
-    data: {
-      isUpdate,
-    },
-  });
-};
 
 const formatBalance = (account: AccountModel) =>
   formatAmountByCurrencyId(account.currentBalance - account.creditLimit, account.currencyId);
