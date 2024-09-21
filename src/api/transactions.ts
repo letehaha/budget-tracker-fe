@@ -16,7 +16,10 @@ export const formatTransactionPayload = <
 >(
   transaction: T,
 ): T => {
-  const params = { ...transaction, time: new Date(transaction.time).toISOString() };
+  const params = { ...transaction };
+  if (params.time) {
+    params.time = new Date(params.time).toISOString();
+  }
   const fieldsToPatch = ["amount", "destinationAmount"];
 
   fieldsToPatch.forEach((field) => {

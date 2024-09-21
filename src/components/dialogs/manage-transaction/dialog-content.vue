@@ -270,6 +270,10 @@ const submit = async () => {
   } catch (e) {
     if (e instanceof ApiErrorResponseError) {
       addErrorNotification(e.data.message);
+    } else {
+      // eslint-disable-next-line no-console
+      console.error(e);
+      addErrorNotification("Unexpected error!");
     }
   } finally {
     isLoading.value = false;

@@ -7,7 +7,7 @@
     </div>
 
     <Dialog.DialogContent custom-close class="max-h-[90dvh] w-full max-w-[800px] bg-card p-0">
-      <ManageTransactionDoalogContent v-bind="dialogProps" />
+      <ManageTransactionDoalogContent v-bind="dialogProps" @close-modal="isDialogVisible = false" />
     </Dialog.DialogContent>
   </Dialog.Dialog>
 </template>
