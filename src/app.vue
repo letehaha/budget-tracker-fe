@@ -2,7 +2,6 @@
   <main class="page">
     <router-view />
 
-    <ui-modal />
     <notifications-center />
   </main>
 </template>
@@ -13,7 +12,6 @@ import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
 import { useRootStore, useAuthStore, useCurrenciesStore } from "@/stores";
 import { ROUTES_NAMES } from "@/routes";
-import UiModal from "@/components/modal-center/ui-modal.vue";
 
 import NotificationsCenter from "@/components/notification-center/notifications-center.vue";
 

@@ -12,6 +12,7 @@ import {
   TRANSACTION_TRANSFER_NATURE,
 } from "shared-types";
 import { DialogClose, DialogTitle } from "radix-vue";
+import * as Dialog from "@/components/lib/ui/dialog";
 import { useAccountsStore, useCategoriesStore, useCurrenciesStore } from "@/stores";
 import {
   createTransaction,
@@ -28,7 +29,6 @@ import {
 } from "@/common/const";
 import InputField from "@/components/fields/input-field.vue";
 import SelectField from "@/components/fields/select-field.vue";
-import { MODAL_TYPES, useModalCenter } from "@/components/modal-center";
 import CategorySelectField from "@/components/fields/category-select-field.vue";
 import TextareaField from "@/components/fields/textarea-field.vue";
 import DateField from "@/components/fields/date-field.vue";
@@ -44,6 +44,7 @@ import { FORM_TYPES, UI_FORM_STRUCT } from "./types";
 import { prepopulateForm } from "./helpers";
 import { getRefundInfo, useTransferFormLogic } from "./composables";
 import { prepareTxCreationParams, prepareTxUpdationParams } from "./utils";
+import RecordList from "./record-list.vue";
 
 defineOptions({
   name: "record-form",
@@ -68,7 +69,6 @@ const route = useRoute();
 watch(() => route.path, closeModal);
 
 const { addErrorNotification } = useNotificationCenter();
-const { addModal } = useModalCenter();
 const { currenciesMap } = storeToRefs(useCurrenciesStore());
 const { accountsRecord, systemAccounts } = storeToRefs(useAccountsStore());
 const { formattedCategories, categoriesMap } = storeToRefs(useCategoriesStore());
@@ -110,23 +110,6 @@ watchOnce(
 );
 
 const linkedTransaction = ref<TransactionModel | null>(null);
-
-const openTransactionLinkingModal = async () => {
-  const type =
-    props.transaction?.transactionType === TRANSACTION_TYPES.expense
-      ? TRANSACTION_TYPES.income
-      : TRANSACTION_TYPES.expense;
-
-  addModal({
-    type: MODAL_TYPES.recordList,
-    data: {
-      transactionType: type,
-      onSelect(transaction) {
-        linkedTransaction.value = transaction;
-      },
-    },
-  });
-};
 
 const isRecordExternal = computed(() => {
   if (!props.transaction) return false;
@@ -460,14 +443,24 @@ onUnmounted(() => {
             "
           >
             <form-row>
-              <Button
-                class="w-full"
-                :disabled="isFormFieldsDisabled"
-                size="sm"
-                @click="openTransactionLinkingModal"
-              >
-                Link existing transaction
-              </Button>
+              <Dialog.Dialog>
+                <Dialog.DialogTrigger>
+                  <Button class="w-full" :disabled="isFormFieldsDisabled" size="sm">
+                    Link existing transaction
+                  </Button>
+                </Dialog.DialogTrigger>
+
+                <Dialog.DialogContent>
+                  <RecordList
+                    :transaction-type="
+                      transaction?.transactionType === TRANSACTION_TYPES.expense
+                        ? TRANSACTION_TYPES.income
+                        : TRANSACTION_TYPES.expense
+                    "
+                    @select="linkedTransaction = $event"
+                  />
+                </Dialog.DialogContent>
+              </Dialog.Dialog>
             </form-row>
           </template>
 
