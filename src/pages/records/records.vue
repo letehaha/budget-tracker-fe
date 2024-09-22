@@ -189,7 +189,7 @@ const fetchTransactions = ({
   filter,
 }: {
   pageParam: number;
-  filter: typeof filters.value;
+  filter: typeof appliedFilters.value;
 }) => {
   const from = pageParam * limit;
 
