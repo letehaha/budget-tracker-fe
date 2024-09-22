@@ -14,13 +14,19 @@ export const useCurrenciesStore = defineStore("currencies", () => {
   const baseCurrency = ref<UserCurrencyModel | null>(null);
   const isBaseCurrencyExists = computed(() => Boolean(baseCurrency.value));
 
-  const systemCurrenciesAssociatedWithUser = computed(() =>
-    systemCurrencies.value.reduce((acc, curr) => {
-      if (currencies.value.find((item) => item.currencyId === curr.id)) {
-        acc.push(curr);
-      }
-      return acc;
-    }, [] as CurrencyModel[]),
+  const systemCurrenciesVerbose = computed<{ linked: CurrencyModel[]; unlinked: CurrencyModel[] }>(
+    () =>
+      systemCurrencies.value.reduce(
+        (acc, curr) => {
+          if (currencies.value.find((item) => item.currencyId === curr.id)) {
+            acc.linked.push(curr);
+          } else {
+            acc.unlinked.push(curr);
+          }
+          return acc;
+        },
+        { linked: [], unlinked: [] },
+      ),
   );
 
   const currenciesMap = computed(() =>
@@ -72,7 +78,7 @@ export const useCurrenciesStore = defineStore("currencies", () => {
     baseCurrency,
     systemCurrencies,
     currenciesMap,
-    systemCurrenciesAssociatedWithUser,
+    systemCurrenciesVerbose,
     isBaseCurrencyExists,
     loadCurrencies,
     loadBaseCurrency,

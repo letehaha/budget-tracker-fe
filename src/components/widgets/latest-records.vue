@@ -16,7 +16,7 @@
       </EmptyState>
     </template>
     <template v-else>
-      <TransactionsList class="latest-records-widget__list" :transactions="transactions || []" />
+      <TransactionsList class="gap-1" :transactions="transactions || []" />
     </template>
   </WidgetWrapper>
 </template>
@@ -40,7 +40,7 @@ const { isAppInitialized } = storeToRefs(useRootStore());
 
 const { data: transactions } = useQuery({
   queryKey: VUE_QUERY_CACHE_KEYS.widgetLatestRecords,
-  queryFn: () => apiLoadTransactions({ limit: 9 }),
+  queryFn: () => apiLoadTransactions({ limit: 9, from: 0 }),
   staleTime: Infinity,
   placeholderData: [],
   enabled: isAppInitialized,
@@ -54,8 +54,5 @@ const isDataEmpty = computed(() => transactions.value.length === 0);
   display: block;
   color: var(--ac-link-primary-base);
   text-align: center;
-}
-.latest-records-widget__list {
-  gap: 5px;
 }
 </style>

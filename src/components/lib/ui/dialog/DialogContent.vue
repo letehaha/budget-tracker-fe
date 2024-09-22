@@ -13,7 +13,9 @@ import { Button } from "@/components/lib/ui/button";
 import { X } from "lucide-vue-next";
 import { cn } from "@/lib/utils";
 
-const props = defineProps<DialogContentProps & { class?: HTMLAttributes["class"] }>();
+const props = defineProps<
+  DialogContentProps & { class?: HTMLAttributes["class"]; customClose?: boolean }
+>();
 const emits = defineEmits<DialogContentEmits>();
 
 const delegatedProps = computed(() => {
@@ -42,12 +44,14 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits);
     >
       <slot />
 
-      <DialogClose class="absolute right-4 top-4" as-child>
-        <Button variant="ghost" size="icon">
-          <X class="size-4" />
-          <span class="sr-only">Close</span>
-        </Button>
-      </DialogClose>
+      <template v-if="!customClose">
+        <DialogClose class="absolute right-4 top-4" as-child>
+          <Button variant="ghost" size="icon">
+            <X class="size-4" />
+            <span class="sr-only">Close</span>
+          </Button>
+        </DialogClose>
+      </template>
     </DialogContent>
   </DialogPortal>
 </template>

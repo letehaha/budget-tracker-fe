@@ -44,7 +44,7 @@
             :currency="currency"
             :deletion-disabled="isDeletionDisabled(currency)"
             @delete="onDeleteHandler(index)"
-            @submit="onSubmitHandler"
+            @submit="onCurrencyEdit"
           />
         </template>
       </div>
@@ -53,13 +53,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from "vue";
+import { ref, computed } from "vue";
 import { storeToRefs } from "pinia";
-import { API_ERROR_CODES, UserCurrencyModel, UserExchangeRatesModel } from "shared-types";
+import { API_ERROR_CODES, UserCurrencyModel } from "shared-types";
 import { useCurrenciesStore, useAccountsStore } from "@/stores";
 import { deleteUserCurrency, loadUserCurrenciesExchangeRates } from "@/api/currencies";
 import { useNotificationCenter } from "@/components/notification-center";
 import { Card } from "@/components/lib/ui/card";
+import { useQuery, useQueryClient } from "@tanstack/vue-query";
+import { VUE_QUERY_CACHE_KEYS } from "@/common/const";
 import EditCurrency from "./edit-currency.vue";
 import { CurrencyWithExchangeRate } from "./types";
 
@@ -70,7 +72,14 @@ const accountsStore = useAccountsStore();
 const { addSuccessNotification, addErrorNotification } = useNotificationCenter();
 const { currencies, baseCurrency } = storeToRefs(currenciesStore);
 const { accountsCurrencyIds } = storeToRefs(accountsStore);
-const rates = ref<UserExchangeRatesModel[]>([]);
+const queryClient = useQueryClient();
+
+const { data: rates } = useQuery({
+  queryKey: VUE_QUERY_CACHE_KEYS.exchangeRates,
+  queryFn: loadUserCurrenciesExchangeRates,
+  staleTime: Infinity,
+  placeholderData: [],
+});
 
 const currenciesList = computed<CurrencyWithExchangeRate[]>(() =>
   currencies.value.map((item) => {
@@ -93,19 +102,6 @@ const toggleActiveItem = (index: ActiveItemIndex) => {
   activeItemIndex.value = activeItemIndex.value === index ? null : index;
 };
 
-const loadRates = async () => {
-  try {
-    rates.value = await loadUserCurrenciesExchangeRates();
-  } catch (err) {
-    if (err.data.code === API_ERROR_CODES.unauthorized) return;
-    addErrorNotification("Unexpected error. Cannot load exchange rates.");
-  }
-};
-
-onMounted(() => {
-  loadRates();
-});
-
 const onDeleteHandler = async (index: ActiveItemIndex) => {
   try {
     await deleteUserCurrency(currencies.value[index].currencyId);
@@ -125,9 +121,9 @@ const onDeleteHandler = async (index: ActiveItemIndex) => {
   }
 };
 
-const onSubmitHandler = () => {
-  loadRates();
+const onCurrencyEdit = () => {
   toggleActiveItem(null);
+  queryClient.invalidateQueries({ queryKey: VUE_QUERY_CACHE_KEYS.exchangeRates });
 };
 
 const isDeletionDisabled = (currency: UserCurrencyModel) =>

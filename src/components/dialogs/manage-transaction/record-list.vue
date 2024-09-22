@@ -21,23 +21,25 @@ import { TRANSACTION_TYPES, TransactionModel } from "shared-types";
 import { useInfiniteQuery } from "@tanstack/vue-query";
 import { VUE_QUERY_CACHE_KEYS } from "@/common/const";
 import { loadTransactions } from "@/api/transactions";
-import { EVENTS as MODAL_EVENTS } from "@/components/modal-center/ui-modal.vue";
 import TransactionRecrod from "@/components/transactions-list/transaction-record.vue";
 
-export interface RecordListModalProps {
+const props = defineProps<{
   transactionType: TRANSACTION_TYPES;
-  onSelect: (item: TransactionModel) => void;
-}
+}>();
 
-const props = defineProps<RecordListModalProps>();
-
-const emit = defineEmits([MODAL_EVENTS.closeModal]);
+const emit = defineEmits<{
+  select: [value: TransactionModel];
+}>();
 
 const limit = 15;
 const fetchTransactions = ({ pageParam = 0 }) => {
-  const type = props.transactionType;
   const from = pageParam * limit;
-  return loadTransactions({ limit, from, type, excludeTransfer: true });
+  return loadTransactions({
+    limit,
+    from,
+    transactionType: props.transactionType,
+    excludeTransfer: true,
+  });
 };
 
 const {
@@ -59,8 +61,7 @@ const {
 });
 
 const handlerRecordClick = (transaction: TransactionModel) => {
-  props.onSelect(transaction);
-  emit(MODAL_EVENTS.closeModal);
+  emit("select", transaction);
 };
 </script>
 

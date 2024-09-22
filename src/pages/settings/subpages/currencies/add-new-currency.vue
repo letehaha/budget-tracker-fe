@@ -13,30 +13,28 @@
       </div>
       <Button
         :disabled="!selectedCurrency || isCurrenciesLoading"
-        class="w-[100px]"
+        class="min-w-[100px]"
         @click="addCurrency"
       >
         Add
       </Button>
 
-      <template v-if="userCurrencies.length === 1">
-        <Tooltip.TooltipProvider>
-          <Tooltip.Tooltip>
-            <Tooltip.TooltipTrigger class="flex items-center gap-2">
-              <InfoIcon class="size-6" />
-              How it works?
-            </Tooltip.TooltipTrigger>
-            <Tooltip.TooltipContent class="max-w-[400px] p-4">
-              <span class="text-sm opacity-90 leading-6">
-                By adding custom currencies, you can create and manage accounts and transactions in
-                those currencies. You’ll also be able to adjust and update their exchange rates
-                relative to your base currency. Linked accounts will automatically create required
-                currencies.
-              </span>
-            </Tooltip.TooltipContent>
-          </Tooltip.Tooltip>
-        </Tooltip.TooltipProvider>
-      </template>
+      <Tooltip.TooltipProvider>
+        <Tooltip.Tooltip>
+          <Tooltip.TooltipTrigger class="flex items-center gap-2">
+            <InfoIcon class="size-6" />
+            How it works?
+          </Tooltip.TooltipTrigger>
+          <Tooltip.TooltipContent class="max-w-[400px] p-4">
+            <span class="text-sm opacity-90 leading-6">
+              By adding custom currencies, you can create and manage accounts and transactions in
+              those currencies. You’ll also be able to adjust and update their exchange rates
+              relative to your base currency. Linked accounts will automatically create required
+              currencies.
+            </span>
+          </Tooltip.TooltipContent>
+        </Tooltip.Tooltip>
+      </Tooltip.TooltipProvider>
     </CardContent>
   </Card>
 </template>
@@ -44,6 +42,7 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { storeToRefs } from "pinia";
+import { useQueryClient } from "@tanstack/vue-query";
 import { CurrencyModel } from "shared-types";
 import { InfoIcon } from "lucide-vue-next";
 import { useCurrenciesStore } from "@/stores";
@@ -53,10 +52,12 @@ import { SelectField } from "@/components/fields";
 import { Button } from "@/components/lib/ui/button";
 import { Card, CardContent } from "@/components/lib/ui/card";
 import * as Tooltip from "@/components/lib/ui/tooltip";
+import { VUE_QUERY_CACHE_KEYS } from "@/common/const";
 
 const currenciesStore = useCurrenciesStore();
 const { addErrorNotification } = useNotificationCenter();
 const { currencies: userCurrencies, systemCurrencies } = storeToRefs(currenciesStore);
+const queryClient = useQueryClient();
 
 const isCurrenciesLoading = ref(false);
 const selectedCurrency = ref<CurrencyModel>(null);
@@ -70,13 +71,9 @@ const addCurrency = async () => {
   try {
     isCurrenciesLoading.value = true;
 
-    await addUserCurrencies([
-      {
-        // TODO: add more options
-        currencyId: selectedCurrency.value.id,
-      },
-    ]);
+    await addUserCurrencies([{ currencyId: selectedCurrency.value.id }]);
 
+    queryClient.invalidateQueries({ queryKey: VUE_QUERY_CACHE_KEYS.exchangeRates });
     await currenciesStore.loadCurrencies();
   } catch (e) {
     addErrorNotification("Unexpected error. Currency is not added.");

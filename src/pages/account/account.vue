@@ -75,7 +75,7 @@ const limit = 10;
 
 const fetchTransactions = ({ pageParam }: { pageParam: number }) => {
   const from = pageParam * limit;
-  return loadTransactions({ limit, from, accountId: account.value.id });
+  return loadTransactions({ limit, from, accountIds: [account.value.id] });
 };
 
 const {

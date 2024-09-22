@@ -2,7 +2,9 @@
   <div class="layout-header">
     <div class="layout-header__actions">
       <div class="layout-header__action">
-        <ui-button variant="default" size="lg" @click="openFormModal"> New Transaction </ui-button>
+        <ManageTransactionDialog>
+          <ui-button variant="default" size="lg"> New Transaction </ui-button>
+        </ManageTransactionDialog>
       </div>
     </div>
 
@@ -46,22 +48,18 @@
 import { computed } from "vue";
 import { storeToRefs } from "pinia";
 import { useRootStore } from "@/stores";
-import { MODAL_TYPES, useModalCenter } from "@/components/modal-center/index";
 import UiTooltip from "@/components/common/tooltip.vue";
 import { toggleTheme, currentTheme, Themes } from "@/common/utils";
 import UiButton from "@/components/lib/ui/button/Button.vue";
 import { MoonStar, Sun, CheckCircle, RefreshCcw } from "lucide-vue-next";
+import ManageTransactionDialog from "@/components/dialogs/manage-transaction/index.vue";
 
-const { addModal } = useModalCenter();
 const rootStore = useRootStore();
 const { isAppInitialized, isFinancialDataSyncing, isAllowedToSyncFinancialData } =
   storeToRefs(rootStore);
 
 const isSyncing = computed(() => !isAppInitialized.value || isFinancialDataSyncing.value);
 
-const openFormModal = () => {
-  addModal({ type: MODAL_TYPES.createRecord });
-};
 const syncFinancialDataHandler = () => {
   if (isAllowedToSyncFinancialData.value) {
     rootStore.syncFinancialData();

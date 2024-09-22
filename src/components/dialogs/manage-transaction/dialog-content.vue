@@ -3,7 +3,7 @@ import { ref, watch, computed, onMounted, nextTick, onUnmounted } from "vue";
 import { useRoute } from "vue-router";
 import { storeToRefs } from "pinia";
 import { useQueryClient } from "@tanstack/vue-query";
-import { useEventListener, watchOnce } from "@vueuse/core";
+import { watchOnce } from "@vueuse/core";
 import {
   TRANSACTION_TYPES,
   PAYMENT_TYPES,
@@ -11,6 +11,8 @@ import {
   ACCOUNT_TYPES,
   TRANSACTION_TRANSFER_NATURE,
 } from "shared-types";
+import { DialogClose, DialogTitle } from "radix-vue";
+import * as Dialog from "@/components/lib/ui/dialog";
 import { useAccountsStore, useCategoriesStore, useCurrenciesStore } from "@/stores";
 import {
   createTransaction,
@@ -27,12 +29,10 @@ import {
 } from "@/common/const";
 import InputField from "@/components/fields/input-field.vue";
 import SelectField from "@/components/fields/select-field.vue";
-import { MODAL_TYPES, useModalCenter } from "@/components/modal-center";
 import CategorySelectField from "@/components/fields/category-select-field.vue";
 import TextareaField from "@/components/fields/textarea-field.vue";
 import DateField from "@/components/fields/date-field.vue";
 import { Button } from "@/components/lib/ui/button";
-import { EVENTS as MODAL_EVENTS } from "@/components/modal-center/ui-modal.vue";
 import TransactionRecrod from "@/components/transactions-list/transaction-record.vue";
 import { ApiErrorResponseError } from "@/js/errors";
 import { useNotificationCenter } from "@/components/notification-center";
@@ -44,6 +44,7 @@ import { FORM_TYPES, UI_FORM_STRUCT } from "./types";
 import { prepopulateForm } from "./helpers";
 import { getRefundInfo, useTransferFormLogic } from "./composables";
 import { prepareTxCreationParams, prepareTxUpdationParams } from "./utils";
+import RecordList from "./record-list.vue";
 
 defineOptions({
   name: "record-form",
@@ -59,16 +60,15 @@ const props = withDefaults(defineProps<CreateRecordModalProps>(), {
   oppositeTransaction: undefined,
 });
 
-const emit = defineEmits([MODAL_EVENTS.closeModal]);
+const emit = defineEmits(["close-modal"]);
 const closeModal = () => {
-  emit(MODAL_EVENTS.closeModal);
+  emit("close-modal");
 };
 
 const route = useRoute();
 watch(() => route.path, closeModal);
 
 const { addErrorNotification } = useNotificationCenter();
-const { addModal } = useModalCenter();
 const { currenciesMap } = storeToRefs(useCurrenciesStore());
 const { accountsRecord, systemAccounts } = storeToRefs(useAccountsStore());
 const { formattedCategories, categoriesMap } = storeToRefs(useCategoriesStore());
@@ -110,23 +110,6 @@ watchOnce(
 );
 
 const linkedTransaction = ref<TransactionModel | null>(null);
-
-const openTransactionLinkingModal = async () => {
-  const type =
-    props.transaction?.transactionType === TRANSACTION_TYPES.expense
-      ? TRANSACTION_TYPES.income
-      : TRANSACTION_TYPES.expense;
-
-  addModal({
-    type: MODAL_TYPES.recordList,
-    data: {
-      transactionType: type,
-      onSelect(transaction) {
-        linkedTransaction.value = transaction;
-      },
-    },
-  });
-};
 
 const isRecordExternal = computed(() => {
   if (!props.transaction) return false;
@@ -275,7 +258,7 @@ const submit = async () => {
       );
     }
 
-    emit(MODAL_EVENTS.closeModal);
+    closeModal();
     // Reload all cached data in the app
     queryClient.invalidateQueries({ queryKey: [VUE_QUERY_TX_CHANGE_QUERY] });
     queryClient.invalidateQueries({
@@ -287,6 +270,10 @@ const submit = async () => {
   } catch (e) {
     if (e instanceof ApiErrorResponseError) {
       addErrorNotification(e.data.message);
+    } else {
+      // eslint-disable-next-line no-console
+      console.error(e);
+      addErrorNotification("Unexpected error!");
     }
   } finally {
     isLoading.value = false;
@@ -301,7 +288,7 @@ const unlinkTransactions = async () => {
       transferIds: [props.transaction.transferId],
     });
 
-    emit(MODAL_EVENTS.closeModal);
+    closeModal();
     // Reload all cached data in the app
     queryClient.invalidateQueries({ queryKey: [VUE_QUERY_TX_CHANGE_QUERY] });
   } catch (err) {
@@ -320,7 +307,7 @@ const deleteTransactionHandler = async () => {
 
     await deleteTransaction(props.transaction.id);
 
-    emit(MODAL_EVENTS.closeModal);
+    closeModal();
     // Reload all cached data in the app
     queryClient.invalidateQueries({ queryKey: [VUE_QUERY_TX_CHANGE_QUERY] });
   } catch (e) {
@@ -360,14 +347,10 @@ onMounted(() => {
 onUnmounted(() => {
   (previouslyFocusedElement.value as HTMLElement).focus();
 });
-
-useEventListener(document, "keydown", (event) => {
-  if (event.key === "Escape") closeModal();
-});
 </script>
 
 <template>
-  <div class="rounded-t-xl bg-card w-full max-w-[800px]">
+  <div class="rounded-t-xl">
     <div
       :class="[
         'h-3 transition-[background-color] ease-out duration-200 rounded-t-xl',
@@ -377,11 +360,15 @@ useEventListener(document, "keydown", (event) => {
       ]"
     />
     <div class="flex items-center justify-between py-3 px-6 mb-4">
-      <span class="text-2xl">
-        {{ isFormCreation ? "Add Transaction" : "Edit Transaction" }}
-      </span>
+      <DialogTitle>
+        <span class="text-2xl">
+          {{ isFormCreation ? "Add Transaction" : "Edit Transaction" }}
+        </span>
+      </DialogTitle>
 
-      <Button variant="ghost" @click="closeModal"> Close </Button>
+      <DialogClose>
+        <Button variant="ghost"> Close </Button>
+      </DialogClose>
     </div>
     <div class="grid grid-cols-[450px,1fr] relative">
       <div class="px-6">
@@ -422,7 +409,7 @@ useEventListener(document, "keydown", (event) => {
             :from-account-disabled="fromAccountFieldDisabled"
             :to-account-disabled="toAccountFieldDisabled"
             :filtered-accounts="transferDestinationAccounts"
-            @close-modal="emit(MODAL_EVENTS.closeModal)"
+            @close-modal="closeModal"
           />
 
           <template v-if="currentTxType !== FORM_TYPES.transfer">
@@ -460,14 +447,24 @@ useEventListener(document, "keydown", (event) => {
             "
           >
             <form-row>
-              <Button
-                class="w-full"
-                :disabled="isFormFieldsDisabled"
-                size="sm"
-                @click="openTransactionLinkingModal"
-              >
-                Link existing transaction
-              </Button>
+              <Dialog.Dialog>
+                <Dialog.DialogTrigger>
+                  <Button class="w-full" :disabled="isFormFieldsDisabled" size="sm">
+                    Link existing transaction
+                  </Button>
+                </Dialog.DialogTrigger>
+
+                <Dialog.DialogContent>
+                  <RecordList
+                    :transaction-type="
+                      transaction?.transactionType === TRANSACTION_TYPES.expense
+                        ? TRANSACTION_TYPES.income
+                        : TRANSACTION_TYPES.expense
+                    "
+                    @select="linkedTransaction = $event"
+                  />
+                </Dialog.DialogContent>
+              </Dialog.Dialog>
             </form-row>
           </template>
 
