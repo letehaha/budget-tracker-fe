@@ -1,4 +1,11 @@
-import { TransactionModel, endpointsTypes, TRANSACTION_TRANSFER_NATURE } from "shared-types";
+import {
+  TransactionModel,
+  endpointsTypes,
+  TRANSACTION_TRANSFER_NATURE,
+  ACCOUNT_TYPES,
+  TRANSACTION_TYPES,
+  SORT_DIRECTIONS,
+} from "shared-types";
 import { api } from "@/api/_api";
 import { fromSystemAmount, toSystemAmount } from "@/api/helpers";
 
@@ -17,22 +24,41 @@ export const formatTransactionPayload = <
   transaction: T,
 ): T => {
   const params = { ...transaction };
-  if (params.time) {
-    params.time = new Date(params.time).toISOString();
-  }
-  const fieldsToPatch = ["amount", "destinationAmount"];
+  const timeFieldsToPatch = ["time", "startDate", "endDate"];
 
-  fieldsToPatch.forEach((field) => {
+  timeFieldsToPatch.forEach((field) => {
+    if (params[field]) params[field] = new Date(params[field]).toISOString();
+  });
+
+  const amountFieldsToPatch = ["amount", "destinationAmount", "amountLte", "amountGte"];
+
+  amountFieldsToPatch.forEach((field) => {
     if (params[field]) params[field] = toSystemAmount(Number(params[field]));
   });
 
   return params;
 };
 
-export const loadTransactions = async (
-  params: endpointsTypes.GetTransactionsQuery,
-): Promise<endpointsTypes.GetTransactionsResponse> => {
-  const result = await api.get("/transactions", params);
+export const loadTransactions = async (params: {
+  from: number;
+  limit?: number;
+  accountType?: ACCOUNT_TYPES;
+  transactionType?: TRANSACTION_TYPES;
+  accountIds?: number[];
+  sort?: SORT_DIRECTIONS;
+  includeUser?: boolean;
+  includeAccount?: boolean;
+  includeCategory?: boolean;
+  includeAll?: boolean;
+  nestedInclude?: boolean;
+  excludeTransfer?: boolean;
+  excludeRefunds?: boolean;
+  startDate?: string;
+  endDate?: string;
+  amountLte?: number;
+  amountGte?: number;
+}): Promise<endpointsTypes.GetTransactionsResponse> => {
+  const result = await api.get("/transactions", formatTransactionPayload(params));
 
   return result.map((item) => formatTransactionResponse(item));
 };

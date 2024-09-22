@@ -33,9 +33,13 @@ const emit = defineEmits<{
 
 const limit = 15;
 const fetchTransactions = ({ pageParam = 0 }) => {
-  const type = props.transactionType;
   const from = pageParam * limit;
-  return loadTransactions({ limit, from, type, excludeTransfer: true });
+  return loadTransactions({
+    limit,
+    from,
+    transactionType: props.transactionType,
+    excludeTransfer: true,
+  });
 };
 
 const {

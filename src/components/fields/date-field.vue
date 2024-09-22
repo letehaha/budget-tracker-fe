@@ -35,7 +35,13 @@
         </div>
         <FieldError :error-message="errorMessage" />
         <Popover.PopoverContent class="w-[350px]">
-          <Calendar v-model="localValue" mode="dateTime" is24hr type="single" />
+          <Calendar
+            v-model="localValue"
+            v-bind="calendarOptions"
+            mode="dateTime"
+            is24hr
+            type="single"
+          />
         </Popover.PopoverContent>
       </FieldLabel>
     </Popover.Popover>
@@ -65,6 +71,10 @@ const props = withDefaults(
     errorMessage?: string;
     inputFieldStyles?: Record<string, string>;
     disabled?: boolean;
+    calendarOptions?: {
+      minDate?: Date;
+      maxDate?: Date;
+    };
   }>(),
   {
     label: undefined,
@@ -74,6 +84,7 @@ const props = withDefaults(
     errorMessage: undefined,
     inputFieldStyles: undefined,
     disabled: false,
+    calendarOptions: undefined,
   },
 );
 
