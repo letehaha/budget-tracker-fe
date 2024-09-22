@@ -25,7 +25,6 @@ import {
   VERBOSE_PAYMENT_TYPES,
   OUT_OF_WALLET_ACCOUNT_MOCK,
   VUE_QUERY_TX_CHANGE_QUERY,
-  VUE_QUERY_CACHE_KEYS,
 } from "@/common/const";
 import InputField from "@/components/fields/input-field.vue";
 import SelectField from "@/components/fields/select-field.vue";
@@ -261,12 +260,6 @@ const submit = async () => {
     closeModal();
     // Reload all cached data in the app
     queryClient.invalidateQueries({ queryKey: [VUE_QUERY_TX_CHANGE_QUERY] });
-    queryClient.invalidateQueries({
-      queryKey: [
-        VUE_QUERY_CACHE_KEYS.recordsPageTransactionList,
-        refundTransactionsTypeBasedOnFormType.value,
-      ],
-    });
   } catch (e) {
     if (e instanceof ApiErrorResponseError) {
       addErrorNotification(e.data.message);
