@@ -86,7 +86,7 @@ const {
   isFetched,
 } = useInfiniteQuery({
   queryKey: [
-    VUE_QUERY_CACHE_KEYS.recordsPageTransactionList,
+    ...VUE_QUERY_CACHE_KEYS.recordsPageTransactionList,
     props.transactionType,
     appliedFilters,
   ],

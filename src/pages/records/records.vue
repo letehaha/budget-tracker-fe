@@ -214,7 +214,7 @@ const {
   hasNextPage,
   isFetched,
 } = useInfiniteQuery({
-  queryKey: [VUE_QUERY_CACHE_KEYS.recordsPageRecordsList, appliedFilters],
+  queryKey: [...VUE_QUERY_CACHE_KEYS.recordsPageRecordsList, appliedFilters],
   queryFn: ({ pageParam }) => fetchTransactions({ pageParam, filter: appliedFilters.value }),
   initialPageParam: 0,
   getNextPageParam: (lastPage, pages) => {
