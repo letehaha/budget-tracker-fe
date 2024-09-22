@@ -51,7 +51,7 @@ export const useNotificationCenter = (): {
       removeNotification(id);
 
       delete notificationIds[id];
-    }, notification.visibilityTime ?? 400000);
+    }, notification.visibilityTime ?? 4000);
 
     return id;
   };
