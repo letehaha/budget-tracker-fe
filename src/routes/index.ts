@@ -38,6 +38,17 @@ const routes = [
         component: () => import("@/pages/crypto/crypto.vue"),
       },
       {
+        path: "/investments",
+        name: ROUTES_NAMES.investments,
+        component: () => import("@/pages/investments/investments.vue"),
+      },
+      {
+        path: "/investment-account/:id",
+        name: ROUTES_NAMES.investmentAccount,
+        component: () =>
+          import("@/pages/investment-account/investment-account.vue"),
+      },
+      {
         path: "/analytics",
         name: ROUTES_NAMES.analytics,
         beforeEnter: [devOnly],

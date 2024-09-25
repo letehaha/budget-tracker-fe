@@ -1,4 +1,4 @@
-import { ACCOUNT_CATEGORIES, AccountModel, endpointsTypes } from "shared-types";
+import { AccountModel, endpointsTypes } from "shared-types";
 import { api } from "@/api/_api";
 import { fromSystemAmount, toSystemAmount } from "@/api/helpers";
 
@@ -19,18 +19,14 @@ export const loadAccounts = async (): Promise<AccountModel[]> => {
 };
 
 export const createAccount = async (
-  payload: Omit<endpointsTypes.CreateAccountBody, "accountCategory">,
+  payload: endpointsTypes.CreateAccountBody,
 ): Promise<AccountModel> => {
   const params = payload;
 
   if (params.creditLimit) params.creditLimit = toSystemAmount(Number(params.creditLimit));
   if (params.initialBalance) params.initialBalance = toSystemAmount(Number(params.initialBalance));
 
-  const result = await api.post("/accounts", {
-    ...params,
-    // For now we just doesn't allow users to select account category on UI
-    accountCategory: ACCOUNT_CATEGORIES.general,
-  });
+  const result = await api.post("/accounts", params);
 
   return result;
 };

@@ -52,7 +52,12 @@
   </template>
   <template v-else>
     <form-row>
-      <input-field model-value="No account exists" label="Account" readonly :disabled="disabled">
+      <input-field
+        model-value="No account exists"
+        label="Account"
+        readonly
+        :disabled="disabled"
+      >
         <template #label-right>
           <div
             class="text-primary cursor-pointer hover:underline"
@@ -102,7 +107,11 @@ withDefaults(
   },
 );
 
-const emit = defineEmits(["close-modal", "update:account", "update:to-account"]);
+const emit = defineEmits([
+  "close-modal",
+  "update:account",
+  "update:to-account",
+]);
 
 const router = useRouter();
 

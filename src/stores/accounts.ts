@@ -1,7 +1,7 @@
 import { ref, WritableComputedRef, computed, watch } from "vue";
 import { defineStore, storeToRefs } from "pinia";
 import { useQuery } from "@tanstack/vue-query";
-import { ACCOUNT_TYPES, AccountModel } from "shared-types";
+import { ACCOUNT_CATEGORIES, ACCOUNT_TYPES, AccountModel } from "shared-types";
 import {
   loadAccounts as apiLoadAccounts,
   createAccount as apiCreateAccount,
@@ -43,6 +43,9 @@ export const useAccountsStore = defineStore("accounts", () => {
     accounts.value.filter((item) => item.type === ACCOUNT_TYPES.system),
   );
   const enabledAccounts = computed(() => accounts.value.filter((item) => item.isEnabled));
+  const investmentAccounts = computed(() =>
+    accounts.value.filter((item) => item.accountCategory === ACCOUNT_CATEGORIES.investment),
+  );
 
   const createAccount = async (payload: Parameters<typeof apiCreateAccount>[0]) => {
     try {
@@ -80,6 +83,7 @@ export const useAccountsStore = defineStore("accounts", () => {
     accountsRecord,
     enabledAccounts,
     systemAccounts,
+    investmentAccounts,
     accountsCurrencyIds,
 
     getAccountById,

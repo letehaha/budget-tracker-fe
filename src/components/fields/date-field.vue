@@ -98,7 +98,12 @@ const emit = defineEmits<{
 const localValue = ref<Date>(props.modelValue);
 
 const handleLocalInputUpdate = (event: InputChangeEvent) => {
-  emit("update:modelValue", new Date(event.target.value));
+  const date = new Date(event.target.value);
+  // For some reason on first update the event.target.value is empty string, so
+  // when we emit invalid date - it breaks the app
+  if (!Number.isNaN(date.getTime())) {
+    emit("update:modelValue", date);
+  }
 };
 
 watch(

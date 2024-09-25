@@ -20,7 +20,10 @@
           </ui-button>
         </router-link>
 
-        <router-link v-slot="{ isActive }" :to="{ name: ROUTES_NAMES.accounts }">
+        <router-link
+          v-slot="{ isActive }"
+          :to="{ name: ROUTES_NAMES.accounts }"
+        >
           <ui-button
             :variant="isActive ? 'default' : 'ghost'"
             as="span"
@@ -32,7 +35,10 @@
           </ui-button>
         </router-link>
 
-        <router-link v-slot="{ isActive }" :to="{ name: ROUTES_NAMES.transactions }">
+        <router-link
+          v-slot="{ isActive }"
+          :to="{ name: ROUTES_NAMES.transactions }"
+        >
           <ui-button
             :variant="isActive ? 'default' : 'ghost'"
             as="span"
@@ -45,7 +51,10 @@
         </router-link>
 
         <template v-if="isDevEnv">
-          <router-link v-slot="{ isActive }" :to="{ name: ROUTES_NAMES.analytics }">
+          <router-link
+            v-slot="{ isActive }"
+            :to="{ name: ROUTES_NAMES.analytics }"
+          >
             <ui-button
               :variant="isActive ? 'default' : 'ghost'"
               as="span"
@@ -59,7 +68,10 @@
         </template>
 
         <template v-if="isDevEnv">
-          <router-link v-slot="{ isActive }" :to="{ name: ROUTES_NAMES.crypto }">
+          <router-link
+            v-slot="{ isActive }"
+            :to="{ name: ROUTES_NAMES.crypto }"
+          >
             <ui-button
               :variant="isActive ? 'default' : 'ghost'"
               as="span"
@@ -71,7 +83,25 @@
             </ui-button>
           </router-link>
         </template>
-        <router-link v-slot="{ isActive }" :to="{ name: ROUTES_NAMES.settings }">
+
+        <router-link
+          v-slot="{ isActive }"
+          :to="{ name: ROUTES_NAMES.investments }"
+        >
+          <ui-button
+            :variant="isActive ? 'default' : 'ghost'"
+            as="span"
+            class="justify-start w-full px-3"
+            size="lg"
+          >
+            Investments
+          </ui-button>
+        </router-link>
+
+        <router-link
+          v-slot="{ isActive }"
+          :to="{ name: ROUTES_NAMES.settings }"
+        >
           <ui-button
             :variant="isActive ? 'default' : 'ghost'"
             as="span"
@@ -84,7 +114,11 @@
         </router-link>
       </nav>
 
-      <ui-button variant="secondary" class="sidebar__item mt-auto" @click="logOutHandler">
+      <ui-button
+        variant="secondary"
+        class="sidebar__item mt-auto"
+        @click="logOutHandler"
+      >
         <LogOutIcon />
         <span> Logout </span>
       </ui-button>

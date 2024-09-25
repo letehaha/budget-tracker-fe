@@ -35,10 +35,8 @@ interface ApiCall {
 const API_HTTP = import.meta.env.VITE_APP_API_HTTP;
 const API_VER = import.meta.env.VITE_APP_API_VER;
 
-// eslint-disable-next-line no-console
-console.log("API_HTTP", API_HTTP);
-// eslint-disable-next-line no-console
-console.log("API_VER", API_VER);
+console.info("API_HTTP", API_HTTP);
+console.info("API_VER", API_VER);
 class ApiCaller {
   authToken: string | null;
 

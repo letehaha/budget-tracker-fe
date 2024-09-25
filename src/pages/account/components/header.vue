@@ -3,6 +3,7 @@ import { AccountModel } from "shared-types";
 import { ref } from "vue";
 import { storeToRefs } from "pinia";
 import { Edit2Icon } from "lucide-vue-next";
+import { useQueryClient } from "@tanstack/vue-query";
 import { CardHeader } from "@/components/lib/ui/card";
 import { Button } from "@/components/lib/ui/button";
 import * as Popover from "@/components/lib/ui/popover";
@@ -12,12 +13,14 @@ import { useFormValidation } from "@/composable";
 import { toLocalNumber } from "@/js/helpers";
 import * as validators from "@/js/helpers/validators";
 import { useNotificationCenter } from "@/components/notification-center";
+import { VUE_QUERY_CACHE_KEYS } from "@/common/const";
 
 const props = defineProps<{
   account: AccountModel;
 }>();
 const { currenciesMap, baseCurrency } = storeToRefs(useCurrenciesStore());
 const accountsStore = useAccountsStore();
+const queryClient = useQueryClient();
 const formEditingPopoverOpen = ref(false);
 const { addSuccessNotification, addErrorNotification } = useNotificationCenter();
 
@@ -46,6 +49,9 @@ const updateAccount = async () => {
       name: accountNameForm.value.name,
     });
 
+    queryClient.invalidateQueries({
+      queryKey: VUE_QUERY_CACHE_KEYS.allAccounts,
+    });
     formEditingPopoverOpen.value = false;
     addSuccessNotification("Account data changed successfully");
   } catch (e) {

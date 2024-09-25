@@ -61,7 +61,9 @@ const isOpen = ref(false);
             <div class="flex gap-2">
               {{ currenciesMap[account.currencyId].currency.code }}
 
-              <span v-if="currenciesMap[account.currencyId].isDefaultCurrency"> (main) </span>
+              <span v-if="currenciesMap[account.currencyId].isDefaultCurrency">
+                (main)
+              </span>
 
               <template v-if="isOpen">
                 <ChevronUpIcon />
@@ -88,7 +90,11 @@ const isOpen = ref(false);
             <div class="flex items-center justify-between gap-2">
               <span> Exchange Rate Live Update: </span>
 
-              {{ currenciesMap[account.currencyId].liveRateUpdate ? "Enabled" : "Disabled" }}
+              {{
+                currenciesMap[account.currencyId].liveRateUpdate
+                  ? "Enabled"
+                  : "Disabled"
+              }}
             </div>
           </div>
         </Collapsible.CollapsibleContent>
