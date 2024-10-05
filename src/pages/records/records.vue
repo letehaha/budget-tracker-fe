@@ -1,96 +1,211 @@
 <template>
   <div class="p-4">
-    <div class="flex gap-20">
-      <Card class="sticky h-min min-w-[350px] top-[var(--header-height)] p-4">
-        <div class="grid gap-4">
-          <DateField
-            v-model="filters.start"
-            :calendar-options="{
-              maxDate: filters.end,
-            }"
-            label="From date"
-          />
-          <DateField
-            v-model="filters.end"
-            :calendar-options="{
-              minDate: filters.start,
-            }"
-            label="To date"
-          />
-
-          <div>
-            <p class="mb-2">Transaction type:</p>
-
-            <RadioGroup
-              v-model="filters.transactionType"
-              :default-value="null"
-              class="flex flex-wrap gap-2"
-            >
-              <label class="flex gap-2 items-center cursor-pointer">
-                <RadioGroupItem :value="null" />
-                <p class="text-sm">Both</p>
-              </label>
-              <label class="flex gap-2 items-center cursor-pointer">
-                <RadioGroupItem :value="TRANSACTION_TYPES.income" />
-                <p class="text-sm">Income</p>
-              </label>
-              <label class="flex gap-2 items-center cursor-pointer">
-                <RadioGroupItem :value="TRANSACTION_TYPES.expense" />
-                <p class="text-sm">Expense</p>
-              </label>
-            </RadioGroup>
-          </div>
-
-          <div class="flex gap-2">
-            <InputField
-              v-model="filters.amountGte"
-              label="Amount from (gte)"
-              placeholder=">= than"
+    <div class="flex flex-col w-min lg:w-auto lg:flex-row gap-4 xl:gap-20 max-w-full">
+      <template v-if="!hideFilters">
+        <Card class="sticky h-min min-w-[350px] top-[var(--header-height)] p-4">
+          <div class="grid gap-4">
+            <DateField
+              v-model="filters.start"
+              :calendar-options="{
+                maxDate: filters.end,
+              }"
+              label="From date"
             />
-            <InputField v-model="filters.amountLte" label="To (lte)" placeholder="<= than" />
-          </div>
+            <DateField
+              v-model="filters.end"
+              :calendar-options="{
+                minDate: filters.start,
+              }"
+              label="To date"
+            />
 
-          <div>
-            <p class="mb-2">Exlude:</p>
+            <div>
+              <p class="mb-2">Transaction type:</p>
+
+              <RadioGroup
+                v-model="filters.transactionType"
+                :default-value="null"
+                class="flex flex-wrap gap-2"
+              >
+                <label class="flex gap-2 items-center cursor-pointer">
+                  <RadioGroupItem :value="null" />
+                  <p class="text-sm">Both</p>
+                </label>
+                <label class="flex gap-2 items-center cursor-pointer">
+                  <RadioGroupItem :value="TRANSACTION_TYPES.income" />
+                  <p class="text-sm">Income</p>
+                </label>
+                <label class="flex gap-2 items-center cursor-pointer">
+                  <RadioGroupItem :value="TRANSACTION_TYPES.expense" />
+                  <p class="text-sm">Expense</p>
+                </label>
+              </RadioGroup>
+            </div>
 
             <div class="flex gap-2">
-              <label class="cursor-pointer flex gap-2 items-center">
-                <Checkbox
-                  :checked="filters.excludeRefunds"
-                  @update:checked="filters.excludeRefunds = $event"
-                />
-                Refunds
-              </label>
-              <label class="cursor-pointer flex gap-2 items-center">
-                <Checkbox
-                  :checked="filters.excludeTransfer"
-                  @update:checked="filters.excludeTransfer = $event"
-                />
-                Transfers
-              </label>
+              <InputField
+                v-model="filters.amountGte"
+                label="Amount from (gte)"
+                placeholder=">= than"
+              />
+              <InputField v-model="filters.amountLte" label="To (lte)" placeholder="<= than" />
+            </div>
+
+            <div>
+              <p class="mb-2">Exlude:</p>
+
+              <div class="flex gap-2">
+                <label class="cursor-pointer flex gap-2 items-center">
+                  <Checkbox
+                    :checked="filters.excludeRefunds"
+                    @update:checked="filters.excludeRefunds = $event"
+                  />
+                  Refunds
+                </label>
+                <label class="cursor-pointer flex gap-2 items-center">
+                  <Checkbox
+                    :checked="filters.excludeTransfer"
+                    @update:checked="filters.excludeTransfer = $event"
+                  />
+                  Transfers
+                </label>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div class="mt-8 flex gap-2">
-          <UiButton
-            variant="secondary"
-            :disabled="isResetButtonDisabled"
-            class="flex-shrink w-full"
-            @click="resetFilters"
-          >
-            Reset
-          </UiButton>
-
-          <template v-if="isFiltersOutOfSync">
-            <UiButton variant="default" class="flex-shrink w-full" @click="applyFilters">
-              Apply
+          <div class="mt-8 flex gap-2">
+            <UiButton
+              variant="secondary"
+              :disabled="isResetButtonDisabled"
+              class="flex-shrink w-full"
+              @click="resetFilters"
+            >
+              Reset
             </UiButton>
-          </template>
-        </div>
-      </Card>
 
-      <Card class="p-6 rounded-md w-screen max-w-[450px]">
+            <template v-if="isFiltersOutOfSync">
+              <UiButton variant="default" class="flex-shrink w-full" @click="applyFilters">
+                Apply
+              </UiButton>
+            </template>
+          </div>
+        </Card>
+      </template>
+      <template v-else>
+        <div class="flex items-center justify-between">
+          <p>Filters:</p>
+
+          <Dialog.Dialog v-model:open="isFiltersDialogOpen">
+            <Dialog.DialogTrigger as-child>
+              <Button variant="ghost" size="icon" class="ml-auto">
+                <div class="relative">
+                  <ListFilterIcon />
+
+                  <template v-if="isAnyFiltersApplied">
+                    <div class="size-3 rounded-full bg-primary absolute -top-1 -right-1" />
+                  </template>
+                </div>
+              </Button>
+            </Dialog.DialogTrigger>
+            <Dialog.DialogContent
+              class="sm:max-w-md max-h-[90dvh] grid-rows-[auto_auto_minmax(0,1fr)_auto]"
+            >
+              <Dialog.DialogHeader class="mb-6">
+                <Dialog.DialogTitle> Select filters </Dialog.DialogTitle>
+              </Dialog.DialogHeader>
+
+              <div class="grid gap-4">
+                <DateField
+                  v-model="filters.start"
+                  :calendar-options="{
+                    maxDate: filters.end,
+                  }"
+                  label="From date"
+                />
+                <DateField
+                  v-model="filters.end"
+                  :calendar-options="{
+                    minDate: filters.start,
+                  }"
+                  label="To date"
+                />
+
+                <div>
+                  <p class="mb-2">Transaction type:</p>
+
+                  <RadioGroup
+                    v-model="filters.transactionType"
+                    :default-value="null"
+                    class="flex flex-wrap gap-2"
+                  >
+                    <label class="flex gap-2 items-center cursor-pointer">
+                      <RadioGroupItem :value="null" />
+                      <p class="text-sm">Both</p>
+                    </label>
+                    <label class="flex gap-2 items-center cursor-pointer">
+                      <RadioGroupItem :value="TRANSACTION_TYPES.income" />
+                      <p class="text-sm">Income</p>
+                    </label>
+                    <label class="flex gap-2 items-center cursor-pointer">
+                      <RadioGroupItem :value="TRANSACTION_TYPES.expense" />
+                      <p class="text-sm">Expense</p>
+                    </label>
+                  </RadioGroup>
+                </div>
+
+                <div class="flex gap-2">
+                  <InputField
+                    v-model="filters.amountGte"
+                    label="Amount from (gte)"
+                    placeholder=">= than"
+                  />
+                  <InputField v-model="filters.amountLte" label="To (lte)" placeholder="<= than" />
+                </div>
+
+                <div>
+                  <p class="mb-2">Exlude:</p>
+
+                  <div class="flex gap-2">
+                    <label class="cursor-pointer flex gap-2 items-center">
+                      <Checkbox
+                        :checked="filters.excludeRefunds"
+                        @update:checked="filters.excludeRefunds = $event"
+                      />
+                      Refunds
+                    </label>
+                    <label class="cursor-pointer flex gap-2 items-center">
+                      <Checkbox
+                        :checked="filters.excludeTransfer"
+                        @update:checked="filters.excludeTransfer = $event"
+                      />
+                      Transfers
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-8 flex gap-2">
+                <UiButton
+                  variant="secondary"
+                  :disabled="isResetButtonDisabled"
+                  class="flex-shrink w-full"
+                  @click="resetFilters"
+                >
+                  Reset
+                </UiButton>
+
+                <template v-if="isFiltersOutOfSync">
+                  <UiButton variant="default" class="flex-shrink w-full" @click="applyFilters">
+                    Apply
+                  </UiButton>
+                </template>
+              </div>
+            </Dialog.DialogContent>
+          </Dialog.Dialog>
+        </div>
+      </template>
+
+      <Card class="py-4 px-2 sm:p-6 rounded-md w-screen max-w-full sm:max-w-[450px]">
         <div>
           <template v-if="isFetched && transactionsPages">
             <TransactionsList :transactions="transactionsPages.pages.flat()" />
@@ -129,9 +244,11 @@
 
 <script lang="ts" setup>
 import { computed, ref } from "vue";
-import { useWindowScroll } from "@vueuse/core";
+import { useWindowScroll, useWindowSize, useDebounce } from "@vueuse/core";
 import isDate from "date-fns/isDate";
 import { isEqual } from "lodash-es";
+import * as Dialog from "@/components/lib/ui/dialog";
+import { ListFilterIcon } from "lucide-vue-next";
 
 import { Card } from "@/components/lib/ui/card";
 import { useInfiniteQuery } from "@tanstack/vue-query";
@@ -171,18 +288,26 @@ const DEFAULT_FILTERS: {
   excludeTransfer: false,
 };
 
+const isFiltersDialogOpen = ref(false);
 const filters = ref({ ...DEFAULT_FILTERS });
 const appliedFilters = ref({ ...DEFAULT_FILTERS });
 
 const isResetButtonDisabled = computed(() => isEqual(filters.value, DEFAULT_FILTERS));
+const isAnyFiltersApplied = computed(() => !isEqual(appliedFilters.value, DEFAULT_FILTERS));
 const isFiltersOutOfSync = computed(() => !isEqual(filters.value, appliedFilters.value));
 const resetFilters = () => {
   filters.value = { ...DEFAULT_FILTERS };
   appliedFilters.value = { ...DEFAULT_FILTERS };
+  isFiltersDialogOpen.value = false;
 };
 const applyFilters = () => {
   appliedFilters.value = { ...filters.value };
+  isFiltersDialogOpen.value = false;
 };
+const { width: windowWidth } = useWindowSize();
+const debouncedWindowWidth = useDebounce(windowWidth, 300);
+
+const hideFilters = computed(() => debouncedWindowWidth.value <= 1024);
 
 const fetchTransactions = ({
   pageParam,
