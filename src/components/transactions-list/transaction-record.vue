@@ -1,6 +1,6 @@
 <template>
   <button
-    class="py-1 px-2 rounded-md flex justify-between items-center cursor-pointer w-full gap-2"
+    class="py-1 px-2 rounded-md flex justify-between items-center cursor-pointer w-full gap-2 [content-visibility:auto]"
     type="button"
     aria-haspopup="true"
     @click="transactionEmit"
