@@ -1,6 +1,6 @@
 <template>
   <Card>
-    <CardContent class="p-4">
+    <CardContent class="!p-4">
       <div class="account__name">
         {{ account.name || "No name set..." }}
       </div>

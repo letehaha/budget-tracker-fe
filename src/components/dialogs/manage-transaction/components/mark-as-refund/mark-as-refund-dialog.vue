@@ -76,9 +76,7 @@ const saveState = () => {
       <Dialog.DialogTrigger as-child>
         <Button class="w-full" :disabled="disabled" variant="secondary"> Link refund </Button>
       </Dialog.DialogTrigger>
-      <Dialog.DialogContent
-        class="sm:max-w-md max-h-[90dvh] grid-rows-[auto_auto_minmax(0,1fr)_auto]"
-      >
+      <Dialog.DialogContent class="max-h-[90dvh] grid grid-rows-[auto_auto_minmax(0,1fr)_auto]">
         <Dialog.DialogHeader class="mb-4">
           <Dialog.DialogTitle>Select transaction</Dialog.DialogTitle>
           <Dialog.DialogDescription>

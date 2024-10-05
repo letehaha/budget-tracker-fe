@@ -1,12 +1,8 @@
 <template>
   <button
-    class="transaction-record"
+    class="py-1 px-2 rounded-md flex justify-between items-center cursor-pointer w-full gap-2 [content-visibility:auto]"
     type="button"
     aria-haspopup="true"
-    :class="{
-      'transaction-record--income': transaction.transactionType === TRANSACTION_TYPES.income,
-      'transaction-record--expense': transaction.transactionType === TRANSACTION_TYPES.expense,
-    }"
     @click="transactionEmit"
   >
     <div class="flex items-center gap-2">
@@ -21,11 +17,16 @@
           </span>
         </template>
         <template v-else>
-          <template v-if="category">
+          <div class="flex gap-2 items-center">
             <span class="text-sm tracking-wider whitespace-nowrap">
-              {{ category.name }}
+              {{ category.name || "Other" }}
             </span>
-          </template>
+            <template v-if="isRefund">
+              <div class="border rounded-sm border-primary text-xs text-white/80 px-1 py-0.5">
+                Refund
+              </div>
+            </template>
+          </div>
         </template>
         <span class="text-sm tracking-wider line-clamp-2 opacity-40">
           {{ transaction.note }}
@@ -51,27 +52,15 @@
 
 <script lang="ts" setup>
 import { format } from "date-fns";
-import { computed, reactive, ref } from "vue";
+import { computed, reactive } from "vue";
 import { storeToRefs } from "pinia";
 import { TRANSACTION_TRANSFER_NATURE, TRANSACTION_TYPES, TransactionModel } from "shared-types";
 
 import { useCategoriesStore, useAccountsStore } from "@/stores";
-import { loadTransactionsByTransferId } from "@/api/transactions";
+import { useOppositeTxRecord } from "@/composable/data-queries/opposite-tx-record";
 
 import { formatUIAmount } from "@/js/helpers";
 import CategoryCircle from "@/components/common/category-circle.vue";
-
-const setOppositeTransaction = async (transaction: TransactionModel) => {
-  const transactions = await loadTransactionsByTransferId(transaction.transferId);
-
-  return transactions.find((item) => item.id !== transaction.id);
-};
-
-const txNatureIsTransfer = (nature: TRANSACTION_TRANSFER_NATURE) =>
-  [
-    TRANSACTION_TRANSFER_NATURE.common_transfer,
-    TRANSACTION_TRANSFER_NATURE.transfer_out_wallet,
-  ].includes(nature);
 
 const props = defineProps<{
   tx: TransactionModel;
@@ -86,16 +75,15 @@ const emit = defineEmits<{
 }>();
 
 const transaction = reactive(props.tx);
+const isTransferTransaction = computed(() =>
+  [
+    TRANSACTION_TRANSFER_NATURE.common_transfer,
+    TRANSACTION_TRANSFER_NATURE.transfer_out_wallet,
+  ].includes(transaction.transferNature),
+);
+const isRefund = computed(() => transaction.refundLinked);
 
-const isTransferTransaction = computed(() => txNatureIsTransfer(transaction.transferNature));
-
-const oppositeTransferTransaction = ref<TransactionModel | null>(null);
-
-if (transaction.transferNature === TRANSACTION_TRANSFER_NATURE.common_transfer) {
-  (async () => {
-    oppositeTransferTransaction.value = await setOppositeTransaction(transaction);
-  })();
-}
+const { oppositeTransferTransaction } = useOppositeTxRecord(transaction);
 
 const category = computed(() => categoriesMap.value[transaction.categoryId]);
 const accountFrom = computed(() => accountsRecord.value[transaction.accountId]);
@@ -131,17 +119,8 @@ const formattedAmount = computed(() => {
 });
 </script>
 
-<style lang="scss">
-.transaction-record {
-  @apply py-1 px-2;
-  @apply rounded-md flex justify-between items-center cursor-pointer w-full gap-2;
+<script lang="ts">
+export function invalidateTxsByTransferIdQuery(id: string) {
+  return ["transactions-by-transfer-id", id];
 }
-.transaction-record__amount {
-  .transaction-record--income & {
-    @apply text-app-income-color;
-  }
-  .transaction-record--expense & {
-    @apply text-app-expense-color;
-  }
-}
-</style>
+</script>

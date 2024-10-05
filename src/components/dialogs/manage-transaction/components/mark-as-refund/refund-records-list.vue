@@ -109,7 +109,7 @@ const handlerRecordClick = (transaction: TransactionModel) => {
 </script>
 
 <template>
-  <div class="grid gap-2 grid-rows-[minmax(0,1fr)_max-content]">
+  <div class="flex flex-col flex-grow min-h-0 gap-2">
     <div class="flex">
       <Dialog.Dialog v-model:open="isFiltersDialogOpen">
         <Dialog.DialogTrigger as-child>

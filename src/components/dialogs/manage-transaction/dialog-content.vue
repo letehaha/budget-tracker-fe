@@ -35,6 +35,7 @@ import { Button } from "@/components/lib/ui/button";
 import TransactionRecrod from "@/components/transactions-list/transaction-record.vue";
 import { ApiErrorResponseError } from "@/js/errors";
 import { useNotificationCenter } from "@/components/notification-center";
+import { getInvalidationQueryKey } from "@/composable/data-queries/opposite-tx-record";
 import TypeSelector from "./components/type-selector.vue";
 import FormRow from "./components/form-row.vue";
 import AccountField from "./components/account-field.vue";
@@ -260,6 +261,14 @@ const submit = async () => {
     closeModal();
     // Reload all cached data in the app
     queryClient.invalidateQueries({ queryKey: [VUE_QUERY_TX_CHANGE_QUERY] });
+    if (props.transaction?.id) {
+      queryClient.invalidateQueries({ queryKey: getInvalidationQueryKey(props.transaction.id) });
+    }
+    if (props.oppositeTransaction?.id) {
+      queryClient.invalidateQueries({
+        queryKey: getInvalidationQueryKey(props.oppositeTransaction.id),
+      });
+    }
   } catch (e) {
     if (e instanceof ApiErrorResponseError) {
       addErrorNotification(e.data.message);
@@ -363,7 +372,7 @@ onUnmounted(() => {
         <Button variant="ghost"> Close </Button>
       </DialogClose>
     </div>
-    <div class="grid grid-cols-[450px,1fr] relative">
+    <div class="grid grid-cols-[450px,minmax(0,1fr)] relative">
       <div class="px-6">
         <type-selector
           :is-form-creation="isFormCreation"
