@@ -17,11 +17,16 @@
           </span>
         </template>
         <template v-else>
-          <template v-if="category">
+          <div class="flex gap-2 items-center">
             <span class="text-sm tracking-wider whitespace-nowrap">
-              {{ category.name }}
+              {{ category.name || "Other" }}
             </span>
-          </template>
+            <template v-if="isRefund">
+              <div class="border rounded-sm border-primary text-xs text-white/80 px-1 py-0.5">
+                Refund
+              </div>
+            </template>
+          </div>
         </template>
         <span class="text-sm tracking-wider line-clamp-2 opacity-40">
           {{ transaction.note }}
@@ -76,6 +81,7 @@ const isTransferTransaction = computed(() =>
     TRANSACTION_TRANSFER_NATURE.transfer_out_wallet,
   ].includes(transaction.transferNature),
 );
+const isRefund = computed(() => transaction.refundLinked);
 
 const { oppositeTransferTransaction } = useOppositeTxRecord(transaction);
 
