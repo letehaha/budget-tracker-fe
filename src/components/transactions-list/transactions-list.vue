@@ -2,7 +2,7 @@
   <Dialog.Dialog v-model:open="isDialogVisible">
     <div v-bind="$attrs" class="transactions-list">
       <template v-for="item in transactions" :key="`${item.id}-render-id-${renderId}`">
-        <TransactionRecrod :tx="item" @record-click="handlerRecordClick" />
+        <TransactionRecord :tx="item" @record-click="handlerRecordClick" />
       </template>
     </div>
 
@@ -21,7 +21,7 @@ import {
   TRANSACTION_TRANSFER_NATURE,
 } from "shared-types";
 import * as Dialog from "@/components/lib/ui/dialog";
-import TransactionRecrod from "./transaction-record.vue";
+import TransactionRecord from "./transaction-record.vue";
 
 const ManageTransactionDoalogContent = defineAsyncComponent(
   () => import("@/components/dialogs/manage-transaction/dialog-content.vue"),

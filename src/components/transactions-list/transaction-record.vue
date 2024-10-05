@@ -1,12 +1,8 @@
 <template>
   <button
-    class="transaction-record"
+    class="py-1 px-2 rounded-md flex justify-between items-center cursor-pointer w-full gap-2"
     type="button"
     aria-haspopup="true"
-    :class="{
-      'transaction-record--income': transaction.transactionType === TRANSACTION_TYPES.income,
-      'transaction-record--expense': transaction.transactionType === TRANSACTION_TYPES.expense,
-    }"
     @click="transactionEmit"
   >
     <div class="flex items-center gap-2">
@@ -130,18 +126,3 @@ const formattedAmount = computed(() => {
   });
 });
 </script>
-
-<style lang="scss">
-.transaction-record {
-  @apply py-1 px-2;
-  @apply rounded-md flex justify-between items-center cursor-pointer w-full gap-2;
-}
-.transaction-record__amount {
-  .transaction-record--income & {
-    @apply text-app-income-color;
-  }
-  .transaction-record--expense & {
-    @apply text-app-expense-color;
-  }
-}
-</style>
