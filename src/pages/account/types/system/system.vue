@@ -14,6 +14,7 @@ import { AlertDialog } from "@/components/common";
 import { InputField } from "@/components/fields";
 import AccountDetailsTab from "@/pages/account/components/account-details-tab.vue";
 import SettingToggleVisibility from "@/pages/account/components/setting-toggle-visibility.vue";
+import SettingAccountGroup from "@/pages/account/components/account-group.vue";
 
 const props = defineProps<{
   account: AccountModel;
@@ -52,6 +53,10 @@ const deleteAccount = async () => {
     <Tabs.TabsContent value="settings">
       <div class="grid gap-4 py-6">
         <SettingToggleVisibility :account="account" />
+
+        <Separator />
+
+        <SettingAccountGroup :account="account" />
 
         <div></div>
 
