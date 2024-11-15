@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { inject, ref, watch } from "vue";
 import { ChevronDown } from "lucide-vue-next";
 import {
   Collapsible,
@@ -10,12 +10,23 @@ import type { AccountGroups } from "@/common/types/models";
 import Button from "@/components/lib/ui/button/Button.vue";
 import AccountsList from "./accounts-list.vue";
 import AccountGroupsList from "./account-groups-list.vue";
+import { useActiveAccountGroups } from "./helpers/use-active-account-groups";
 
-defineProps<{
+const props = defineProps<{
   group: AccountGroups;
 }>();
 
+const accountGroupsContext =
+  inject<ReturnType<typeof useActiveAccountGroups>>("accountGroupsContext");
+
 const isOpen = ref(false);
+watch(
+  () => accountGroupsContext.openGroupIds.value,
+  (openGroupIds) => {
+    isOpen.value = openGroupIds.has(props.group.id);
+  },
+  { immediate: true },
+);
 </script>
 
 <template>

@@ -4,18 +4,23 @@ import { storeToRefs } from "pinia";
 import { useQuery } from "@tanstack/vue-query";
 import { VUE_QUERY_CACHE_KEYS } from "@/common/const";
 import { loadAccountGroups } from "@/api/account-groups";
-import { computed } from "vue";
+import { computed, provide } from "vue";
 import { AccountGroups } from "@/common/types/models";
 import { AccountModel } from "shared-types";
 import AccountsList from "./accounts-list.vue";
 import AccountGroupsList from "./account-groups-list.vue";
+import { useActiveAccountGroups } from "./helpers/use-active-account-groups";
 
 const { enabledAccounts } = storeToRefs(useAccountsStore());
 const { data: accountGroups, isLoading } = useQuery({
   queryFn: () => loadAccountGroups(),
   queryKey: VUE_QUERY_CACHE_KEYS.accountGroups,
   staleTime: Infinity,
+  placeholderData: [],
 });
+
+const accountGroupsContext = useActiveAccountGroups(accountGroups);
+provide("accountGroupsContext", accountGroupsContext);
 
 const accountsInGroups = computed(() => {
   const flattenAccounts = (groups: AccountGroups[]): Record<number, AccountModel> =>
