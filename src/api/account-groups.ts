@@ -4,12 +4,11 @@ import { formatAccount } from "./accounts";
 
 const formatAccountGroups = (_groups: AccountGroups | AccountGroups[]): AccountGroups[] => {
   const groups = Array.isArray(_groups) ? _groups : [_groups];
-  groups.map((group) => ({
+  return groups.map((group) => ({
     ...group,
     accounts: group.accounts.map(formatAccount),
     childGroups: formatAccountGroups(group.childGroups),
   }));
-  return groups;
 };
 
 export const loadAccountGroups = async (
