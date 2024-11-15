@@ -40,6 +40,12 @@
           </template>
         </ui-button>
       </ui-tooltip>
+
+      <router-link :to="{ name: ROUTES_NAMES.settings }">
+        <ui-button variant="secondary" class="text-white" size="icon" as="span">
+          <SettingsIcon />
+        </ui-button>
+      </router-link>
     </div>
   </div>
 </template>
@@ -47,11 +53,12 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { storeToRefs } from "pinia";
+import { SettingsIcon, MoonStar, Sun, CheckCircle, RefreshCcw } from "lucide-vue-next";
 import { useRootStore } from "@/stores";
+import { ROUTES_NAMES } from "@/routes";
 import UiTooltip from "@/components/common/tooltip.vue";
 import { toggleTheme, currentTheme, Themes } from "@/common/utils";
 import UiButton from "@/components/lib/ui/button/Button.vue";
-import { MoonStar, Sun, CheckCircle, RefreshCcw } from "lucide-vue-next";
 import ManageTransactionDialog from "@/components/dialogs/manage-transaction/index.vue";
 
 const rootStore = useRootStore();

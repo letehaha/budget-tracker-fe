@@ -89,7 +89,8 @@ body {
       #{$cssVar}-rgb: #{hextorgb($value)};
     }
   }
-
+}
+body {
   --system-border-radius: 6px;
 
   // sizes
@@ -101,13 +102,13 @@ body {
   --container-right-corner: calc(((100vw - var(--container-width)) / 2) + var(--container-width));
   --container-left-corner: calc(((100vw - var(--container-width)) / 2));
 
-  @include respond-to-custom-width(840) {
-    --container-padding: 24px;
-  }
-
   // z-indexes
   --z-select-field: 1;
   --z-category-select-field: 1;
   --z-modal: 10;
   --z-notifications: 51;
+
+  @include respond-to-custom-width(840) {
+    --container-padding: 24px;
+  }
 }

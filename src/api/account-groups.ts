@@ -1,25 +1,31 @@
 import { api } from "@/api/_api";
 import { AccountGroups } from "@/common/types/models";
+import { formatAccount } from "./accounts";
+
+const formatAccountGroups = (_groups: AccountGroups | AccountGroups[]): AccountGroups[] => {
+  const groups = Array.isArray(_groups) ? _groups : [_groups];
+  groups.map((group) => ({
+    ...group,
+    accounts: group.accounts.map(formatAccount),
+    childGroups: formatAccountGroups(group.childGroups),
+  }));
+  return groups;
+};
 
 export const loadAccountGroups = async (
-  payload: { accountIds?: number[] } = {},
+  payload: { accountIds?: number[]; hidden?: boolean } = {},
 ): Promise<AccountGroups[]> => {
   const result: AccountGroups[] = await api.get("/account-group", payload);
 
-  return result;
+  return formatAccountGroups(result);
 };
 
-export const createAccountsGroup = async (payload: { name: string }): Promise<AccountGroups[]> => {
-  const result: AccountGroups[] = await api.post("/account-group", payload);
-
-  return result;
+export const createAccountsGroup = async (payload: { name: string }): Promise<void> => {
+  await api.post("/account-group", payload);
 };
 
 export const linkAccountToGroup = async (payload: { accountId: number; groupId: number }) => {
-  const result: AccountGroups[] = await api.post(
-    `/account-group/${payload.groupId}/add-account/${payload.accountId}`,
-  );
-  return result;
+  await api.post(`/account-group/${payload.groupId}/add-account/${payload.accountId}`);
 };
 
 export const removeAccountFromGroup = async (payload: { accountId: number; groupId: number }) => {

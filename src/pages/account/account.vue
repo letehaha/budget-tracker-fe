@@ -84,7 +84,7 @@ const {
   hasNextPage,
   isFetched,
 } = useInfiniteQuery({
-  queryKey: [...VUE_QUERY_CACHE_KEYS.accountSpecificTransactions, account.value.id],
+  queryKey: [...VUE_QUERY_CACHE_KEYS.accountSpecificTransactions, account],
   queryFn: fetchTransactions,
   initialPageParam: 0,
   getNextPageParam: (lastPage, pages) => {

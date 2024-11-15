@@ -5,7 +5,7 @@ import InputField from "@/components/fields/input-field.vue";
 import UiButton from "@/components/lib/ui/button/Button.vue";
 import { createAccountsGroup } from "@/api/account-groups";
 import { useMutation, useQueryClient } from "@tanstack/vue-query";
-import { AccountGroups } from "@/common/types/models";
+import { VUE_QUERY_CACHE_KEYS } from "@/common/const";
 
 const queryClient = useQueryClient();
 const form = ref({
@@ -16,8 +16,8 @@ const isOpen = ref(false);
 
 const { isPending: isMutating, mutate } = useMutation({
   mutationFn: createAccountsGroup,
-  onSuccess: (data) => {
-    queryClient.setQueryData<AccountGroups[]>(["account-groups"], (old) => [...old, ...data]);
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: VUE_QUERY_CACHE_KEYS.accountGroups });
     isOpen.value = false;
     form.value.name = "";
   },
@@ -41,7 +41,7 @@ const createGroup = async () => {
         <Dialog.DialogTitle>Create group</Dialog.DialogTitle>
       </Dialog.DialogHeader>
 
-      <form class="mt-4" @submit="createGroup">
+      <form class="mt-4" @submit.prevent="createGroup">
         <InputField v-model="form.name" label="Group name" placeholder="Investments" />
 
         <div class="flex">

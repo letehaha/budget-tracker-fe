@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    <ui-sidebar />
+    <Sidebar />
 
     <ScrollArea class="page__wrapper">
       <ui-header class="sticky top-0 z-10 bg-background" />
@@ -24,7 +24,7 @@ import { useRootStore, useCurrenciesStore } from "@/stores";
 
 import { ScrollArea, ScrollBar } from "@/components/lib/ui/scroll-area";
 import UiHeader from "@/components/ui-header.vue";
-import UiSidebar from "@/components/ui-sidebar.vue";
+import Sidebar from "@/components/sidebar/index.vue";
 
 const router = useRouter();
 const rootStore = useRootStore();

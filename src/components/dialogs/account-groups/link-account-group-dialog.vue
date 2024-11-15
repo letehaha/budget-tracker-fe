@@ -2,7 +2,7 @@
 import { computed, ref, watch } from "vue";
 import { AccountModel } from "shared-types";
 import { PlusIcon, CheckIcon } from "lucide-vue-next";
-import { useMutation, useQuery } from "@tanstack/vue-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import * as Dialog from "@/components/lib/ui/dialog";
 import UiButton from "@/components/lib/ui/button/Button.vue";
 import {
@@ -13,6 +13,7 @@ import {
 
 import { AccountGroups } from "@/common/types/models";
 import { useAccountGroupForAccount } from "@/composable/data-queries/account-groups";
+import { VUE_QUERY_CACHE_KEYS } from "@/common/const";
 import CreateAccountGroupDialog from "./create-account-group-dialog.vue";
 
 const props = defineProps<{
@@ -22,9 +23,10 @@ const isOpen = ref(false);
 
 const selectedGroup = ref<AccountGroups>(null);
 
+const queryClient = useQueryClient();
 const { data } = useQuery({
   queryFn: () => loadAccountGroups(),
-  queryKey: ["account-groups"],
+  queryKey: VUE_QUERY_CACHE_KEYS.accountGroups,
   staleTime: Infinity,
 });
 
@@ -45,6 +47,7 @@ const { isPending: isLinkingAccount, mutate: linkAccount } = useMutation({
   mutationFn: linkAccountToGroup,
   onSuccess: () => {
     invalidateAccountGroup();
+    queryClient.invalidateQueries({ queryKey: VUE_QUERY_CACHE_KEYS.accountGroups });
     isOpen.value = false;
   },
 });
@@ -52,6 +55,7 @@ const { isPending: isUnlinkingAccount, mutate: unlinkAccount } = useMutation({
   mutationFn: removeAccountFromGroup,
   onSuccess: () => {
     invalidateAccountGroup();
+    queryClient.invalidateQueries({ queryKey: VUE_QUERY_CACHE_KEYS.accountGroups });
     isOpen.value = false;
   },
 });

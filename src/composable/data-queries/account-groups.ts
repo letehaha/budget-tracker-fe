@@ -9,10 +9,10 @@ export const useAccountGroupForAccount = (
   const queryClient = useQueryClient();
   const query = useQuery<AccountGroups | null>({
     queryFn: async () => {
-      const result = await loadAccountGroups({ accountIds: [Number(accountId)] });
+      const result = await loadAccountGroups({ accountIds: [Number(accountId)], hidden: true });
       return result.length ? result[0] : null;
     },
-    queryKey: ["account-group-of-account", accountId],
+    queryKey: ["account-group-of-account", accountId, true],
     staleTime: Infinity,
     ...queryOptions,
   });

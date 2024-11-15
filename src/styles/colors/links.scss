@@ -6,14 +6,14 @@ body {
   --ac-link-primary-hover: var(--abc-brand-light-600);
   --ac-link-primary-active: var(--abc-brand-light-700);
 
+  // danger link
+  --ac-link-danger-base: var(--abc-red-500);
+  --ac-link-danger-hover: var(--abc-red-600);
+  --ac-link-danger-active: var(--abc-red-700);
+
   &.dark {
     --ac-link-primary-base: var(--abc-brand-dark-500);
     --ac-link-primary-hover: var(--abc-brand-dark-600);
     --ac-link-primary-active: var(--abc-brand-dark-500);
   }
-
-  // danger link
-  --ac-link-danger-base: var(--abc-red-500);
-  --ac-link-danger-hover: var(--abc-red-600);
-  --ac-link-danger-active: var(--abc-red-700);
 }

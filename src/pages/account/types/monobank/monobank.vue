@@ -5,6 +5,7 @@ import { Separator } from "@/components/lib/ui/separator";
 
 import AccountDetailsTab from "@/pages/account/components/account-details-tab.vue";
 import SettingToggleVisibility from "@/pages/account/components/setting-toggle-visibility.vue";
+import SettingAccountGroup from "@/pages/account/components/account-group.vue";
 import LoadLatestTransactions from "./load-latest-transactions.vue";
 import LoadTransactions from "./load-transactions.vue";
 
@@ -25,6 +26,10 @@ defineProps<{
     <Tabs.TabsContent value="settings">
       <div class="grid gap-4 pt-6">
         <SettingToggleVisibility :account="account" />
+
+        <Separator />
+
+        <SettingAccountGroup :account="account" />
 
         <Separator />
 
