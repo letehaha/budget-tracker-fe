@@ -2,7 +2,7 @@ import { ACCOUNT_CATEGORIES, AccountModel, endpointsTypes } from "shared-types";
 import { api } from "@/api/_api";
 import { fromSystemAmount, toSystemAmount } from "@/api/helpers";
 
-const formatAccount = (account: AccountModel): AccountModel => ({
+export const formatAccount = (account: AccountModel): AccountModel => ({
   ...account,
   creditLimit: fromSystemAmount(account.creditLimit),
   currentBalance: fromSystemAmount(account.currentBalance),

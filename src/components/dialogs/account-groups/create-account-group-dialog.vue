@@ -6,6 +6,7 @@ import UiButton from "@/components/lib/ui/button/Button.vue";
 import { createAccountsGroup } from "@/api/account-groups";
 import { useMutation, useQueryClient } from "@tanstack/vue-query";
 import { AccountGroups } from "@/common/types/models";
+import { VUE_QUERY_CACHE_KEYS } from "@/common/const";
 
 const queryClient = useQueryClient();
 const form = ref({
@@ -18,6 +19,7 @@ const { isPending: isMutating, mutate } = useMutation({
   mutationFn: createAccountsGroup,
   onSuccess: (data) => {
     queryClient.setQueryData<AccountGroups[]>(["account-groups"], (old) => [...old, ...data]);
+    queryClient.invalidateQueries({ queryKey: VUE_QUERY_CACHE_KEYS.accountGroups });
     isOpen.value = false;
     form.value.name = "";
   },

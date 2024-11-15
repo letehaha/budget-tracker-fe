@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Card, CardContent, CardHeader } from "@/components/lib/ui/card";
 import NavigationLinks from "./navigation-links.vue";
-import AccountsList from "./accounts-list.vue";
+import AccountsView from "./accounts-view/index.vue";
 import LogounButton from "./logout-button.vue";
 </script>
 
@@ -16,7 +16,7 @@ import LogounButton from "./logout-button.vue";
     <CardContent class="px-3 md:px-6 flex flex-col flex-grow max-h-[calc(100%-52px)]">
       <NavigationLinks />
 
-      <AccountsList />
+      <AccountsView />
 
       <LogounButton />
     </CardContent>
