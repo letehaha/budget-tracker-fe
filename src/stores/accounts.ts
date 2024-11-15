@@ -1,6 +1,6 @@
 import { ref, WritableComputedRef, computed, watch } from "vue";
 import { defineStore, storeToRefs } from "pinia";
-import { useQuery } from "@tanstack/vue-query";
+import { useQuery, useQueryClient } from "@tanstack/vue-query";
 import { ACCOUNT_TYPES, AccountModel } from "shared-types";
 import {
   loadAccounts as apiLoadAccounts,
@@ -13,6 +13,7 @@ import { VUE_QUERY_CACHE_KEYS } from "@/common/const";
 import { useUserStore } from "./user";
 
 export const useAccountsStore = defineStore("accounts", () => {
+  const queryClient = useQueryClient();
   const { isUserExists } = storeToRefs(useUserStore());
 
   const accountsRecord = ref<Record<number, AccountModel>>({});
@@ -58,6 +59,9 @@ export const useAccountsStore = defineStore("accounts", () => {
     try {
       await apiEditAccount({ id, ...data });
       await refetchAccounts();
+      if (data.isEnabled !== undefined) {
+        queryClient.invalidateQueries({ queryKey: VUE_QUERY_CACHE_KEYS.accountGroups });
+      }
     } catch (e) {
       // eslint-disable-next-line no-console
       console.log(e);

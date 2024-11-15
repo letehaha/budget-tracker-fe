@@ -40,7 +40,7 @@ watch(
       </Button>
     </CollapsibleTrigger>
     <CollapsibleContent>
-      <div class="pl-4">
+      <div class="pl-4 pt-0.5">
         <AccountsList :accounts="group.accounts" />
         <AccountGroupsList v-if="group.childGroups.length" :groups="group.childGroups" />
       </div>

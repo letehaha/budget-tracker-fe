@@ -10,7 +10,7 @@ const formatAccountGroups = (groups: AccountGroups[]): AccountGroups[] =>
   }));
 
 export const loadAccountGroups = async (
-  payload: { accountIds?: number[] } = {},
+  payload: { accountIds?: number[]; hidden?: boolean } = {},
 ): Promise<AccountGroups[]> => {
   const result: AccountGroups[] = await api.get("/account-group", payload);
 
