@@ -25,10 +25,7 @@ export const createAccountsGroup = async (payload: { name: string }): Promise<vo
 };
 
 export const linkAccountToGroup = async (payload: { accountId: number; groupId: number }) => {
-  const result: AccountGroups[] = await api.post(
-    `/account-group/${payload.groupId}/add-account/${payload.accountId}`,
-  );
-  return formatAccountGroups(result);
+  await api.post(`/account-group/${payload.groupId}/add-account/${payload.accountId}`);
 };
 
 export const removeAccountFromGroup = async (payload: { accountId: number; groupId: number }) => {
