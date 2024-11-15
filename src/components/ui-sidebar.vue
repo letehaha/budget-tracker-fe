@@ -1,19 +1,19 @@
 <template>
-  <Card class="sidebar">
-    <CardHeader>
-      <div class="sidebar__logo">
+  <Card class="flex flex-col rounded-none">
+    <CardHeader class="sm:py-3 h-[52px]">
+      <div class="text-lg font-medium">
         <span class="hidden md:block"> BudgetTracker </span>
         <span class="md:hidden"> BT </span>
       </div>
     </CardHeader>
-    <CardContent class="px-3 md:px-6 flex flex-col flex-grow">
-      <nav class="sidebar__navigation">
+    <CardContent class="px-3 md:px-6 flex flex-col flex-grow max-h-[calc(100%-52px)]">
+      <nav class="grid gap-2 -ml-3">
         <router-link v-slot="{ isActive }" :to="{ name: ROUTES_NAMES.home }">
           <ui-button
             :variant="isActive ? 'default' : 'ghost'"
             as="span"
             class="sidebar__item"
-            size="lg"
+            size="default"
           >
             <LayoutDashboardIcon />
             <span> Dashboard </span>
@@ -25,7 +25,7 @@
             :variant="isActive ? 'default' : 'ghost'"
             as="span"
             class="sidebar__item"
-            size="lg"
+            size="default"
           >
             <LayersIcon />
             <span> Accounts </span>
@@ -37,20 +37,20 @@
             :variant="isActive ? 'default' : 'ghost'"
             as="span"
             class="sidebar__item"
-            size="lg"
+            size="default"
           >
             <CreditCardIcon />
             <span> Transactions </span>
           </ui-button>
         </router-link>
 
-        <template v-if="isDevEnv">
+        <!-- <template v-if="isDevEnv">
           <router-link v-slot="{ isActive }" :to="{ name: ROUTES_NAMES.analytics }">
             <ui-button
               :variant="isActive ? 'default' : 'ghost'"
               as="span"
               class="sidebar__item"
-              size="lg"
+              size="default"
             >
               <ChartAreaIcon />
               <span> Analytics (dev only) </span>
@@ -64,25 +64,41 @@
               :variant="isActive ? 'default' : 'ghost'"
               as="span"
               class="sidebar__item"
-              size="lg"
+              size="default"
             >
               <BitcoinIcon />
               <span> Crypto (dev only) </span>
             </ui-button>
           </router-link>
-        </template>
-        <router-link v-slot="{ isActive }" :to="{ name: ROUTES_NAMES.settings }">
-          <ui-button
-            :variant="isActive ? 'default' : 'ghost'"
-            as="span"
-            class="sidebar__item"
-            size="lg"
-          >
-            <SettingsIcon />
-            <span> Settings </span>
-          </ui-button>
-        </router-link>
+        </template> -->
       </nav>
+
+      <div class="my-6 min-w-[260px] overflow-y-hidden -ml-3 grid gap-4">
+        <p class="text-xs uppercase ml-3">Accounts</p>
+
+        <div class="grid overflow-auto max-h-full">
+          <template v-for="account in enabledAccounts" :key="account.id">
+            <router-link
+              :to="{ name: ROUTES_NAMES.account, params: { id: account.id } }"
+              class="flex w-full"
+            >
+              <ui-button variant="ghost" as="div" size="default" class="w-full h-auto">
+                <div class="flex justify-between items-center w-full">
+                  <div class="flex flex-col gap-1">
+                    <span class="text-sm">{{ account.name }}</span>
+                    <span class="text-xs">
+                      {{ account.accountCategory }}
+                    </span>
+                  </div>
+                  <div class="text-sm">
+                    {{ formatAmountByCurrencyId(account.currentBalance, account.currencyId) }}
+                  </div>
+                </div>
+              </ui-button>
+            </router-link>
+          </template>
+        </div>
+      </div>
 
       <ui-button variant="secondary" class="sidebar__item mt-auto" @click="logOutHandler">
         <LogOutIcon />
@@ -95,20 +111,16 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
 
-import { useAuthStore } from "@/stores";
-import { isDevEnv } from "@/common/const";
+import { useAccountsStore, useAuthStore } from "@/stores";
 import { ROUTES_NAMES } from "@/routes";
-import {
-  LayoutDashboardIcon,
-  CreditCardIcon,
-  LayersIcon,
-  ChartAreaIcon,
-  BitcoinIcon,
-  SettingsIcon,
-  LogOutIcon,
-} from "lucide-vue-next";
+import { LayoutDashboardIcon, CreditCardIcon, LayersIcon, LogOutIcon } from "lucide-vue-next";
 import UiButton from "@/components/lib/ui/button/Button.vue";
 import { Card, CardContent, CardHeader } from "@/components/lib/ui/card";
+import { storeToRefs } from "pinia";
+import { useFormatCurrency } from "@/composable";
+
+const { enabledAccounts } = storeToRefs(useAccountsStore());
+const { formatAmountByCurrencyId } = useFormatCurrency();
 
 const router = useRouter();
 const { logout } = useAuthStore();
@@ -120,26 +132,8 @@ const logOutHandler = () => {
 </script>
 
 <style lang="scss" scoped>
-.sidebar {
-  @apply flex flex-col rounded-none;
-}
-.sidebar__logo {
-  font-size: 18px;
-  font-weight: 500;
-  letter-spacing: 0.5px;
-  text-align: center;
-  color: var(--abc-text-white-base);
-}
 .sidebar__item {
   @apply justify-start w-full px-3 gap-2;
-
-  span {
-    @apply hidden md:block;
-  }
-}
-.sidebar__navigation {
-  display: grid;
-  gap: 16px;
 }
 .sidebar__navigation-link {
   color: var(--sidebar-btn-text);

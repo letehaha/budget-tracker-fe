@@ -1,13 +1,11 @@
 <template>
   <section class="p-6">
-    <accounts-list />
-
-    <div class="flex items-center justify-center gap-1 my-6">
+    <div class="flex items-center justify-center gap-1 mb-6">
       <ui-button size="icon" variant="ghost" @click="selectPrevPeriod">
         <ChevronLeft :size="20" />
       </ui-button>
 
-      <div class="dashboard-page__period">
+      <div class="w-[150px] text-center">
         {{ periodSelectorText }}
       </div>
 
@@ -22,12 +20,14 @@
     </div>
 
     <div class="dashboard-page__info">
-      <BalanceTrendWidget :selected-period="currentPeriod" class="dashboard-page__balance-trend" />
+      <BalanceTrendWidget :selected-period="currentPeriod" class="[grid-area:balance-trend]" />
+
       <SpendingCategoriesWidget
         :selected-period="currentPeriod"
-        class="dashboard-page__spending-categories"
+        class="[grid-area:spending-categories]"
       />
-      <LatestRecordsWidget class="dashboard-page__latest-records" />
+
+      <LatestRecordsWidget class="[grid-area:latest-records] lg:max-w-[420px]" />
     </div>
   </section>
 </template>
@@ -45,7 +45,6 @@ import {
 } from "date-fns";
 import { ChevronLeft, ChevronRight } from "lucide-vue-next";
 import UiButton from "@/components/lib/ui/button/Button.vue";
-import AccountsList from "./accounts-list/accounts-list.vue";
 
 const BalanceTrendWidget = defineAsyncComponent(
   () => import("@/components/widgets/balance-trend.vue"),
@@ -96,36 +95,17 @@ const selectNextPeriod = () => {
 <style lang="scss">
 .dashboard-page__info {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr)) 420px;
-  grid-template-areas: "balance-trend spending-categories latest-records";
+  grid-template-columns: minmax(0, 1fr) 420px;
+  grid-template-areas: "balance-trend latest-records" "spending-categories latest-records";
   grid-gap: 24px;
 
-  @include below(1300) {
+  @include below(1200) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-areas: "balance-trend spending-categories" "latest-records latest-records";
+    grid-template-areas: "balance-trend balance-trend" "spending-categories latest-records";
   }
   @include below(900) {
     grid-template-columns: minmax(0, 1fr);
     grid-template-areas: "balance-trend" "spending-categories" "latest-records";
   }
-}
-.dashboard-page__charts {
-  color: var(--app-on-surface-color);
-}
-.dashboard-page__balance-trend {
-  grid-area: balance-trend;
-}
-.dashboard-page__latest-records {
-  grid-area: latest-records;
-
-  @include over(900) {
-    max-width: 420px;
-  }
-}
-.dashboard-page__spending-categories {
-  grid-area: spending-categories;
-}
-.dashboard-page__period {
-  @apply w-[150px] text-center;
 }
 </style>
