@@ -51,15 +51,17 @@ import EmptyState from "./components/empty-state.vue";
 
 // Calculate it manually so shart will always have first and last ticks (dates)
 function generateDateSteps(datesToShow = 5, date = new Date()) {
-  const step = Math.round(getDaysInMonth(date) / datesToShow);
   const start = startOfMonth(date).getTime();
   const end = startOfDay(endOfMonth(date)).getTime();
-
+  const monthDuration = end - start;
   const dates = [start];
-  while (dates[dates.length - 1] < end) {
-    const nextDate = addDays(dates[dates.length - 1], step).getTime();
-    dates.push(nextDate <= end ? nextDate : end);
+
+  for (let i = 1; i < datesToShow - 1; i++) {
+    const nextDate = start + (monthDuration * i) / (datesToShow - 1);
+    dates.push(Math.floor(nextDate));
   }
+
+  dates.push(end);
 
   return dates;
 }
@@ -149,13 +151,30 @@ const chartOptions = computed(() => {
   const fromDate = actualDataPeriod.value.from;
   const toDate = actualDataPeriod.value.to;
 
+  const xAxisTicks = generateDateSteps(ticksAmount, fromDate);
+
   const config = buildAreaChartConfig({
     chart: {
       height: 220,
       marginTop: 20,
+      animation: false,
+    },
+    plotOptions: {
+      series: {
+        animation: false,
+      },
     },
     xAxis: {
-      tickPositions: generateDateSteps(ticksAmount, fromDate),
+      tickPositions: xAxisTicks,
+      labels: {
+        formatter() {
+          const date = new Date(this.value);
+          return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+        },
+      },
+      type: "datetime",
+      min: xAxisTicks[0],
+      max: xAxisTicks[xAxisTicks.length - 1],
     },
     yAxis: {
       tickAmount: 5,
@@ -172,6 +191,7 @@ const chartOptions = computed(() => {
       {
         type: "area",
         showInLegend: false,
+        animation: false,
         data: [
           ...(balanceHistory.value || []).map((point) => [
             new Date(point.date).getTime(),
