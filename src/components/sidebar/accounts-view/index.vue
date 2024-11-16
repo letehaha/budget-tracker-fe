@@ -4,8 +4,13 @@ import { storeToRefs } from "pinia";
 import { useQuery } from "@tanstack/vue-query";
 import { VUE_QUERY_CACHE_KEYS } from "@/common/const";
 import { loadAccountGroups } from "@/api/account-groups";
-import { computed, provide } from "vue";
+import { computed, provide, ref } from "vue";
 import { AccountGroups } from "@/common/types/models";
+import * as Popover from "@/components/lib/ui/popover";
+import Button from "@/components/lib/ui/button/Button.vue";
+import CreateAccountDialog from "@/components/dialogs/create-account-dialog.vue";
+import CreateAccountGroupDialog from "@/components/dialogs/account-groups/create-account-group-dialog.vue";
+import { PlusIcon } from "lucide-vue-next";
 import { AccountModel } from "shared-types";
 import AccountsList from "./accounts-list.vue";
 import AccountGroupsList from "./account-groups-list.vue";
@@ -42,11 +47,34 @@ const accountsInGroups = computed(() => {
 const accountsWithoutGroups = computed(() =>
   enabledAccounts.value.filter((i) => !accountsInGroups.value[i.id]),
 );
+
+const isPopoverOpen = ref(false);
 </script>
 
 <template>
-  <div class="my-6 min-w-[300px] overflow-y-hidden -ml-3 grid gap-4">
-    <p class="text-xs uppercase ml-3">Accounts</p>
+  <div class="my-6 min-w-[300px] overflow-y-hidden -ml-3 grid gap-0.5">
+    <div class="ml-3 flex justify-between items-center">
+      <p class="text-xs uppercase">Accounts</p>
+
+      <Popover.Popover :open="isPopoverOpen" @update:open="isPopoverOpen = $event">
+        <Popover.PopoverTrigger as-child>
+          <Button size="icon" variant="secondary">
+            <PlusIcon />
+          </Button>
+        </Popover.PopoverTrigger>
+        <Popover.PopoverContent side="bottom">
+          <div class="grid gap-2">
+            <CreateAccountDialog @created="isPopoverOpen = false">
+              <Button type="button" size="sm" variant="secondary"> New account </Button>
+            </CreateAccountDialog>
+
+            <CreateAccountGroupDialog @created="isPopoverOpen = false">
+              <Button type="button" size="sm" variant="secondary"> New accounts group </Button>
+            </CreateAccountGroupDialog>
+          </div>
+        </Popover.PopoverContent>
+      </Popover.Popover>
+    </div>
 
     <div class="grid overflow-auto gap-0.5 max-h-full">
       <template v-if="isLoading">

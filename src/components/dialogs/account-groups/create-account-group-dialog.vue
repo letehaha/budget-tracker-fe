@@ -12,6 +12,8 @@ const form = ref({
   name: "",
 });
 
+const emit = defineEmits(["created"]);
+
 const isOpen = ref(false);
 
 const { isPending: isMutating, mutate } = useMutation({
@@ -20,6 +22,7 @@ const { isPending: isMutating, mutate } = useMutation({
     queryClient.invalidateQueries({ queryKey: VUE_QUERY_CACHE_KEYS.accountGroups });
     isOpen.value = false;
     form.value.name = "";
+    emit("created");
   },
 });
 const isSubmitDisabled = computed(() => isMutating.value || !form.value.name);
