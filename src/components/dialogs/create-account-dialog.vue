@@ -1,9 +1,19 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, defineAsyncComponent } from "vue";
 import * as Dialog from "@/components/lib/ui/dialog";
-import CreateAccountForm from "@/components/forms/create-account-form.vue";
+
+const CreateAccountForm = defineAsyncComponent(
+  () => import("@/components/forms/create-account-form.vue"),
+);
+
+const emit = defineEmits(["created"]);
 
 const isOpen = ref(false);
+
+const onAccountCreation = () => {
+  isOpen.value = false;
+  emit("created");
+};
 </script>
 
 <template>
@@ -18,7 +28,7 @@ const isOpen = ref(false);
         <Dialog.DialogTitle>Create account</Dialog.DialogTitle>
       </Dialog.DialogHeader>
 
-      <CreateAccountForm @created="isOpen = false" />
+      <CreateAccountForm @created="onAccountCreation" />
     </Dialog.DialogContent>
   </Dialog.Dialog>
 </template>

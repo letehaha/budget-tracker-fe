@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref } from "vue";
+import { computed, defineAsyncComponent, reactive, ref } from "vue";
 import { storeToRefs } from "pinia";
 import { useQueryClient } from "@tanstack/vue-query";
 
@@ -12,7 +12,9 @@ import InputField from "@/components/fields/input-field.vue";
 import UiButton from "@/components/lib/ui/button/Button.vue";
 import FieldLabel from "@/components/fields/components/field-label.vue";
 
-import AddCurrencyDialog from "@/components/dialogs/add-currency-dialog.vue";
+const AddCurrencyDialog = defineAsyncComponent(
+  () => import("@/components/dialogs/add-currency-dialog.vue"),
+);
 
 const emit = defineEmits(["created"]);
 
