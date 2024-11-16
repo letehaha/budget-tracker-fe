@@ -1,20 +1,25 @@
 <script setup lang="ts">
-import { useAccountsStore } from "@/stores";
+import { computed, defineAsyncComponent, provide, ref } from "vue";
+import { PlusIcon } from "lucide-vue-next";
 import { storeToRefs } from "pinia";
 import { useQuery } from "@tanstack/vue-query";
+import { useAccountsStore } from "@/stores";
 import { VUE_QUERY_CACHE_KEYS } from "@/common/const";
 import { loadAccountGroups } from "@/api/account-groups";
-import { computed, provide, ref } from "vue";
 import { AccountGroups } from "@/common/types/models";
 import * as Popover from "@/components/lib/ui/popover";
 import Button from "@/components/lib/ui/button/Button.vue";
-import CreateAccountDialog from "@/components/dialogs/create-account-dialog.vue";
-import CreateAccountGroupDialog from "@/components/dialogs/account-groups/create-account-group-dialog.vue";
-import { PlusIcon } from "lucide-vue-next";
 import { AccountModel } from "shared-types";
 import AccountsList from "./accounts-list.vue";
 import AccountGroupsList from "./account-groups-list.vue";
 import { useActiveAccountGroups } from "./helpers/use-active-account-groups";
+
+const CreateAccountDialog = defineAsyncComponent(
+  () => import("@/components/dialogs/create-account-dialog.vue"),
+);
+const CreateAccountGroupDialog = defineAsyncComponent(
+  () => import("@/components/dialogs/account-groups/create-account-group-dialog.vue"),
+);
 
 const { enabledAccounts } = storeToRefs(useAccountsStore());
 const { data: accountGroups, isLoading } = useQuery({
