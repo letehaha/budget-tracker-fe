@@ -43,7 +43,12 @@
 
       <router-link :to="{ name: ROUTES_NAMES.settings }">
         <ui-button variant="secondary" class="text-white" size="icon" as="span">
-          <SettingsIcon />
+          <template v-if="currentTheme === Themes.dark">
+            <SettingsIcon />
+          </template>
+          <template v-if="currentTheme === Themes.light">
+            <SettingsIcon color="black" />
+          </template>
         </ui-button>
       </router-link>
     </div>
@@ -53,7 +58,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { storeToRefs } from "pinia";
-import { SettingsIcon, MoonStar, Sun, CheckCircle, RefreshCcw } from "lucide-vue-next";
+import { SettingsIcon, MoonStar, Sun, CheckCircle, RefreshCcw, Settings2 } from "lucide-vue-next";
 import { useRootStore } from "@/stores";
 import { ROUTES_NAMES } from "@/routes";
 import UiTooltip from "@/components/common/tooltip.vue";
