@@ -2,11 +2,17 @@
 import * as AlertDialog from "@/components/lib/ui/alert-dialog";
 import type { ButtonVariantProps } from "@/components/lib/ui/button";
 
+interface DescriptionModel {
+  message: string;
+  boldText: string;
+  details: string;
+}
+
 defineEmits(["accept", "cancel"]);
 withDefaults(
   defineProps<{
     title: string;
-    description?: string;
+    description?: string | DescriptionModel;
     cancelLabel?: string;
     acceptLabel?: string;
     acceptVariant?: ButtonVariantProps["variant"];
@@ -35,7 +41,14 @@ withDefaults(
           </AlertDialog.AlertDialogTitle>
 
           <AlertDialog.AlertDialogDescription v-if="description">
-            {{ description }}
+            <template v-if="typeof description === 'object'">
+              {{ description.message }}
+              <strong>{{ description.boldText }}</strong>
+              {{ description.details }}
+            </template>
+            <template v-else>
+              {{ description }}
+            </template>
           </AlertDialog.AlertDialogDescription>
 
           <slot name="content" />

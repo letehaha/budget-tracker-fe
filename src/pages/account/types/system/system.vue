@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import { AccountModel } from "shared-types";
 
@@ -25,6 +25,21 @@ const router = useRouter();
 const { addSuccessNotification, addErrorNotification } = useNotificationCenter();
 const accountsStore = useAccountsStore();
 const confirmAccountName = ref("");
+
+const alertDescription = computed(() => {
+  if (props.transactionsCount > 0) {
+    return {
+      message: `This action cannot be undone.`,
+      boldText: `You have ${props.transactionsCount} transactions associated with this account, they will also be deleted.`,
+      details: "Do you really want to delete this account?`",
+    };
+  }
+  return {
+    message: "This action cannot be undone. You have ",
+    boldText: "You have zero transactions associated.",
+    details: " Do you really want to delete this account?",
+  };
+});
 
 const deleteAccount = async () => {
   const accountName = props.account.name;
@@ -78,7 +93,7 @@ const deleteAccount = async () => {
 
             <AlertDialog
               title="Are you absolutely sure?"
-              :description="`This action cannot be undone. You have ${props.transactionsCount} transactions associated with this account, they will also be deleted. Do you rely want to delete this account?`"
+              :description="alertDescription"
               :accept-disabled="confirmAccountName !== account.name"
               accept-variant="destructive"
               @accept="deleteAccount"
