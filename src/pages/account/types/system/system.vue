@@ -18,6 +18,7 @@ import SettingAccountGroup from "@/pages/account/components/account-group.vue";
 
 const props = defineProps<{
   account: AccountModel;
+  transactionsCount: number;
 }>();
 const router = useRouter();
 
@@ -77,7 +78,7 @@ const deleteAccount = async () => {
 
             <AlertDialog
               title="Are you absolutely sure?"
-              description="This action cannot be undone. This will permanently delete your account and remove your data from our servers."
+              :description="`This action cannot be undone. You have ${props.transactionsCount} transactions associated with this account, they will also be deleted. Do you rely want to delete this account?`"
               :accept-disabled="confirmAccountName !== account.name"
               accept-variant="destructive"
               @accept="deleteAccount"
