@@ -53,7 +53,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { storeToRefs } from "pinia";
-import { SettingsIcon, MoonStar, Sun, CheckCircle, RefreshCcw, Settings2 } from "lucide-vue-next";
+import { SettingsIcon, MoonStar, Sun, CheckCircle, RefreshCcw } from "lucide-vue-next";
 import { useRootStore } from "@/stores";
 import { ROUTES_NAMES } from "@/routes";
 import UiTooltip from "@/components/common/tooltip.vue";
