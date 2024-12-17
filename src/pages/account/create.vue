@@ -1,6 +1,6 @@
 <template>
   <div class="p-6">
-    <Card class="sticky h-min w-[380px] top-[var(--header-height)] p-4">
+    <Card class="sticky h-min w-[440px] top-[var(--header-height)] p-4">
       <CreateAccountForm class="max-w-[440px]" @created="pushToAccountsPage" />
     </Card>
   </div>
