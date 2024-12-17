@@ -31,7 +31,7 @@ const alertDescription = computed(() => {
     return {
       message: `This action cannot be undone.`,
       boldText: `You have ${props.transactionsCount} transactions associated with this account, they will also be deleted.`,
-      details: "Do you really want to delete this account?`",
+      details: "Do you really want to delete this account?",
     };
   }
   return {
