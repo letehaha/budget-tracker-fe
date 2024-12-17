@@ -111,7 +111,15 @@ const submit = async () => {
       <form class="grid gap-6" data-cy="monobank-set-token-modal" @submit.prevent="submit">
         <p>
           Please visit
-          <a href="https://api.monobank.ua/" class="text-primary">https://api.monobank.ua/</a>
+          <a
+            href="https://api.monobank.ua/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-primary"
+          >
+            https://api.monobank.ua/
+          </a>
+
           and follow all the instructions. Paste the API token from Monobank in the field below
         </p>
         <div>
