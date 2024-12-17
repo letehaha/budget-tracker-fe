@@ -43,12 +43,7 @@
 
       <router-link :to="{ name: ROUTES_NAMES.settings }">
         <ui-button variant="secondary" class="text-white" size="icon" as="span">
-          <template v-if="currentTheme === Themes.dark">
-            <SettingsIcon />
-          </template>
-          <template v-if="currentTheme === Themes.light">
-            <SettingsIcon color="black" />
-          </template>
+          <SettingsIcon :color="currentTheme === Themes.light ? 'black' : undefined" />
         </ui-button>
       </router-link>
     </div>
