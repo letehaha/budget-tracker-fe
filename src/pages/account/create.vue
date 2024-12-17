@@ -1,6 +1,8 @@
 <template>
   <div class="p-6">
-    <CreateAccountForm class="max-w-[440px]" @created="pushToAccountsPage" />
+    <Card class="sticky h-min w-[380px] top-[var(--header-height)] p-4">
+      <CreateAccountForm class="max-w-[440px]" @created="pushToAccountsPage" />
+    </Card>
   </div>
 </template>
 
@@ -9,6 +11,7 @@ import { useRouter } from "vue-router";
 
 import { ROUTES_NAMES } from "@/routes/constants";
 import CreateAccountForm from "@/components/forms/create-account-form.vue";
+import { Card } from "@/components/lib/ui/card";
 
 const router = useRouter();
 const pushToAccountsPage = () => {
