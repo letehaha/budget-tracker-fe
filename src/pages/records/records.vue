@@ -97,7 +97,7 @@
 
           <Dialog.Dialog v-model:open="isFiltersDialogOpen">
             <Dialog.DialogTrigger as-child>
-              <Button variant="ghost" size="icon" class="ml-auto">
+              <UiButton variant="ghost" size="icon" class="ml-auto">
                 <div class="relative">
                   <ListFilterIcon />
 
@@ -105,7 +105,7 @@
                     <div class="size-3 rounded-full bg-primary absolute -top-1 -right-1" />
                   </template>
                 </div>
-              </Button>
+              </UiButton>
             </Dialog.DialogTrigger>
             <Dialog.DialogContent
               class="sm:max-w-md max-h-[90dvh] grid-rows-[auto_auto_minmax(0,1fr)_auto]"
