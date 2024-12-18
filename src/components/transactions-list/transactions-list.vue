@@ -1,7 +1,10 @@
 <template>
   <Dialog.Dialog v-model:open="isDialogVisible">
     <div v-bind="$attrs" class="transactions-list">
-      <template v-for="item in transactions" :key="`${item.id}-render-id-${renderId}`">
+      <template
+        v-for="item in transactions"
+        :key="`${item.id}-${item.categoryId}-${item.refAmount}-${item.note}-${item.time}`"
+      >
         <TransactionRecord :tx="item" @record-click="handlerRecordClick" />
       </template>
     </div>
@@ -27,7 +30,7 @@ const ManageTransactionDoalogContent = defineAsyncComponent(
   () => import("@/components/dialogs/manage-transaction/dialog-content.vue"),
 );
 
-const props = withDefaults(
+withDefaults(
   defineProps<{
     transactions: TransactionModel[];
     isTransactionRecord?: boolean;
@@ -82,15 +85,6 @@ const handlerRecordClick = ([baseTx, oppositeTx]: [
   isDialogVisible.value = true;
   dialogProps.value = modalOptions;
 };
-
-// Since transactions list might change inside but txId will remain the same
-// there is no way except this one to rerender list elements
-const renderId = ref(1);
-
-watch(
-  () => props.transactions,
-  () => renderId.value++,
-);
 </script>
 
 <style lang="scss">
