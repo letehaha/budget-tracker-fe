@@ -75,7 +75,6 @@ import { AccountModel, TRANSACTION_TYPES } from "shared-types";
 import { ROUTES_NAMES } from "@/routes";
 
 import CreateAccountDialog from "@/components/dialogs/create-account-dialog.vue";
-import SelectField from "@/components/fields/select-field.vue";
 import UiButton from "@/components/lib/ui/button/Button.vue";
 import SelectFieldLib from "@/components/fields/select-field-lib.vue";
 import InputField from "@/components/fields/input-field.vue";
