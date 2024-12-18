@@ -2,11 +2,12 @@
   <template v-if="accounts.length || account">
     <template v-if="isTransferTransaction && !isTransactionLinking">
       <form-row>
-        <select-field
+        <select-field-lib
           label="From account"
           placeholder="Select account"
           :values="accounts"
           label-key="name"
+          value-key="id"
           :disabled="disabled || fromAccountDisabled"
           is-value-preselected
           :model-value="account"
@@ -15,14 +16,15 @@
       </form-row>
 
       <form-row>
-        <select-field
+        <select-field-lib
           label="To account"
           placeholder="Select account"
           :values="filteredAccounts"
           label-key="name"
+          value-key="id"
           :disabled="disabled || toAccountDisabled"
           :model-value="toAccount"
-          @update:model-value="emit('update:to-account', $event)"
+          @update:model-value="updateToAccount"
         />
       </form-row>
     </template>
@@ -114,5 +116,9 @@ const redirectToCreateAccountPage = async () => {
 
 const updateFormAccount = (account: AccountModel) => {
   emit("update:account", account);
+};
+
+const updateToAccount = (account: AccountModel) => {
+  emit("update:to-account", account);
 };
 </script>
