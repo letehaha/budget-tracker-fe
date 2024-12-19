@@ -2,17 +2,11 @@
 import * as AlertDialog from "@/components/lib/ui/alert-dialog";
 import type { ButtonVariantProps } from "@/components/lib/ui/button";
 
-interface DescriptionModel {
-  message: string;
-  boldText: string;
-  details: string;
-}
-
 defineEmits(["accept", "cancel"]);
 withDefaults(
   defineProps<{
     title: string;
-    description?: string | DescriptionModel;
+    description?: string; // "description" slot can be used to pass template
     cancelLabel?: string;
     acceptLabel?: string;
     acceptVariant?: ButtonVariantProps["variant"];
