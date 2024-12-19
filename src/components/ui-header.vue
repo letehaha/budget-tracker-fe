@@ -43,7 +43,7 @@
 
       <router-link :to="{ name: ROUTES_NAMES.settings }">
         <ui-button variant="secondary" class="text-white" size="icon" as="span">
-          <SettingsIcon />
+          <SettingsIcon :color="currentTheme === Themes.light ? 'black' : undefined" />
         </ui-button>
       </router-link>
     </div>

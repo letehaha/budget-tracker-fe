@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
-import { AccountModel } from "shared-types";
+import { AccountModel, TransactionModel } from "shared-types";
 
 import { useAccountsStore } from "@/stores";
 import { ROUTES_NAMES } from "@/routes";
@@ -18,12 +18,14 @@ import SettingAccountGroup from "@/pages/account/components/account-group.vue";
 
 const props = defineProps<{
   account: AccountModel;
+  transactions: TransactionModel[];
 }>();
 const router = useRouter();
 
 const { addSuccessNotification, addErrorNotification } = useNotificationCenter();
 const accountsStore = useAccountsStore();
 const confirmAccountName = ref("");
+const accountHasTransactions = computed(() => props.transactions.length > 0);
 
 const deleteAccount = async () => {
   const accountName = props.account.name;
@@ -77,13 +79,26 @@ const deleteAccount = async () => {
 
             <AlertDialog
               title="Are you absolutely sure?"
-              description="This action cannot be undone. This will permanently delete your account and remove your data from our servers."
               :accept-disabled="confirmAccountName !== account.name"
               accept-variant="destructive"
               @accept="deleteAccount"
             >
               <template #trigger>
                 <Button variant="destructive"> Delete this account </Button>
+              </template>
+              <template #description>
+                <template v-if="accountHasTransactions">
+                  This action cannot be undone.
+                  <strong>
+                    You have {{ transactions.length }} transactions associated with this account,
+                    they will also be deleted.
+                  </strong>
+                  Do you really want to delete this account?
+                </template>
+                <template v-else>
+                  This action cannot be undone. Do you really want to delete this account?
+                  <strong> You have zero transactions associated. </strong>
+                </template>
               </template>
               <template #content>
                 <InputField

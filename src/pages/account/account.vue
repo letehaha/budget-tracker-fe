@@ -9,7 +9,7 @@
           <MonobankAccount :account="account" />
         </template>
         <template v-else-if="account.type === ACCOUNT_TYPES.system">
-          <SystemAccount :account="account" />
+          <SystemAccount :account="account" :transactions="rawTransactionsList" />
         </template>
       </Card.CardContent>
     </Card.Card>
