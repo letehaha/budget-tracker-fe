@@ -6,7 +6,7 @@ defineEmits(["accept", "cancel"]);
 withDefaults(
   defineProps<{
     title: string;
-    description?: string;
+    description?: string; // "description" slot can be used to pass template
     cancelLabel?: string;
     acceptLabel?: string;
     acceptVariant?: ButtonVariantProps["variant"];
@@ -34,8 +34,10 @@ withDefaults(
             {{ title }}
           </AlertDialog.AlertDialogTitle>
 
-          <AlertDialog.AlertDialogDescription v-if="description">
-            {{ description }}
+          <AlertDialog.AlertDialogDescription v-if="description || $slots.description">
+            <slot name="description">
+              {{ description }}
+            </slot>
           </AlertDialog.AlertDialogDescription>
 
           <slot name="content" />
