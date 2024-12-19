@@ -13,6 +13,7 @@
             <select-field
               v-model="selectedCurrency"
               :values="currencies"
+              value-key="id"
               placeholder="Loading..."
               label="Base Currency"
               with-search-field

@@ -6,6 +6,7 @@
           v-model="selectedCurrency"
           :values="filteredCurrencies"
           :placeholder="isCurrenciesLoading ? 'Loading...' : 'Select currency'"
+          value-key="id"
           with-search-field
           :disabled="!filteredCurrencies.length"
           :label-key="(item: CurrencyModel) => `${item.code} - ${item.currency}`"
