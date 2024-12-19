@@ -25,21 +25,7 @@ const router = useRouter();
 const { addSuccessNotification, addErrorNotification } = useNotificationCenter();
 const accountsStore = useAccountsStore();
 const confirmAccountName = ref("");
-
-const alertDescription = computed(() => {
-  if (props.transactionsCount > 0) {
-    return {
-      message: `This action cannot be undone.`,
-      boldText: `You have ${props.transactionsCount} transactions associated with this account, they will also be deleted.`,
-      details: "Do you really want to delete this account?",
-    };
-  }
-  return {
-    message: "This action cannot be undone. You have ",
-    boldText: "You have zero transactions associated.",
-    details: " Do you really want to delete this account?",
-  };
-});
+const accountHasTransactions = computed(() => props.transactionsCount > 0);
 
 const deleteAccount = async () => {
   const accountName = props.account.name;
@@ -93,7 +79,6 @@ const deleteAccount = async () => {
 
             <AlertDialog
               title="Are you absolutely sure?"
-              :description="alertDescription"
               :accept-disabled="confirmAccountName !== account.name"
               accept-variant="destructive"
               @accept="deleteAccount"
@@ -102,9 +87,18 @@ const deleteAccount = async () => {
                 <Button variant="destructive"> Delete this account </Button>
               </template>
               <template #description>
-                {{ alertDescription.message }}
-                <strong>{{ alertDescription.boldText }}</strong>
-                {{ alertDescription.details }}
+                <template v-if="accountHasTransactions">
+                  This action cannot be undone.
+                  <strong>
+                    You have {{ transactionsCount }} transactions associated with this account, they
+                    will also be deleted.
+                  </strong>
+                  Do you really want to delete this account?
+                </template>
+                <template v-else>
+                  This action cannot be undone. Do you really want to delete this account?
+                  <strong> You have zero transactions associated. </strong>
+                </template>
               </template>
               <template #content>
                 <InputField

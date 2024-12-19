@@ -40,8 +40,10 @@ withDefaults(
             {{ title }}
           </AlertDialog.AlertDialogTitle>
 
-          <AlertDialog.AlertDialogDescription v-if="description">
-            <slot name="description" />
+          <AlertDialog.AlertDialogDescription v-if="description || $slots.description">
+            <slot name="description">
+              {{ description }}
+            </slot>
           </AlertDialog.AlertDialogDescription>
 
           <slot name="content" />
