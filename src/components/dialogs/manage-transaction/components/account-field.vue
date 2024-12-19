@@ -2,7 +2,7 @@
   <template v-if="accounts.length || account">
     <template v-if="isTransferTransaction && !isTransactionLinking">
       <form-row>
-        <select-field-lib
+        <select-field
           label="From account"
           placeholder="Select account"
           :values="accounts"
@@ -12,11 +12,19 @@
           is-value-preselected
           :model-value="account"
           @update:model-value="updateFormAccount"
-        />
+        >
+          <template #select-bottom-content>
+            <CreateAccountDialog>
+              <UiButton type="button" class="mt-4 w-full" variant="link">
+                Add new account +
+              </UiButton>
+            </CreateAccountDialog>
+          </template>
+        </select-field>
       </form-row>
 
       <form-row>
-        <select-field-lib
+        <select-field
           label="To account"
           placeholder="Select account"
           :values="filteredAccounts"
@@ -25,12 +33,20 @@
           :disabled="disabled || toAccountDisabled"
           :model-value="toAccount"
           @update:model-value="updateToAccount"
-        />
+        >
+          <template #select-bottom-content>
+            <CreateAccountDialog>
+              <UiButton type="button" class="mt-4 w-full" variant="link">
+                Add new account +
+              </UiButton>
+            </CreateAccountDialog>
+          </template>
+        </select-field>
       </form-row>
     </template>
     <template v-else>
       <form-row>
-        <select-field-lib
+        <select-field
           label="Account"
           placeholder="Select account"
           :values="accounts"
@@ -48,7 +64,7 @@
               </UiButton>
             </CreateAccountDialog>
           </template>
-        </select-field-lib>
+        </select-field>
       </form-row>
     </template>
   </template>
@@ -76,7 +92,7 @@ import { ROUTES_NAMES } from "@/routes";
 
 import CreateAccountDialog from "@/components/dialogs/create-account-dialog.vue";
 import UiButton from "@/components/lib/ui/button/Button.vue";
-import SelectFieldLib from "@/components/fields/select-field-lib.vue";
+import SelectField from "@/components/fields/select-field.vue";
 import InputField from "@/components/fields/input-field.vue";
 
 import FormRow from "./form-row.vue";
