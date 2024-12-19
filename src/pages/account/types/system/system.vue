@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
-import { AccountModel } from "shared-types";
+import { AccountModel, TransactionModel } from "shared-types";
 
 import { useAccountsStore } from "@/stores";
 import { ROUTES_NAMES } from "@/routes";
@@ -18,14 +18,14 @@ import SettingAccountGroup from "@/pages/account/components/account-group.vue";
 
 const props = defineProps<{
   account: AccountModel;
-  transactionsCount: number;
+  transactions: TransactionModel[];
 }>();
 const router = useRouter();
 
 const { addSuccessNotification, addErrorNotification } = useNotificationCenter();
 const accountsStore = useAccountsStore();
 const confirmAccountName = ref("");
-const accountHasTransactions = computed(() => props.transactionsCount > 0);
+const accountHasTransactions = computed(() => props.transactions.length > 0);
 
 const deleteAccount = async () => {
   const accountName = props.account.name;
@@ -90,8 +90,8 @@ const deleteAccount = async () => {
                 <template v-if="accountHasTransactions">
                   This action cannot be undone.
                   <strong>
-                    You have {{ transactionsCount }} transactions associated with this account, they
-                    will also be deleted.
+                    You have {{ transactions.length }} transactions associated with this account,
+                    they will also be deleted.
                   </strong>
                   Do you really want to delete this account?
                 </template>
