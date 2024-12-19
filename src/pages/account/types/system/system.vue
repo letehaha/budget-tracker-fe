@@ -101,6 +101,11 @@ const deleteAccount = async () => {
               <template #trigger>
                 <Button variant="destructive"> Delete this account </Button>
               </template>
+              <template #description>
+                {{ alertDescription.message }}
+                <strong>{{ alertDescription.boldText }}</strong>
+                {{ alertDescription.details }}
+              </template>
               <template #content>
                 <InputField
                   v-model="confirmAccountName"

@@ -41,14 +41,7 @@ withDefaults(
           </AlertDialog.AlertDialogTitle>
 
           <AlertDialog.AlertDialogDescription v-if="description">
-            <template v-if="typeof description === 'object'">
-              {{ description.message }}
-              <strong>{{ description.boldText }}</strong>
-              {{ description.details }}
-            </template>
-            <template v-else>
-              {{ description }}
-            </template>
+            <slot name="description" />
           </AlertDialog.AlertDialogDescription>
 
           <slot name="content" />
