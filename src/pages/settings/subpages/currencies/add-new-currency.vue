@@ -1,6 +1,6 @@
 <template>
   <Card class="mb-8">
-    <CardContent class="pt-6 flex gap-4">
+    <CardContent class="!pt-6 flex gap-4">
       <div class="flex-shrink-0 w-full max-w-[300px]">
         <select-field
           v-model="selectedCurrency"
