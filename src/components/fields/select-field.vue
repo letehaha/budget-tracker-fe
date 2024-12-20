@@ -35,7 +35,7 @@
 </template>
 
 <script lang="ts" setup generic="T extends Record<string, any>">
-import { computed, nextTick, ref } from "vue";
+import { computed, ref } from "vue";
 import * as Select from "@/components/lib/ui/select";
 import InputField from "@/components/fields/input-field.vue";
 
