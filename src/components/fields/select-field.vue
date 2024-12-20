@@ -5,7 +5,11 @@
     </template>
 
     <div>
-      <Select.Select v-model="selectedKey" :disabled="disabled" @update:open="selectOpen">
+      <Select.Select
+        v-model="selectedKey"
+        :disabled="disabled"
+        @update:open="isDropdownOpen = $event"
+      >
         <Select.SelectTrigger class="w-full">
           <Select.SelectValue :placeholder="placeholder">
             {{ selectedValue ? getLabelFromValue(selectedValue) : placeholder }}
@@ -35,7 +39,7 @@
 </template>
 
 <script lang="ts" setup generic="T extends Record<string, any>">
-import { computed, ref } from "vue";
+import { computed, nextTick, ref, watch } from "vue";
 import * as Select from "@/components/lib/ui/select";
 import InputField from "@/components/fields/input-field.vue";
 
@@ -69,22 +73,12 @@ const emit = defineEmits<{
 
 const searchQuery = ref("");
 const selectedValue = computed(() => props.modelValue);
+const isDropdownOpen = ref<boolean>(false);
 
 const keydownHandler = (event: KeyboardEvent) => {
   if (/^[a-zA-Z0-9]$/.test(event.key)) {
     event.stopPropagation();
     event.preventDefault();
-  }
-};
-
-const selectOpen = () => {
-  const el = document.querySelector("[data-radix-select-viewport]");
-  if (el) {
-    el.addEventListener("keydown", (event) => {
-      keydownHandler(event as KeyboardEvent);
-    });
-  } else {
-    selectOpen();
   }
 };
 
@@ -114,5 +108,15 @@ const selectedKey = computed({
 const filteredValues = computed(() => {
   const query = searchQuery.value.toLowerCase();
   return propsValue.value.filter((item) => getLabelFromValue(item).toLowerCase().includes(query));
+});
+
+watch(isDropdownOpen, async () => {
+  if (isDropdownOpen.value) {
+    await nextTick();
+    const el = document.querySelector("[data-radix-select-viewport]");
+    el.addEventListener("keydown", (event) => {
+      keydownHandler(event as KeyboardEvent);
+    });
+  }
 });
 </script>
