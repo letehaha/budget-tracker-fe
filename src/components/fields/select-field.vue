@@ -1,48 +1,9 @@
-<template>
-  <div>
-    <template v-if="label">
-      <FieldLabel :label="label" />
-    </template>
-
-    <div>
-      <Select.Select
-        v-model="selectedKey"
-        :disabled="disabled"
-        @update:open="isDropdownOpen = $event"
-      >
-        <Select.SelectTrigger class="w-full">
-          <Select.SelectValue :placeholder="placeholder">
-            {{ selectedValue ? getLabelFromValue(selectedValue) : placeholder }}
-          </Select.SelectValue>
-        </Select.SelectTrigger>
-        <Select.SelectContent>
-          <div class="p-2">
-            <input-field v-model="searchQuery" type="text" placeholder="Search..." @keydown.stop />
-          </div>
-
-          <div class>
-            <Select.SelectItem
-              v-for="item in filteredValues"
-              :key="getKeyFromItem(item)"
-              :value="getKeyFromItem(item)"
-            >
-              {{ getLabelFromValue(item) }}
-            </Select.SelectItem>
-          </div>
-          <slot name="select-bottom-content" />
-        </Select.SelectContent>
-      </Select.Select>
-    </div>
-
-    <FieldError :error-message="errorMessage" />
-  </div>
-</template>
-
 <script lang="ts" setup generic="T extends Record<string, any>">
 import { computed, nextTick, ref, watch } from "vue";
 import * as Select from "@/components/lib/ui/select";
 import InputField from "@/components/fields/input-field.vue";
 
+import { debounce } from "lodash-es";
 import FieldError from "./components/field-error.vue";
 import FieldLabel from "./components/field-label.vue";
 
@@ -74,6 +35,7 @@ const emit = defineEmits<{
 const searchQuery = ref("");
 const selectedValue = computed(() => props.modelValue);
 const isDropdownOpen = ref<boolean>(false);
+const debouncedFilteredValues = ref<T[]>([]);
 
 const keydownHandler = (event: KeyboardEvent) => {
   if (/^[a-zA-Z0-9]$/.test(event.key)) {
@@ -105,18 +67,63 @@ const selectedKey = computed({
   },
 });
 
-const filteredValues = computed(() => {
-  const query = searchQuery.value.toLowerCase();
-  return propsValue.value.filter((item) => getLabelFromValue(item).toLowerCase().includes(query));
-});
+watch(
+  searchQuery,
+  debounce((query: string) => {
+    const lowerCaseQuery = query.toLowerCase();
+    debouncedFilteredValues.value = propsValue.value.filter((item) =>
+      getLabelFromValue(item).toLowerCase().includes(lowerCaseQuery),
+    );
+  }, 300),
+);
+
+debouncedFilteredValues.value = propsValue.value;
 
 watch(isDropdownOpen, async () => {
   if (isDropdownOpen.value) {
     await nextTick();
     const el = document.querySelector("[data-radix-select-viewport]");
-    el.addEventListener("keydown", (event) => {
+    el?.addEventListener("keydown", (event) => {
       keydownHandler(event as KeyboardEvent);
     });
   }
 });
 </script>
+
+<template>
+  <div>
+    <template v-if="label">
+      <FieldLabel :label="label" />
+    </template>
+
+    <div>
+      <Select.Select
+        v-model="selectedKey"
+        :disabled="disabled"
+        @update:open="isDropdownOpen = $event"
+      >
+        <Select.SelectTrigger class="w-full">
+          <Select.SelectValue :placeholder="placeholder">
+            {{ selectedValue ? getLabelFromValue(selectedValue) : placeholder }}
+          </Select.SelectValue>
+        </Select.SelectTrigger>
+        <Select.SelectContent>
+          <div class="p-2">
+            <input-field v-model="searchQuery" type="text" placeholder="Search..." @keydown.stop />
+          </div>
+
+          <Select.SelectItem
+            v-for="item in debouncedFilteredValues"
+            :key="getKeyFromItem(item as T)"
+            :value="getKeyFromItem(item as T)"
+          >
+            {{ getLabelFromValue(item as T) }}
+          </Select.SelectItem>
+          <slot name="select-bottom-content" />
+        </Select.SelectContent>
+      </Select.Select>
+    </div>
+
+    <FieldError :error-message="errorMessage" />
+  </div>
+</template>
