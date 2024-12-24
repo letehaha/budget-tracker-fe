@@ -7,7 +7,7 @@
           :values="filteredCurrencies"
           :placeholder="isCurrenciesLoading ? 'Loading...' : 'Select currency'"
           value-key="id"
-          with-search-field
+          with-search
           :disabled="!filteredCurrencies.length"
           :label-key="(item: CurrencyModel) => `${item.code} - ${item.currency}`"
         />

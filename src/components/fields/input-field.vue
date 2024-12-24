@@ -15,7 +15,9 @@
 
       <div class="relative">
         <template v-if="isLeadingIconExist">
-          <div class="absolute top-0 left-0 flex items-center h-full px-6">
+          <div
+            :class="['absolute top-0 left-0 flex items-center h-full px-6', leadingIconCssClass]"
+          >
             <slot name="iconLeading" />
           </div>
         </template>
@@ -45,7 +47,9 @@
         />
 
         <template v-if="isTrailIconExist">
-          <div class="absolute top-0 right-0 flex items-center h-full px-6">
+          <div
+            :class="['absolute top-0 right-0 flex items-center h-full px-6', trailingIconCssClass]"
+          >
             <slot name="iconTrailing" />
           </div>
         </template>
@@ -88,6 +92,8 @@ const props = defineProps<{
   inputFieldStyles?: HTMLAttributes["style"];
   onlyPositive?: boolean;
   autofocus?: boolean;
+  trailingIconCssClass?: string;
+  leadingIconCssClass?: string;
 }>();
 
 const emits = defineEmits<{
