@@ -181,6 +181,13 @@ const vCalendarSlots = computed(() =>
 .calendar .vc-day-content:not(.vc-highlight-content-light) {
   @apply rounded-md;
 }
+.calendar .vc-day-content.vc-disabled {
+  @apply cursor-not-allowed;
+}
+.calendar .vc-day-content.vc-disabled:hover {
+  // prevent hover state for disabled item
+  @apply bg-transparent opacity-50 text-muted-foreground;
+}
 .calendar
   .is-not-in-month:not(:has(.vc-highlight-content-solid)):not(
     :has(.vc-highlight-content-light)

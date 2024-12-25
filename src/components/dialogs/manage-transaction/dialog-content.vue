@@ -503,6 +503,9 @@ onUnmounted(() => {
               v-model="form.time"
               :disabled="isFormFieldsDisabled || isRecordExternal"
               label="Datetime"
+              :calendar-options="{
+                maxDate: new Date(),
+              }"
             />
           </form-row>
         </div>
