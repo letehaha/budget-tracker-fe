@@ -1,13 +1,13 @@
 <template>
   <Card class="mb-8">
-    <CardContent class="pt-6 flex gap-4">
+    <CardContent class="!pt-6 flex gap-4">
       <div class="flex-shrink-0 w-full max-w-[300px]">
         <select-field
           v-model="selectedCurrency"
           :values="filteredCurrencies"
           :placeholder="isCurrenciesLoading ? 'Loading...' : 'Select currency'"
           value-key="id"
-          with-search-field
+          with-search
           :disabled="!filteredCurrencies.length"
           :label-key="(item: CurrencyModel) => `${item.code} - ${item.currency}`"
         />

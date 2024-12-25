@@ -16,7 +16,7 @@
               value-key="id"
               placeholder="Loading..."
               label="Base Currency"
-              with-search-field
+              with-search
               :label-key="(item) => `${item.code} - ${item.currency}`"
             />
           </div>

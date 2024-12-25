@@ -41,13 +41,21 @@
       <div class="categories-page__list">
         <template v-if="currentLevel.length">
           <template v-for="cat in currentLevel" :key="cat.id">
-            <button class="categories-page__list-item" type="button" @click="selectCategory(cat)">
+            <button
+              class="categories-page__list-item"
+              type="button"
+              :disabled="categoryLevelCount === 2"
+              @click="selectCategory(cat)"
+            >
               <div class="categories-page__category-info">
                 <CategoryCircle :category="cat" />
 
                 {{ cat.name }}
               </div>
-              <span class="base-text-smaller categories-page__category-view">
+              <span
+                v-if="categoryLevelCount !== 2"
+                class="base-text-smaller categories-page__category-view"
+              >
                 <span>View</span>
                 <span>></span>
               </span>
@@ -59,7 +67,7 @@
         </template>
       </div>
 
-      <div class="categories-page__add-subcategory">
+      <div v-if="categoryLevelCount < 2" class="categories-page__add-subcategory">
         <button type="button" @click="startCreating">Add subcategory +</button>
       </div>
     </div>
@@ -113,6 +121,7 @@ const { addErrorNotification, addSuccessNotification } = useNotificationCenter()
 const { formattedCategories } = storeToRefs(categoriesStore);
 const currentLevel = ref<FormattedCategory[]>(formattedCategories.value);
 const selectedCategory = ref<FormattedCategory | null>(null);
+const categoryLevelCount = ref<number>(0);
 
 const form = reactive({
   name: "",
@@ -143,6 +152,7 @@ const goBack = () => {
   closeForm();
   selectedCategory.value = null;
   currentLevel.value = formattedCategories.value;
+  categoryLevelCount.value = 0;
 };
 const applyChanges = async () => {
   if (!selectedCategory.value) return;
@@ -176,10 +186,12 @@ const applyChanges = async () => {
   }
 };
 const selectCategory = (category: FormattedCategory) => {
+  if (categoryLevelCount.value === 2) return;
   closeForm();
   selectedCategory.value = category;
 
   if (category.subCategories) {
+    categoryLevelCount.value++;
     currentLevel.value = category.subCategories;
   }
 };

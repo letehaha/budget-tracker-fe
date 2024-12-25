@@ -8,6 +8,7 @@
           :values="accounts"
           label-key="name"
           value-key="id"
+          with-search
           :disabled="disabled || fromAccountDisabled"
           is-value-preselected
           :model-value="account"
@@ -30,6 +31,7 @@
           :values="filteredAccounts"
           label-key="name"
           value-key="id"
+          with-search
           :disabled="disabled || toAccountDisabled"
           :model-value="toAccount"
           @update:model-value="updateToAccount"
@@ -52,6 +54,7 @@
           :values="accounts"
           label-key="name"
           value-key="id"
+          with-search
           :disabled="disabled || fromAccountDisabled"
           is-value-preselected
           :model-value="account"
