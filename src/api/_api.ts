@@ -7,6 +7,7 @@ import { useNotificationCenter, NotificationType } from "@/components/notificati
 import * as errors from "@/js/errors";
 
 type HTTP_METHOD = "PATCH" | "POST" | "PUT" | "GET" | "DELETE";
+const SESSION_ID_HEADER_KEY = "X-Session-ID";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type ApiValidResponse = any;
@@ -16,6 +17,7 @@ interface ApiRequestConfig {
   headers: {
     "Content-Type": string;
     Authorization: string;
+    [SESSION_ID_HEADER_KEY]: string;
   };
   body?: string;
 }
@@ -34,6 +36,7 @@ interface ApiCall {
 
 const API_HTTP = import.meta.env.VITE_APP_API_HTTP;
 const API_VER = import.meta.env.VITE_APP_API_VER;
+const SESSION_ID_KEY = "session-id";
 
 // eslint-disable-next-line no-console
 console.log("API_HTTP", API_HTTP);
@@ -155,6 +158,7 @@ class ApiCaller {
       headers: {
         "Content-Type": "application/json",
         Authorization: this.authToken || "",
+        "X-Session-ID": window.sessionStorage?.getItem(SESSION_ID_KEY) || "",
       },
     };
 
@@ -191,6 +195,10 @@ class ApiCaller {
 
       throw new errors.UnexpectedError("Unexpected error.", {});
     }
+
+    const sessionId = result.headers.get(SESSION_ID_HEADER_KEY);
+
+    if (sessionId) window.sessionStorage?.setItem(SESSION_ID_KEY, sessionId);
 
     const {
       status,
