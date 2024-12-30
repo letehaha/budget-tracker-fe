@@ -16,22 +16,39 @@
             :class="
               cn(
                 'datetime-local-raw-input',
-                'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
+                'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background',
+                'file:border-0 file:bg-transparent file:text-sm file:font-medium',
+                'placeholder:text-muted-foreground',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+                'disabled:cursor-not-allowed disabled:opacity-50',
+                'appearance-none', // fixes Safari width issues
                 $attrs.class ?? '',
               )
             "
             @input="handleLocalInputUpdate"
           />
-          <Popover.PopoverTrigger as-child>
+          <template v-if="isSafariMobile">
             <Button
               class="absolute top-0 right-0 flex items-center justify-center w-16 h-10"
               variant="ghost"
               size="icon"
-              :disabled="disabled"
+              disabled
             >
-              <CalendarClockIcon :size="24" />
+              <CalendarClockIcon class="size-6 text-white" />
             </Button>
-          </Popover.PopoverTrigger>
+          </template>
+          <template v-else>
+            <Popover.PopoverTrigger as-child>
+              <Button
+                class="absolute top-0 right-0 flex items-center justify-center w-16 h-10"
+                variant="ghost"
+                size="icon"
+                :disabled="disabled"
+              >
+                <CalendarClockIcon :size="24" />
+              </Button>
+            </Popover.PopoverTrigger>
+          </template>
         </div>
         <FieldError :error-message="errorMessage" />
         <Popover.PopoverContent class="w-[350px]">
@@ -57,6 +74,7 @@ import { FieldLabel, FieldError } from "@/components/fields";
 import { CalendarClockIcon } from "lucide-vue-next";
 import { ref, watch } from "vue";
 import { Button } from "@/components/lib/ui/button";
+import { useSafariDetection } from "@/composable/detect-safari";
 
 interface InputChangeEvent extends InputEvent {
   target: HTMLInputElement;
@@ -87,6 +105,8 @@ const props = withDefaults(
     calendarOptions: undefined,
   },
 );
+
+const { isSafariMobile } = useSafariDetection();
 
 const formatToInput = (value: Date) => format(value, "yyyy-MM-dd HH:mm");
 
