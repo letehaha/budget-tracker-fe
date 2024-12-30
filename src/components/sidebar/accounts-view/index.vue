@@ -64,7 +64,7 @@ const isPopoverOpen = ref(false);
       <Popover.Popover :open="isPopoverOpen" @update:open="isPopoverOpen = $event">
         <Popover.PopoverTrigger as-child>
           <Button size="icon" variant="secondary">
-            <PlusIcon />
+            <PlusIcon :class="['transition-transform', isPopoverOpen && '-rotate-45']" />
           </Button>
         </Popover.PopoverTrigger>
         <Popover.PopoverContent side="bottom">
