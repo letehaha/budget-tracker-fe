@@ -57,7 +57,7 @@ const isPopoverOpen = ref(false);
 </script>
 
 <template>
-  <div class="my-6 min-w-[300px] overflow-y-hidden -ml-3 grid gap-0.5">
+  <div class="my-6 min-w-[300px] overflow-y-hidden md:-ml-3 grid gap-0.5">
     <div class="ml-3 flex justify-between items-center">
       <p class="text-xs uppercase">Accounts</p>
 

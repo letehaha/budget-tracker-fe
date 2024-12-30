@@ -5,6 +5,7 @@ import { API_ERROR_CODES } from "shared-types";
 import { authLogin, authRegister, api } from "@/api";
 import { useCategoriesStore, useCurrenciesStore, useUserStore } from "@/stores";
 import { ApiErrorResponseError, UnexpectedError } from "@/js/errors";
+import { isMobileSheetOpen } from "@/composable/global-state/mobile-sheet";
 import { resetAllDefinedStores } from "./setup";
 
 export const useAuthStore = defineStore("auth", () => {
@@ -63,6 +64,7 @@ export const useAuthStore = defineStore("auth", () => {
   const logout = () => {
     api.setToken("");
     localStorage.setItem("user-token", "");
+    isMobileSheetOpen.value = false;
 
     resetAllDefinedStores();
   };

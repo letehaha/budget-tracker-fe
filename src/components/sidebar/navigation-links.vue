@@ -5,7 +5,7 @@ import UiButton from "@/components/lib/ui/button/Button.vue";
 </script>
 
 <template>
-  <nav class="grid gap-2 -ml-3">
+  <nav class="grid gap-2 md:-ml-3">
     <router-link v-slot="{ isActive }" :to="{ name: ROUTES_NAMES.home }">
       <ui-button
         :variant="isActive ? 'default' : 'ghost'"

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { cn } from "@/lib/utils";
-import { X } from "lucide-vue-next";
+import { XIcon } from "lucide-vue-next";
 import {
   DialogClose,
   DialogContent,
@@ -11,6 +11,7 @@ import {
   useForwardPropsEmits,
 } from "radix-vue";
 import { computed, type HTMLAttributes } from "vue";
+import Button from "@/components/lib/ui/button/Button.vue";
 import { type SheetVariants, sheetVariants } from ".";
 
 interface SheetContentProps extends DialogContentProps {
@@ -40,7 +41,8 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits);
   <DialogPortal>
     <DialogOverlay
       :class="[
-        'fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
+        'fixed inset-0 z-50 bg-black/80',
+        'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
       ]"
     />
     <DialogContent
@@ -50,11 +52,17 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits);
       <slot />
 
       <DialogClose
+        as-child
         :class="[
-          'absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary',
+          'absolute right-4 top-4 rounded-sm ring-offset-background',
+          'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
+          'disabled:pointer-events-none',
+          'data-[state=open]:bg-secondary',
         ]"
       >
-        <X class="w-4 h-4 text-muted-foreground" />
+        <Button size="icon" variant="secondary">
+          <XIcon class="size-5" />
+        </Button>
       </DialogClose>
     </DialogContent>
   </DialogPortal>

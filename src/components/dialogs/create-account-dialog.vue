@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, defineAsyncComponent } from "vue";
 import * as Dialog from "@/components/lib/ui/dialog";
+import { isMobileSheetOpen } from "@/composable/global-state/mobile-sheet";
 
 const CreateAccountForm = defineAsyncComponent(
   () => import("@/components/forms/create-account-form.vue"),
@@ -12,6 +13,7 @@ const isOpen = ref(false);
 
 const onAccountCreation = () => {
   isOpen.value = false;
+  isMobileSheetOpen.value = false;
   emit("created");
 };
 </script>

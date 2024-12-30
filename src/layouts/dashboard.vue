@@ -1,6 +1,8 @@
 <template>
   <div class="page">
-    <Sidebar />
+    <template v-if="!isMobileView">
+      <Sidebar />
+    </template>
 
     <ScrollArea class="page__wrapper">
       <ui-header class="sticky top-0 z-10 bg-background" />
@@ -15,7 +17,7 @@
 </template>
 
 <script lang="ts" setup>
-import { watch } from "vue";
+import { computed, watch } from "vue";
 import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
 
@@ -25,10 +27,14 @@ import { useRootStore, useCurrenciesStore } from "@/stores";
 import { ScrollArea, ScrollBar } from "@/components/lib/ui/scroll-area";
 import UiHeader from "@/components/ui-header.vue";
 import Sidebar from "@/components/sidebar/index.vue";
+import { useDebounce, useWindowSize } from "@vueuse/core";
 
 const router = useRouter();
 const rootStore = useRootStore();
 const userCurrenciesStore = useCurrenciesStore();
+const { width: windowWidth } = useWindowSize();
+const debouncedWindowWidth = useDebounce(windowWidth, 300);
+const isMobileView = computed(() => debouncedWindowWidth.value <= 768);
 
 const { isAppInitialized } = storeToRefs(rootStore);
 const { isBaseCurrencyExists } = storeToRefs(userCurrenciesStore);
