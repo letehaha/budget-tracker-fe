@@ -4,7 +4,7 @@
       <template v-if="isMobileView">
         <Sheet.Sheet :open="isMobileSheetOpen" @update:open="isMobileSheetOpen = $event">
           <Sheet.SheetTrigger as-child>
-            <Button size="icon" variant="secondary">
+            <Button size="icon" variant="secondary" class="flex-shrink-0">
               <MenuIcon class="size-5" />
             </Button>
           </Sheet.SheetTrigger>
@@ -23,12 +23,12 @@
         </Sheet.Sheet>
       </template>
 
-      <ManageTransactionDialog>
+      <component :is="isMobileView ? ManageTransactionDrawer : ManageTransactionDialog">
         <Button variant="default" :size="isMobileView ? 'default' : 'lg'">
           <span class="hidden md:block"> New Transaction </span>
           <span class="flex md:hidden items-center gap-1"> <PlusIcon class="size-5" /> Add </span>
         </Button>
-      </ManageTransactionDialog>
+      </component>
     </div>
 
     <div class="flex items-center gap-2 ml-auto">
@@ -92,6 +92,7 @@ import { toggleTheme, currentTheme, Themes } from "@/common/utils";
 import Button from "@/components/lib/ui/button/Button.vue";
 import * as Sheet from "@/components/lib/ui/sheet";
 import ManageTransactionDialog from "@/components/dialogs/manage-transaction/index.vue";
+import ManageTransactionDrawer from "@/components/dialogs/manage-transaction/drawer-view.vue";
 import { useDebounce, useWindowSize } from "@vueuse/core";
 import Sidebar from "@/components/sidebar/index.vue";
 import { useRoute } from "vue-router";

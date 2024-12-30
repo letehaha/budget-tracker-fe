@@ -3,7 +3,7 @@ import { ref, watch, computed, onMounted, nextTick, onUnmounted } from "vue";
 import { useRoute } from "vue-router";
 import { storeToRefs } from "pinia";
 import { useQueryClient } from "@tanstack/vue-query";
-import { watchOnce } from "@vueuse/core";
+import { useDebounce, useWindowSize, watchOnce } from "@vueuse/core";
 import {
   TRANSACTION_TYPES,
   PAYMENT_TYPES,
@@ -26,6 +26,7 @@ import {
   OUT_OF_WALLET_ACCOUNT_MOCK,
   VUE_QUERY_TX_CHANGE_QUERY,
 } from "@/common/const";
+import * as Drawer from "@/components/lib/ui/drawer";
 import InputField from "@/components/fields/input-field.vue";
 import SelectField from "@/components/fields/select-field.vue";
 import CategorySelectField from "@/components/fields/category-select-field.vue";
@@ -73,6 +74,9 @@ const { currenciesMap } = storeToRefs(useCurrenciesStore());
 const { accountsRecord, systemAccounts } = storeToRefs(useAccountsStore());
 const { formattedCategories, categoriesMap } = storeToRefs(useCategoriesStore());
 const queryClient = useQueryClient();
+const { width: windowWidth } = useWindowSize();
+const debouncedWindowWidth = useDebounce(windowWidth, 300);
+const isMobileView = computed(() => debouncedWindowWidth.value <= 768);
 
 const isFormCreation = computed(() => !props.transaction);
 
@@ -372,7 +376,7 @@ onUnmounted(() => {
         <Button variant="ghost"> Close </Button>
       </DialogClose>
     </div>
-    <div class="grid grid-cols-[450px,minmax(0,1fr)] relative">
+    <div class="grid grid-cols-1 md:grid-cols-[450px,minmax(0,1fr)] relative">
       <div class="px-6">
         <type-selector
           :is-form-creation="isFormCreation"
@@ -510,7 +514,49 @@ onUnmounted(() => {
           </form-row>
         </div>
 
-        <div class="flex items-center justify-between p-6">
+        <template v-if="isMobileView">
+          <Drawer.Drawer>
+            <Drawer.DrawerTrigger class="w-full" as-child>
+              <Button variant="secondary" size="default" class="w-full"> More options </Button>
+            </Drawer.DrawerTrigger>
+            <Drawer.DrawerContent>
+              <div class="px-6 pt-6 bg-black/20 shadow-black/40 shadow-[inset_2px_4px_12px]">
+                <form-row>
+                  <select-field
+                    v-model="form.paymentType"
+                    label="Payment Type"
+                    :disabled="isFormFieldsDisabled || isRecordExternal"
+                    :values="VERBOSE_PAYMENT_TYPES"
+                    is-value-preselected
+                  />
+                </form-row>
+                <form-row>
+                  <textarea-field
+                    v-model="form.note"
+                    placeholder="Note"
+                    :disabled="isFormFieldsDisabled"
+                    label="Note (optional)"
+                  />
+                </form-row>
+                <template v-if="!isTransferTx">
+                  <form-row>
+                    <MarkAsRefundField
+                      v-model:refunds="form.refundsTx"
+                      v-model:refunded-by="form.refundedByTxs"
+                      :transaction-id="transaction?.id"
+                      :is-record-creation="isFormCreation"
+                      :transaction-type="refundTransactionsTypeBasedOnFormType"
+                      :disabled="isFormFieldsDisabled"
+                      :is-there-original-refunds="Boolean(originalRefunds.length)"
+                    />
+                  </form-row>
+                </template>
+              </div>
+            </Drawer.DrawerContent>
+          </Drawer.Drawer>
+        </template>
+
+        <div class="flex items-center justify-between py-6">
           <Button
             v-if="transaction && transaction.accountType === ACCOUNT_TYPES.system"
             class="min-w-[100px]"
@@ -522,47 +568,50 @@ onUnmounted(() => {
             Delete
           </Button>
           <Button
-            class="ml-auto min-w-[100px]"
+            class="ml-auto min-w-[120px]"
             :aria-label="isFormCreation ? 'Create transaction' : 'Edit transaction'"
             :disabled="isFormFieldsDisabled"
             @click="submit"
           >
-            {{ isLoading ? "Loading..." : isFormCreation ? "Submit" : "Edit" }}
+            {{ isLoading ? "Loading..." : isFormCreation ? "Create" : "Edit" }}
           </Button>
         </div>
       </div>
-      <div class="px-6 pt-6 bg-black/20 shadow-black/40 shadow-[inset_2px_4px_12px]">
-        <form-row>
-          <select-field
-            v-model="form.paymentType"
-            label="Payment Type"
-            :disabled="isFormFieldsDisabled || isRecordExternal"
-            :values="VERBOSE_PAYMENT_TYPES"
-            is-value-preselected
-          />
-        </form-row>
-        <form-row>
-          <textarea-field
-            v-model="form.note"
-            placeholder="Note"
-            :disabled="isFormFieldsDisabled"
-            label="Note (optional)"
-          />
-        </form-row>
-        <template v-if="!isTransferTx">
+
+      <template v-if="!isMobileView">
+        <div class="px-6 pt-6 bg-black/20 shadow-black/40 shadow-[inset_2px_4px_12px]">
           <form-row>
-            <MarkAsRefundField
-              v-model:refunds="form.refundsTx"
-              v-model:refunded-by="form.refundedByTxs"
-              :transaction-id="transaction?.id"
-              :is-record-creation="isFormCreation"
-              :transaction-type="refundTransactionsTypeBasedOnFormType"
-              :disabled="isFormFieldsDisabled"
-              :is-there-original-refunds="Boolean(originalRefunds.length)"
+            <select-field
+              v-model="form.paymentType"
+              label="Payment Type"
+              :disabled="isFormFieldsDisabled || isRecordExternal"
+              :values="VERBOSE_PAYMENT_TYPES"
+              is-value-preselected
             />
           </form-row>
-        </template>
-      </div>
+          <form-row>
+            <textarea-field
+              v-model="form.note"
+              placeholder="Note"
+              :disabled="isFormFieldsDisabled"
+              label="Note (optional)"
+            />
+          </form-row>
+          <template v-if="!isTransferTx">
+            <form-row>
+              <MarkAsRefundField
+                v-model:refunds="form.refundsTx"
+                v-model:refunded-by="form.refundedByTxs"
+                :transaction-id="transaction?.id"
+                :is-record-creation="isFormCreation"
+                :transaction-type="refundTransactionsTypeBasedOnFormType"
+                :disabled="isFormFieldsDisabled"
+                :is-there-original-refunds="Boolean(originalRefunds.length)"
+              />
+            </form-row>
+          </template>
+        </div>
+      </template>
     </div>
   </div>
 </template>
