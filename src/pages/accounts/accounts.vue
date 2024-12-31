@@ -44,7 +44,9 @@
               <CardHeader class="p-3">
                 <div
                   v-if="!account.isEnabled"
-                  class="absolute top-0 right-0 p-1 text-xs leading-none rounded-tr-md bg-background"
+                  :class="[
+                    'absolute top-0 right-0 p-1 text-xs leading-none rounded-tr-md bg-background',
+                  ]"
                 >
                   Hidden
                 </div>

@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import { redirectRouteGuard, authPageGuard, baseCurrencyExists, devOnly } from "./guards";
 import { ROUTES_NAMES } from "./constants";
 
-export { ROUTES_NAMES, ROUTER_LAYOUTS } from "./constants";
+export { ROUTES_NAMES } from "./constants";
 
 const routes = [
   {

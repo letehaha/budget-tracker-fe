@@ -60,14 +60,16 @@ const deleteAccount = async () => {
 
         <SettingAccountGroup :account="account" />
 
-        <div></div>
-
-        <div class="grid gap-4 p-4 mt-4 -mx-4 border border-destructive rounded-xl">
+        <div
+          class="grid gap-4 p-4 mt-4 sm:-mx-4 border border-destructive rounded-xl @container/danger-zone"
+        >
           <p class="text-xl font-medium">Danger zone</p>
 
           <Separator />
 
-          <div class="flex items-center justify-between gap-2">
+          <div
+            class="flex flex-col @[400px]/danger-zone:flex-row @[400px]/danger-zone:items-center justify-between gap-2"
+          >
             <div>
               <p class="mb-2 font-bold">Delete this account</p>
               <p class="text-xs">

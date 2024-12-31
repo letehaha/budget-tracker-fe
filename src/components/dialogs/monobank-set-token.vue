@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { reactive, ref } from "vue";
 import { API_ERROR_CODES } from "shared-types";
-import * as Dialog from "@/components/lib/ui/dialog";
 import { useBanksMonobankStore, useCurrenciesStore } from "@/stores";
 import { MONOBANK_API_TOKEN_LENGTH } from "@/common/const";
 import { ApiErrorResponseError } from "@/js/errors";
@@ -9,6 +8,7 @@ import { useFormValidation } from "@/composable";
 import { required, minLength } from "@/js/helpers/validators";
 import InputField from "@/components/fields/input-field.vue";
 import Button from "@/components/common/ui-button.vue";
+import ResponsiveDialog from "@/components/common/responsive-dialog.vue";
 
 import { useNotificationCenter, NotificationType } from "@/components/notification-center";
 
@@ -95,50 +95,45 @@ const submit = async () => {
 </script>
 
 <template>
-  <Dialog.Dialog v-model:open="isDialogOpen">
-    <Dialog.DialogTrigger as-child>
+  <ResponsiveDialog v-model:open="isDialogOpen">
+    <template #trigger>
       <slot />
-    </Dialog.DialogTrigger>
-    <Dialog.DialogContent
-      class="sm:max-w-md max-h-[90dvh] grid-rows-[auto_auto_minmax(0,1fr)_auto]"
-    >
-      <Dialog.DialogHeader class="mb-10">
-        <Dialog.DialogTitle>
-          {{ isUpdate ? "Update your Monobank API Token" : "Set Monobank API Token" }}
-        </Dialog.DialogTitle>
-      </Dialog.DialogHeader>
+    </template>
 
-      <form class="grid gap-6" data-cy="monobank-set-token-modal" @submit.prevent="submit">
-        <p>
-          Please visit
-          <a
-            href="https://api.monobank.ua/"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-primary"
-          >
-            https://api.monobank.ua/
-          </a>
+    <template #title>
+      {{ isUpdate ? "Update your Monobank API Token" : "Set Monobank API Token" }}
+    </template>
 
-          and follow all the instructions. Paste the API token from Monobank in the field below
-        </p>
-        <div>
-          <input-field
-            v-model="form.token"
-            name="token"
-            label="API Token"
-            placeholder="uBrAYwEg6H..."
-            :error-message="getFieldErrorMessage('form.token')"
-          />
-        </div>
+    <form class="grid gap-6" data-cy="monobank-set-token-modal" @submit.prevent="submit">
+      <p>
+        Please visit
+        <a
+          href="https://api.monobank.ua/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-primary"
+        >
+          https://api.monobank.ua/
+        </a>
 
-        <div class="flex justify-center">
-          <Button type="submit" :disabled="isLoading">
-            <template v-if="isUpdate"> Update token </template>
-            <template v-else> Pair account </template>
-          </Button>
-        </div>
-      </form>
-    </Dialog.DialogContent>
-  </Dialog.Dialog>
+        and follow all the instructions. Paste the API token from Monobank in the field below
+      </p>
+      <div>
+        <input-field
+          v-model="form.token"
+          name="token"
+          label="API Token"
+          placeholder="uBrAYwEg6H..."
+          :error-message="getFieldErrorMessage('form.token')"
+        />
+      </div>
+
+      <div class="flex">
+        <Button type="submit" class="w-full" :disabled="isLoading">
+          <template v-if="isUpdate"> Update token </template>
+          <template v-else> Pair account </template>
+        </Button>
+      </div>
+    </form>
+  </ResponsiveDialog>
 </template>

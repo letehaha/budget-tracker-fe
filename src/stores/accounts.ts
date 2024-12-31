@@ -1,4 +1,4 @@
-import { ref, WritableComputedRef, computed, watch } from "vue";
+import { ref, computed, watch } from "vue";
 import { defineStore, storeToRefs } from "pinia";
 import { useQuery, useQueryClient } from "@tanstack/vue-query";
 import { ACCOUNT_TYPES, AccountModel } from "shared-types";
@@ -31,10 +31,6 @@ export const useAccountsStore = defineStore("accounts", () => {
       accountsRecord.value[acc.id] = acc;
     }
   });
-
-  const getAccountById: WritableComputedRef<(id: number) => AccountModel | undefined> = computed(
-    () => (id: number) => accounts.value.find((i) => i.id === id),
-  );
 
   const accountsCurrencyIds = computed(() => [
     ...new Set(accounts.value.map((item) => item.currencyId)),
@@ -85,8 +81,6 @@ export const useAccountsStore = defineStore("accounts", () => {
     enabledAccounts,
     systemAccounts,
     accountsCurrencyIds,
-
-    getAccountById,
 
     createAccount,
     editAccount,

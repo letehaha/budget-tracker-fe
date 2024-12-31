@@ -16,7 +16,7 @@ export function toLocalNumber(
   return String(value);
 }
 
-export function toLocalFiatCurrency(
+function toLocalFiatCurrency(
   value: string | number | undefined | null,
   options: Intl.NumberFormatOptions = {},
 ): string {

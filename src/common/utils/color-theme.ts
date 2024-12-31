@@ -9,7 +9,7 @@ export enum Themes {
 
 export const currentTheme = ref<Themes>(Themes.dark);
 
-export const setTheme = (theme: Themes, save = false) => {
+const setTheme = (theme: Themes, save = false) => {
   currentTheme.value = theme;
   document.body.classList.remove(Themes.dark);
   document.body.classList.remove(Themes.light);

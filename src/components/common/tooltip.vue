@@ -24,7 +24,7 @@ defineOptions({
 withDefaults(
   defineProps<{
     content?: string;
-    position: "bottom" | "top";
+    position?: "bottom" | "top";
   }>(),
   {
     content: undefined,

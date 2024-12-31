@@ -4,8 +4,8 @@ export * from "./vue-query";
 
 export const MONOBANK_API_TOKEN_LENGTH = 44;
 
-export const isDevEnv = process.env.NODE_ENV === "development";
-export const isProdEnv = process.env.NODE_ENV === "production";
+// export const isDevEnv = process.env.NODE_ENV === "development";
+// export const isProdEnv = process.env.NODE_ENV === "production";
 
 export type VerbosePaymentType = {
   value: PAYMENT_TYPES;
@@ -21,8 +21,8 @@ export const VERBOSE_PAYMENT_TYPES: VerbosePaymentType[] = [
   { value: PAYMENT_TYPES.webPayment, label: "Web Payment" },
 ];
 
-export const OUT_OF_WALLET_ACCOUNT_NAME = "Out of wallet";
-export type OutOfWalletAccountModel = AccountModel & {
+const OUT_OF_WALLET_ACCOUNT_NAME = "Out of wallet";
+type OutOfWalletAccountModel = AccountModel & {
   _isOutOfWallet?: boolean;
 };
 

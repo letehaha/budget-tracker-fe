@@ -4,11 +4,11 @@ import { storeToRefs } from "pinia";
 import { useQueryClient } from "@tanstack/vue-query";
 import { Button } from "@/components/lib/ui/button";
 import * as Select from "@/components/lib/ui/select";
-import * as Dialog from "@/components/lib/ui/dialog";
 import { useCurrenciesStore } from "@/stores";
 import { addUserCurrencies } from "@/api/currencies";
 import { useNotificationCenter } from "@/components/notification-center";
 import { VUE_QUERY_CACHE_KEYS } from "@/common/const";
+import ResponsiveDialog from "@/components/common/responsive-dialog.vue";
 
 const emit = defineEmits<{
   added: [value: number];
@@ -49,34 +49,30 @@ const saveCurrency = async () => {
 </script>
 
 <template>
-  <Dialog.Dialog v-model:open="isOpen" @update:open="isOpen = $event">
-    <Dialog.DialogTrigger as-child>
+  <ResponsiveDialog v-model:open="isOpen">
+    <template #trigger>
       <slot />
-    </Dialog.DialogTrigger>
-    <Dialog.DialogContent
-      class="sm:max-w-md max-h-[90dvh] grid-rows-[auto_auto_minmax(0,1fr)_auto]"
-    >
-      <Dialog.DialogHeader class="mb-4">
-        <Dialog.DialogTitle>Add new currency</Dialog.DialogTitle>
-        <Dialog.DialogDescription> Select one currency to add </Dialog.DialogDescription>
-      </Dialog.DialogHeader>
+    </template>
 
-      <form class="grid gap-6" @submit.prevent="saveCurrency">
-        <Select.Select v-model="form.currencyId" autocomplete="false">
-          <Select.SelectTrigger>
-            <Select.SelectValue placeholder="Select currency" />
-          </Select.SelectTrigger>
-          <Select.SelectContent>
-            <template v-for="item of systemCurrenciesVerbose.unlinked" :key="item.id">
-              <Select.SelectItem :value="String(item.id)">
-                {{ item.code }} – {{ item.currency }}
-              </Select.SelectItem>
-            </template>
-          </Select.SelectContent>
-        </Select.Select>
+    <template #title> Add new currency </template>
 
-        <Button type="submit"> Add </Button>
-      </form>
-    </Dialog.DialogContent>
-  </Dialog.Dialog>
+    <template #description> Select one currency to add </template>
+
+    <form class="grid gap-6 mt-4" @submit.prevent="saveCurrency">
+      <Select.Select v-model="form.currencyId" autocomplete="false">
+        <Select.SelectTrigger>
+          <Select.SelectValue placeholder="Select currency" />
+        </Select.SelectTrigger>
+        <Select.SelectContent>
+          <template v-for="item of systemCurrenciesVerbose.unlinked" :key="item.id">
+            <Select.SelectItem :value="String(item.id)">
+              {{ item.code }} – {{ item.currency }}
+            </Select.SelectItem>
+          </template>
+        </Select.SelectContent>
+      </Select.Select>
+
+      <Button type="submit"> Add </Button>
+    </form>
+  </ResponsiveDialog>
 </template>

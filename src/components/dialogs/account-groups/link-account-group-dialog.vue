@@ -3,14 +3,13 @@ import { computed, ref, watch } from "vue";
 import { AccountModel } from "shared-types";
 import { PlusIcon, CheckIcon } from "lucide-vue-next";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
-import * as Dialog from "@/components/lib/ui/dialog";
 import UiButton from "@/components/lib/ui/button/Button.vue";
 import {
   linkAccountToGroup,
   loadAccountGroups,
   removeAccountFromGroup,
 } from "@/api/account-groups";
-
+import ResponsiveDialog from "@/components/common/responsive-dialog.vue";
 import { AccountGroups } from "@/common/types/models";
 import { useAccountGroupForAccount } from "@/composable/data-queries/account-groups";
 import { VUE_QUERY_CACHE_KEYS } from "@/common/const";
@@ -78,58 +77,50 @@ const isGroupChanged = computed(() => currentSelection.value?.name !== selectedG
 </script>
 
 <template>
-  <Dialog.Dialog v-model:open="isOpen" @update:open="isOpen = $event">
-    <Dialog.DialogTrigger as-child>
+  <ResponsiveDialog v-model:open="isOpen">
+    <template #trigger>
       <slot />
-    </Dialog.DialogTrigger>
-    <Dialog.DialogContent
-      class="sm:max-w-md max-h-[90dvh] grid-rows-[auto_auto_minmax(0,1fr)_auto]"
-    >
-      <Dialog.DialogHeader class="mb-8">
-        <Dialog.DialogTitle class="flex items-center gap-3">
-          Link account group
-        </Dialog.DialogTitle>
-      </Dialog.DialogHeader>
+    </template>
+    <template #title> Link account group </template>
 
-      <div class="grid gap-1">
-        <template v-for="group of data" :key="group.id">
+    <div class="grid gap-1">
+      <template v-for="group of data" :key="group.id">
+        <UiButton
+          variant="ghost"
+          class="w-full justify-between"
+          :disabled="isFormPending"
+          @click="() => handleSelection(group)"
+        >
+          {{ group.name }}
+
+          <template v-if="group.id === selectedGroup?.id">
+            <CheckIcon class="size-5 text-primary" />
+          </template>
+        </UiButton>
+      </template>
+    </div>
+
+    <div class="mt-8">
+      <template v-if="isGroupChanged">
+        <div class="grid grid-cols-2 gap-2">
           <UiButton
-            variant="ghost"
-            class="w-full justify-between"
+            variant="secondary"
             :disabled="isFormPending"
-            @click="() => handleSelection(group)"
+            @click="selectedGroup = currentSelection"
           >
-            {{ group.name }}
-
-            <template v-if="group.id === selectedGroup?.id">
-              <CheckIcon class="size-5 text-primary" />
-            </template>
+            Cancel
           </UiButton>
-        </template>
-      </div>
-
-      <div class="mt-8">
-        <template v-if="isGroupChanged">
-          <div class="grid grid-cols-2 gap-2">
-            <UiButton
-              variant="secondary"
-              :disabled="isFormPending"
-              @click="selectedGroup = currentSelection"
-            >
-              Cancel
-            </UiButton>
-            <UiButton :disabled="isFormPending" @click="saveChanges"> Save </UiButton>
-          </div>
-        </template>
-        <template v-else>
-          <CreateAccountGroupDialog>
-            <UiButton variant="secondary" class="w-full gap-2">
-              Create new group
-              <PlusIcon class="size-5" />
-            </UiButton>
-          </CreateAccountGroupDialog>
-        </template>
-      </div>
-    </Dialog.DialogContent>
-  </Dialog.Dialog>
+          <UiButton :disabled="isFormPending" @click="saveChanges"> Save </UiButton>
+        </div>
+      </template>
+      <template v-else>
+        <CreateAccountGroupDialog>
+          <UiButton variant="secondary" class="w-full gap-2">
+            Create new group
+            <PlusIcon class="size-5" />
+          </UiButton>
+        </CreateAccountGroupDialog>
+      </template>
+    </div>
+  </ResponsiveDialog>
 </template>

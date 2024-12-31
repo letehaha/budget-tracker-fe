@@ -17,7 +17,8 @@
     "test:e2e": "cypress run",
     "test:e2e:interact": "cypress open --browser chrome --e2e",
     "git-pull": "git pull --recurse-submodules",
-    "postinstall": "chmod +x ./post-install.sh && ./post-install.sh"
+    "postinstall": "chmod +x ./post-install.sh && ./post-install.sh",
+    "knip": "npx knip"
   },
   "type": "module",
   "browserslist": [
@@ -26,27 +27,27 @@
     "not dead"
   ],
   "dependencies": {
+    "@tailwindcss/container-queries": "^0.1.1",
     "@tanstack/vue-query": "^5.51.21",
     "@vuelidate/core": "^2.0.3",
     "@vuelidate/validators": "^2.0.4",
-    "@vueuse/core": "^11.1.0",
+    "@vueuse/core": "^12.2.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
-    "core-js": "^3.38.0",
     "date-fns": "^3.6.0",
     "highcharts": "^11.4.6",
     "highcharts-vue": "^2.0.1",
     "lodash-es": "^4.17.21",
-    "loglevel": "^1.9.1",
     "lucide-vue-next": "^0.424.0",
-    "pinia": "^2.2.1",
+    "pinia": "^2.3.0",
     "radix-vue": "^1.9.3",
     "register-service-worker": "^1.7.2",
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7",
     "v-calendar": "^3.1.2",
-    "vue": "3.4.36",
-    "vue-router": "^4.4.3"
+    "vaul-vue": "^0.2.0",
+    "vue": "3.5.13",
+    "vue-router": "^4.5.0"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.4.1",
@@ -61,22 +62,20 @@
     "@storybook/vue3-vite": "^8.2.8",
     "@types/lodash-es": "^4.17.12",
     "@vitejs/plugin-vue": "^5.1.2",
-    "@vue/compiler-sfc": "3.4.36",
     "@vue/eslint-config-airbnb": "^8.0.0",
     "@vue/eslint-config-typescript": "^13.0.0",
     "@vue/test-utils": "^2.4.6",
     "autoprefixer": "^10.4.20",
-    "css-loader": "^7.1.2",
     "cypress": "^13.13.2",
     "dotenv": "^16.4.5",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
-    "eslint-friendly-formatter": "^4.0.1",
     "eslint-import-resolver-typescript": "^3.6.1",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-prettier-vue": "^5.0.0",
     "eslint-plugin-vue": "^9.27.0",
     "jsdom": "^24.1.1",
+    "knip": "^5.41.1",
     "prettier": "3.3.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -84,12 +83,11 @@
     "storybook": "^8.2.8",
     "storybook-dark-mode": "^4.0.2",
     "tailwindcss": "^3.4.8",
-    "typescript": "^5.5.4",
+    "typescript": "^5.7.2",
     "vite": "^5.4.7",
     "vite-svg-loader": "^5.1.0",
     "vitest": "^2.0.5",
-    "vue-style-loader": "^4.1.3",
-    "vue-tsc": "^2.0.29"
+    "vue-tsc": "^2.2.0"
   },
   "volta": {
     "node": "21.6.0"

@@ -44,7 +44,7 @@
             <button
               class="categories-page__list-item"
               type="button"
-              :disabled="categoryLevelCount === 2"
+              :disabled="categoryLevelCount >= MAX_CATEGORIES_NESTING - 1"
               @click="selectCategory(cat)"
             >
               <div class="categories-page__category-info">
@@ -53,7 +53,7 @@
                 {{ cat.name }}
               </div>
               <span
-                v-if="categoryLevelCount !== 2"
+                v-if="categoryLevelCount < MAX_CATEGORIES_NESTING - 1"
                 class="base-text-smaller categories-page__category-view"
               >
                 <span>View</span>
@@ -67,7 +67,10 @@
         </template>
       </div>
 
-      <div v-if="categoryLevelCount < 2" class="categories-page__add-subcategory">
+      <div
+        v-if="categoryLevelCount < MAX_CATEGORIES_NESTING - 1"
+        class="categories-page__add-subcategory"
+      >
         <button type="button" @click="startCreating">Add subcategory +</button>
       </div>
     </div>
@@ -116,6 +119,7 @@ defineOptions({
   name: "settings-categories",
 });
 const categoriesStore = useCategoriesStore();
+const MAX_CATEGORIES_NESTING = 3;
 
 const { addErrorNotification, addSuccessNotification } = useNotificationCenter();
 const { formattedCategories } = storeToRefs(categoriesStore);
@@ -186,7 +190,7 @@ const applyChanges = async () => {
   }
 };
 const selectCategory = (category: FormattedCategory) => {
-  if (categoryLevelCount.value === 2) return;
+  if (categoryLevelCount.value >= MAX_CATEGORIES_NESTING - 1) return;
   closeForm();
   selectedCategory.value = category;
 

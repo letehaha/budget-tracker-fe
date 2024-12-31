@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, defineAsyncComponent, provide, ref } from "vue";
+import { computed, provide, ref } from "vue";
 import { PlusIcon } from "lucide-vue-next";
 import { storeToRefs } from "pinia";
 import { useQuery } from "@tanstack/vue-query";
@@ -10,16 +10,11 @@ import { AccountGroups } from "@/common/types/models";
 import * as Popover from "@/components/lib/ui/popover";
 import Button from "@/components/lib/ui/button/Button.vue";
 import { AccountModel } from "shared-types";
+import CreateAccountDialog from "@/components/dialogs/create-account-dialog.vue";
+import CreateAccountGroupDialog from "@/components/dialogs/account-groups/create-account-group-dialog.vue";
 import AccountsList from "./accounts-list.vue";
 import AccountGroupsList from "./account-groups-list.vue";
 import { useActiveAccountGroups } from "./helpers/use-active-account-groups";
-
-const CreateAccountDialog = defineAsyncComponent(
-  () => import("@/components/dialogs/create-account-dialog.vue"),
-);
-const CreateAccountGroupDialog = defineAsyncComponent(
-  () => import("@/components/dialogs/account-groups/create-account-group-dialog.vue"),
-);
 
 const { enabledAccounts } = storeToRefs(useAccountsStore());
 const { data: accountGroups, isLoading } = useQuery({
@@ -57,14 +52,14 @@ const isPopoverOpen = ref(false);
 </script>
 
 <template>
-  <div class="my-6 min-w-[300px] overflow-y-hidden -ml-3 grid gap-0.5">
+  <div class="my-6 min-w-[300px] overflow-y-hidden md:-ml-3 grid gap-0.5">
     <div class="ml-3 flex justify-between items-center">
       <p class="text-xs uppercase">Accounts</p>
 
       <Popover.Popover :open="isPopoverOpen" @update:open="isPopoverOpen = $event">
         <Popover.PopoverTrigger as-child>
           <Button size="icon" variant="secondary">
-            <PlusIcon />
+            <PlusIcon :class="['transition-transform', isPopoverOpen && '-rotate-45']" />
           </Button>
         </Popover.PopoverTrigger>
         <Popover.PopoverContent side="bottom">

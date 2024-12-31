@@ -72,6 +72,16 @@ jobs:
       - name: Build source code
         run: npm run build
 
+  knip-checkup:
+    name: No unused files and exports
+    needs: prepare-dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/prepare-local-env
+      - name: Run knip
+        run: npm run knip
+
   # integration-tests:
   #   name: Integration testing
   #   needs: prepare-dependencies

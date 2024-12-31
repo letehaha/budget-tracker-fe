@@ -15,7 +15,7 @@ import DateField from "@/components/fields/date-field.vue";
 import InputField from "@/components/fields/input-field.vue";
 import { removeValuesFromObject } from "@/common/utils/remove-values-from-object";
 
-export interface RecordListModalProps {
+interface RecordListModalProps {
   transactionType: TRANSACTION_TYPES;
   selectedTransactions: TransactionModel[];
   onSelect: (item: TransactionModel) => void;

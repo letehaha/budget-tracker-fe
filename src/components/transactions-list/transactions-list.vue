@@ -1,20 +1,3 @@
-<template>
-  <Dialog.Dialog v-model:open="isDialogVisible">
-    <div v-bind="$attrs" class="transactions-list">
-      <template
-        v-for="item in transactions"
-        :key="`${item.id}-${item.categoryId}-${item.refAmount}-${item.note}-${item.time}`"
-      >
-        <TransactionRecord :tx="item" @record-click="handlerRecordClick" />
-      </template>
-    </div>
-
-    <Dialog.DialogContent custom-close class="max-h-[90dvh] w-full max-w-[900px] bg-card p-0">
-      <ManageTransactionDoalogContent v-bind="dialogProps" @close-modal="isDialogVisible = false" />
-    </Dialog.DialogContent>
-  </Dialog.Dialog>
-</template>
-
 <script lang="ts" setup>
 import { defineAsyncComponent, ref, watch } from "vue";
 import {
@@ -24,6 +7,9 @@ import {
   TRANSACTION_TRANSFER_NATURE,
 } from "shared-types";
 import * as Dialog from "@/components/lib/ui/dialog";
+import * as Drawer from "@/components/lib/ui/drawer";
+import { createReusableTemplate } from "@vueuse/core";
+import { CUSTOM_BREAKPOINTS, useWindowBreakpoints } from "@/composable/window-breakpoints";
 import TransactionRecord from "./transaction-record.vue";
 
 const ManageTransactionDoalogContent = defineAsyncComponent(
@@ -39,6 +25,8 @@ withDefaults(
     isTransactionRecord: false,
   },
 );
+const [UseDialogTemplate, SlotContent] = createReusableTemplate();
+const isMobile = useWindowBreakpoints(CUSTOM_BREAKPOINTS.uiMobile);
 
 const isDialogVisible = ref(false);
 const defaultDialogProps = {
@@ -87,9 +75,36 @@ const handlerRecordClick = ([baseTx, oppositeTx]: [
 };
 </script>
 
-<style lang="scss">
-.transactions-list {
-  display: grid;
-  gap: 8px;
-}
-</style>
+<template>
+  <div>
+    <div v-bind="$attrs" class="grid gap-2">
+      <template
+        v-for="item in transactions"
+        :key="`${item.id}-${item.categoryId}-${item.refAmount}-${item.note}-${item.time}`"
+      >
+        <TransactionRecord :tx="item" @record-click="handlerRecordClick" />
+      </template>
+    </div>
+
+    <UseDialogTemplate>
+      <ManageTransactionDoalogContent v-bind="dialogProps" @close-modal="isDialogVisible = false" />
+    </UseDialogTemplate>
+
+    <template v-if="isMobile">
+      <Drawer.Drawer v-model:open="isDialogVisible">
+        <Drawer.DrawerContent custom-indicator>
+          <Drawer.DrawerDescription></Drawer.DrawerDescription>
+          <SlotContent />
+        </Drawer.DrawerContent>
+      </Drawer.Drawer>
+    </template>
+    <template v-else>
+      <Dialog.Dialog v-model:open="isDialogVisible">
+        <Dialog.DialogContent custom-close class="max-h-[90dvh] w-full max-w-[900px] bg-card p-0">
+          <Dialog.DialogDescription></Dialog.DialogDescription>
+          <SlotContent />
+        </Dialog.DialogContent>
+      </Dialog.Dialog>
+    </template>
+  </div>
+</template>

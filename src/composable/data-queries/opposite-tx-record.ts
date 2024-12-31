@@ -16,6 +16,7 @@ export function useOppositeTxRecord(transaction) {
   const { data: oppositeTransferTransaction } = useQuery({
     queryKey: [BASE_QUERY_KEY, transaction.id, transaction.transferId],
     queryFn: async () => {
+      if (!transaction.transferId) return null;
       const transactions = await loadTransactionsByTransferId(transaction.transferId);
       if (!transactions) return null;
       return transactions.find((item) => item.id !== transaction.id) || null;
