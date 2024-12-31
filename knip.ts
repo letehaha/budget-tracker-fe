@@ -25,6 +25,8 @@ const config: KnipConfig = {
     "@storybook/vue3",
     "@storybook/addon-docs",
     "@storybook/addon-actions",
+    // needed on CI
+    "shared-types",
   ],
   // ignoreBinaries: ["eslint"],
   rules: {
