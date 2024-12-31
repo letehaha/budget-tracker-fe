@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useVModel } from "@vueuse/core";
-import type { Calendar } from "v-calendar";
 import { DatePicker } from "v-calendar";
 import { ChevronLeft, ChevronRight } from "lucide-vue-next";
 import { computed, nextTick, onMounted, ref, useSlots } from "vue";
@@ -55,7 +54,7 @@ const modelValue = useVModel(props, "modelValue", emits, {
 const datePicker = ref<InstanceType<typeof DatePicker>>();
 // In this current version of v-calendar has the calendarRef instance, which is
 // required to handle arrow nav.
-const calendarRef = computed<InstanceType<typeof Calendar>>(() => datePicker.value.calendarRef);
+const calendarRef = computed(() => datePicker.value.calendarRef);
 
 function handleNav(direction: "prev" | "next") {
   if (!calendarRef.value) return;

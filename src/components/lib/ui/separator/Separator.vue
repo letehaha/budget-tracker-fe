@@ -2,7 +2,7 @@
 import { Separator, type SeparatorProps } from "radix-vue";
 import { cn } from "@/lib/utils";
 
-const props = defineProps<SeparatorProps & { class?: string }>();
+const props = defineProps<SeparatorProps & { class?: string | string[] }>();
 </script>
 
 <template>
