@@ -17,7 +17,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, watch } from "vue";
+import { watch } from "vue";
 import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
 
@@ -27,14 +27,12 @@ import { useRootStore, useCurrenciesStore } from "@/stores";
 import { ScrollArea, ScrollBar } from "@/components/lib/ui/scroll-area";
 import UiHeader from "@/components/ui-header.vue";
 import Sidebar from "@/components/sidebar/index.vue";
-import { useDebounce, useWindowSize } from "@vueuse/core";
+import { useWindowBreakpoints, CUSTOM_BREAKPOINTS } from "@/composable/window-breakpoints";
 
 const router = useRouter();
 const rootStore = useRootStore();
 const userCurrenciesStore = useCurrenciesStore();
-const { width: windowWidth } = useWindowSize();
-const debouncedWindowWidth = useDebounce(windowWidth, 300);
-const isMobileView = computed(() => debouncedWindowWidth.value <= 768);
+const isMobileView = useWindowBreakpoints(CUSTOM_BREAKPOINTS.uiMobile);
 
 const { isAppInitialized } = storeToRefs(rootStore);
 const { isBaseCurrencyExists } = storeToRefs(userCurrenciesStore);

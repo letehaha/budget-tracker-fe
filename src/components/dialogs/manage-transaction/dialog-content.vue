@@ -3,7 +3,7 @@ import { ref, watch, computed, onMounted, nextTick, onUnmounted } from "vue";
 import { useRoute } from "vue-router";
 import { storeToRefs } from "pinia";
 import { useQueryClient } from "@tanstack/vue-query";
-import { useDebounce, useWindowSize, watchOnce } from "@vueuse/core";
+import { watchOnce } from "@vueuse/core";
 import {
   TRANSACTION_TYPES,
   PAYMENT_TYPES,
@@ -37,6 +37,7 @@ import TransactionRecrod from "@/components/transactions-list/transaction-record
 import { ApiErrorResponseError } from "@/js/errors";
 import { useNotificationCenter } from "@/components/notification-center";
 import { getInvalidationQueryKey } from "@/composable/data-queries/opposite-tx-record";
+import { CUSTOM_BREAKPOINTS, useWindowBreakpoints } from "@/composable/window-breakpoints";
 import TypeSelector from "./components/type-selector.vue";
 import FormRow from "./components/form-row.vue";
 import AccountField from "./components/account-field.vue";
@@ -74,9 +75,8 @@ const { currenciesMap } = storeToRefs(useCurrenciesStore());
 const { accountsRecord, systemAccounts } = storeToRefs(useAccountsStore());
 const { formattedCategories, categoriesMap } = storeToRefs(useCategoriesStore());
 const queryClient = useQueryClient();
-const { width: windowWidth } = useWindowSize();
-const debouncedWindowWidth = useDebounce(windowWidth, 300);
-const isMobileView = computed(() => debouncedWindowWidth.value <= 768);
+
+const isMobileView = useWindowBreakpoints(CUSTOM_BREAKPOINTS.uiMobile);
 
 const isFormCreation = computed(() => !props.transaction);
 
@@ -519,7 +519,9 @@ onUnmounted(() => {
             <Drawer.DrawerTrigger class="w-full" as-child>
               <Button variant="secondary" size="default" class="w-full"> More options </Button>
             </Drawer.DrawerTrigger>
+
             <Drawer.DrawerContent>
+              <Drawer.DrawerTitle></Drawer.DrawerTitle>
               <div class="px-6 pt-6 bg-black/20 shadow-black/40 shadow-[inset_2px_4px_12px]">
                 <form-row>
                   <select-field

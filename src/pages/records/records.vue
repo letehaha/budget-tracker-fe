@@ -244,7 +244,7 @@
 
 <script lang="ts" setup>
 import { computed, ref } from "vue";
-import { useWindowScroll, useWindowSize, useDebounce } from "@vueuse/core";
+import { useWindowScroll } from "@vueuse/core";
 import isDate from "date-fns/isDate";
 import { isEqual } from "lodash-es";
 import * as Dialog from "@/components/lib/ui/dialog";
@@ -264,6 +264,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/lib/ui/radio-group";
 import { TRANSACTION_TYPES } from "shared-types";
 import InputField from "@/components/fields/input-field.vue";
 import Checkbox from "@/components/lib/ui/checkbox/Checkbox.vue";
+import { useWindowBreakpoints } from "@/composable/window-breakpoints";
 
 const limit = 30;
 
@@ -304,10 +305,8 @@ const applyFilters = () => {
   appliedFilters.value = { ...filters.value };
   isFiltersDialogOpen.value = false;
 };
-const { width: windowWidth } = useWindowSize();
-const debouncedWindowWidth = useDebounce(windowWidth, 300);
 
-const hideFilters = computed(() => debouncedWindowWidth.value <= 1024);
+const hideFilters = useWindowBreakpoints(1024);
 
 const fetchTransactions = ({
   pageParam,

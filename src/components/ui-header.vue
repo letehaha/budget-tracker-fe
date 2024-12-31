@@ -93,19 +93,17 @@ import Button from "@/components/lib/ui/button/Button.vue";
 import * as Sheet from "@/components/lib/ui/sheet";
 import ManageTransactionDialog from "@/components/dialogs/manage-transaction/index.vue";
 import ManageTransactionDrawer from "@/components/dialogs/manage-transaction/drawer-view.vue";
-import { useDebounce, useWindowSize } from "@vueuse/core";
 import Sidebar from "@/components/sidebar/index.vue";
 import { useRoute } from "vue-router";
 import { isMobileSheetOpen } from "@/composable/global-state/mobile-sheet";
+import { CUSTOM_BREAKPOINTS, useWindowBreakpoints } from "@/composable/window-breakpoints";
 
 const route = useRoute();
 const rootStore = useRootStore();
 const { isAppInitialized, isFinancialDataSyncing, isAllowedToSyncFinancialData } =
   storeToRefs(rootStore);
 
-const { width: windowWidth } = useWindowSize();
-const debouncedWindowWidth = useDebounce(windowWidth, 300);
-const isMobileView = computed(() => debouncedWindowWidth.value <= 768);
+const isMobileView = useWindowBreakpoints(CUSTOM_BREAKPOINTS.uiMobile);
 
 const isSyncing = computed(() => !isAppInitialized.value || isFinancialDataSyncing.value);
 

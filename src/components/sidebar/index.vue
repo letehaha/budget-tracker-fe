@@ -8,7 +8,7 @@ defineProps<{ mobileView?: boolean }>();
 </script>
 
 <template>
-  <component :is="mobileView ? 'div' : Card" class="flex flex-col rounded-none">
+  <component :is="mobileView ? 'div' : Card" class="flex flex-col rounded-none h-full">
     <CardHeader class="sm:py-3 h-[52px]">
       <div class="text-lg font-medium">
         <span class="hidden md:block"> BudgetTracker </span>

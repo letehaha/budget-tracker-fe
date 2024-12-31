@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, defineAsyncComponent, provide, ref } from "vue";
+import { computed, provide, ref } from "vue";
 import { PlusIcon } from "lucide-vue-next";
 import { storeToRefs } from "pinia";
 import { useQuery } from "@tanstack/vue-query";
@@ -10,16 +10,11 @@ import { AccountGroups } from "@/common/types/models";
 import * as Popover from "@/components/lib/ui/popover";
 import Button from "@/components/lib/ui/button/Button.vue";
 import { AccountModel } from "shared-types";
+import CreateAccountDialog from "@/components/dialogs/create-account-dialog.vue";
+import CreateAccountGroupDialog from "@/components/dialogs/account-groups/create-account-group-dialog.vue";
 import AccountsList from "./accounts-list.vue";
 import AccountGroupsList from "./account-groups-list.vue";
 import { useActiveAccountGroups } from "./helpers/use-active-account-groups";
-
-const CreateAccountDialog = defineAsyncComponent(
-  () => import("@/components/dialogs/create-account-dialog.vue"),
-);
-const CreateAccountGroupDialog = defineAsyncComponent(
-  () => import("@/components/dialogs/account-groups/create-account-group-dialog.vue"),
-);
 
 const { enabledAccounts } = storeToRefs(useAccountsStore());
 const { data: accountGroups, isLoading } = useQuery({

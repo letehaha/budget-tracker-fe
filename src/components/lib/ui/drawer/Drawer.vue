@@ -13,7 +13,7 @@ const forwarded = useForwardPropsEmits(props, emits);
 </script>
 
 <template>
-  <DrawerRoot v-bind="forwarded">
+  <DrawerRoot v-bind="forwarded" @open-auto-focus="(e) => console.log(e)">
     <slot />
   </DrawerRoot>
 </template>
