@@ -2,7 +2,7 @@ import { useDebounce, useWindowSize } from "@vueuse/core";
 import { computed, ComputedRef } from "vue";
 
 interface Options {
-  debounce?: number; // Debounce wait time (default: 300ms)
+  wait?: number; // Debounce wait time (default: 300ms)
   direction?: "up" | "down"; // "down" for <=, "up" for >= (default: "down")
 }
 
@@ -19,9 +19,9 @@ export function useWindowBreakpoints(
   size: Breakpoint | Breakpoint[],
   options: Options = {},
 ): ComputedRef<boolean | boolean[]> {
-  const { debounce = 300, direction = "down" } = options;
+  const { wait = 300, direction = "down" } = options;
   const { width: windowWidth } = useWindowSize();
-  const debouncedWindowWidth = useDebounce(windowWidth, debounce);
+  const debouncedWindowWidth = useDebounce(windowWidth, wait);
 
   const isExpectedSize = computed(() => {
     if (Array.isArray(size)) {

@@ -32,7 +32,7 @@ import { useWindowBreakpoints, CUSTOM_BREAKPOINTS } from "@/composable/window-br
 const router = useRouter();
 const rootStore = useRootStore();
 const userCurrenciesStore = useCurrenciesStore();
-const isMobileView = useWindowBreakpoints(CUSTOM_BREAKPOINTS.uiMobile);
+const isMobileView = useWindowBreakpoints(CUSTOM_BREAKPOINTS.uiMobile, { wait: 50 });
 
 const { isAppInitialized } = storeToRefs(rootStore);
 const { isBaseCurrencyExists } = storeToRefs(userCurrenciesStore);
