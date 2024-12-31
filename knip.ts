@@ -13,18 +13,18 @@ const config: KnipConfig = {
     "cypress/**/**",
     // keep them all for now
     "src/components/lib/**/**",
+    // for some reason it cannot resolve it
+    "tsconfig.json",
   ],
   ignoreDependencies: [
-    "prettier",
     // Needed for Storybook
     "react-dom",
     // Storybook
+    "@storybook/cli",
     "@storybook/theming",
     "@storybook/vue3",
     "@storybook/addon-docs",
     "@storybook/addon-actions",
-    // mapping to backend service
-    "shared-types",
   ],
   // ignoreBinaries: ["eslint"],
   rules: {
