@@ -1,4 +1,4 @@
-export const ROUTER_LAYOUTS = Object.freeze({
+const ROUTER_LAYOUTS = Object.freeze({
   auth: "auth",
   dashboard: "dashboard",
 });

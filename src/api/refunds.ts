@@ -2,9 +2,6 @@ import { api } from "@/api/_api";
 import { TransactionModel } from "shared-types";
 import { formatTransactionResponse } from "./transactions";
 
-export const linkRefund = async (params: { originalTxId: number | null; refundTxId: number }) =>
-  api.post("/transactions/refund", params);
-
 type GetRefundsResponse = {
   id: number;
   originalTxId: number;

@@ -2,42 +2,13 @@ import { API_ERROR_CODES, CategoryModel } from "shared-types";
 
 export * from "./binance-response";
 
-export enum API_STATUS_CODES {
-  badRequest = 400,
-  unauthorized = 401,
-  forbidden = 403,
-  notFound = 404,
-  timeout = 408,
-  conflict = 409,
-  tooManyRequests = 429,
-  internalError = 500,
-}
-
 export interface ApiBaseError {
   statusText?: string;
   code: API_ERROR_CODES;
   message?: string;
 }
 
-export type ApiBadRequestError = ApiBaseError;
-export type ApiUnauthorizedError = ApiBaseError;
-export type ApiForbiddenError = ApiBaseError;
-export type ApiConflictError = ApiBaseError;
-export type ApiNetworkError = ApiBaseError;
-export type ApiTimeoutError = ApiBaseError;
-export type ApiNotFoundError = ApiBaseError;
-export type ApiTooManyRequestsError = ApiBaseError;
-
-export type APIRequestError =
-  | ApiBadRequestError
-  | ApiUnauthorizedError
-  | ApiForbiddenError
-  | ApiConflictError
-  | ApiNetworkError
-  | ApiTimeoutError
-  | ApiNotFoundError
-  | ApiTooManyRequestsError;
-
+/** @public for Knip */
 export enum KEYBOARD_CODES {
   plus = 43,
   minus = 45,
@@ -50,9 +21,6 @@ export enum KEYBOARD_CODES {
   arrowRight = 39,
   arrowBottom = 40,
 }
-
-export type UnwrapPromise<T> = T extends Promise<infer U> ? U : T;
-export type UnwrapArray<T> = T extends (infer U)[] ? U : T;
 
 export interface FormattedCategory extends CategoryModel {
   subCategories: FormattedCategory[];

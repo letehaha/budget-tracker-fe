@@ -51,7 +51,7 @@ defineOptions({
   name: "record-form",
 });
 
-export interface CreateRecordModalProps {
+interface CreateRecordModalProps {
   transaction?: TransactionModel;
   oppositeTransaction?: TransactionModel;
 }

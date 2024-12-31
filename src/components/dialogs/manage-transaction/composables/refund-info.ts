@@ -1,11 +1,10 @@
 import { computed, ref, Ref, onMounted } from "vue";
 import { getRefundsForTransaction } from "@/api/refunds";
 import { TRANSACTION_TYPES, TransactionModel } from "shared-types";
-import { UnwrapPromise } from "@/common/types";
 import { areSlicesEqual } from "./refund-form-comparer";
 import { FORM_TYPES, UI_FORM_STRUCT } from "../types";
 
-export type RefundStatus = "refunds" | "refunded" | null;
+type RefundStatus = "refunds" | "refunded" | null;
 
 export const getRefundInfo = ({
   form,
@@ -16,7 +15,7 @@ export const getRefundInfo = ({
 }) => {
   const isInitialRefundsDataLoaded = ref(false);
   const initialRefundStatus = ref<RefundStatus>(null);
-  const originalRefunds = ref<UnwrapPromise<ReturnType<typeof getRefundsForTransaction>>>([]);
+  const originalRefunds = ref<Awaited<ReturnType<typeof getRefundsForTransaction>>>([]);
   const initialRefundsFormSlice = ref<Pick<UI_FORM_STRUCT, "refundsTx" | "refundedByTxs">>({
     refundsTx: undefined,
     refundedByTxs: undefined,
