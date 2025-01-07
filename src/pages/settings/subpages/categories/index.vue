@@ -1,65 +1,68 @@
 <template>
-  <div class="categories-page">
-    <div class="categories-page__card">
-      <div class="categories-page__header">
-        <button
+  <div class="grid gap-4 grid-cols-[repeat(2,minmax(0,450px))]">
+    <Card class="py-4 px-2 max-w-[450px]">
+      <div class="flex justify-center relative mb-4 py-2 px-4">
+        <Button
           v-if="selectedCategory"
-          type="button"
-          class="categories-page__categories-back"
+          variant="ghost"
+          class="absolute left-2 top-0 gap-1 group"
           @click="goBack"
         >
-          {{ "<" }}
-          Back
-        </button>
+          <ChevronLeftIcon class="group-hover:-translate-x-0.5 transition-transform size-4" />
 
-        <h3 class="categories-page__title">
+          Back
+        </Button>
+
+        <h3 class="text-lg font-semibold">
           {{ selectedCategory ? "View Category" : "All Categories" }}
         </h3>
 
-        <button
+        <Button
           v-if="selectedCategory"
-          type="button"
-          class="categories-page__category-edit"
+          class="absolute right-2 top-0 min-w-[80px] gap-2"
+          variant="secondary"
           @click="startEditing"
         >
           Edit
-        </button>
+
+          <PencilIcon class="size-3" />
+        </Button>
       </div>
 
       <template v-if="selectedCategory">
-        <div class="categories-page__details">
-          <div class="categories-page__details-row">
-            <span>Name:</span>
+        <div class="p-4 pt-0 grid gap-2 my-6 border-b">
+          <div class="flex justify-between">
+            <span class="opacity-70">Name:</span>
 
             {{ selectedCategory.name }}
           </div>
         </div>
 
-        <h4 class="base-text-xsmall categories-page__subcategories-title">Subcategories</h4>
+        <h4 class="text-xs ml-4 uppercase">Subcategories</h4>
       </template>
 
-      <div class="categories-page__list">
+      <div class="grid gap-2 mt-4 px-4 text-center">
         <template v-if="currentLevel.length">
           <template v-for="cat in currentLevel" :key="cat.id">
-            <button
-              class="categories-page__list-item"
-              type="button"
+            <Button
+              class="grid grid-cols-[1fr,min-content] gap-8 -ml-4 w-[calc(100%+32px)]"
+              variant="ghost"
               :disabled="categoryLevelCount >= MAX_CATEGORIES_NESTING - 1"
               @click="selectCategory(cat)"
             >
-              <div class="categories-page__category-info">
+              <div class="flex items-center gap-2">
                 <CategoryCircle :category="cat" />
 
                 {{ cat.name }}
               </div>
               <span
                 v-if="categoryLevelCount < MAX_CATEGORIES_NESTING - 1"
-                class="base-text-smaller categories-page__category-view"
+                class="text-sm w-max opacity-70 flex gap-2"
               >
                 <span>View</span>
                 <span>></span>
               </span>
-            </button>
+            </Button>
           </template>
         </template>
         <template v-else>
@@ -67,36 +70,37 @@
         </template>
       </div>
 
-      <div
-        v-if="categoryLevelCount < MAX_CATEGORIES_NESTING - 1"
-        class="categories-page__add-subcategory"
-      >
-        <button type="button" @click="startCreating">Add subcategory +</button>
+      <div v-if="categoryLevelCount < MAX_CATEGORIES_NESTING - 1" class="px-4 mt-6 text-center">
+        <Button type="button" class="w-full" variant="secondary" @click="startCreating">
+          Add subcategory +
+        </Button>
       </div>
-    </div>
-    <template v-if="isFormVisible">
-      <form class="categories-page__card" @submit.prevent="applyChanges">
-        <div class="categories-page__header">
-          <button type="button" class="categories-page__categories-back" @click="closeForm">
-            Cancel
-          </button>
+    </Card>
 
-          <h3 class="categories-page__title">
+    <template v-if="isFormVisible">
+      <Card as="form" class="py-4 px-2 max-w-[450px]" @submit.prevent="applyChanges">
+        <div class="flex justify-center relative mb-4 py-2 px-4">
+          <Button variant="ghost" class="p-2 absolute left-2 top-0 text-primary" @click="closeForm">
+            Cancel
+          </Button>
+
+          <h3 class="text-lg font-semibold">
             {{ isEditing ? "Edit Category" : "Create Category" }}
           </h3>
 
-          <button type="submit" class="categories-page__category-edit">Save</button>
+          <Button type="submit" class="absolute right-2 top-0">Save</Button>
         </div>
 
-        <div class="categories-page__fields">
+        <div class="px-4 mt-12">
           <InputField v-model="form.name" label="Category name" placeholder="Category name" />
         </div>
+
         <template v-if="isEditing">
-          <div class="categories-page__form-actions">
-            <UiButton theme="danger" @click="deleteCategory"> Delete </UiButton>
+          <div class="px-4 mt-12">
+            <Button variant="destructive" @click="deleteCategory"> Delete category </Button>
           </div>
         </template>
-      </form>
+      </Card>
     </template>
   </div>
 </template>
@@ -110,10 +114,12 @@ import { editCategory, createCategory, deleteCategory as apiDeleteCategory } fro
 import { useNotificationCenter } from "@/components/notification-center";
 import CategoryCircle from "@/components/common/category-circle.vue";
 import InputField from "@/components/fields/input-field.vue";
-import UiButton from "@/components/common/ui-button.vue";
 import { type FormattedCategory } from "@/common/types";
 import { ApiErrorResponseError } from "@/js/errors";
 import { removeNullishValues } from "@/common/utils/remove-keys";
+import { Card } from "@/components/lib/ui/card";
+import { Button } from "@/components/lib/ui/button";
+import { ChevronLeftIcon, PencilIcon } from "lucide-vue-next";
 
 defineOptions({
   name: "settings-categories",
@@ -217,112 +223,3 @@ const deleteCategory = async () => {
   }
 };
 </script>
-
-<style lang="scss">
-.categories-page {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 450px));
-  gap: 16px;
-}
-.categories-page__card {
-  @include surface-container();
-  padding: 16px 8px;
-
-  max-width: 450px;
-}
-.categories-page__header {
-  display: flex;
-  justify-content: center;
-  position: relative;
-  margin-bottom: 16px;
-  padding: 8px 16px;
-}
-.categories-page__title {
-  @extend %heading-3;
-}
-.categories-page__list {
-  display: grid;
-  gap: 8px;
-  margin-top: 16px;
-  padding: 0 16px;
-  text-align: center;
-}
-.categories-page__list-item {
-  padding: 12px 16px;
-  display: grid;
-  grid-template-columns: 1fr min-content;
-  gap: 32px;
-  cursor: pointer;
-  margin-left: -16px;
-  width: calc(100% + 32px);
-  transition: 0.2s ease-out;
-  border-radius: 8px;
-
-  &:hover {
-    background-color: var(--abc-background-dark-400);
-  }
-}
-.categories-page__category-info {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.categories-page__category-view {
-  width: max-content;
-  opacity: 0.7;
-  display: flex;
-  gap: 8px;
-}
-.categories-page__subcategories-title {
-  margin-left: 16px;
-  text-transform: uppercase;
-}
-.categories-page__categories-back {
-  padding: 8px;
-  position: absolute;
-  left: 8px;
-  top: 0;
-  color: var(--app-primary);
-}
-.categories-page__category-edit {
-  padding: 8px;
-  position: absolute;
-  right: 8px;
-  top: 0;
-  color: var(--app-primary);
-}
-.categories-page__details {
-  padding: 0 16px 16px;
-  display: grid;
-  gap: 4px;
-  margin: 24px 0;
-  border-bottom: 1px solid var(--abc-background-dark-400);
-}
-.categories-page__details-row {
-  display: flex;
-  justify-content: space-between;
-
-  span {
-    opacity: 0.7;
-  }
-}
-.categories-page__fields {
-  padding: 0 16px;
-  margin-top: 48px;
-}
-.categories-page__form-actions {
-  padding: 0 16px;
-  margin-top: 48px;
-}
-.categories-page__add-subcategory {
-  padding: 0 16px;
-  margin-top: 24px;
-  text-align: center;
-  color: var(--app-primary);
-
-  button {
-    padding: 8px 16px;
-    border-radius: 8px;
-  }
-}
-</style>
