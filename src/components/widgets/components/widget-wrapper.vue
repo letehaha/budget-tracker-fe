@@ -11,7 +11,7 @@
           class="grid grid-cols-[minmax(0,1fr),max-content,20px] gap-1 items-center justify-between"
         >
           <h3>
-            {{ title }}
+            <slot name="title" />
           </h3>
 
           <div>
@@ -37,12 +37,10 @@ import { Card, CardContent, CardHeader } from "@/components/lib/ui/card";
 
 withDefaults(
   defineProps<{
-    title?: string;
     higher?: boolean;
     isFetching?: boolean;
   }>(),
   {
-    title: undefined,
     isFetching: false,
   },
 );

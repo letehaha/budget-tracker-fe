@@ -1,5 +1,6 @@
 <template>
-  <WidgetWrapper title="Balance trend" :is-fetching="isWidgetDataFetching">
+  <WidgetWrapper :is-fetching="isWidgetDataFetching">
+    <template #title> Balance trend </template>
     <template v-if="isDataEmpty">
       <EmptyState>
         <ChartLineIcon class="size-32" />
