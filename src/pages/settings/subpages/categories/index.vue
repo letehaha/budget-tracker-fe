@@ -47,7 +47,6 @@
             <Button
               class="grid grid-cols-[1fr,min-content] gap-8 -ml-4 w-[calc(100%+32px)]"
               variant="ghost"
-              :disabled="categoryLevelCount >= MAX_CATEGORIES_NESTING - 1"
               @click="selectCategory(cat)"
             >
               <div class="flex items-center gap-2">
@@ -95,6 +94,12 @@
           <InputField v-model="form.name" label="Category name" placeholder="Category name" />
         </div>
 
+        <label class="px-4 mt-4 flex items-center gap-4 cursor-pointer">
+          <p>Exclude category from expenses stats</p>
+
+          <Checkbox v-model:checked="form.excludeFromStats" />
+        </label>
+
         <template v-if="isEditing">
           <div class="px-4 mt-12">
             <Button variant="destructive" @click="deleteCategory"> Delete category </Button>
@@ -120,6 +125,12 @@ import { removeNullishValues } from "@/common/utils/remove-keys";
 import { Card } from "@/components/lib/ui/card";
 import { Button } from "@/components/lib/ui/button";
 import { ChevronLeftIcon, PencilIcon } from "lucide-vue-next";
+import Checkbox from "@/components/lib/ui/checkbox/Checkbox.vue";
+import {
+  useUserSettings,
+  addCategories,
+  removeCategories,
+} from "@/composable/data-queries/user-settings";
 
 defineOptions({
   name: "settings-categories",
@@ -133,8 +144,11 @@ const currentLevel = ref<FormattedCategory[]>(formattedCategories.value);
 const selectedCategory = ref<FormattedCategory | null>(null);
 const categoryLevelCount = ref<number>(0);
 
+const { data: userSettings, mutateAsync: updateUserSettings } = useUserSettings();
+
 const form = reactive({
   name: "",
+  excludeFromStats: false,
 });
 const isFormVisible = ref(false);
 const isEditing = ref(false);
@@ -144,11 +158,15 @@ const closeForm = () => {
   isCreating.value = false;
   isFormVisible.value = false;
   form.name = "";
+  form.excludeFromStats = false;
 };
 const startEditing = () => {
   closeForm();
   if (selectedCategory.value) {
     form.name = selectedCategory.value.name;
+    form.excludeFromStats = userSettings.value.stats.expenses.excludedCategories.includes(
+      selectedCategory.value.id,
+    );
   }
   isEditing.value = true;
   isFormVisible.value = true;
@@ -188,6 +206,12 @@ const applyChanges = async () => {
       }
       await createCategory(params);
     }
+
+    await updateUserSettings(
+      form.excludeFromStats
+        ? addCategories(userSettings.value, [selectedCategory.value.id])
+        : removeCategories(userSettings.value, [selectedCategory.value.id]),
+    );
     addSuccessNotification("Successfully updated!");
     await categoriesStore.loadCategories();
     goBack();
@@ -196,7 +220,6 @@ const applyChanges = async () => {
   }
 };
 const selectCategory = (category: FormattedCategory) => {
-  if (categoryLevelCount.value >= MAX_CATEGORIES_NESTING - 1) return;
   closeForm();
   selectedCategory.value = category;
 
