@@ -1,56 +1,50 @@
 <template>
-  <Card class="currencies-list">
-    <div class="currencies-list__row currencies-list__row--header">
-      <div class="currencies-list__column" />
-      <div class="currencies-list__column">Name</div>
-      <div class="currencies-list__column">Currency rate per {{ baseCurrency.currency.code }}</div>
-    </div>
-    <template v-for="(currency, index) in currenciesList" :key="currency.id">
-      <div class="currencies-list__item">
-        <div
-          class="currencies-list__row"
-          :class="{
-            'currencies-list__row--default': currency.isDefaultCurrency,
-          }"
-          @click="!currency.isDefaultCurrency && toggleActiveItem(index)"
-        >
-          <div class="currencies-list__column">
-            {{ currency.currency.code }}
+  <div class="grid gap-4 grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(20rem,1fr))]">
+    <Card
+      v-for="(currency, index) in currenciesList"
+      :key="currency.id"
+      class="p-4 flex flex-col gap-4 border rounded-lg shadow-sm transition-all duration-300"
+      :class="{ 'border-green-500': activeItemIndex === index }"
+      @click="!currency.isDefaultCurrency && toggleActiveItem(index)"
+    >
+      <div class="gap-4">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center">
+            <img class="w-5 h-5" :src="getCurrencyIcon(currency.currency.code)" alt="icon" />
+            <div class="text-lg font-medium text-white ml-2">
+              {{ currency.currency.currency }}
+            </div>
           </div>
-          <div class="currencies-list__column">
-            {{ currency.currency.currency }}
-          </div>
-          <div class="currencies-list__column">
-            <template v-if="currency.isDefaultCurrency">
-              <span class="currencies-list__note"> This is your base currency </span>
-            </template>
-            <template v-else>
-              <div class="currencies-list__ratios">
-                <span>
-                  {{ currency.quoteCode }} 1 = {{ currency.currency.code }}
-                  {{ currency.quoteRate }}
-                </span>
-                <span>
-                  {{ currency.currency.code }} 1 = {{ currency.quoteCode }}
-                  {{ currency.rate }}
-                </span>
-              </div>
-            </template>
+          <div>
+            <div class="text-sm font-bold">
+              {{ currency.quoteRate.toLocaleString() }}
+              <span class="text-sm">
+                {{ currency.currency.code }} / {{ baseCurrency.currency.code }}
+              </span>
+            </div>
           </div>
         </div>
-
-        <template v-if="activeItemIndex === index">
-          <edit-currency
-            :currency="currency"
-            :deletion-disabled="isDeletionDisabled(currency)"
-            @delete="onDeleteHandler(index)"
-            @submit="onCurrencyEdit"
-          />
-        </template>
       </div>
-    </template>
-  </Card>
+
+      <ResponsiveDialog v-model:open="isOpen">
+        <template #trigger>
+          <slot />
+        </template>
+
+        <template #title>
+          <span> Edit currency </span>
+        </template>
+        <edit-currency
+          :currency="selectedCurrency"
+          :deletion-disabled="isDeletionDisabled(selectedCurrency)"
+          @delete="onDeleteHandler(activeItemIndex)"
+          @submit="onCurrencyEdit"
+        />
+      </ResponsiveDialog>
+    </Card>
+  </div>
 </template>
+
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
@@ -62,6 +56,8 @@ import { useNotificationCenter } from "@/components/notification-center";
 import { Card } from "@/components/lib/ui/card";
 import { useQuery, useQueryClient } from "@tanstack/vue-query";
 import { VUE_QUERY_CACHE_KEYS } from "@/common/const";
+import { getCurrencyIcon } from "@/js/helpers/currencyImage";
+import ResponsiveDialog from "@/components/common/responsive-dialog.vue";
 import EditCurrency from "./edit-currency.vue";
 import { CurrencyWithExchangeRate } from "./types";
 
@@ -73,6 +69,8 @@ const { addSuccessNotification, addErrorNotification } = useNotificationCenter()
 const { currencies, baseCurrency } = storeToRefs(currenciesStore);
 const { accountsCurrencyIds } = storeToRefs(accountsStore);
 const queryClient = useQueryClient();
+
+const isOpen = ref(false);
 
 const { data: rates } = useQuery({
   queryKey: VUE_QUERY_CACHE_KEYS.exchangeRates,
@@ -98,8 +96,12 @@ const currenciesList = computed<CurrencyWithExchangeRate[]>(() =>
 
 const activeItemIndex = ref<ActiveItemIndex>(null);
 
+const selectedCurrency = ref<CurrencyWithExchangeRate | null>(null);
+
 const toggleActiveItem = (index: ActiveItemIndex) => {
   activeItemIndex.value = activeItemIndex.value === index ? null : index;
+  selectedCurrency.value = activeItemIndex.value !== null ? currenciesList.value[index] : null;
+  isOpen.value = !!selectedCurrency.value;
 };
 
 const onDeleteHandler = async (index: ActiveItemIndex) => {
@@ -164,5 +166,19 @@ const isDeletionDisabled = (currency: UserCurrencyModel) =>
 .currencies-list__ratios {
   display: flex;
   gap: 24px;
+}
+.slide-down-enter-active,
+.slide-down-leave-active {
+  transition: all 0.3s ease;
+}
+.slide-down-enter-from,
+.slide-down-leave-to {
+  transform: translateY(-10px);
+  opacity: 0;
+}
+.slide-down-enter-to,
+.slide-down-leave-from {
+  transform: translateY(0);
+  opacity: 1;
 }
 </style>

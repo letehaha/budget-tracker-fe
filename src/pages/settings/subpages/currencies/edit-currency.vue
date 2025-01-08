@@ -191,7 +191,7 @@ const onSaveHandler = async () => {
 <style lang="scss" scoped>
 .edit-currency {
   padding: var(--settings-currency-list-item-padding);
-  border-top: 1px solid #ccc;
+  // border-top: 1px solid #ccc;
 }
 .edit-currency__default-currency {
   cursor: pointer;
