@@ -167,18 +167,4 @@ const isDeletionDisabled = (currency: UserCurrencyModel) =>
   display: flex;
   gap: 24px;
 }
-.slide-down-enter-active,
-.slide-down-leave-active {
-  transition: all 0.3s ease;
-}
-.slide-down-enter-from,
-.slide-down-leave-to {
-  transform: translateY(-10px);
-  opacity: 0;
-}
-.slide-down-enter-to,
-.slide-down-leave-from {
-  transform: translateY(0);
-  opacity: 1;
-}
 </style>
