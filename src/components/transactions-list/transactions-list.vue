@@ -77,7 +77,7 @@ const handlerRecordClick = ([baseTx, oppositeTx]: [
 
 <template>
   <div>
-    <div v-bind="$attrs" class="grid gap-2">
+    <div v-bind="$attrs" class="grid gap-2 grid-cols-1">
       <template
         v-for="item in transactions"
         :key="`${item.id}-${item.categoryId}-${item.refAmount}-${item.note}-${item.time}`"
