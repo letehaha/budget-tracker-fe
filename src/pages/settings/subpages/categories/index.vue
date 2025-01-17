@@ -12,6 +12,7 @@
             :expanded-categories="expandedCategories"
             :max-level="MAX_CATEGORIES_NESTING"
             :current-level="1"
+            :active-category-id="selectedCategory?.id"
             @toggle="toggleCategory"
             @select="selectCategory"
           />
@@ -95,7 +96,7 @@ const form = reactive({
   excludeFromStats: false,
 });
 const isFormVisible = ref(false);
-const isEditing = ref(false);
+const isEditing = ref(true);
 const isCreating = ref(false);
 const expandedCategories = ref<number[]>([]);
 const closeForm = () => {

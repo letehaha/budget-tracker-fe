@@ -3,7 +3,10 @@
     <template v-for="cat in categories" :key="cat.id">
       <div>
         <Button
-          class="grid grid-cols-[1fr,min-content] gap-8 -ml-4 w-[calc(100%+32px)]"
+          :class="[
+            'grid grid-cols-[1fr,min-content] gap-8 -ml-4 w-[calc(100%+32px)]',
+            { 'bg-accent': isActiveCategory(cat) },
+          ]"
           variant="ghost"
           @click="toggleCategory(cat)"
         >
@@ -30,6 +33,7 @@
             :expanded-categories="props.expandedCategories"
             :max-level="maxLevel"
             :current-level="currentLevel + 1"
+            :active-category-id="activeCategoryId"
             @toggle="toggleCategory"
             @select="selectCategory"
           />
@@ -50,6 +54,7 @@ const props = defineProps<{
   expandedCategories: number[];
   maxLevel: number;
   currentLevel: number;
+  activeCategoryId: number | null;
 }>();
 
 const emits = defineEmits(["toggle", "select"]);
@@ -57,6 +62,8 @@ const emits = defineEmits(["toggle", "select"]);
 const toggleCategory = (category: FormattedCategory) => {
   emits("toggle", category);
 };
+
+const isActiveCategory = (category: FormattedCategory) => category.id === props.activeCategoryId;
 
 const selectCategory = (category: FormattedCategory) => {
   emits("select", category);
