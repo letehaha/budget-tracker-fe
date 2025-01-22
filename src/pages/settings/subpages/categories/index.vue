@@ -25,9 +25,7 @@
 
     <Card as="form" class="py-4 px-2 max-w-[450px] max-h-[300px]" @submit.prevent="applyChanges">
       <div class="flex justify-center relative mb-4 py-2 px-4">
-        <h3 class="text-lg font-semibold">
-          {{ isEditing ? "Edit Category" : "Create Category" }}
-        </h3>
+        <h3 class="text-lg font-semibold">Edit Category</h3>
         <Button type="submit" class="absolute right-2 top-0">Save</Button>
       </div>
       <div class="px-4 mt-12">
@@ -37,18 +35,29 @@
         <p>Exclude category from expenses stats</p>
         <Checkbox v-model:checked="form.excludeFromStats" />
       </label>
-      <template v-if="isEditing">
-        <div class="px-4 mt-12">
-          <Button variant="destructive" @click="deleteCategory"> Delete category </Button>
-        </div>
-      </template>
+      <div class="flex justify-between px-4 mt-5">
+        <Button variant="destructive" @click.prevent="deleteCategory"> Delete category </Button>
 
-      <div v-if="isAddSubcategoryVisible" class="px-4 mt-6 text-center">
-        <Button type="button" class="w-full" variant="secondary" @click="startCreating">
-          Add subcategory +
-        </Button>
+        <div v-if="isAddSubcategoryVisible" class="text-center">
+          <Button type="button" class="w-full" variant="secondary" @click="startCreating">
+            Add subcategory +
+          </Button>
+        </div>
       </div>
     </Card>
+    <ResponsiveDialog v-model:open="isDialogVisible">
+      <template #trigger>
+        <slot />
+      </template>
+
+      <template #title> Add new category </template>
+
+      <form class="grid gap-6 mt-4" @submit.prevent="applyChanges">
+        <InputField v-model="newCategoryName" label="Category name" placeholder="Category name" />
+
+        <Button type="submit" class="w-full" variant="secondary"> Add category </Button>
+      </form>
+    </ResponsiveDialog>
   </div>
 </template>
 
@@ -66,6 +75,7 @@ import { removeNullishValues } from "@/common/utils/remove-keys";
 import { Card } from "@/components/lib/ui/card";
 import { Button } from "@/components/lib/ui/button";
 import { useRouter, useRoute } from "vue-router";
+import ResponsiveDialog from "@/components/common/responsive-dialog.vue";
 
 import Checkbox from "@/components/lib/ui/checkbox/Checkbox.vue";
 import Accordion from "@/components/common/accordion.vue";
@@ -82,7 +92,6 @@ defineOptions({
 const router = useRouter();
 const route = useRoute();
 const categoriesStore = useCategoriesStore();
-const MAX_CATEGORIES_NESTING = 3;
 
 const { addErrorNotification, addSuccessNotification } = useNotificationCenter();
 const { formattedCategories } = storeToRefs(categoriesStore);
@@ -95,21 +104,18 @@ const form = reactive({
   name: "",
   excludeFromStats: false,
 });
-const isFormVisible = ref(false);
+// const isFormVisible = ref(false);
 const isEditing = ref(true);
 const isCreating = ref(false);
+const isDialogVisible = ref(false);
+const MAX_CATEGORIES_NESTING = 3;
 const expandedCategories = ref<number[]>([]);
-const closeForm = () => {
-  isEditing.value = false;
-  isCreating.value = false;
-  isFormVisible.value = false;
-  form.name = "";
-  form.excludeFromStats = false;
-};
+const newCategoryName = ref("");
 const startCreating = () => {
-  closeForm();
+  newCategoryName.value = "";
+  isEditing.value = false;
   isCreating.value = true;
-  isFormVisible.value = true;
+  isDialogVisible.value = true;
 };
 const findCategoryById = (categories, id) => {
   for (const category of categories) {
@@ -204,7 +210,7 @@ const applyChanges = async () => {
     } else if (isCreating.value) {
       type InputParams = Parameters<typeof createCategory>[0];
 
-      let params: InputParams = { name: form.name };
+      let params: InputParams = { name: newCategoryName.value };
 
       if (selectedCategory.value) {
         params = removeNullishValues({
@@ -215,6 +221,7 @@ const applyChanges = async () => {
         }) as InputParams;
       }
       await createCategory(params);
+      isDialogVisible.value = false;
     }
 
     await updateUserSettings(
@@ -237,6 +244,7 @@ const deleteCategory = async () => {
 
     await categoriesStore.loadCategories();
     addSuccessNotification("Successfully deleted!");
+    form.name = "";
   } catch (err) {
     if (err instanceof ApiErrorResponseError) {
       if (err.data.code === API_ERROR_CODES.validationError) {

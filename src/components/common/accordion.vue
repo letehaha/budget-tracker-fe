@@ -54,7 +54,7 @@ const props = defineProps<{
   expandedCategories: number[];
   maxLevel: number;
   currentLevel: number;
-  activeCategoryId: number | null;
+  activeCategoryId: number | null | undefined;
 }>();
 
 const emits = defineEmits(["toggle", "select"]);
