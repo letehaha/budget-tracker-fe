@@ -1,5 +1,45 @@
 <template>
-  <WidgetWrapper title="Expenses Structure" :is-fetching="isWidgetDataFetching">
+  <WidgetWrapper :is-fetching="isWidgetDataFetching">
+    <template #title>
+      <div class="flex gap-2 items-center">
+        Expenses Structure
+
+        <template v-if="hasExcludedStats">
+          <Tooltip.TooltipProvider>
+            <Tooltip.Tooltip>
+              <Tooltip.TooltipTrigger class="px-1">
+                <CircleOffIcon class="size-4 text-warning" />
+              </Tooltip.TooltipTrigger>
+              <Tooltip.TooltipContent class="max-w-[300px] p-4">
+                <div>
+                  <p>
+                    Some categories are excluded.
+                    <router-link
+                      to="/settings/categories"
+                      class="text-primary hover:underline"
+                      as="span"
+                    >
+                      Update settings
+                    </router-link>
+                    to change this behavior.
+                  </p>
+                  <div class="grid gap-2 mt-3">
+                    <template v-for="categoryId of excludedCategories" :key="categoryId">
+                      <div class="flex items-center gap-2">
+                        <CategoryCircle :category="categoriesMap[categoryId]" />
+
+                        {{ categoriesMap[categoryId].name }}
+                      </div>
+                    </template>
+                  </div>
+                </div>
+              </Tooltip.TooltipContent>
+            </Tooltip.Tooltip>
+          </Tooltip.TooltipProvider>
+        </template>
+      </div>
+    </template>
+
     <template v-if="isDataEmpty">
       <EmptyState>
         <ChartPieIcon class="size-32" />
@@ -38,11 +78,16 @@ import { computed, ref, watch } from "vue";
 import { subMonths, startOfMonth, endOfMonth } from "date-fns";
 import { useQuery } from "@tanstack/vue-query";
 import { Chart as Highcharts } from "highcharts-vue";
-import { ChartPieIcon } from "lucide-vue-next";
+import { ChartPieIcon, CircleOffIcon } from "lucide-vue-next";
 import { useFormatCurrency, useHighcharts } from "@/composable";
 import { calculatePercentageDifference } from "@/js/helpers";
+import * as Tooltip from "@/components/lib/ui/tooltip";
 import { getSpendingsByCategories, getExpensesAmountForPeriod } from "@/api";
 import { VUE_QUERY_CACHE_KEYS } from "@/common/const";
+import { useUserSettings } from "@/composable/data-queries/user-settings";
+import { storeToRefs } from "pinia";
+import { useCategoriesStore } from "@/stores";
+import CategoryCircle from "@/components/common/category-circle.vue";
 import WidgetWrapper from "./components/widget-wrapper.vue";
 import EmptyState from "./components/empty-state.vue";
 
@@ -55,7 +100,16 @@ const props = defineProps<{
 }>();
 
 const { formatBaseCurrency } = useFormatCurrency();
+const categoriesStore = useCategoriesStore();
+const { categoriesMap } = storeToRefs(categoriesStore);
 const periodFrom = ref(new Date().getTime());
+
+const { data: userSettings } = useUserSettings();
+
+const excludedCategories = computed(() =>
+  userSettings.value ? userSettings.value.stats.expenses.excludedCategories : [],
+);
+const hasExcludedStats = computed(() => excludedCategories.value.length);
 
 watch(
   () => props.selectedPeriod.from,

@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { defineAsyncComponent, ref } from "vue";
+import { ref } from "vue";
 import * as Dialog from "@/components/lib/ui/dialog";
-
-const DialogContent = defineAsyncComponent(() => import("./dialog-content.vue"));
+import DialogContent from "./dialog-content.vue";
 
 const isOpen = ref(false);
 </script>

@@ -135,7 +135,5 @@ const onInput = (event: InputChangeEvent) => {
     border-color 0.2s ease-out;
   resize: none;
   color: var(--app-on-surface-color);
-
-  @include placeholder-custom(rgba(var(--app-on-surface-color-rgb), 0.4));
 }
 </style>
