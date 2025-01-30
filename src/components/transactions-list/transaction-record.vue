@@ -1,13 +1,13 @@
 <template>
   <button
     :class="[
-      'py-1 px-2 rounded-md flex justify-between items-center cursor-pointer w-full gap-2 [content-visibility:auto]',
+      'py-1 px-2 rounded-md grid grid-cols-[minmax(0,1fr)_max-content] justify-between items-center cursor-pointer w-full gap-2 [content-visibility:auto]',
     ]"
     type="button"
     aria-haspopup="true"
     @click="transactionEmit"
   >
-    <div class="flex items-center gap-2">
+    <div class="flex items-center gap-2 overflow-hidden">
       <template v-if="!isTransferTransaction && category">
         <CategoryCircle :category="category" />
       </template>
@@ -30,12 +30,12 @@
             </template>
           </div>
         </template>
-        <span class="text-sm tracking-wider line-clamp-2 opacity-40">
+        <span class="text-sm tracking-wider line-clamp-2 opacity-40 [word-break:break-word]">
           {{ transaction.note }}
         </span>
       </div>
     </div>
-    <div class="flex-none">
+    <div>
       <div
         :class="[
           'text-right',
