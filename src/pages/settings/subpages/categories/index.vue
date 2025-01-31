@@ -1,5 +1,5 @@
 <template>
-  <div class="grid gap-4 grid-cols-[repeat(2,minmax(0,450px))]">
+  <div class="grid gap-4 grid-cols-1 sm:grid-cols-[repeat(2,minmax(0,450px))]">
     <Card class="py-4 px-2 max-w-[450px]">
       <div class="flex justify-center relative mb-4 py-2 px-4">
         <h3 class="text-lg font-semibold">All Categories</h3>
