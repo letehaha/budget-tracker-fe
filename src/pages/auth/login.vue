@@ -43,7 +43,7 @@
 
 <script lang="ts" setup>
 import { ref, Ref, watch } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { API_ERROR_CODES } from "shared-types";
 
 import { ROUTES_NAMES } from "@/routes/constants";
@@ -58,6 +58,7 @@ import { Card, CardHeader, CardFooter, CardContent } from "@/components/lib/ui/c
 import { ApiErrorResponseError } from "@/js/errors";
 
 const router = useRouter();
+const route = useRoute();
 const { login } = useAuthStore();
 
 const form = ref({
@@ -100,7 +101,13 @@ const submit = async () => {
 
     await login({ password, username });
 
-    router.push({ name: ROUTES_NAMES.home });
+    const redirectPath = route.query.redirect?.toString() || ROUTES_NAMES.home;
+
+    if (redirectPath.startsWith("/")) {
+      router.push(redirectPath);
+    } else {
+      router.push({ name: ROUTES_NAMES.home });
+    }
   } catch (e) {
     if (e instanceof ApiErrorResponseError) {
       const errorCodes: Partial<{ [K in API_ERROR_CODES]: string }> = {

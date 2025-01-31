@@ -31,10 +31,12 @@ export const redirectRouteGuard: NavigationGuard = async (to, from, next): Promi
   if (token) {
     api.setToken(token);
     await authStore.setLoggedIn();
-
     next();
   } else {
-    next("/sign-in");
+    next({
+      path: "/sign-in",
+      query: { redirect: to.fullPath },
+    });
   }
 };
 
