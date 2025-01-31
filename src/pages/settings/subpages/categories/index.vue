@@ -1,9 +1,10 @@
 <template>
-  <div class="grid gap-4 grid-cols-1 sm:grid-cols-[repeat(2,minmax(0,450px))]">
+  <div class="grid gap-4 grid-cols-[repeat(2,minmax(0,450px))]">
     <Card class="py-4 px-2 max-w-[450px]">
       <div class="flex justify-center relative mb-4 py-2 px-4">
         <h3 class="text-lg font-semibold">All Categories</h3>
       </div>
+
       <div class="grid gap-2 mt-4 px-4 text-center">
         <template v-if="formattedCategories.length">
           <Accordion
@@ -21,6 +22,7 @@
         </template>
       </div>
     </Card>
+
     <Card as="form" class="py-4 px-2 max-w-[450px] max-h-[300px]" @submit.prevent="applyChanges">
       <div class="flex justify-center relative mb-4 py-2 px-4">
         <h3 class="text-lg font-semibold">Edit Category</h3>
@@ -35,6 +37,7 @@
       </label>
       <div class="flex justify-between px-4 mt-5">
         <Button variant="destructive" @click.prevent="deleteCategory"> Delete category </Button>
+
         <div v-if="isAddSubcategoryVisible" class="text-center">
           <Button type="button" class="w-full" variant="secondary" @click="startCreating">
             Add subcategory +
@@ -46,9 +49,12 @@
       <template #trigger>
         <slot />
       </template>
+
       <template #title> Add new category </template>
+
       <form class="grid gap-6 mt-4" @submit.prevent="applyChanges">
         <InputField v-model="newCategoryName" label="Category name" placeholder="Category name" />
+
         <Button type="submit" class="w-full" variant="secondary"> Add category </Button>
       </form>
     </ResponsiveDialog>
