@@ -63,6 +63,11 @@ const routes = [
             name: ROUTES_NAMES.settingsCurrencies,
             component: () => import("@/pages/settings/subpages/currencies/index.vue"),
           },
+          {
+            path: "accounts",
+            name: ROUTES_NAMES.settingsAccounts,
+            component: () => import("@/pages/settings/subpages/accounts/index.vue"),
+          },
         ],
       },
     ],

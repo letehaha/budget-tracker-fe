@@ -24,6 +24,11 @@ const tabs: Tab[] = [
     label: "Categories",
     to: { name: ROUTES_NAMES.settingsCategories },
   },
+  {
+    name: "accounts",
+    label: "Accounts",
+    to: { name: ROUTES_NAMES.settingsAccounts },
+  },
 ];
 const initialTab = tabs.find((i) => i.name === route.path.split("/").at(-1));
 </script>
