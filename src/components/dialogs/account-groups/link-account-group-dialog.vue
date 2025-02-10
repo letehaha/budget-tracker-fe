@@ -65,7 +65,7 @@ const saveChanges = () => {
   if (selectedGroup.value) {
     linkAccount({ accountId: props.account.id, groupId: selectedGroup.value.id });
   } else {
-    unlinkAccount({ accountId: props.account.id, groupId: currentSelection.value.id });
+    unlinkAccount({ accountIds: [props.account.id], groupId: currentSelection.value.id });
   }
 };
 

@@ -27,6 +27,22 @@ export const linkAccountToGroup = async (payload: { accountId: number; groupId: 
   await api.post(`/account-group/${payload.groupId}/add-account/${payload.accountId}`);
 };
 
-export const removeAccountFromGroup = async (payload: { accountId: number; groupId: number }) => {
-  await api.delete(`/account-group/${payload.groupId}/accounts/${payload.accountId}`);
+export const removeAccountFromGroup = async (payload: {
+  accountIds: number[];
+  groupId: number;
+}) => {
+  await api.delete(`/account-group/${payload.groupId}/accounts`, {
+    accountIds: payload.accountIds,
+  });
+};
+
+export const updateAccountGroup = async (payload: {
+  groupId: number;
+  updates: { name?: string; parentGroupId?: number | null };
+}) => {
+  await api.put(`/account-group/${payload.groupId}`, payload.updates);
+};
+
+export const deleteAccountGroup = async (payload: { userId: number; groupId: number }) => {
+  await api.delete(`/account-group/${payload.groupId}`);
 };
