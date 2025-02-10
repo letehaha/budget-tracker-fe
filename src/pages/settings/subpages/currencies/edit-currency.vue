@@ -1,52 +1,70 @@
 <template>
-  <div class="edit-currency">
-    <div class="edit-currency__row edit-currency__ratio">
+  <div>
+    <div class="grid grid-cols-2 gap-4 w-full">
       <input-field
         v-model="form.baseRate"
         :label="`1 ${currency.currency.code} =`"
-        :custom-disabled="!isChecked"
+        :disabled="isLiveRateEnabled"
         @focus="onBaseFocus"
       />
       <input-field
         v-model="form.quoteRate"
         :label="`1 ${currency.quoteCode} =`"
-        :custom-disabled="!isChecked"
+        :disabled="isLiveRateEnabled"
         @focus="onQuoteFocus"
       />
-      <div class="edit-currency__checkbox">
-        <label class="edit-currency__label">
-          <span class="edit-currency__live-span">Live update</span>
-          <input
-            :checked="!currency.custom"
-            class="tick-field__input"
-            type="checkbox"
-            @change="toggleChange"
-          />
-        </label>
-      </div>
     </div>
-    <div class="edit-currency__actions">
-      <ui-tooltip :content="!isFormDirty ? 'Nothing to save' : ''">
-        <ui-button :disabled="!isFormDirty" @click="onSaveHandler"> Save </ui-button>
-      </ui-tooltip>
 
-      <ui-tooltip :content="deletionDisabled ? DISABLED_DELETE_TEXT : ''">
-        <ui-button theme="danger" :disabled="deletionDisabled" @click="onDeleteHandler">
+    <div class="my-4 w-full h-px bg-white/20" />
+
+    <div class="flex gap-4 justify-between items-center">
+      <p class="text-sm opacity-90">
+        Disable live updation to be able to set custom exchange rate.
+        <br />
+        <span class="inline-flex items-center gap-1">
+          <InfoIcon class="size-4 text-primary inline" /> When enabled, custom rate is ignored.
+        </span>
+      </p>
+
+      <label class="flex items-center cursor-pointer w-max">
+        <span class="mr-2.5 w-max">Live update</span>
+        <Checkbox :checked="isLiveRateEnabled" @update:checked="toggleChange($event)" />
+      </label>
+    </div>
+
+    <div class="my-4 w-full h-px bg-white/20" />
+
+    <div class="flex gap-4 justify-between items-center">
+      <p class="text-sm opacity-90">
+        Currency can only be deleted/disconnected if there's no accounts and/or transactions
+        associated with it.
+      </p>
+
+      <ui-tooltip :content="deletionDisabled ? DISABLED_DELETE_TEXT : ''" position="top">
+        <Button variant="destructive" :disabled="deletionDisabled" @click="onDeleteHandler">
           Delete currency
-        </ui-button>
+        </Button>
       </ui-tooltip>
+    </div>
+
+    <div class="my-4 w-full h-px bg-white/20" />
+
+    <div class="mt-8">
+      <Button class="w-full" @click="onSubmitHandler"> Save </Button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { reactive, computed, onMounted, ref, watch } from "vue";
+import { reactive, computed, ref, watch } from "vue";
 import { API_ERROR_CODES } from "shared-types";
 import { useCurrenciesStore } from "@/stores";
+import { InfoIcon } from "lucide-vue-next";
 import { editUserCurrenciesExchangeRates, deleteCustomRate } from "@/api/currencies";
-import UiButton from "@/components/common/ui-button.vue";
+import Button from "@/components/lib/ui/button/Button.vue";
 import InputField from "@/components/fields/input-field.vue";
 import UiTooltip from "@/components/common/tooltip.vue";
+import Checkbox from "@/components/lib/ui/checkbox/Checkbox.vue";
 import { useNotificationCenter } from "@/components/notification-center";
 import { CurrencyWithExchangeRate } from "./types";
 
@@ -79,14 +97,10 @@ const form = reactive({
 });
 const isBaseEditing = ref(false);
 const isQuoteEditing = ref(false);
-const isChecked = ref<boolean>(false);
+const isLiveRateEnabled = ref<boolean>(!props.currency.custom);
 
 const isRateChanged = computed(
   () => +props.currency.rate !== +form.baseRate || +props.currency.quoteRate !== +form.quoteRate,
-);
-
-const isFormDirty = computed(
-  () => isRateChanged.value || (props.currency.custom && !isChecked.value),
 );
 
 const onBaseFocus = () => {
@@ -97,8 +111,8 @@ const onQuoteFocus = () => {
   isQuoteEditing.value = true;
   isBaseEditing.value = false;
 };
-const toggleChange = (event) => {
-  isChecked.value = !event.target.checked;
+const toggleChange = (value: boolean) => {
+  isLiveRateEnabled.value = value;
 };
 
 watch(
@@ -117,10 +131,6 @@ watch(
     }
   },
 );
-
-onMounted(() => {
-  isChecked.value = props.currency.custom;
-});
 
 const onDeleteHandler = () => {
   emit("delete");
@@ -179,45 +189,11 @@ const updateExchangeRates = async () => {
   }
 };
 
-const onSaveHandler = async () => {
-  if (isRateChanged.value && !props.currency.custom) {
+const onSubmitHandler = async () => {
+  if (!isLiveRateEnabled.value && isRateChanged.value) {
     await updateExchangeRates();
-  } else if (props.currency.custom) {
+  } else if (isLiveRateEnabled.value) {
     await deleteExchangeRates();
   }
 };
 </script>
-
-<style lang="scss" scoped>
-.edit-currency {
-  padding: var(--settings-currency-list-item-padding);
-  // border-top: 1px solid #ccc;
-}
-.edit-currency__default-currency {
-  cursor: pointer;
-}
-.edit-currency__actions {
-  display: flex;
-  grid-template-columns: min-content min-content;
-  gap: 32px;
-  margin-top: 32px;
-}
-.edit-currency__checkbox {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.edit-currency__label {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.edit-currency__live-span {
-  margin-right: 10px;
-}
-.edit-currency__ratio {
-  max-width: 485px;
-  display: flex;
-  gap: 16px;
-}
-</style>

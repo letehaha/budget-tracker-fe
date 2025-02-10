@@ -1,53 +1,67 @@
 <template>
-  <div class="grid gap-4 grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(20rem,1fr))]">
-    <Card
-      v-for="(currency, index) in currenciesList"
-      :key="currency.id"
-      class="p-4 flex flex-col gap-4 border rounded-lg shadow-sm transition-all duration-300"
-      :class="{ 'border-green-500': activeItemIndex === index }"
-      @click="!currency.isDefaultCurrency && toggleActiveItem(index)"
-    >
-      <div class="gap-4">
-        <div class="flex justify-between items-center">
-          <div class="flex items-center">
-            <img class="w-5 h-5" :src="getCurrencyIcon(currency.currency.code)" alt="icon" />
-            <div class="text-lg font-medium text-white ml-2">
-              {{ currency.currency.currency }}
+  <div class="grid gap-4 grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(320px,1fr))]">
+    <button v-for="(currency, index) in currenciesList" :key="currency.id" type="button">
+      <Card
+        :class="[
+          'p-4 flex flex-col gap-4 border rounded-lg shadow-sm transition-all duration-300',
+          currency.isDefaultCurrency && 'cursor-default',
+          !currency.isDefaultCurrency && 'hover:border-green-500',
+        ]"
+        @click="!currency.isDefaultCurrency && toggleActiveItem(index)"
+      >
+        <div class="gap-4">
+          <div class="flex justify-between items-center">
+            <div class="flex items-center">
+              <img class="w-5 h-5" :src="getCurrencyIcon(currency.currency.code)" alt="icon" />
+              <div class="text-lg font-medium text-white ml-2">
+                {{ currency.currency.currency }}
+              </div>
             </div>
-          </div>
-          <div>
-            <div class="text-sm font-bold">
-              {{ currency.quoteRate.toLocaleString() }}
-              <span class="text-sm">
-                {{ currency.currency.code }} / {{ baseCurrency.currency.code }}
-              </span>
+
+            <div>
+              <div class="text-sm font-bold">
+                {{ currency.quoteRate.toLocaleString() }}
+
+                <span class="text-sm">
+                  {{ currency.currency.code }} / {{ baseCurrency.currency.code }}
+                </span>
+              </div>
+              <div class="text-sm font-bold">
+                {{ currency.rate.toLocaleString() }}
+
+                <span class="text-sm">
+                  {{ baseCurrency.currency.code }} / {{ currency.currency.code }}
+                </span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </Card>
+    </button>
 
-      <ResponsiveDialog v-model:open="isOpen">
-        <template #trigger>
-          <slot />
-        </template>
+    <ResponsiveDialog v-model:open="isEditingModalVisible">
+      <template #trigger>
+        <slot />
+      </template>
 
-        <template #title>
-          <span> Edit currency </span>
-        </template>
+      <template #title>
+        <span> Edit currency </span>
+      </template>
+
+      <template v-if="selectedCurrency">
         <edit-currency
           :currency="selectedCurrency"
           :deletion-disabled="isDeletionDisabled(selectedCurrency)"
           @delete="onDeleteHandler(activeItemIndex)"
           @submit="onCurrencyEdit"
         />
-      </ResponsiveDialog>
-    </Card>
+      </template>
+    </ResponsiveDialog>
   </div>
 </template>
 
-
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, nextTick } from "vue";
 import { storeToRefs } from "pinia";
 import { API_ERROR_CODES, UserCurrencyModel } from "shared-types";
 import { useCurrenciesStore, useAccountsStore } from "@/stores";
@@ -70,7 +84,7 @@ const { currencies, baseCurrency } = storeToRefs(currenciesStore);
 const { accountsCurrencyIds } = storeToRefs(accountsStore);
 const queryClient = useQueryClient();
 
-const isOpen = ref(false);
+const isEditingModalVisible = ref(false);
 
 const { data: rates } = useQuery({
   queryKey: VUE_QUERY_CACHE_KEYS.exchangeRates,
@@ -101,16 +115,21 @@ const selectedCurrency = ref<CurrencyWithExchangeRate | null>(null);
 const toggleActiveItem = (index: ActiveItemIndex) => {
   activeItemIndex.value = activeItemIndex.value === index ? null : index;
   selectedCurrency.value = activeItemIndex.value !== null ? currenciesList.value[index] : null;
-  isOpen.value = !!selectedCurrency.value;
+  isEditingModalVisible.value = !!selectedCurrency.value;
+};
+
+const onCurrencyEdit = async () => {
+  isEditingModalVisible.value = false;
+  await nextTick();
+  toggleActiveItem(null);
+  queryClient.invalidateQueries({ queryKey: VUE_QUERY_CACHE_KEYS.exchangeRates });
 };
 
 const onDeleteHandler = async (index: ActiveItemIndex) => {
   try {
     await deleteUserCurrency(currencies.value[index].currencyId);
-
-    activeItemIndex.value = null;
-
     await currenciesStore.loadCurrencies();
+    await onCurrencyEdit();
 
     addSuccessNotification("Successfully deleted.");
   } catch (e) {
@@ -123,48 +142,6 @@ const onDeleteHandler = async (index: ActiveItemIndex) => {
   }
 };
 
-const onCurrencyEdit = () => {
-  toggleActiveItem(null);
-  queryClient.invalidateQueries({ queryKey: VUE_QUERY_CACHE_KEYS.exchangeRates });
-};
-
 const isDeletionDisabled = (currency: UserCurrencyModel) =>
-  accountsCurrencyIds.value.includes(currency.currencyId);
+  accountsCurrencyIds.value.includes(currency?.currencyId);
 </script>
-
-<style lang="scss" scoped>
-.currencies-list {
-  --settings-currency-list-item-padding: 16px 32px;
-
-  padding: 16px 0;
-}
-.currencies-list__item {
-  &:not(:last-child) {
-    border-bottom: 1px solid #ccc;
-  }
-}
-.currencies-list__row {
-  padding: var(--settings-currency-list-item-padding);
-
-  display: grid;
-  grid-template-columns: 50px 300px 1fr 50px;
-  grid-gap: 16px;
-
-  transition: background-color 0.2s ease-out;
-
-  &:not(.currencies-list__row--header):not(.currencies-list__row--default) {
-    cursor: pointer;
-
-    &:hover {
-      background-color: var(--app-surface-color-hover);
-    }
-  }
-}
-.currencies-list__note {
-  opacity: 0.5;
-}
-.currencies-list__ratios {
-  display: flex;
-  gap: 24px;
-}
-</style>
