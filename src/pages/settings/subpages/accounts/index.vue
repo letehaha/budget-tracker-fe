@@ -17,13 +17,21 @@
           </th>
         </tr>
       </thead>
-      <tbody class="divide-y divide-gray rounded-md">
+      <tbody class="divide-y divide-gray">
         <template v-for="(group, index) in accountGroups" :key="group.id">
           <tr
-            class="cursor-pointer hover:bg-accent hover:text-accent-foreground"
+            :class="[
+              'cursor-pointer hover:bg-accent hover:text-accent-foreground',
+              index === group.accounts.length - 1 ? 'last-row' : '',
+            ]"
             @click="toggleActiveItem(group, index)"
           >
-            <td class="px-4 py-2 w-[40%] rounded-l-xl">
+            <td
+              :class="[
+                'px-4 py-2 w-[40%]',
+                index === group.accounts.length - 1 ? 'rounded-bl-md' : '',
+              ]"
+            >
               <div class="flex items-center gap-3">
                 <ChevronUp
                   :class="[
@@ -42,7 +50,12 @@
               </div>
             </td>
             <td class="px-6 py-4">{{ group.accounts.length }}</td>
-            <td class="px-6 py-4 text-right space-x-4 rounded-r-xl">
+            <td
+              :class="[
+                'px-6 py-4 text-right space-x-4',
+                index === group.accounts.length - 1 ? 'rounded-br-md' : '',
+              ]"
+            >
               <Button
                 v-if="openNameEditor[index]"
                 variant="default"
@@ -113,11 +126,11 @@
                     :key="account.id"
                     class="cursor-pointer rounded-xl hover:bg-accent hover:text-accent-foreground"
                   >
-                    <td class="px-8 py-2 w-[40%] rounded-l-xl">{{ account.name }}</td>
+                    <td class="px-8 py-2 w-[40%] rounded-l-md">{{ account.name }}</td>
                     <td class="px-4 py-2">
                       {{ formatAmountByCurrencyId(account.currentBalance, account.currencyId) }}
                     </td>
-                    <td class="px-4 py-2 space-x-2 text-right rounded-r-xl">
+                    <td class="px-4 py-2 space-x-2 text-right rounded-r-md">
                       <div class="flex items-center justify-end space-x-3">
                         <router-link
                           :to="{ name: ROUTES_NAMES.account, params: { id: account.id } }"
