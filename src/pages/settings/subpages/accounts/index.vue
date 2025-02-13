@@ -182,13 +182,6 @@ import { ROUTES_NAMES } from "@/routes";
 
 type ActiveItemIndex = number;
 
-const { data: accountGroups } = useQuery({
-  queryFn: () => loadAccountGroups(),
-  queryKey: VUE_QUERY_CACHE_KEYS.accountGroups,
-  staleTime: Infinity,
-  placeholderData: [],
-});
-
 const activeItemIndex = ref<ActiveItemIndex>(null);
 const selectedGroup = ref<AccountGroups>(null);
 const activeEditName = ref<string>("");
@@ -202,6 +195,13 @@ const tableHeaders = ["Group Name", "Connected Accounts", "Actions"];
 const underTableHeaders = ["Account Name", "Balance", "Actions"];
 
 const { addSuccessNotification } = useNotificationCenter();
+
+const { data: accountGroups } = useQuery({
+  queryFn: () => loadAccountGroups(),
+  queryKey: VUE_QUERY_CACHE_KEYS.accountGroups,
+  staleTime: Infinity,
+  placeholderData: [],
+});
 
 const { mutate: updateGroupMutation } = useMutation({
   mutationFn: updateAccountGroup,
