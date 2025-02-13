@@ -1,87 +1,171 @@
 <!-- eslint-disable vue/max-len -->
 <template>
-  <div class="flex flex-col gap-4 max-w-[50%]">
-    <Card
-      v-for="(group, index) in accountGroups"
-      :key="group.id"
-      class="p-4 flex flex-col gap-4 border rounded-lg shadow-sm transition-all duration-300 cursor-pointer"
-      @click.prevent="toggleActiveItem(group, index)"
-    >
-      <div class="flex items-center justify-between">
-        <h2>{{ group.name }}</h2>
-
-        <div class="flex justify-between items-center w-[130px]">
-          <Popover.Popover
-            :open="openPopovers[index]"
-            @update:open="(value) => togglePopover(index, value)"
+  <div class="overflow-x-auto">
+    <table class="min-w-full w-full bg-card rounded-xl divide-y">
+      <thead class="">
+        <tr>
+          <th
+            v-for="(header, index) in tableHeaders"
+            :key="header"
+            scope="col"
+            :class="[
+              'px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider',
+              index === tableHeaders.length - 1 ? 'text-right' : 'text-left',
+            ]"
           >
-            <Popover.PopoverTrigger as-child>
-              <Button
-                variant="secondary"
-                size="sm"
-                @click.stop="togglePopover(index, true, group.name)"
-                >Edit</Button
-              >
-            </Popover.PopoverTrigger>
-            <Popover.PopoverContent>
-              <form class="grid gap-6" @submit.prevent="updateGroup(group, index)">
-                <InputField
-                  v-model="activePopoverName"
-                  label="Account name"
-                  placeholder="Account name"
+            {{ header }}
+          </th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray rounded-md">
+        <template v-for="(group, index) in accountGroups" :key="group.id">
+          <tr
+            class="cursor-pointer hover:bg-accent hover:text-accent-foreground"
+            @click="toggleActiveItem(group, index)"
+          >
+            <td class="px-4 py-2 w-[40%] rounded-l-xl">
+              <div class="flex items-center gap-3">
+                <ChevronUp
+                  :class="[
+                    'size-4 opacity-50 shrink-0',
+                    { 'rotate-180': activeItemIndex === index },
+                  ]"
                 />
-
-                <Button type="submit" :disabled="group.name === activePopoverName"> Save </Button>
-              </form>
-            </Popover.PopoverContent>
-          </Popover.Popover>
-
-          <AlertDialog
-            title="Do you want to delete this account group?"
-            :accept-disabled="false"
-            accept-variant="destructive"
-            @accept="deleteAccount(group)"
-          >
-            <template #trigger>
-              <Button variant="destructive" size="sm" @click.stop="toggleDelete(group)">
-                Delete
-              </Button>
-            </template>
-            <template #description>
-              <div v-if="deletedElements.length">
-                <div class="text-sm mb-2">Before delete these accounts will be disconnected</div>
-                <div v-for="item in deletedElements" :key="item.id" class="text-sm px-4 py-2">
-                  - {{ item.name }}
+                <div>
+                  <template v-if="openNameEditor[index]">
+                    <InputField v-model="activeEditName" placeholder="Account name" @click.stop />
+                  </template>
+                  <template v-else>
+                    <div class="">{{ group.name }}</div>
+                  </template>
                 </div>
               </div>
-            </template>
-          </AlertDialog>
-        </div>
-      </div>
+            </td>
+            <td class="px-6 py-4">{{ group.accounts.length }}</td>
+            <td class="px-6 py-4 text-right space-x-4 rounded-r-xl">
+              <Button
+                v-if="openNameEditor[index]"
+                variant="default"
+                size="sm"
+                :aria-label="'Save'"
+                @click.stop="updateGroup(group, index)"
+              >
+                Save
+              </Button>
+              <Button
+                v-else
+                variant="default"
+                size="sm"
+                :aria-label="'Edit'"
+                @click.stop="toggleGroupNameEdit(index, group)"
+              >
+                Edit
+              </Button>
 
-      <div v-if="activeItemIndex === index">
-        <template v-for="account in group.accounts" :key="account.id">
-          <AccountItem :account="account" />
+              <AlertDialog
+                title="Do you want to delete this account group?"
+                :accept-disabled="false"
+                accept-variant="destructive"
+                @accept="deleteAccount(group)"
+              >
+                <template #trigger>
+                  <Button variant="destructive" size="sm" @click.stop="toggleDelete(group)">
+                    Delete
+                  </Button>
+                </template>
+                <template #description>
+                  <div v-if="deletedElements.length">
+                    <div class="text-sm mb-2">
+                      Before delete these accounts will be disconnected
+                    </div>
+                    <div v-for="item in deletedElements" :key="item.id" class="text-sm px-4 py-2">
+                      - {{ item.name }}
+                    </div>
+                  </div>
+                </template>
+              </AlertDialog>
+            </td>
+          </tr>
+
+          <tr v-if="activeItemIndex === index">
+            <td colspan="3" class="p-4">
+              <table class="min-w-full">
+                <thead>
+                  <tr>
+                    <th
+                      v-for="(header, underTableIndex) in underTableHeaders"
+                      :key="header"
+                      scope="col"
+                      :class="[
+                        'px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider',
+                        underTableIndex === underTableHeaders.length - 1
+                          ? 'text-right'
+                          : 'text-left',
+                      ]"
+                    >
+                      {{ header }}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    v-for="account in group.accounts"
+                    :key="account.id"
+                    class="cursor-pointer rounded-xl hover:bg-accent hover:text-accent-foreground"
+                  >
+                    <td class="px-8 py-2 w-[40%] rounded-l-xl">{{ account.name }}</td>
+                    <td class="px-4 py-2">
+                      {{ formatAmountByCurrencyId(account.currentBalance, account.currencyId) }}
+                    </td>
+                    <td class="px-4 py-2 space-x-2 text-right rounded-r-xl">
+                      <div class="flex items-center justify-end space-x-3">
+                        <router-link
+                          :to="{ name: ROUTES_NAMES.account, params: { id: account.id } }"
+                        >
+                          <Button size="sm" variant="default">
+                            <SquareArrowOutUpRight :size="20" />
+                          </Button>
+                        </router-link>
+                        <Button
+                          size="sm"
+                          :disabled="isFormPending"
+                          variant="destructive"
+                          @click="unlinkAccountFromGroup(account.id)"
+                        >
+                          Ungroup
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
         </template>
-      </div>
-    </Card>
+      </tbody>
+    </table>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { useQueryClient, useQuery, useMutation } from "@tanstack/vue-query";
 import { VUE_QUERY_CACHE_KEYS } from "@/common/const";
-import { deleteAccountGroup, loadAccountGroups, updateAccountGroup } from "@/api/account-groups";
+import {
+  deleteAccountGroup,
+  loadAccountGroups,
+  updateAccountGroup,
+  removeAccountFromGroup,
+} from "@/api/account-groups";
 import { AccountGroups } from "@/common/types/models";
-import { Card } from "@/components/lib/ui/card";
 import { AlertDialog } from "@/components/common";
 import { InputField } from "@/components/fields";
-import * as Popover from "@/components/lib/ui/popover";
 import Button from "@/components/lib/ui/button/Button.vue";
-import AccountItem from "@/components/sidebar/accounts-view/accounts-item.vue";
 import { AccountModel } from "shared-types";
 import { useNotificationCenter } from "@/components/notification-center";
+import { useFormatCurrency } from "@/composable";
+import { SquareArrowOutUpRight, ChevronUp } from "lucide-vue-next";
+import { ROUTES_NAMES } from "@/routes";
 
 type ActiveItemIndex = number;
 
@@ -94,28 +178,17 @@ const { data: accountGroups } = useQuery({
 
 const activeItemIndex = ref<ActiveItemIndex>(null);
 const selectedGroup = ref<AccountGroups>(null);
-const openPopovers = ref<Record<number, boolean>>({});
-const activePopoverName = ref<string>("");
+const activeEditName = ref<string>("");
+const openNameEditor = ref<Record<number, boolean>>({});
+const toggledListItem = ref([]);
 const deletedElements = ref<AccountModel[]>(null);
 const queryClient = useQueryClient();
+const toggledAccountId = ref<number>();
+const { formatAmountByCurrencyId } = useFormatCurrency();
+const tableHeaders = ["Group Name", "Connected Accounts", "Actions"];
+const underTableHeaders = ["Account Name", "Balance", "Actions"];
 
 const { addSuccessNotification } = useNotificationCenter();
-
-const toggleActiveItem = (group: AccountGroups, index: ActiveItemIndex) => {
-  activeItemIndex.value = activeItemIndex.value === index ? null : index;
-  selectedGroup.value = group;
-};
-
-const togglePopover = (index: ActiveItemIndex, value: boolean, name?: string) => {
-  openPopovers.value[index] = value;
-  if (name) {
-    activePopoverName.value = name;
-  }
-};
-
-const toggleDelete = (group: AccountGroups) => {
-  deletedElements.value = group.accounts;
-};
 
 const { mutate: updateGroupMutation } = useMutation({
   mutationFn: updateAccountGroup,
@@ -124,17 +197,12 @@ const { mutate: updateGroupMutation } = useMutation({
   },
 });
 
-const updateGroup = async (group: AccountGroups, index: ActiveItemIndex) => {
-  const newName = activePopoverName.value.trim();
-
-  if (newName && group.name !== newName) {
-    await updateGroupMutation({
-      groupId: group.id,
-      updates: { name: newName },
-    });
-    togglePopover(index, false);
-  }
-};
+const { isPending: isUnlinkingAccount, mutate: unlinkAccount } = useMutation({
+  mutationFn: removeAccountFromGroup,
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: VUE_QUERY_CACHE_KEYS.accountGroups });
+  },
+});
 
 const { mutate: deleteAccountMutation } = useMutation({
   mutationFn: deleteAccountGroup,
@@ -144,10 +212,48 @@ const { mutate: deleteAccountMutation } = useMutation({
   },
 });
 
+const isFormPending = computed(() => isUnlinkingAccount.value);
+
+const toggleActiveItem = (group: AccountGroups, index: ActiveItemIndex) => {
+  toggledListItem[index] = index;
+  activeItemIndex.value = activeItemIndex.value === index ? null : index;
+  selectedGroup.value = group;
+  toggledListItem[index] = !toggledListItem[index];
+};
+
+const toggleGroupNameEdit = (index: ActiveItemIndex, group: AccountGroups) => {
+  openNameEditor.value[index] = true;
+  activeEditName.value = group.name;
+};
+
+const toggleDelete = (group: AccountGroups) => {
+  deletedElements.value = group.accounts;
+};
+
+const updateGroup = async (group: AccountGroups, index: ActiveItemIndex) => {
+  const newName = activeEditName.value.trim();
+
+  if (newName && group.name !== newName) {
+    await updateGroupMutation({
+      groupId: group.id,
+      updates: { name: newName },
+    });
+  }
+  openNameEditor.value[index] = false;
+  activeItemIndex.value = null;
+};
+
 const deleteAccount = async (group: AccountGroups) => {
   await deleteAccountMutation({
     userId: group.userId,
     groupId: group.id,
   });
+};
+
+const unlinkAccountFromGroup = (id: number) => {
+  toggledAccountId.value = id;
+  if (selectedGroup.value) {
+    unlinkAccount({ accountIds: [id], groupId: selectedGroup.value.id });
+  }
 };
 </script>
