@@ -40,7 +40,6 @@ watch(
   () => props.account.id,
   (newAccountId) => {
     accountId.value = newAccountId;
-    invalidateAccountGroup();
   },
   { immediate: true },
 );

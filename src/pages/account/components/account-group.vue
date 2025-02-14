@@ -12,13 +12,12 @@ const props = defineProps<{
 
 const accId = ref<number | string>(props.account.id);
 
-const { group: accountGroupData, refetch } = useAccountGroupForAccount(accId);
+const { group: accountGroupData } = useAccountGroupForAccount(accId);
 
 watch(
   () => props.account.id,
   (newAccountId) => {
     accId.value = newAccountId;
-    refetch();
   },
   { immediate: true },
 );
