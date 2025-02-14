@@ -29,9 +29,20 @@ const { data } = useQuery({
   staleTime: Infinity,
 });
 
+const accountId = ref(props.account.id);
+
 const { data: currentSelection, invalidate: invalidateAccountGroup } = useAccountGroupForAccount(
-  { accountId: props.account.id },
+  accountId,
   { enabled: () => isOpen.value },
+);
+
+watch(
+  () => props.account.id,
+  (newAccountId) => {
+    accountId.value = newAccountId;
+    invalidateAccountGroup();
+  },
+  { immediate: true },
 );
 
 watch(
