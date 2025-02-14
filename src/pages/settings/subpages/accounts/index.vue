@@ -1,7 +1,7 @@
 <!-- eslint-disable vue/max-len -->
 <template>
   <div class="overflow-x-auto">
-    <table class="min-w-full w-full bg-card rounded-xl divide-y">
+    <table v-if="accountGroups.length" class="min-w-full w-full bg-card rounded-md divide-y">
       <thead class="">
         <tr>
           <th
@@ -20,23 +20,24 @@
       <tbody class="divide-y divide-gray">
         <template v-for="(group, index) in accountGroups" :key="group.id">
           <tr
-            :class="[
-              'cursor-pointer hover:bg-accent hover:text-accent-foreground',
-              index === group.accounts.length - 1 ? 'last-row' : '',
-            ]"
+            class="'cursor-pointer hover:bg-accent hover:text-accent-foreground"
             @click="toggleActiveItem(group, index)"
           >
             <td
               :class="[
                 'px-4 py-2 w-[40%]',
-                index === group.accounts.length - 1 ? 'rounded-bl-md' : '',
+                accountGroups.length === 1
+                  ? 'rounded-bl-md'
+                  : index === accountGroups.length - 1
+                    ? 'rounded-bl-md'
+                    : '',
               ]"
             >
               <div class="flex items-center gap-3">
-                <ChevronUp
+                <ChevronRight
                   :class="[
                     'size-4 opacity-50 shrink-0',
-                    { 'rotate-180': activeItemIndex === index },
+                    { 'rotate-90': activeItemIndex === index },
                   ]"
                 />
                 <div>
@@ -53,7 +54,11 @@
             <td
               :class="[
                 'px-6 py-4 text-right space-x-4',
-                index === group.accounts.length - 1 ? 'rounded-br-md' : '',
+                accountGroups.length === 1
+                  ? 'rounded-br-md'
+                  : index === accountGroups.length - 1
+                    ? 'rounded-br-md'
+                    : '',
               ]"
             >
               <Button
@@ -102,7 +107,7 @@
 
           <tr v-if="activeItemIndex === index">
             <td colspan="3" class="p-4">
-              <table class="min-w-full">
+              <table v-if="group.accounts.length" class="min-w-full">
                 <thead>
                   <tr>
                     <th
@@ -152,11 +157,19 @@
                   </tr>
                 </tbody>
               </table>
+              <div v-else>
+                <div class="text-center">No accounts data</div>
+              </div>
             </td>
           </tr>
         </template>
       </tbody>
     </table>
+    <div v-else>
+      <div class="min-w-full w-full bg-card rounded-md px-6 py-4 text-center">
+        No group account data
+      </div>
+    </div>
   </div>
 </template>
 
@@ -177,7 +190,7 @@ import Button from "@/components/lib/ui/button/Button.vue";
 import { AccountModel } from "shared-types";
 import { useNotificationCenter } from "@/components/notification-center";
 import { useFormatCurrency } from "@/composable";
-import { SquareArrowOutUpRight, ChevronUp } from "lucide-vue-next";
+import { SquareArrowOutUpRight, ChevronRight } from "lucide-vue-next";
 import { ROUTES_NAMES } from "@/routes";
 
 type ActiveItemIndex = number;
