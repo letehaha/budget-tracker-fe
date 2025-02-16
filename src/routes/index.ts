@@ -66,7 +66,7 @@ const routes = [
           {
             path: "accounts",
             name: ROUTES_NAMES.settingsAccounts,
-            component: () => import("@/pages/settings/subpages/accounts/index.vue"),
+            component: () => import("@/pages/settings/subpages/accounts-groups/index.vue"),
           },
         ],
       },
