@@ -1,12 +1,7 @@
 <script setup lang="ts">
 import { cn } from "@/lib/utils";
 
-const props = defineProps({
-  class: {
-    type: String,
-    default: "",
-  },
-});
+const props = withDefaults(defineProps<{ class?: string | string[] }>(), { class: "" });
 </script>
 
 <template>
