@@ -200,6 +200,11 @@ class ApiCaller {
 
     if (sessionId) window.sessionStorage?.setItem(SESSION_ID_KEY, sessionId);
 
+    // Handle empty response from backend
+    if (result.headers.get("content-length") === "0" || result.status === 204) {
+      return undefined;
+    }
+
     const {
       status,
       response,
