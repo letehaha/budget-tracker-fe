@@ -4,12 +4,23 @@ import { EditIcon } from "lucide-vue-next";
 import UiButton from "@/components/lib/ui/button/Button.vue";
 import LinkAccountGroup from "@/components/dialogs/account-groups/link-account-group-dialog.vue";
 import { useAccountGroupForAccount } from "@/composable/data-queries/account-groups";
+import { ref, watch } from "vue";
 
 const props = defineProps<{
   account: AccountModel;
 }>();
 
-const { data } = useAccountGroupForAccount({ accountId: props.account.id });
+const accId = ref<number | string>(props.account.id);
+
+const { group: accountGroupData } = useAccountGroupForAccount(accId);
+
+watch(
+  () => props.account.id,
+  (newAccountId) => {
+    accId.value = newAccountId;
+  },
+  { immediate: true },
+);
 </script>
 
 <template>
@@ -17,8 +28,8 @@ const { data } = useAccountGroupForAccount({ accountId: props.account.id });
     <span> Account group: </span>
 
     <div class="flex items-center gap-2">
-      <template v-if="data">
-        {{ data.name }}
+      <template v-if="accountGroupData">
+        {{ accountGroupData.name }}
       </template>
       <template v-else>
         <span> Not associated </span>

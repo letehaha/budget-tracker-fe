@@ -29,9 +29,19 @@ const { data } = useQuery({
   staleTime: Infinity,
 });
 
+const accountId = ref(props.account.id);
+
 const { data: currentSelection, invalidate: invalidateAccountGroup } = useAccountGroupForAccount(
-  { accountId: props.account.id },
+  accountId,
   { enabled: () => isOpen.value },
+);
+
+watch(
+  () => props.account.id,
+  (newAccountId) => {
+    accountId.value = newAccountId;
+  },
+  { immediate: true },
 );
 
 watch(
@@ -65,7 +75,7 @@ const saveChanges = () => {
   if (selectedGroup.value) {
     linkAccount({ accountId: props.account.id, groupId: selectedGroup.value.id });
   } else {
-    unlinkAccount({ accountId: props.account.id, groupId: currentSelection.value.id });
+    unlinkAccount({ accountIds: [props.account.id], groupId: currentSelection.value.id });
   }
 };
 
