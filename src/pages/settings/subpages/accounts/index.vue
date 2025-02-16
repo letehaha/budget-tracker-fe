@@ -1,4 +1,3 @@
-<!-- eslint-disable vue/max-len -->
 <template>
   <div class="overflow-x-auto">
     <table v-if="accountGroups.length" class="min-w-full w-full bg-card rounded-md divide-y">
@@ -20,8 +19,15 @@
       <tbody class="divide-y divide-gray">
         <template v-for="(group, index) in accountGroups" :key="group.id">
           <tr
-            class="'cursor-pointer hover:bg-accent hover:text-accent-foreground"
-            @click="toggleActiveItem(group, index)"
+            :class="[
+              'hover:bg-accent hover:text-accent-foreground',
+              group.accounts.length && 'cursor-pointer',
+            ]"
+            @click="
+              () => {
+                if (group.accounts.length) toggleActiveItem(group, index);
+              }
+            "
           >
             <td
               :class="[
@@ -34,12 +40,16 @@
               ]"
             >
               <div class="flex items-center gap-3">
-                <ChevronRight
-                  :class="[
-                    'size-4 opacity-50 shrink-0',
-                    { 'rotate-90': activeItemIndex === index },
-                  ]"
-                />
+                <div class="size-4">
+                  <template v-if="group.accounts.length">
+                    <ChevronRight
+                      :class="[
+                        'size-4 opacity-50 shrink-0',
+                        { 'rotate-90': activeItemIndex === index },
+                      ]"
+                    />
+                  </template>
+                </div>
                 <div>
                   <template v-if="openNameEditor[index]">
                     <InputField v-model="activeEditName" placeholder="Account name" @click.stop />

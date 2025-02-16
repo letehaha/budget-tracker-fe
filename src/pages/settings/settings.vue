@@ -26,7 +26,7 @@ const tabs: Tab[] = [
   },
   {
     name: "accounts",
-    label: "Accounts",
+    label: "Accounts groups",
     to: { name: ROUTES_NAMES.settingsAccounts },
   },
 ];
