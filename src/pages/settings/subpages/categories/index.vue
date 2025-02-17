@@ -1,131 +1,84 @@
 <template>
-  <div class="grid gap-4 grid-cols-[repeat(2,minmax(0,450px))]">
+  <div class="grid gap-4 grid-cols-1 sm:grid-cols-[repeat(2,minmax(0,450px))]">
     <Card class="py-4 px-2 max-w-[450px]">
       <div class="flex justify-center relative mb-4 py-2 px-4">
-        <Button
-          v-if="selectedCategory"
-          variant="ghost"
-          class="absolute left-2 top-0 gap-1 group"
-          @click="goBack"
-        >
-          <ChevronLeftIcon class="group-hover:-translate-x-0.5 transition-transform size-4" />
-
-          Back
-        </Button>
-
-        <h3 class="text-lg font-semibold">
-          {{ selectedCategory ? "View Category" : "All Categories" }}
-        </h3>
-
-        <Button
-          v-if="selectedCategory"
-          class="absolute right-2 top-0 min-w-[80px] gap-2"
-          variant="secondary"
-          @click="startEditing"
-        >
-          Edit
-
-          <PencilIcon class="size-3" />
-        </Button>
+        <h3 class="text-lg font-semibold">All Categories</h3>
       </div>
 
-      <template v-if="selectedCategory">
-        <div class="p-4 pt-0 grid gap-2 my-6 border-b">
-          <div class="flex justify-between">
-            <span class="opacity-70">Name:</span>
-
-            {{ selectedCategory.name }}
-          </div>
-        </div>
-
-        <h4 class="text-xs ml-4 uppercase">Subcategories</h4>
-      </template>
-
       <div class="grid gap-2 mt-4 px-4 text-center">
-        <template v-if="currentLevel.length">
-          <template v-for="cat in currentLevel" :key="cat.id">
-            <Button
-              class="grid grid-cols-[1fr,min-content] gap-8 -ml-4 w-[calc(100%+32px)]"
-              variant="ghost"
-              @click="selectCategory(cat)"
-            >
-              <div class="flex items-center gap-2">
-                <CategoryCircle :category="cat" />
-
-                {{ cat.name }}
-              </div>
-              <span
-                v-if="categoryLevelCount < MAX_CATEGORIES_NESTING - 1"
-                class="text-sm w-max opacity-70 flex gap-2"
-              >
-                <span>View</span>
-                <span>></span>
-              </span>
-            </Button>
-          </template>
+        <template v-if="formattedCategories.length">
+          <Accordion
+            :categories="formattedCategories"
+            :expanded-categories="expandedCategories"
+            :max-level="MAX_CATEGORIES_NESTING"
+            :current-level="1"
+            :active-category-id="selectedCategory?.id"
+            @toggle="toggleCategory"
+            @select="selectCategory"
+          />
         </template>
         <template v-else>
           <div>No subcategories</div>
         </template>
       </div>
-
-      <div v-if="categoryLevelCount < MAX_CATEGORIES_NESTING - 1" class="px-4 mt-6 text-center">
-        <Button type="button" class="w-full" variant="secondary" @click="startCreating">
-          Add subcategory +
-        </Button>
-      </div>
     </Card>
 
-    <template v-if="isFormVisible">
-      <Card as="form" class="py-4 px-2 max-w-[450px]" @submit.prevent="applyChanges">
-        <div class="flex justify-center relative mb-4 py-2 px-4">
-          <Button variant="ghost" class="p-2 absolute left-2 top-0 text-primary" @click="closeForm">
-            Cancel
+    <Card as="form" class="py-4 px-2 max-w-[450px] max-h-[300px]" @submit.prevent="applyChanges">
+      <div class="flex justify-center relative mb-4 py-2 px-4">
+        <h3 class="text-lg font-semibold">Edit Category</h3>
+        <Button type="submit" class="absolute right-2 top-0">Save</Button>
+      </div>
+      <div class="px-4 mt-12">
+        <InputField v-model="form.name" label="Category name" placeholder="Category name" />
+      </div>
+      <label class="px-4 mt-4 flex items-center gap-4 cursor-pointer">
+        <p>Exclude category from expenses stats</p>
+        <Checkbox v-model:checked="form.excludeFromStats" />
+      </label>
+      <div class="flex justify-between px-4 mt-5">
+        <Button variant="destructive" @click.prevent="deleteCategory"> Delete category </Button>
+
+        <div v-if="isAddSubcategoryVisible" class="text-center">
+          <Button type="button" class="w-full" variant="secondary" @click="startCreating">
+            Add subcategory +
           </Button>
-
-          <h3 class="text-lg font-semibold">
-            {{ isEditing ? "Edit Category" : "Create Category" }}
-          </h3>
-
-          <Button type="submit" class="absolute right-2 top-0">Save</Button>
         </div>
+      </div>
+    </Card>
+    <ResponsiveDialog v-model:open="isDialogVisible">
+      <template #trigger>
+        <slot />
+      </template>
 
-        <div class="px-4 mt-12">
-          <InputField v-model="form.name" label="Category name" placeholder="Category name" />
-        </div>
+      <template #title> Add new category </template>
 
-        <label class="px-4 mt-4 flex items-center gap-4 cursor-pointer">
-          <p>Exclude category from expenses stats</p>
+      <form class="grid gap-6 mt-4" @submit.prevent="applyChanges">
+        <InputField v-model="newCategoryName" label="Category name" placeholder="Category name" />
 
-          <Checkbox v-model:checked="form.excludeFromStats" />
-        </label>
-
-        <template v-if="isEditing">
-          <div class="px-4 mt-12">
-            <Button variant="destructive" @click="deleteCategory"> Delete category </Button>
-          </div>
-        </template>
-      </Card>
-    </template>
+        <Button type="submit" class="w-full" variant="secondary"> Add category </Button>
+      </form>
+    </ResponsiveDialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
-import { ref, reactive } from "vue";
+import { ref, reactive, onMounted } from "vue";
 import { API_ERROR_CODES } from "shared-types";
 import { useCategoriesStore } from "@/stores";
 import { editCategory, createCategory, deleteCategory as apiDeleteCategory } from "@/api";
 import { useNotificationCenter } from "@/components/notification-center";
-import CategoryCircle from "@/components/common/category-circle.vue";
 import InputField from "@/components/fields/input-field.vue";
 import { type FormattedCategory } from "@/common/types";
 import { ApiErrorResponseError } from "@/js/errors";
 import { removeNullishValues } from "@/common/utils/remove-keys";
 import { Card } from "@/components/lib/ui/card";
 import { Button } from "@/components/lib/ui/button";
-import { ChevronLeftIcon, PencilIcon } from "lucide-vue-next";
+import { useRouter, useRoute } from "vue-router";
+import ResponsiveDialog from "@/components/common/responsive-dialog.vue";
+
 import Checkbox from "@/components/lib/ui/checkbox/Checkbox.vue";
+import Accordion from "@/components/common/accordion.vue";
 import {
   useUserSettings,
   addCategories,
@@ -135,14 +88,15 @@ import {
 defineOptions({
   name: "settings-categories",
 });
+
+const router = useRouter();
+const route = useRoute();
 const categoriesStore = useCategoriesStore();
-const MAX_CATEGORIES_NESTING = 3;
 
 const { addErrorNotification, addSuccessNotification } = useNotificationCenter();
 const { formattedCategories } = storeToRefs(categoriesStore);
-const currentLevel = ref<FormattedCategory[]>(formattedCategories.value);
 const selectedCategory = ref<FormattedCategory | null>(null);
-const categoryLevelCount = ref<number>(0);
+const isAddSubcategoryVisible = ref(true);
 
 const { data: userSettings, mutateAsync: updateUserSettings } = useUserSettings();
 
@@ -150,38 +104,100 @@ const form = reactive({
   name: "",
   excludeFromStats: false,
 });
-const isFormVisible = ref(false);
-const isEditing = ref(false);
+// const isFormVisible = ref(false);
+const isEditing = ref(true);
 const isCreating = ref(false);
-const closeForm = () => {
+const isDialogVisible = ref(false);
+const MAX_CATEGORIES_NESTING = 3;
+const expandedCategories = ref<number[]>([]);
+const newCategoryName = ref("");
+const startCreating = () => {
+  newCategoryName.value = "";
   isEditing.value = false;
-  isCreating.value = false;
-  isFormVisible.value = false;
-  form.name = "";
-  form.excludeFromStats = false;
+  isCreating.value = true;
+  isDialogVisible.value = true;
 };
-const startEditing = () => {
-  closeForm();
-  if (selectedCategory.value) {
-    form.name = selectedCategory.value.name;
+const findCategoryById = (categories, id) => {
+  for (const category of categories) {
+    if (category.id === id) {
+      return category;
+    }
+    if (category.subCategories && category.subCategories.length > 0) {
+      const result = findCategoryById(category.subCategories, id);
+      if (result) {
+        return result;
+      }
+    }
+  }
+  return null;
+};
+const getCategoryParents = (categories, id, parents = []) => {
+  for (const category of categories) {
+    if (category.id === id) {
+      return [...parents, category];
+    }
+    if (category.subCategories && category.subCategories.length > 0) {
+      const result = getCategoryParents(category.subCategories, id, [...parents, category]);
+      if (result) {
+        return result;
+      }
+    }
+  }
+  return [];
+};
+const getCategoryLevel = (category, allCategories, level = 1) => {
+  if (!category.parentId) {
+    return level;
+  }
+
+  const parentCategory = findCategoryById(allCategories, category.parentId);
+  if (!parentCategory) {
+    return level;
+  }
+
+  return getCategoryLevel(parentCategory, allCategories, level + 1);
+};
+const toggleCategory = (category) => {
+  const categoryId = category.id;
+  const index = expandedCategories.value.indexOf(categoryId);
+
+  if (category.parentId === null && !expandedCategories.value.includes(category.id)) {
+    expandedCategories.value = [];
+  }
+
+  if (index === -1) {
+    expandedCategories.value.push(categoryId);
+  } else {
+    expandedCategories.value.splice(index, 1);
+  }
+
+  const currentLevel = getCategoryLevel(category, formattedCategories.value);
+
+  if (currentLevel < MAX_CATEGORIES_NESTING || currentLevel === MAX_CATEGORIES_NESTING - 1) {
+    isAddSubcategoryVisible.value = true;
+  } else {
+    isAddSubcategoryVisible.value = false;
+  }
+
+  router.replace({
+    query: {
+      ...route.query,
+      selectedCategory: categoryId,
+    },
+  });
+
+  selectedCategory.value = category;
+  form.name = category.name;
+
+  if (userSettings.value?.stats?.expenses?.excludedCategories) {
     form.excludeFromStats = userSettings.value.stats.expenses.excludedCategories.includes(
       selectedCategory.value.id,
     );
+  } else {
+    form.excludeFromStats = false;
   }
-  isEditing.value = true;
-  isFormVisible.value = true;
 };
-const startCreating = () => {
-  closeForm();
-  isCreating.value = true;
-  isFormVisible.value = true;
-};
-const goBack = () => {
-  closeForm();
-  selectedCategory.value = null;
-  currentLevel.value = formattedCategories.value;
-  categoryLevelCount.value = 0;
-};
+
 const applyChanges = async () => {
   if (!selectedCategory.value) return;
 
@@ -194,7 +210,7 @@ const applyChanges = async () => {
     } else if (isCreating.value) {
       type InputParams = Parameters<typeof createCategory>[0];
 
-      let params: InputParams = { name: form.name };
+      let params: InputParams = { name: newCategoryName.value };
 
       if (selectedCategory.value) {
         params = removeNullishValues({
@@ -205,6 +221,7 @@ const applyChanges = async () => {
         }) as InputParams;
       }
       await createCategory(params);
+      isDialogVisible.value = false;
     }
 
     await updateUserSettings(
@@ -214,19 +231,12 @@ const applyChanges = async () => {
     );
     addSuccessNotification("Successfully updated!");
     await categoriesStore.loadCategories();
-    goBack();
   } catch (err) {
     addErrorNotification("Unexpected error!");
   }
 };
-const selectCategory = (category: FormattedCategory) => {
-  closeForm();
+const selectCategory = (category) => {
   selectedCategory.value = category;
-
-  if (category.subCategories) {
-    categoryLevelCount.value++;
-    currentLevel.value = category.subCategories;
-  }
 };
 const deleteCategory = async () => {
   try {
@@ -234,7 +244,7 @@ const deleteCategory = async () => {
 
     await categoriesStore.loadCategories();
     addSuccessNotification("Successfully deleted!");
-    goBack();
+    form.name = "";
   } catch (err) {
     if (err instanceof ApiErrorResponseError) {
       if (err.data.code === API_ERROR_CODES.validationError) {
@@ -245,4 +255,28 @@ const deleteCategory = async () => {
     addErrorNotification("Unexpected error. Category is not deleted.");
   }
 };
+
+onMounted(() => {
+  const selectedCategoryId = route.query.selectedCategory;
+  console.log(selectedCategoryId);
+
+  if (selectedCategoryId) {
+    console.log(formattedCategories.value);
+    console.log(Number(selectedCategoryId));
+    const categoryParents = getCategoryParents(
+      formattedCategories.value,
+      Number(selectedCategoryId),
+    );
+
+    if (categoryParents.length > 0) {
+      const category = categoryParents[categoryParents.length - 1];
+      const allCategoryIds = categoryParents.map((c) => c.id);
+      expandedCategories.value = allCategoryIds;
+
+      toggleCategory(category);
+    } else {
+      console.warn(`Category with ID ${selectedCategoryId} not found`);
+    }
+  }
+});
 </script>
