@@ -1,5 +1,5 @@
 import { ref } from "vue";
-import { BudgetsModel } from "shared-types";
+import { BudgetModel } from "shared-types";
 import { defineStore } from "pinia";
 import { loadSystemBudgets, loadBudgetById } from "@/api/budgets";
 import { useNotificationCenter } from "@/components/notification-center";
@@ -7,8 +7,8 @@ import * as errors from "@/js/errors";
 
 export const useBudgetsStore = defineStore("budgets", () => {
   const notificationStore = useNotificationCenter();
-  const budgetsList = ref<BudgetsModel[]>([]);
-  const budgetItem = ref<BudgetsModel>();
+  const budgetsList = ref<BudgetModel[]>([]);
+  const budgetItem = ref<BudgetModel>();
 
   const loadBudgets = async () => {
     try {
