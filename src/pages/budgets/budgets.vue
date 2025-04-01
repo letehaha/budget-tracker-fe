@@ -31,7 +31,7 @@ const isModalClosed = () => {
           '@[450px]/budgets-card:flex-row @[450px]/budgets-card:items-center',
         ]"
       >
-        <h3 class="text-xl">Budgets list</h3>
+        <h3 class="text-xl">Budgets</h3>
 
         <Button class="w-min" @click="openModal"> Create budget +</Button>
       </CardHeader>
