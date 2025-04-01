@@ -11,15 +11,19 @@ import { VUE_QUERY_CACHE_KEYS } from "@/common/const";
 import { useMutation, useQueryClient } from "@tanstack/vue-query";
 
 const BUDGET_DEFAULT_VALUES: {
+  id: number | null;
   name: string | null;
-  categoryName: string | null;
+  status: string | null;
+  // categoryName: string | null;
   startDate?: Date | null;
   endDate?: Date | null;
   limitAmount?: number | null;
   autoInclude?: boolean;
 } = {
+  id: null,
   name: null,
-  categoryName: null,
+  status: null,
+  // categoryName: null,
   startDate: null,
   endDate: null,
   limitAmount: 0,
