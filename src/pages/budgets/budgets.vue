@@ -16,6 +16,10 @@ const isOpen = ref(false);
 const openModal = () => {
   isOpen.value = true;
 };
+
+const isModalClosed = () => {
+  isOpen.value = false;
+};
 </script>
 
 <template>
@@ -29,7 +33,7 @@ const openModal = () => {
       >
         <h3 class="text-xl">Budgets list</h3>
 
-        <Button class="w-min" @click="openModal">Create budget +</Button>
+        <Button class="w-min" @click="openModal"> Create budget +</Button>
       </CardHeader>
       <CardContent>
         <BudgetList />
@@ -38,7 +42,7 @@ const openModal = () => {
 
     <ResponsiveDialog v-model:open="isOpen">
       <template #title> Create budget </template>
-      <BudgetCreation />
+      <BudgetCreation @create-budget="isModalClosed" />
     </ResponsiveDialog>
   </div>
 </template>

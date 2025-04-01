@@ -30,6 +30,7 @@ const BUDGET_DEFAULT_VALUES: {
   autoInclude: false,
 } as const;
 
+const emits = defineEmits(["create-budget"]);
 const queryClient = useQueryClient();
 
 const { isPending: isMutating, mutate } = useMutation({
@@ -42,10 +43,13 @@ const { isPending: isMutating, mutate } = useMutation({
 const form = ref({ ...BUDGET_DEFAULT_VALUES });
 
 const isDateExist = computed(() => !!form.value.startDate && !!form.value.endDate);
-const isSubmitDisabled = computed(() => isMutating.value || !form.value.name);
+const isSubmitDisabled = computed(
+  () => isMutating.value || !form.value.name || !form.value.limitAmount,
+);
 
 const createBudgetItem = async () => {
   await mutate(form.value);
+  emits("create-budget");
 };
 </script>
 

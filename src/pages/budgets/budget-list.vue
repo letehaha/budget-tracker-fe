@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import Button from "@/components/lib/ui/button/Button.vue";
 import { EditIcon, Trash2Icon } from "lucide-vue-next";
+import { AlertDialog } from "@/components/common";
 
 import { loadSystemBudgets } from "@/api/budgets";
-import { useQuery } from "@tanstack/vue-query";
+import { useQuery, useQueryClient } from "@tanstack/vue-query";
 import { VUE_QUERY_CACHE_KEYS } from "@/common/const";
 
 import { deleteBudget as deleteBudgetApi } from "@/api";
@@ -11,10 +12,14 @@ import { useNotificationCenter } from "@/components/notification-center";
 import { useRouter } from "vue-router";
 import { ROUTES_NAMES } from "@/routes";
 import { useCurrenciesStore } from "@/stores/currencies";
+import { ref } from "vue";
 
-const { addErrorNotification } = useNotificationCenter();
+const { addErrorNotification, addSuccessNotification } = useNotificationCenter();
 const router = useRouter();
+const queryClient = useQueryClient();
 const { baseCurrency } = useCurrenciesStore();
+
+const isModalVisible = ref<boolean>(false);
 
 const { data: budgetsList } = useQuery({
   queryFn: () => loadSystemBudgets(),
@@ -23,6 +28,10 @@ const { data: budgetsList } = useQuery({
   placeholderData: [],
 });
 
+const toggleDeleteModal = () => {
+  isModalVisible.value = true;
+};
+
 const toggleBudgetNameEdit = (budgetId: number) => {
   router.push({ name: ROUTES_NAMES.budgetsInfo, params: { id: budgetId } });
 };
@@ -30,6 +39,8 @@ const toggleBudgetNameEdit = (budgetId: number) => {
 const deleteBudget = async (budgetId: number) => {
   try {
     await deleteBudgetApi(budgetId);
+    queryClient.invalidateQueries({ queryKey: VUE_QUERY_CACHE_KEYS.budgetsList });
+    addSuccessNotification("Budget deleted successfully!");
   } catch (err) {
     addErrorNotification("Unexpected error!");
   }
@@ -56,10 +67,28 @@ const deleteBudget = async (budgetId: number) => {
           <span class="@[360px]/budgets-list:inline"> Edit </span>
           <EditIcon class="size-4" />
         </Button>
-        <Button size="sm" variant="destructive" @click="deleteBudget(budget.id)">
+        <!-- <Button size="sm" variant="destructive" @click="deleteBudget(budget.id)">
           <span class="@[360px]/budgets-list:inline"> Delete </span>
           <Trash2Icon class="size-4" />
-        </Button>
+        </Button> -->
+
+        <AlertDialog
+          title="Do you want to delete this budget?"
+          accept-variant="destructive"
+          @accept="deleteBudget(budget.id)"
+        >
+          <template #trigger>
+            <Button
+              variant="destructive"
+              size="sm"
+              class="w-min gap-1"
+              @click.stop="toggleDeleteModal"
+            >
+              <span class="@[360px]/budgets-list:inline"> Delete </span>
+              <Trash2Icon class="size-4" />
+            </Button>
+          </template>
+        </AlertDialog>
       </div>
     </div>
   </div>
