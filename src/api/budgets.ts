@@ -1,4 +1,3 @@
-/* eslint-disable prettier-vue/prettier */
 import { BudgetModel } from "shared-types";
 import { api } from "@/api/_api";
 import { toSystemAmount, fromSystemAmount } from "./helpers";
@@ -25,17 +24,17 @@ export const loadSystemBudgets = async (): Promise<BudgetModel[]> => {
 };
 
 export const loadBudgetById = async (id: number): Promise<BudgetModel> => {
-  const result = await api.get(`/budgets/${id}`)
+  const result = await api.get(`/budgets/${id}`);
 
-  if (result.limitAmount) result.limitAmount = fromSystemAmount(Number(result.limitAmount))
+  if (result.limitAmount) result.limitAmount = fromSystemAmount(Number(result.limitAmount));
 
-  return result
-}
+  return result;
+};
 
 export const createBudget = async (
-  payload: Omit<BudgetModel, 'id' | 'userId'>,
+  payload: Omit<BudgetModel, "id" | "userId">,
 ): Promise<BudgetModel> => {
-  const params = payload
+  const params = payload;
 
   if (params.limitAmount) params.limitAmount = toSystemAmount(Number(params.limitAmount));
   const result = await api.post("/budgets", params);
@@ -47,23 +46,20 @@ export const deleteBudget = async (budgetId: number) => {
   await api.delete(`/budgets/${budgetId}`);
 };
 
-export const editBudget = async (
-  {
-    budgetId,
-    payload
-  }:
-  {
-    budgetId: number,
-    payload: editBudgetParamsParams
-  }
-) => {
-  const params = payload
+export const editBudget = async ({
+  budgetId,
+  payload,
+}: {
+  budgetId: number;
+  payload: editBudgetParamsParams;
+}) => {
+  const params = payload;
 
   if (params.limitAmount) params.limitAmount = toSystemAmount(Number(params.limitAmount));
 
-  await api.put(`/budgets/${budgetId}`, params)
-}
+  await api.put(`/budgets/${budgetId}`, params);
+};
 
 export const addTransactionsToBudget = async (budgetId: number, params: unknown) => {
-  await api.post(`/budgets/${budgetId}/transactions`, params)
-}
+  await api.post(`/budgets/${budgetId}/transactions`, params);
+};
