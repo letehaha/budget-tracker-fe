@@ -1,5 +1,5 @@
 /* eslint-disable prettier-vue/prettier */
-import { BudgetsModel } from "shared-types";
+import { BudgetModel } from "shared-types";
 import { api } from "@/api/_api";
 import { toSystemAmount, fromSystemAmount } from "./helpers";
 
@@ -8,10 +8,10 @@ interface editBudgetParamsParams {
   limitAmount?: number;
 }
 
-export const loadSystemBudgets = async (): Promise<BudgetsModel[]> => {
+export const loadSystemBudgets = async (): Promise<BudgetModel[]> => {
   const result = await api.get("/budgets");
 
-  const updatedResult = result.map((budget: BudgetsModel) => {
+  const updatedResult = result.map((budget: BudgetModel) => {
     if (budget.limitAmount) {
       return {
         ...budget,
@@ -24,7 +24,7 @@ export const loadSystemBudgets = async (): Promise<BudgetsModel[]> => {
   return updatedResult;
 };
 
-export const loadBudgetById = async (id: number): Promise<BudgetsModel> => {
+export const loadBudgetById = async (id: number): Promise<BudgetModel> => {
   const result = await api.get(`/budgets/${id}`)
 
   if (result.limitAmount) result.limitAmount = fromSystemAmount(Number(result.limitAmount))
@@ -33,8 +33,8 @@ export const loadBudgetById = async (id: number): Promise<BudgetsModel> => {
 }
 
 export const createBudget = async (
-  payload: Omit<BudgetsModel, 'id' | 'userId'>,
-): Promise<BudgetsModel> => {
+  payload: Omit<BudgetModel, 'id' | 'userId'>,
+): Promise<BudgetModel> => {
   const params = payload
 
   if (params.limitAmount) params.limitAmount = toSystemAmount(Number(params.limitAmount));
